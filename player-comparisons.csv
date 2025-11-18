@@ -1,0 +1,140 @@
+Comparison points,Who wins?,Where’s the data?
+ACCOLADES,,
+NBA Champion,Most,Awards.csv
+Finals MVP,Most,Awards.csv
+Most Valuable Player,Most,Awards.csv
+Conference Finals MVP,Most,Awards.csv
+Bubble MVP,Most,Awards.csv
+All-NBA First Team,Most,Awards.csv
+All-NBA Selections,Most,Awards.csv
+All-Star,Most,Awards.csv
+All-Star MVP,Most,Awards.csv
+Defensive Player of the Year,Most,Awards.csv
+All-Defensive First Team,Most,Awards.csv
+All-Defensive Team Selections,Most,Awards.csv
+Rookie of the Year,Most,Awards.csv
+All-Rookie First Team,Most,Awards.csv
+All-Rookie Second Team,Most,Awards.csv
+NBA Cup Champion,Most,Awards.csv
+NBA Cup MVP,Most,Awards.csv
+All-Tournament Cup Team,Most,Awards.csv
+Sixth Man of the Year,Most,Awards.csv
+Most Improved Player,Most,Awards.csv
+Clutch Player of the Year,Most,Awards.csv
+Player of the Week,Most,Awards.csv
+Player of the Month,Most,Awards.csv
+Rookie of the Month,Most,Awards.csv
+Defensive Player of the Month,Most,Awards.csv
+Scoring Leader,Most,Awards.csv
+Rebounding Leader,Most,Awards.csv
+Assists Leader,Most,Awards.csv
+Blocks Leader,Most,Awards.csv
+Steals Leader,Most,Awards.csv
+Dunk Contest,Most,All-Star.csv
+Three-Point Contest,Most,All-Star.csv
+Skills Challenge,Most,All-Star.csv
+Olympic Gold,Most,Awards.csv
+Olympic Medals,Most,Awards.csv
+Olympic MVP,Most,Awards.csv
+FIBA Olympics All-Star Five,Most,Awards.csv
+World Cup Gold,Most,Awards.csv
+World Cup Medals,Most,Awards.csv
+World Cup MVP,Most,Awards.csv
+NBA CAREER AVERAGES,,
+Points per game,Most,RS-Stats.csv
+Rebounds per game,Most,RS-Stats.csv
+Assists per game,Most,RS-Stats.csv
+Steals per game,Most,RS-Stats.csv
+Blocks per game,Most,RS-Stats.csv
+Field Goal %,Most,RS-Stats.csv
+Three Point %,Most,RS-Stats.csv
+Free Throw %,Most,RS-Stats.csv
+Turnovers per game,Least,RS-Stats.csv
+Points per game PO,Most,PO-Stats.csv
+Rebounds per game PO,Most,PO-Stats.csv
+Assists per game PO,Most,PO-Stats.csv
+Steals per game PO,Most,PO-Stats.csv
+Blocks per game PO,Most,PO-Stats.csv
+Field Goal % PO,Most,PO-Stats.csv
+Three Point % PO,Most,PO-Stats.csv
+Free Throw % PO,Most,PO-Stats.csv
+Turnovers per game PO,Least,PO-Stats.csv
+NBA CAREER TOTALS,,
+Games,Most,RS-Stats.csv
+Points,Most,RS-Stats.csv
+Rebounds,Most,RS-Stats.csv
+Assists,Most,RS-Stats.csv
+Steals,Most,RS-Stats.csv
+Blocks,Most,RS-Stats.csv
+Turnovers,Least,RS-Stats.csv
+Games PO,Most,PO-Stats.csv
+Points PO,Most,PO-Stats.csv
+Rebounds PO,Most,PO-Stats.csv
+Assists PO,Most,PO-Stats.csv
+Steals PO,Most,PO-Stats.csv
+Blocks PO,Most,PO-Stats.csv
+Turnovers PO,Least,PO-Stats.csv
+NBA SEASON PEAK,,
+Points,Most,RS-Stats.csv
+Rebounds,Most,RS-Stats.csv
+Assists,Most,RS-Stats.csv
+Steals,Most,RS-Stats.csv
+Blocks,Most,RS-Stats.csv
+FG%,Most,RS-Stats.csv
+3P%,Most,RS-Stats.csv
+FT%,Most,RS-Stats.csv
+Turnovers,Least,RS-Stats.csv
+Points PO,Most,PO-Stats.csv
+Rebounds PO,Most,PO-Stats.csv
+Assists PO,Most,PO-Stats.csv
+Steals PO,Most,PO-Stats.csv
+Blocks PO,Most,PO-Stats.csv
+FG% PO,Most,PO-Stats.csv
+3P% PO,Most,PO-Stats.csv
+FT% PO,Most,PO-Stats.csv
+Turnovers PO,Most,PO-Stats.csv
+PLAYOFF SUCCESS,,
+First Round,Most,PO-series.csv
+Conference Semis,Most,PO-series.csv
+Conference Finals,Most,PO-series.csv
+Finalist,Most,PO-series.csv
+Champion,Most,PO-series.csv
+Playoff series played,Most,PO-series.csv
+Playoff series won,Most,PO-series.csv
+Playoff series win %,Most,PO-series.csv
+SALARIES,,
+Career earnings,Most,Salaries.csv
+Average salary,Most,Salaries.csv
+Highest salary,Most,Salaries.csv
+Lowest salary,Most,Salaries.csv
+DRAFT COMBINE,,
+Body fat,Least,Combine.csv
+Hand size,Most,Combine.csv
+Height without shoes,Most,Combine.csv
+Standing reach,Most,Combine.csv
+Weight,Least,Combine.csv
+Wingspan,Most,Combine.csv
+Lane agility time,Least,Combine.csv
+Shuttle run,Least,Combine.csv
+Three quarter sprint,Least,Combine.csv
+Standing vertical leap,Most,Combine.csv
+Max vertical leap,Most,Combine.csv
+Max bench press,Most,Combine.csv
+BEST VOTE RANKING,,
+MVP,Most,Award-Votes.csv
+DPOY,Most,Award-Votes.csv
+ROY,Most,Award-Votes.csv
+Sixth Man,Most,Award-Votes.csv
+MIP,Most,Award-Votes.csv
+YEARS RECEIVING VOTES,,
+Years with MVP votes,Most,Award-Votes.csv
+Years with DPOY votes,Most,Award-Votes.csv
+Years with ROY votes,Most,Award-Votes.csv
+Years with Sixth Man votes,Most,Award-Votes.csv
+Years with MIP votes,Most,Award-Votes.csv
+SIGNATURE SHOES,,
+Number of Shoes,Most,Sneakers.csv
+NBA 2K,,
+Average,Most,NBA2K.csv
+Highest,Most,NBA2K.csv
+Lowest,Most,NBA2K.csv

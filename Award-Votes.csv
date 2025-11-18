@@ -1,0 +1,3371 @@
+PLAYER,YEAR,AWARD,RNK
+Jalen Brunson,2025,Clutch,1
+Nikola Jokic,2025,Clutch,2
+Anthony Edwards,2025,Clutch,3
+Trae Young,2025,Clutch,4
+Stephen Curry,2025,Clutch,5
+Darius Garland,2025,Clutch,6
+LeBron James,2025,Clutch,7
+Shai Gilgeous-Alexander,2025,Clutch,8
+Donovan Mitchell,2025,Clutch,9
+Kyrie Irving,2025,Clutch,10
+Tyrese Maxey,2025,Clutch,10
+Jayson Tatum,2025,Clutch,10
+De'Aaron Fox,2023,Clutch,1
+Jimmy Butler,2023,Clutch,2
+DeMar DeRozan,2023,Clutch,3
+Jalen Brunson,2023,Clutch,4
+Joel Embiid,2023,Clutch,5
+Donovan Mitchell,2023,Clutch,6
+Shai Gilgeous-Alexander,2023,Clutch,7
+Luka Doncic,2023,Clutch,8
+Stephen Curry,2023,Clutch,9
+Damian Lillard,2023,Clutch,10
+Jayson Tatum,2023,Clutch,10
+Kyrie Irving,2023,Clutch,12
+Nikola Jokic,2023,Clutch,13
+Julius Randle,2023,Clutch,14
+Stephen Curry,2024,Clutch,1
+DeMar DeRozan,2024,Clutch,2
+Shai Gilgeous-Alexander,2024,Clutch,3
+Nikola Jokic,2024,Clutch,4
+Jalen Brunson,2024,Clutch,5
+Luka Doncic,2024,Clutch,6
+Kyrie Irving,2024,Clutch,7
+Anthony Edwards,2024,Clutch,8
+Jayson Tatum,2024,Clutch,9
+LeBron James,2024,Clutch,10
+Damian Lillard,2024,Clutch,11
+De'Aaron Fox,2024,Clutch,12
+Giannis Antetokounmpo,2024,Clutch,12
+Jalen Williams,2024,Clutch,12
+Malik Monk,2024,Clutch,12
+Alonzo Mourning,2000,DPOY,1
+Shaquille O'Neal,2000,DPOY,2
+Dikembe Mutombo,2000,DPOY,3
+Eddie Jones,2000,DPOY,3
+Gary Payton,2000,DPOY,5
+Kobe Bryant,2000,DPOY,5
+Kevin Garnett,2000,DPOY,7
+Anthony Mason,2000,DPOY,8
+Bo Outlaw,2000,DPOY,8
+Clifford Robinson,2000,DPOY,8
+Jason Kidd,2000,DPOY,8
+Kendall Gill,2000,DPOY,8
+Scottie Pippen,2000,DPOY,8
+Evan Mobley,2025,DPOY,1
+Dyson Daniels,2025,DPOY,2
+Draymond Green,2025,DPOY,3
+Luguentz Dort,2025,DPOY,4
+Amen Thompson,2025,DPOY,5
+Ivica Zubac,2025,DPOY,6
+Jaren Jackson Jr,2025,DPOY,7
+Giannis Antetokounmpo,2025,DPOY,8
+Toumani Camara,2025,DPOY,9
+Ban Adebayo,2025,DPOY,10
+Shai Gilgeous-Alexander,2025,DPOY,10
+Derrick White,2025,DPOY,10
+Rudy Gobert,2025,DPOY,13
+Sidney Moncrief,1983,DPOY,1
+Tree Rollins,1983,DPOY,2
+Bobby Jones,1983,DPOY,3
+Larry Bird,1983,DPOY,3
+Maurice Cheeks,1983,DPOY,3
+Michael Cooper,1983,DPOY,3
+Sidney Moncrief,1984,DPOY,1
+Mark Eaton,1984,DPOY,2
+Dennis Johnson,1984,DPOY,3
+Bobby Jones,1984,DPOY,4
+Maurice Cheeks,1984,DPOY,4
+Michael Cooper,1984,DPOY,4
+T.R. Dunn,1984,DPOY,7
+Rickey Green,1984,DPOY,8
+Calvin Natt,1984,DPOY,9
+Larry Nance,1984,DPOY,9
+Rory Sparrow,1984,DPOY,9
+Bill Laimbeer,1984,DPOY,12
+Jamaal Wilkes,1984,DPOY,12
+Larry Bird,1984,DPOY,12
+Lonnie Shelton,1984,DPOY,12
+Magic Johnson,1984,DPOY,12
+Moses Malone,1984,DPOY,12
+Mychal Thompson,1984,DPOY,12
+Tree Rollins,1984,DPOY,12
+Mark Eaton,1985,DPOY,1
+Sidney Moncrief,1985,DPOY,2
+Paul Pressey,1985,DPOY,3
+Michael Cooper,1985,DPOY,4
+Maurice Cheeks,1985,DPOY,5
+Dennis Johnson,1985,DPOY,6
+Danny Vranes,1985,DPOY,7
+Micheal Ray Richardson,1985,DPOY,7
+T.R. Dunn,1985,DPOY,7
+Alvin Robertson,1986,DPOY,1
+Manute Bol,1986,DPOY,2
+Sidney Moncrief,1986,DPOY,3
+Michael Cooper,1987,DPOY,1
+Alvin Robertson,1987,DPOY,2
+Mark Eaton,1987,DPOY,3
+Manute Bol,1987,DPOY,4
+Kevin McHale,1987,DPOY,5
+Maurice Cheeks,1987,DPOY,6
+Dennis Johnson,1987,DPOY,7
+Bill Hanzlik,1987,DPOY,8
+Derek Harper,1987,DPOY,8
+Doc Rivers,1987,DPOY,8
+Fat Lever,1987,DPOY,8
+Michael Jordan,1987,DPOY,8
+Paul Pressey,1987,DPOY,8
+T.R. Dunn,1987,DPOY,8
+Michael Jordan,1988,DPOY,1
+Mark Eaton,1988,DPOY,2
+Hakeem Olajuwon,1988,DPOY,3
+Alvin Robertson,1988,DPOY,4
+Fat Lever,1988,DPOY,5
+Michael Cooper,1988,DPOY,5
+Patrick Ewing,1988,DPOY,5
+Bob Hansen,1988,DPOY,8
+Clyde Drexler,1988,DPOY,8
+Dennis Rodman,1988,DPOY,8
+John Stockton,1988,DPOY,8
+Manute Bol,1988,DPOY,8
+Maurice Cheeks,1988,DPOY,8
+Nate McMillan,1988,DPOY,8
+Paul Pressey,1988,DPOY,8
+Sam Perkins,1988,DPOY,8
+Mark Eaton,1989,DPOY,1
+Hakeem Olajuwon,1989,DPOY,2
+Dennis Rodman,1989,DPOY,3
+Manute Bol,1989,DPOY,4
+Michael Jordan,1989,DPOY,5
+Patrick Ewing,1989,DPOY,6
+Buck Williams,1989,DPOY,7
+Fat Lever,1989,DPOY,7
+Dennis Rodman,1990,DPOY,1
+Hakeem Olajuwon,1990,DPOY,2
+Derek Harper,1990,DPOY,3
+Joe Dumars,1990,DPOY,3
+Alvin Robertson,1990,DPOY,5
+Mark Eaton,1990,DPOY,5
+Michael Jordan,1990,DPOY,5
+Patrick Ewing,1990,DPOY,5
+Dennis Rodman,1991,DPOY,1
+David Robinson,1991,DPOY,2
+Alvin Robertson,1991,DPOY,3
+Joe Dumars,1991,DPOY,4
+Buck Williams,1991,DPOY,5
+Hakeem Olajuwon,1991,DPOY,5
+Derek Harper,1991,DPOY,7
+John Stockton,1991,DPOY,7
+Michael Jordan,1991,DPOY,7
+Patrick Ewing,1991,DPOY,7
+Scottie Pippen,1991,DPOY,7
+David Robinson,1992,DPOY,1
+Dennis Rodman,1992,DPOY,2
+Michael Jordan,1992,DPOY,3
+Scottie Pippen,1992,DPOY,3
+Joe Dumars,1992,DPOY,5
+Buck Williams,1992,DPOY,6
+Hakeem Olajuwon,1992,DPOY,6
+Karl Malone,1992,DPOY,6
+Hakeem Olajuwon,1993,DPOY,1
+David Robinson,1993,DPOY,2
+Michael Jordan,1993,DPOY,2
+Dennis Rodman,1993,DPOY,4
+Charles Oakley,1993,DPOY,5
+Dan Majerle,1993,DPOY,5
+John Starks,1993,DPOY,5
+Patrick Ewing,1993,DPOY,5
+Hakeem Olajuwon,1994,DPOY,1
+David Robinson,1994,DPOY,2
+Dikembe Mutombo,1994,DPOY,3
+Scottie Pippen,1994,DPOY,4
+Gary Payton,1994,DPOY,5
+Dennis Rodman,1994,DPOY,6
+Mookie Blaylock,1994,DPOY,7
+Nate McMillan,1994,DPOY,7
+Charles Oakley,1994,DPOY,9
+Horace Grant,1994,DPOY,10
+Dikembe Mutombo,1995,DPOY,1
+Scottie Pippen,1995,DPOY,2
+Hakeem Olajuwon,1995,DPOY,3
+David Robinson,1995,DPOY,4
+Dennis Rodman,1995,DPOY,5
+Alonzo Mourning,1995,DPOY,6
+Derrick McKey,1995,DPOY,6
+Gary Payton,1995,DPOY,6
+Nate McMillan,1995,DPOY,6
+Gary Payton,1996,DPOY,1
+Scottie Pippen,1996,DPOY,2
+Dikembe Mutombo,1996,DPOY,3
+David Robinson,1996,DPOY,4
+Hakeem Olajuwon,1996,DPOY,5
+Michael Jordan,1996,DPOY,6
+Dennis Rodman,1996,DPOY,7
+Bo Outlaw,1996,DPOY,8
+Horace Grant,1996,DPOY,8
+Latrell Sprewell,1996,DPOY,8
+Dikembe Mutombo,1997,DPOY,1
+Gary Payton,1997,DPOY,2
+Mookie Blaylock,1997,DPOY,3
+Scottie Pippen,1997,DPOY,4
+Michael Jordan,1997,DPOY,5
+Horace Grant,1997,DPOY,6
+Joe Dumars,1997,DPOY,6
+Mario Elie,1997,DPOY,6
+Rick Fox,1997,DPOY,6
+Shawn Kemp,1997,DPOY,6
+Dikembe Mutombo,1998,DPOY,1
+Gary Payton,1998,DPOY,2
+David Robinson,1998,DPOY,3
+Michael Jordan,1998,DPOY,4
+Bo Outlaw,1998,DPOY,5
+Dennis Rodman,1998,DPOY,5
+Mookie Blaylock,1998,DPOY,5
+Tim Duncan,1998,DPOY,5
+Anthony Mason,1998,DPOY,9
+Scottie Pippen,1998,DPOY,9
+Brevin Knight,1998,DPOY,11
+Horace Grant,1998,DPOY,11
+Kendall Gill,1998,DPOY,11
+Kevin Garnett,1998,DPOY,11
+Alonzo Mourning,1999,DPOY,1
+Dikembe Mutombo,1999,DPOY,2
+Gary Payton,1999,DPOY,3
+David Robinson,1999,DPOY,4
+Theo Ratliff,1999,DPOY,5
+Tim Duncan,1999,DPOY,5
+Clifford Robinson,1999,DPOY,7
+Eddie Jones,1999,DPOY,7
+Hakeem Olajuwon,1999,DPOY,7
+Kevin Garnett,1999,DPOY,7
+Michael Curry,1999,DPOY,7
+Scottie Pippen,1999,DPOY,7
+Dikembe Mutombo,2001,DPOY,1
+Kevin Garnett,2001,DPOY,2
+Tim Duncan,2001,DPOY,3
+Doug Christie,2001,DPOY,4
+Ben Wallace,2001,DPOY,5
+David Robinson,2001,DPOY,5
+Theo Ratliff,2001,DPOY,7
+Anthony Mason,2001,DPOY,8
+Bruce Bowen,2001,DPOY,8
+Shaquille O'Neal,2001,DPOY,8
+Allen Iverson,2001,DPOY,11
+Jason Kidd,2001,DPOY,11
+Kobe Bryant,2001,DPOY,11
+Shawn Marion,2001,DPOY,11
+Ben Wallace,2002,DPOY,1
+Kevin Garnett,2002,DPOY,2
+Dikembe Mutombo,2002,DPOY,3
+Kobe Bryant,2002,DPOY,3
+Ben Wallace,2003,DPOY,1
+Metta World Peace,2003,DPOY,2
+Kevin Garnett,2003,DPOY,3
+Tim Duncan,2003,DPOY,4
+Doug Christie,2003,DPOY,5
+Allen Iverson,2003,DPOY,6
+Bruce Bowen,2003,DPOY,7
+Kobe Bryant,2003,DPOY,8
+Theo Ratliff,2003,DPOY,9
+Eric Snow,2003,DPOY,10
+Gary Payton,2003,DPOY,11
+Kenyon Martin,2003,DPOY,12
+Adonal Foyle,2003,DPOY,13
+Shaquille O'Neal,2003,DPOY,13
+Shawn Marion,2003,DPOY,13
+Metta World Peace,2004,DPOY,1
+Ben Wallace,2004,DPOY,2
+Theo Ratliff,2004,DPOY,3
+Bruce Bowen,2004,DPOY,4
+Andrei Kirilenko,2004,DPOY,5
+Kevin Garnett,2004,DPOY,6
+Tim Duncan,2004,DPOY,7
+Clifford Robinson,2004,DPOY,8
+Kenyon Martin,2004,DPOY,9
+Earl Watson,2004,DPOY,10
+James Posey,2004,DPOY,10
+Kobe Bryant,2004,DPOY,10
+Shaquille O'Neal,2004,DPOY,10
+Ben Wallace,2005,DPOY,1
+Bruce Bowen,2005,DPOY,2
+Marcus Camby,2005,DPOY,3
+Tim Duncan,2005,DPOY,4
+Shawn Marion,2005,DPOY,5
+Larry Hughes,2005,DPOY,6
+Tayshaun Prince,2005,DPOY,7
+Shaquille O'Neal,2005,DPOY,8
+Kevin Garnett,2005,DPOY,9
+Andrei Kirilenko,2005,DPOY,10
+Allen Iverson,2005,DPOY,11
+Joel Przybilla,2005,DPOY,12
+Kirk Hinrich,2005,DPOY,12
+Andre Iguodala,2005,DPOY,14
+Trenton Hassell,2005,DPOY,14
+David Wesley,2005,DPOY,16
+Rasheed Wallace,2005,DPOY,16
+Josh Howard,2005,DPOY,18
+Manu Ginobili,2005,DPOY,18
+Tyson Chandler,2005,DPOY,18
+Andres Nocioni,2005,DPOY,21
+Dwight Howard,2005,DPOY,21
+Dwyane Wade,2005,DPOY,21
+Emeka Okafor,2005,DPOY,21
+Shane Battier,2005,DPOY,21
+Ben Wallace,2006,DPOY,1
+Bruce Bowen,2006,DPOY,2
+Andrei Kirilenko,2006,DPOY,3
+Metta World Peace,2006,DPOY,4
+Marcus Camby,2006,DPOY,5
+Tim Duncan,2006,DPOY,6
+Shawn Marion,2006,DPOY,7
+Alonzo Mourning,2006,DPOY,8
+Gerald Wallace,2006,DPOY,9
+Elton Brand,2006,DPOY,10
+Shane Battier,2006,DPOY,10
+Andre Iguodala,2006,DPOY,12
+Andres Nocioni,2006,DPOY,13
+Eddie Jones,2006,DPOY,13
+James Posey,2006,DPOY,13
+Kevin Garnett,2006,DPOY,13
+PJ Brown,2006,DPOY,13
+Raja Bell,2006,DPOY,13
+Rasheed Wallace,2006,DPOY,13
+Tayshaun Prince,2006,DPOY,13
+Marcus Camby,2007,DPOY,1
+Bruce Bowen,2007,DPOY,2
+Tim Duncan,2007,DPOY,3
+Shawn Marion,2007,DPOY,4
+Shane Battier,2007,DPOY,5
+Ben Wallace,2007,DPOY,6
+Gerald Wallace,2007,DPOY,7
+Metta World Peace,2007,DPOY,8
+Tyson Chandler,2007,DPOY,9
+Jermaine O'Neal,2007,DPOY,10
+Emeka Okafor,2007,DPOY,11
+Tayshaun Prince,2007,DPOY,11
+Andrei Kirilenko,2007,DPOY,13
+Kevin Garnett,2007,DPOY,13
+Kirk Hinrich,2007,DPOY,13
+Dwight Howard,2007,DPOY,16
+Quinton Ross,2007,DPOY,16
+Josh Howard,2007,DPOY,18
+Udonis Haslem,2007,DPOY,18
+Luol Deng,2007,DPOY,20
+Caron Butler,2007,DPOY,21
+Josh Smith,2007,DPOY,21
+Raja Bell,2007,DPOY,23
+Alonzo Mourning,2007,DPOY,24
+Andre Iguodala,2007,DPOY,24
+Anthony Parker,2007,DPOY,24
+Devin Harris,2007,DPOY,24
+Kobe Bryant,2007,DPOY,24
+Yao Ming,2007,DPOY,24
+Kevin Garnett,2008,DPOY,1
+Marcus Camby,2008,DPOY,2
+Shane Battier,2008,DPOY,3
+Bruce Bowen,2008,DPOY,4
+Kobe Bryant,2008,DPOY,5
+Josh Smith,2008,DPOY,6
+Chris Paul,2008,DPOY,7
+Dwight Howard,2008,DPOY,7
+Tim Duncan,2008,DPOY,9
+Tayshaun Prince,2008,DPOY,10
+Tyson Chandler,2008,DPOY,11
+Rasheed Wallace,2008,DPOY,12
+Raja Bell,2008,DPOY,13
+Richard Hamilton,2008,DPOY,13
+Samuel Dalembert,2008,DPOY,13
+Andrei Kirilenko,2008,DPOY,16
+Chauncey Billups,2008,DPOY,16
+Kyle Lowry,2008,DPOY,16
+Metta World Peace,2008,DPOY,16
+Rajon Rondo,2008,DPOY,16
+Dwight Howard,2009,DPOY,1
+LeBron James,2009,DPOY,2
+Dwyane Wade,2009,DPOY,3
+Shane Battier,2009,DPOY,4
+Metta World Peace,2009,DPOY,5
+Chris Paul,2009,DPOY,6
+Kobe Bryant,2009,DPOY,7
+Kevin Garnett,2009,DPOY,8
+Chris Andersen,2009,DPOY,9
+Rajon Rondo,2009,DPOY,10
+Tim Duncan,2009,DPOY,11
+Raja Bell,2009,DPOY,12
+Anderson Varejao,2009,DPOY,13
+Andre Iguodala,2009,DPOY,13
+Ronny Turiaf,2009,DPOY,15
+Grant Hill,2009,DPOY,16
+Hidayet Turkoglu,2009,DPOY,16
+Joel Przybilla,2009,DPOY,16
+Josh Smith,2009,DPOY,16
+Marcus Camby,2009,DPOY,16
+Trevor Ariza,2009,DPOY,16
+Dwight Howard,2010,DPOY,1
+Josh Smith,2010,DPOY,2
+Gerald Wallace,2010,DPOY,3
+LeBron James,2010,DPOY,4
+Rajon Rondo,2010,DPOY,5
+Metta World Peace,2010,DPOY,6
+Andrew Bogut,2010,DPOY,7
+Thabo Sefolosha,2010,DPOY,8
+Anderson Varejao,2010,DPOY,9
+Dwyane Wade,2010,DPOY,10
+Marcus Camby,2010,DPOY,10
+Kobe Bryant,2010,DPOY,12
+Shawn Marion,2010,DPOY,13
+Tim Duncan,2010,DPOY,14
+Shane Battier,2010,DPOY,15
+Andrei Kirilenko,2010,DPOY,16
+Arron Afflalo,2010,DPOY,17
+Ben Wallace,2010,DPOY,17
+Brendan Haywood,2010,DPOY,17
+David Lee,2010,DPOY,17
+Kendrick Perkins,2010,DPOY,17
+Kenyon Martin,2010,DPOY,17
+Luc Mbah a Moute,2010,DPOY,17
+Matt Barnes,2010,DPOY,17
+Dwight Howard,2011,DPOY,1
+Kevin Garnett,2011,DPOY,2
+Tyson Chandler,2011,DPOY,3
+Tony Allen,2011,DPOY,4
+Rajon Rondo,2011,DPOY,5
+Andrew Bogut,2011,DPOY,6
+Grant Hill,2011,DPOY,7
+Andre Iguodala,2011,DPOY,8
+LeBron James,2011,DPOY,9
+Luol Deng,2011,DPOY,10
+Kobe Bryant,2011,DPOY,11
+Chris Paul,2011,DPOY,12
+Chuck Hayes,2011,DPOY,12
+Serge Ibaka,2011,DPOY,14
+Joakim Noah,2011,DPOY,15
+Dwyane Wade,2011,DPOY,16
+Tim Duncan,2011,DPOY,17
+Metta World Peace,2011,DPOY,18
+JaVale McGee,2011,DPOY,19
+Keith Bogans,2011,DPOY,19
+Thabo Sefolosha,2011,DPOY,21
+Andrew Bynum,2011,DPOY,22
+Gerald Wallace,2011,DPOY,23
+Kenyon Martin,2011,DPOY,23
+Josh Smith,2011,DPOY,25
+Tyson Chandler,2012,DPOY,1
+Serge Ibaka,2012,DPOY,2
+Dwight Howard,2012,DPOY,3
+LeBron James,2012,DPOY,4
+Kevin Garnett,2012,DPOY,5
+Tony Allen,2012,DPOY,6
+Andre Iguodala,2012,DPOY,7
+Shawn Marion,2012,DPOY,8
+Luol Deng,2012,DPOY,9
+Josh Smith,2012,DPOY,10
+Joakim Noah,2012,DPOY,11
+Chris Paul,2012,DPOY,12
+Marc Gasol,2012,DPOY,12
+Avery Bradley,2012,DPOY,14
+Grant Hill,2012,DPOY,14
+Iman Shumpert,2012,DPOY,14
+Mike Conley,2012,DPOY,14
+Dwyane Wade,2012,DPOY,18
+Greg Monroe,2012,DPOY,18
+Russell Westbrook,2012,DPOY,18
+Marc Gasol,2013,DPOY,1
+LeBron James,2013,DPOY,2
+Serge Ibaka,2013,DPOY,3
+Joakim Noah,2013,DPOY,4
+Tony Allen,2013,DPOY,5
+Tim Duncan,2013,DPOY,6
+Larry Sanders,2013,DPOY,7
+Paul George,2013,DPOY,8
+Andre Iguodala,2013,DPOY,9
+Roy Hibbert,2013,DPOY,10
+Chris Paul,2013,DPOY,11
+Avery Bradley,2013,DPOY,12
+Tyson Chandler,2013,DPOY,13
+Dwight Howard,2013,DPOY,14
+Luol Deng,2013,DPOY,15
+Dwyane Wade,2013,DPOY,16
+Jimmy Butler,2013,DPOY,17
+Kenneth Faried,2013,DPOY,17
+Russell Westbrook,2013,DPOY,17
+Trevor Ariza,2013,DPOY,17
+Mike Conley,2013,DPOY,21
+Joakim Noah,2014,DPOY,1
+Roy Hibbert,2014,DPOY,2
+DeAndre Jordan,2014,DPOY,3
+Serge Ibaka,2014,DPOY,4
+Andre Iguodala,2014,DPOY,5
+LeBron James,2014,DPOY,6
+Paul George,2014,DPOY,7
+Anthony Davis,2014,DPOY,8
+Dwight Howard,2014,DPOY,8
+Andrew Bogut,2014,DPOY,10
+Kawhi Leonard,2014,DPOY,11
+PJ Tucker,2014,DPOY,12
+Chris Paul,2014,DPOY,13
+Tim Duncan,2014,DPOY,13
+Marc Gasol,2014,DPOY,15
+Trevor Ariza,2014,DPOY,15
+Patrick Beverley,2014,DPOY,17
+Kawhi Leonard,2015,DPOY,1
+Draymond Green,2015,DPOY,2
+DeAndre Jordan,2015,DPOY,3
+Anthony Davis,2015,DPOY,4
+Rudy Gobert,2015,DPOY,5
+Andrew Bogut,2015,DPOY,6
+Tony Allen,2015,DPOY,7
+Tim Duncan,2015,DPOY,8
+Michael Kidd-Gilchrist,2015,DPOY,9
+Jimmy Butler,2015,DPOY,10
+Marc Gasol,2015,DPOY,10
+Joakim Noah,2015,DPOY,12
+LeBron James,2015,DPOY,13
+Trevor Ariza,2015,DPOY,13
+Chris Paul,2015,DPOY,15
+DeMarre Carroll,2015,DPOY,15
+Hassan Whiteside,2015,DPOY,15
+Nerlens Noel,2015,DPOY,15
+Patrick Beverley,2015,DPOY,15
+Kawhi Leonard,2016,DPOY,1
+Draymond Green,2016,DPOY,2
+Hassan Whiteside,2016,DPOY,3
+DeAndre Jordan,2016,DPOY,4
+Paul Millsap,2016,DPOY,5
+Avery Bradley,2016,DPOY,6
+Rudy Gobert,2016,DPOY,7
+Tony Allen,2016,DPOY,8
+Anthony Davis,2016,DPOY,9
+Andre Drummond,2016,DPOY,10
+Jimmy Butler,2016,DPOY,11
+LeBron James,2016,DPOY,11
+Al Horford,2016,DPOY,13
+Chris Paul,2016,DPOY,13
+Jae Crowder,2016,DPOY,13
+Kyle Lowry,2016,DPOY,13
+Trevor Ariza,2016,DPOY,13
+Draymond Green,2017,DPOY,1
+Rudy Gobert,2017,DPOY,2
+Kawhi Leonard,2017,DPOY,3
+Robert Covington,2017,DPOY,4
+Andre Roberson,2017,DPOY,5
+Hassan Whiteside,2017,DPOY,5
+LeBron James,2017,DPOY,5
+LaMarcus Aldridge,2017,DPOY,8
+Patrick Beverley,2017,DPOY,8
+Rudy Gobert,2018,DPOY,1
+Joel Embiid,2018,DPOY,2
+Anthony Davis,2018,DPOY,3
+Paul George,2018,DPOY,4
+Al Horford,2018,DPOY,5
+Draymond Green,2018,DPOY,6
+Jrue Holiday,2018,DPOY,7
+Robert Covington,2018,DPOY,8
+Kevin Durant,2018,DPOY,9
+Jaylen Brown,2018,DPOY,10
+Klay Thompson,2018,DPOY,11
+Jimmy Butler,2018,DPOY,12
+Steven Adams,2018,DPOY,12
+Clint Capela,2018,DPOY,14
+Andre Drummond,2018,DPOY,15
+Jusuf Nurkic,2018,DPOY,15
+Victor Oladipo,2018,DPOY,15
+Rudy Gobert,2019,DPOY,1
+Giannis Antetokounmpo,2019,DPOY,2
+Paul George,2019,DPOY,3
+Joel Embiid,2019,DPOY,4
+Myles Turner,2019,DPOY,5
+Draymond Green,2019,DPOY,6
+Kawhi Leonard,2019,DPOY,6
+Marcus Smart,2019,DPOY,8
+Jarrett Allen,2019,DPOY,9
+Patrick Beverley,2019,DPOY,9
+Giannis Antetokounmpo,2020,DPOY,1
+Anthony Davis,2020,DPOY,2
+Rudy Gobert,2020,DPOY,3
+Ben Simmons,2020,DPOY,4
+Bam Adebayo,2020,DPOY,5
+Marcus Smart,2020,DPOY,6
+Patrick Beverley,2020,DPOY,6
+Andre Drummond,2020,DPOY,8
+Kawhi Leonard,2020,DPOY,8
+Brook Lopez,2020,DPOY,10
+Hassan Whiteside,2020,DPOY,11
+Jarrett Allen,2020,DPOY,12
+Rudy Gobert,2021,DPOY,1
+Ben Simmons,2021,DPOY,2
+Draymond Green,2021,DPOY,3
+Bam Adebayo,2021,DPOY,4
+Giannis Antetokounmpo,2021,DPOY,5
+Clint Capela,2021,DPOY,6
+Joel Embiid,2021,DPOY,7
+Jrue Holiday,2021,DPOY,8
+Myles Turner,2021,DPOY,9
+Jimmy Butler,2021,DPOY,10
+Kentavious Caldwell-Pope,2021,DPOY,11
+Matisse Thybulle,2021,DPOY,11
+Marcus Smart,2022,DPOY,1
+Mikal Bridges,2022,DPOY,2
+Rudy Gobert,2022,DPOY,3
+Bam Adebayo,2022,DPOY,4
+Jaren Jackson,2022,DPOY,5
+Giannis Antetokounmpo,2022,DPOY,6
+Robert Williams,2022,DPOY,7
+Jrue Holiday,2022,DPOY,8
+Al Horford,2022,DPOY,9
+Draymond Green,2022,DPOY,10
+Matisse Thybulle,2022,DPOY,11
+Jaren Jackson,2023,DPOY,1
+Brook Lopez,2023,DPOY,2
+Evan Mobley,2023,DPOY,3
+Draymond Green,2023,DPOY,4
+Bam Adebayo,2023,DPOY,5
+Giannis Antetokounmpo,2023,DPOY,6
+Jrue Holiday,2023,DPOY,7
+OG Anunoby,2023,DPOY,7
+Joel Embiid,2023,DPOY,9
+Nicolas Claxton,2023,DPOY,9
+Alex Caruso,2023,DPOY,11
+Jimmy Butler,2023,DPOY,12
+Rudy Gobert,2024,DPOY,1
+Victor Wembanyama,2024,DPOY,2
+Bam Adebayo,2024,DPOY,3
+Anthony Davis,2024,DPOY,4
+Herb Jones,2024,DPOY,5
+Jrue Holiday,2024,DPOY,6
+Shai Gilgeous-Alexander,2024,DPOY,7
+Derrick White,2024,DPOY,8
+Giannis Antetokounmpo,2024,DPOY,9
+Alex Caruso,2024,DPOY,10
+Domantas Sabonis,2024,DPOY,10
+Jalen Suggs,2024,DPOY,10
+Jarrett Allen,2024,DPOY,10
+Patrick Beverley,2017,Hustle,1
+Amir Johnson,2018,Hustle,1
+Marcus Smart,2019,Hustle,1
+Montrezl Harrell,2020,Hustle,1
+Thaddeus Young,2021,Hustle,1
+Ben Simmons,2021,Hustle,2
+Jae'Sean Tate,2021,Hustle,3
+Draymond Green,2021,Hustle,4
+Jrue Holiday,2021,Hustle,5
+Marcus Smart,2022,Hustle,1
+Pat Connaughton,2022,Hustle,2
+Bruce Brown,2022,Hustle,3
+Bobby Portis,2022,Hustle,4
+Isaiah Stewart,2022,Hustle,5
+Marcus Smart,2023,Hustle,1
+Draymond Green,2023,Hustle,2
+Aaron Nesmith,2023,Hustle,3
+Mitchell Robinson,2023,Hustle,4
+Herb Jones,2023,Hustle,5
+Jalen Rose,2000,MIP,1
+Dirk Nowitzki,2000,MIP,2
+Jerry Stackhouse,2000,MIP,3
+Austin Croshere,2000,MIP,4
+Tracy McGrady,2000,MIP,5
+John Amaechi,2000,MIP,6
+Ruben Patterson,2000,MIP,6
+Michael Dickerson,2000,MIP,8
+Rodney Rogers,2000,MIP,8
+Shaquille O'Neal,2000,MIP,10
+Bob Sura,2000,MIP,11
+Derrick Coleman,2000,MIP,11
+Kobe Bryant,2000,MIP,11
+Rashard Lewis,2000,MIP,11
+Sean Elliott,2000,MIP,11
+Dyson Daniels,2025,MIP,1
+Ivica Zubac,2025,MIP,2
+Cade Cunningham,2025,MIP,3
+Christian Braun,2025,MIP,4
+Austin Reaves,2025,MIP,5
+Evan Mobley,2025,MIP,6
+Amen Thompson,2025,MIP,7
+Deni Avdija,2025,MIP,8
+Tyler Herro,2025,MIP,9
+Josh Giddey,2025,MIP,10
+Payton Pritchard,2025,MIP,11
+Toumani Camara,2025,MIP,12
+OG Anunoby,2025,MIP,13
+Jalen Williams,2025,MIP,14
+Alvin Robertson,1986,MIP,1
+Charles Barkley,1986,MIP,2
+Kevin Willis,1986,MIP,3
+Dominique Wilkins,1986,MIP,4
+Dale Ellis,1987,MIP,1
+James Donaldson,1987,MIP,2
+Fat Lever,1987,MIP,3
+Kevin Willis,1987,MIP,3
+Otis Thorpe,1987,MIP,3
+Sleepy Floyd,1987,MIP,3
+Gerald Wilkins,1987,MIP,7
+Terry Porter,1987,MIP,8
+Karl Malone,1987,MIP,9
+Michael Cage,1987,MIP,9
+Steve Johnson,1987,MIP,9
+Tim McCormick,1987,MIP,9
+Bob Hansen,1987,MIP,13
+Charles Barkley,1987,MIP,13
+John Paxson,1987,MIP,13
+Larry Smith,1987,MIP,13
+Kevin Duckworth,1988,MIP,1
+John Stockton,1988,MIP,2
+Mark Price,1988,MIP,3
+Michael Adams,1988,MIP,4
+Jerome Kersey,1988,MIP,5
+Frank Brickowski,1988,MIP,6
+Randy Breuer,1988,MIP,6
+Byron Scott,1988,MIP,8
+John Battle,1988,MIP,8
+Roy Tarpley,1988,MIP,8
+Kevin Johnson,1989,MIP,1
+Reggie Lewis,1989,MIP,2
+Chris Mullin,1989,MIP,3
+Kelly Tripucka,1989,MIP,4
+Ken Norman,1989,MIP,4
+Ron Anderson,1989,MIP,4
+Dennis Rodman,1989,MIP,7
+Derrick McKey,1989,MIP,7
+Larry Krystkowiak,1989,MIP,7
+Patrick Ewing,1989,MIP,7
+Scottie Pippen,1989,MIP,7
+Rony Seikaly,1990,MIP,1
+Reggie Miller,1990,MIP,2
+Tony Campbell,1990,MIP,3
+Jeff Hornacek,1990,MIP,4
+Hersey Hawkins,1990,MIP,5
+Derek Smith,1990,MIP,6
+Detlef Schrempf,1990,MIP,6
+Mark West,1990,MIP,6
+Roy Tarpley,1990,MIP,6
+Scottie Pippen,1990,MIP,6
+Scott Skiles,1991,MIP,1
+Kevin Gamble,1991,MIP,2
+Kenny Smith,1991,MIP,3
+Harvey Grant,1991,MIP,4
+Tim Hardaway,1991,MIP,5
+Sean Elliott,1991,MIP,6
+Shawn Kemp,1991,MIP,7
+Bernard King,1991,MIP,8
+Derek Harper,1991,MIP,8
+Larry Smith,1991,MIP,8
+Michael Adams,1991,MIP,8
+Rex Chapman,1991,MIP,8
+Scottie Pippen,1991,MIP,8
+Spud Webb,1991,MIP,8
+Pervis Ellison,1992,MIP,1
+Drazen Petrovic,1992,MIP,2
+Kevin Willis,1992,MIP,3
+Glen Rice,1992,MIP,4
+Predrag Stojakovic,1992,MIP,4
+John Starks,1992,MIP,6
+Tim Perry,1992,MIP,6
+Grant Long,1992,MIP,8
+Kendall Gill,1992,MIP,8
+Sarunas Marciulionis,1992,MIP,8
+Micheal Williams,1992,MIP,11
+Mookie Blaylock,1992,MIP,11
+Mahmoud Abdul-Rauf,1993,MIP,1
+Eric Murdock,1993,MIP,2
+Kenny Anderson,1993,MIP,3
+John Starks,1993,MIP,4
+Clifford Robinson,1993,MIP,5
+Gary Payton,1993,MIP,6
+Derrick Coleman,1993,MIP,8
+Blue Edwards,1993,MIP,9
+Doug West,1993,MIP,9
+Alaa Abdelnaby,1993,MIP,11
+Cedric Ceballos,1993,MIP,11
+Drazen Petrovic,1993,MIP,11
+Mookie Blaylock,1993,MIP,11
+Shawn Kemp,1993,MIP,11
+Terry Mills,1993,MIP,11
+Don MacLean,1994,MIP,1
+Latrell Sprewell,1994,MIP,2
+Gary Payton,1994,MIP,3
+Dale Davis,1994,MIP,4
+Mookie Blaylock,1994,MIP,4
+Rod Strickland,1994,MIP,4
+Bison Dele,1994,MIP,7
+Dana Barros,1994,MIP,7
+Olden Polynice,1994,MIP,7
+Pete Myers,1994,MIP,7
+Rex Chapman,1994,MIP,7
+Vincent Askew,1994,MIP,7
+Dana Barros,1995,MIP,1
+Elliot Perry,1995,MIP,2
+Gheorghe Muresan,1995,MIP,3
+Scott Burrell,1995,MIP,3
+Allan Houston,1995,MIP,5
+Avery Johnson,1995,MIP,6
+Popeye Jones,1995,MIP,7
+Tyrone Hill,1995,MIP,7
+Cedric Ceballos,1995,MIP,9
+Chris Gatling,1995,MIP,9
+Jim Jackson,1995,MIP,9
+Nick Van Exel,1995,MIP,9
+Rik Smits,1995,MIP,9
+Rodney Rogers,1995,MIP,9
+Vlade Divac,1995,MIP,9
+Walt Williams,1995,MIP,9
+Gheorghe Muresan,1996,MIP,1
+George McCloud,1996,MIP,2
+Danny Ferry,1996,MIP,3
+Terrell Brandon,1996,MIP,3
+Bison Dele,1996,MIP,5
+Tracy Murray,1996,MIP,5
+Elden Campbell,1996,MIP,7
+Allan Houston,1996,MIP,8
+Bobby Phills,1996,MIP,8
+Chris Childs,1996,MIP,8
+David Wesley,1996,MIP,8
+Dennis Scott,1996,MIP,8
+Shawn Bradley,1996,MIP,8
+Greg Anthony,1996,MIP,14
+Jayson Williams,1996,MIP,14
+Juwan Howard,1996,MIP,14
+Matt Geiger,1996,MIP,14
+Vinny Del Negro,1996,MIP,14
+Isaac Austin,1997,MIP,1
+Doug Christie,1997,MIP,2
+Rasheed Wallace,1997,MIP,3
+Voshon Lenard,1997,MIP,4
+Glen Rice,1997,MIP,5
+Kendall Gill,1997,MIP,5
+Lindsey Hunter,1997,MIP,7
+Kevin Garnett,1997,MIP,8
+LaPhonso Ellis,1997,MIP,9
+Tom Gugliotta,1997,MIP,9
+David Wesley,1997,MIP,11
+Eddie Jones,1997,MIP,12
+Monty Williams,1997,MIP,12
+Rony Seikaly,1997,MIP,12
+Tim Hardaway,1997,MIP,12
+Alan Henderson,1998,MIP,1
+Corliss Williamson,1998,MIP,2
+Donyell Marshall,1998,MIP,3
+Michael Finley,1998,MIP,4
+Nick Anderson,1998,MIP,4
+Theo Ratliff,1998,MIP,6
+Kobe Bryant,1998,MIP,7
+Antoine Walker,1998,MIP,8
+Bo Outlaw,1998,MIP,8
+John Wallace,1998,MIP,8
+Lamond Murray,1998,MIP,8
+Vin Baker,1998,MIP,8
+Jalen Rose,1998,MIP,13
+Karl Malone,1998,MIP,13
+Matt Geiger,1998,MIP,13
+Rod Strickland,1998,MIP,13
+Darrell Armstrong,1999,MIP,1
+Eric Snow,1999,MIP,2
+Gary Trent,1999,MIP,3
+Joe Smith,1999,MIP,4
+Danny Fortson,1999,MIP,5
+Theo Ratliff,1999,MIP,6
+Maurice Taylor,1999,MIP,7
+Brian Grant,1999,MIP,8
+Tracy McGrady,1999,MIP,8
+Antonio McDyess,1999,MIP,10
+Bryon Russell,1999,MIP,10
+Clifford Robinson,1999,MIP,10
+Dee Brown,1999,MIP,10
+Greg Ostertag,1999,MIP,10
+Haywoode Workman,1999,MIP,10
+Latrell Sprewell,1999,MIP,10
+Othella Harrington,1999,MIP,10
+Randy Brown,1999,MIP,10
+Tracy McGrady,2001,MIP,1
+Predrag Stojakovic,2001,MIP,2
+Steve Nash,2001,MIP,3
+Shawn Marion,2001,MIP,4
+Baron Davis,2001,MIP,5
+Dirk Nowitzki,2001,MIP,5
+Jason Terry,2001,MIP,7
+Travis Best,2001,MIP,7
+Alvin Williams,2001,MIP,9
+Ben Wallace,2001,MIP,9
+Bonzi Wells,2001,MIP,9
+Donyell Marshall,2001,MIP,9
+Jeff McInnis,2001,MIP,9
+Richard Hamilton,2001,MIP,9
+Jermaine O'Neal,2002,MIP,1
+Ben Wallace,2002,MIP,2
+Steve Nash,2002,MIP,3
+Jerry Stackhouse,2002,MIP,4
+Brent Barry,2002,MIP,5
+Wally Szczerbiak,2002,MIP,6
+Michael Olowokandi,2002,MIP,7
+Troy Hudson,2002,MIP,7
+Andre Miller,2002,MIP,9
+Kenyon Martin,2002,MIP,9
+Michael Redd,2002,MIP,9
+Desmond Mason,2002,MIP,12
+Gary Payton,2002,MIP,12
+Hidayet Turkoglu,2002,MIP,12
+Kenny Thomas,2002,MIP,12
+Bobby Jackson,2002,MIP,16
+Jason Terry,2002,MIP,16
+Lee Nailon,2002,MIP,16
+Ricky Davis,2002,MIP,16
+Todd MacCulloch,2002,MIP,16
+Wesley Person,2002,MIP,16
+Gilbert Arenas,2003,MIP,1
+Matt Harpring,2003,MIP,2
+Troy Murphy,2003,MIP,3
+Tony Parker,2003,MIP,4
+Ricky Davis,2003,MIP,5
+Chauncey Billups,2003,MIP,6
+Jason Williams,2003,MIP,7
+Richard Jefferson,2003,MIP,8
+Troy Hudson,2003,MIP,9
+Corey Maggette,2003,MIP,10
+Bobby Jackson,2003,MIP,11
+Michael Redd,2003,MIP,12
+Metta World Peace,2003,MIP,13
+Andrei Kirilenko,2003,MIP,14
+Dirk Nowitzki,2003,MIP,14
+Jermaine O'Neal,2003,MIP,14
+Stephon Marbury,2003,MIP,14
+Brad Miller,2003,MIP,18
+Stephen Jackson,2003,MIP,18
+Tracy McGrady,2003,MIP,18
+Brent Barry,2003,MIP,21
+Eric Snow,2003,MIP,21
+Kevin Garnett,2003,MIP,21
+Zydrunas Ilgauskas,2003,MIP,21
+Earl Boykins,2003,MIP,25
+Anfernee Hardaway,2003,MIP,26
+Antawn Jamison,2003,MIP,26
+Dion Glover,2003,MIP,26
+Predrag Stojakovic,2003,MIP,26
+Steve Nash,2003,MIP,26
+Stromile Swift,2003,MIP,26
+Zach Randolph,2004,MIP,1
+Carlos Boozer,2004,MIP,2
+James Posey,2004,MIP,3
+Andrei Kirilenko,2004,MIP,4
+Michael Redd,2004,MIP,5
+Lamar Odom,2004,MIP,6
+Jamaal Magloire,2004,MIP,7
+Samuel Dalembert,2004,MIP,8
+Joe Johnson,2004,MIP,9
+Brian Cardinal,2004,MIP,10
+Rafer Alston,2004,MIP,11
+Mark Blount,2004,MIP,12
+Carlos Arroyo,2004,MIP,13
+Quentin Richardson,2004,MIP,13
+Metta World Peace,2004,MIP,15
+Ronald Murray,2004,MIP,15
+Yao Ming,2004,MIP,15
+Erick Dampier,2004,MIP,18
+Richard Jefferson,2004,MIP,19
+Corey Maggette,2004,MIP,20
+Manu Ginobili,2004,MIP,20
+Mike Dunleavy,2004,MIP,20
+Tayshaun Prince,2004,MIP,23
+Desmond Mason,2004,MIP,24
+Jason Williams,2004,MIP,24
+Kenny Thomas,2004,MIP,24
+Marcus Camby,2004,MIP,24
+Nenê,2004,MIP,24
+Pau Gasol,2004,MIP,24
+Raja Bell,2004,MIP,24
+Stephen Jackson,2004,MIP,24
+Bobby Simmons,2005,MIP,1
+Dwyane Wade,2005,MIP,2
+Tayshaun Prince,2005,MIP,3
+Primoz Brezec,2005,MIP,4
+Dan Dickau,2005,MIP,5
+LeBron James,2005,MIP,6
+Amare Stoudemire,2005,MIP,7
+Joel Przybilla,2005,MIP,8
+Larry Hughes,2005,MIP,8
+Chris Bosh,2005,MIP,10
+Grant Hill,2005,MIP,11
+Udonis Haslem,2005,MIP,12
+Damon Jones,2005,MIP,13
+Luke Ridnour,2005,MIP,13
+Gilbert Arenas,2005,MIP,15
+Kirk Hinrich,2005,MIP,16
+Kyle Korver,2005,MIP,17
+Tyson Chandler,2005,MIP,18
+Josh Howard,2005,MIP,19
+Joe Johnson,2005,MIP,20
+Vince Carter,2005,MIP,20
+Dirk Nowitzki,2005,MIP,22
+Eddy Curry,2005,MIP,22
+Shaquille O'Neal,2005,MIP,22
+Shawn Marion,2005,MIP,22
+Brevin Knight,2005,MIP,26
+Fred Jones,2005,MIP,26
+Gerald Wallace,2005,MIP,26
+Jason Richardson,2005,MIP,26
+Reggie Evans,2005,MIP,26
+Drew Gooden,2005,MIP,31
+Anthony Johnson,2005,MIP,32
+Mickael Pietrus,2005,MIP,32
+Rashard Lewis,2005,MIP,32
+Ricky Davis,2005,MIP,32
+Tony Parker,2005,MIP,32
+Boris Diaw,2006,MIP,1
+David West,2006,MIP,2
+Nenad Krstic,2006,MIP,3
+Gerald Wallace,2006,MIP,4
+Chris Bosh,2006,MIP,5
+Andres Nocioni,2006,MIP,6
+Tony Parker,2006,MIP,6
+Mike James,2006,MIP,8
+Carmelo Anthony,2006,MIP,9
+Jameer Nelson,2006,MIP,10
+Chris Kaman,2006,MIP,11
+Yao Ming,2006,MIP,11
+Elton Brand,2006,MIP,13
+DeSagana Diop,2006,MIP,14
+Smush Parker,2006,MIP,14
+Mehmet Okur,2006,MIP,16
+Pau Gasol,2006,MIP,16
+Dwight Howard,2006,MIP,18
+Caron Butler,2006,MIP,19
+LeBron James,2006,MIP,19
+Kevin Martin,2006,MIP,21
+Zaza Pachulia,2006,MIP,21
+Bobby Simmons,2006,MIP,23
+Chris Wilcox,2006,MIP,23
+Josh Smith,2006,MIP,23
+Kobe Bryant,2006,MIP,23
+Luol Deng,2006,MIP,23
+Matt Harpring,2006,MIP,23
+Maurice Williams,2006,MIP,23
+Paul Pierce,2006,MIP,23
+Raja Bell,2006,MIP,23
+Monta Ellis,2007,MIP,1
+Kevin Martin,2007,MIP,2
+Deron Williams,2007,MIP,3
+Tyson Chandler,2007,MIP,4
+Andris Biedrins,2007,MIP,5
+Al Jefferson,2007,MIP,6
+Luol Deng,2007,MIP,7
+Leandro Barbosa,2007,MIP,8
+Andre Iguodala,2007,MIP,9
+David Lee,2007,MIP,10
+Jason Kapono,2007,MIP,11
+Josh Howard,2007,MIP,12
+Mikki Moore,2007,MIP,12
+Carlos Boozer,2007,MIP,14
+Jose Calderon,2007,MIP,15
+Amare Stoudemire,2007,MIP,16
+Bostjan Nachbar,2007,MIP,17
+Eddy Curry,2007,MIP,17
+Matt Carroll,2007,MIP,17
+Caron Butler,2007,MIP,20
+Andrew Bynum,2007,MIP,21
+Ben Gordon,2007,MIP,21
+Chris Wilcox,2007,MIP,21
+Dwight Howard,2007,MIP,21
+Gerald Wallace,2007,MIP,21
+Josh Smith,2007,MIP,21
+Luke Walton,2007,MIP,21
+Nenê,2007,MIP,21
+Predrag Stojakovic,2007,MIP,21
+Hidayet Turkoglu,2008,MIP,1
+Rudy Gay,2008,MIP,2
+LaMarcus Aldridge,2008,MIP,3
+Al Jefferson,2008,MIP,4
+Rajon Rondo,2008,MIP,5
+Mike Dunleavy,2008,MIP,6
+Jose Calderon,2008,MIP,7
+Chris Paul,2008,MIP,8
+Beno Udrih,2008,MIP,9
+David West,2008,MIP,10
+Ronnie Brewer,2008,MIP,11
+Andrew Bynum,2008,MIP,12
+Chris Kaman,2008,MIP,13
+Louis Williams,2008,MIP,14
+Andrew Bogut,2008,MIP,15
+Monta Ellis,2008,MIP,15
+Rafer Alston,2008,MIP,17
+Andre Iguodala,2008,MIP,18
+LeBron James,2008,MIP,18
+Travis Outlaw,2008,MIP,18
+Brandon Bass,2008,MIP,21
+Deron Williams,2008,MIP,21
+Dwight Howard,2008,MIP,23
+Jason Maxiell,2008,MIP,23
+Linas Kleiza,2008,MIP,23
+Shaquille O'Neal,2008,MIP,23
+Tyson Chandler,2008,MIP,23
+Brandon Roy,2008,MIP,28
+Danny Granger,2008,MIP,28
+JR Smith,2008,MIP,30
+Roger Mason,2008,MIP,30
+Danny Granger,2009,MIP,1
+Devin Harris,2009,MIP,2
+Kevin Durant,2009,MIP,3
+Paul Millsap,2009,MIP,4
+Nenê,2009,MIP,5
+Rajon Rondo,2009,MIP,6
+David Lee,2009,MIP,7
+John Salmons,2009,MIP,8
+Thaddeus Young,2009,MIP,9
+Von Wafer,2009,MIP,10
+Brandon Roy,2009,MIP,11
+Chris Andersen,2009,MIP,12
+JR Smith,2009,MIP,12
+Glen Davis,2009,MIP,14
+Jason Terry,2009,MIP,14
+Wilson Chandler,2009,MIP,14
+Aaron Brooks,2009,MIP,17
+Jameer Nelson,2009,MIP,17
+Dwyane Wade,2009,MIP,19
+Kelenna Azubuike,2009,MIP,19
+LaMarcus Aldridge,2009,MIP,19
+Roger Mason,2009,MIP,19
+Luis Scola,2009,MIP,23
+Ronnie Brewer,2009,MIP,23
+Andrea Bargnani,2009,MIP,25
+Emeka Okafor,2009,MIP,25
+Gerald Wallace,2009,MIP,25
+Jeff Green,2009,MIP,25
+Jose Juan Barea,2009,MIP,25
+Kendrick Perkins,2009,MIP,25
+Maurice Williams,2009,MIP,25
+Mike Conley,2009,MIP,25
+Rasual Butler,2009,MIP,25
+Tyrus Thomas,2009,MIP,25
+Aaron Brooks,2010,MIP,1
+George Hill,2010,MIP,2
+Kevin Durant,2010,MIP,2
+Marc Gasol,2010,MIP,2
+Andrew Bogut,2010,MIP,5
+Russell Westbrook,2010,MIP,6
+Joakim Noah,2010,MIP,7
+Gerald Wallace,2010,MIP,8
+Brook Lopez,2010,MIP,9
+Corey Brewer,2010,MIP,9
+Carl Landry,2010,MIP,11
+Andray Blatche,2010,MIP,12
+Rajon Rondo,2010,MIP,12
+Channing Frye,2010,MIP,14
+Danilo Gallinari,2010,MIP,14
+Josh Smith,2010,MIP,16
+David Lee,2010,MIP,17
+Dwight Howard,2010,MIP,18
+Chris Kaman,2010,MIP,19
+Ersan Ilyasova,2010,MIP,19
+JJ Redick,2010,MIP,19
+Chris Douglas-Roberts,2010,MIP,22
+Nenê,2010,MIP,22
+Paul Millsap,2010,MIP,22
+Robin Lopez,2010,MIP,25
+Ben Wallace,2010,MIP,26
+JJ Hickson,2010,MIP,26
+John Salmons,2010,MIP,26
+Monta Ellis,2010,MIP,26
+Zach Randolph,2010,MIP,26
+Kevin Love,2011,MIP,1
+LaMarcus Aldridge,2011,MIP,2
+Dorell Wright,2011,MIP,3
+Derrick Rose,2011,MIP,4
+Kris Humphries,2011,MIP,5
+Kyle Lowry,2011,MIP,6
+Russell Westbrook,2011,MIP,7
+Wesley Matthews,2011,MIP,8
+Jrue Holiday,2011,MIP,9
+Mike Conley,2011,MIP,10
+Arron Afflalo,2011,MIP,11
+Roy Hibbert,2011,MIP,12
+DeMar DeRozan,2011,MIP,13
+Eric Gordon,2011,MIP,14
+Nick Young,2011,MIP,14
+Tyler Hansbrough,2011,MIP,14
+Darrell Arthur,2011,MIP,17
+DeAndre Jordan,2011,MIP,17
+Serge Ibaka,2011,MIP,17
+Thaddeus Young,2011,MIP,17
+Amare Stoudemire,2011,MIP,21
+DJ Augustin,2011,MIP,21
+Luol Deng,2011,MIP,21
+Elton Brand,2011,MIP,24
+James Harden,2011,MIP,24
+Jared Dudley,2011,MIP,24
+Jodie Meeks,2011,MIP,24
+Marcin Gortat,2011,MIP,24
+Michael Beasley,2011,MIP,24
+Tony Allen,2011,MIP,24
+Tyson Chandler,2011,MIP,24
+Ryan Anderson,2012,MIP,1
+Ersan Ilyasova,2012,MIP,2
+Nikola Pekovic,2012,MIP,3
+Andrew Bynum,2012,MIP,4
+Greg Monroe,2012,MIP,5
+Jeremy Lin,2012,MIP,6
+Goran Dragic,2012,MIP,7
+Avery Bradley,2012,MIP,8
+Danny Green,2012,MIP,9
+Jeff Teague,2012,MIP,9
+Serge Ibaka,2012,MIP,11
+Ty Lawson,2012,MIP,11
+Paul George,2012,MIP,13
+Steve Novak,2012,MIP,14
+DeMarcus Cousins,2012,MIP,15
+Kevin Love,2012,MIP,16
+James Harden,2012,MIP,17
+Roy Hibbert,2012,MIP,17
+Gerald Henderson,2012,MIP,19
+Marcin Gortat,2012,MIP,19
+Kyle Lowry,2012,MIP,21
+Marc Gasol,2012,MIP,21
+Gordon Hayward,2012,MIP,23
+Arron Afflalo,2012,MIP,24
+Brandan Wright,2012,MIP,24
+CJ Watson,2012,MIP,24
+Tony Parker,2012,MIP,24
+Jarrett Jack,2012,MIP,28
+Marreese Speights,2012,MIP,28
+Paul George,2013,MIP,1
+Greivis Vasquez,2013,MIP,2
+Larry Sanders,2013,MIP,3
+Nikola Vucevic,2013,MIP,4
+Jrue Holiday,2013,MIP,5
+Omer Asik,2013,MIP,6
+James Harden,2013,MIP,7
+Stephen Curry,2013,MIP,8
+Serge Ibaka,2013,MIP,9
+Chandler Parsons,2013,MIP,10
+Kemba Walker,2013,MIP,11
+JR Smith,2013,MIP,12
+Klay Thompson,2013,MIP,12
+Jimmy Butler,2013,MIP,14
+Andray Blatche,2013,MIP,15
+Carmelo Anthony,2013,MIP,15
+Kawhi Leonard,2013,MIP,15
+Mike Conley,2013,MIP,15
+Ryan Anderson,2013,MIP,15
+Kevin Durant,2013,MIP,20
+Arron Afflalo,2013,MIP,21
+Earl Clark,2013,MIP,21
+Greg Monroe,2013,MIP,21
+Joakim Noah,2013,MIP,21
+Kenneth Faried,2013,MIP,21
+Tristan Thompson,2013,MIP,26
+Brook Lopez,2013,MIP,27
+Jarrett Jack,2013,MIP,27
+Jeff Teague,2013,MIP,27
+Lance Stephenson,2013,MIP,27
+Robin Lopez,2013,MIP,27
+Tobias Harris,2013,MIP,27
+Ty Lawson,2013,MIP,27
+Goran Dragic,2014,MIP,1
+Lance Stephenson,2014,MIP,2
+Anthony Davis,2014,MIP,3
+Gerald Green,2014,MIP,4
+DeAndre Jordan,2014,MIP,5
+Kyle Lowry,2014,MIP,6
+Blake Griffin,2014,MIP,7
+DeMar DeRozan,2014,MIP,8
+Patrick Mills,2014,MIP,9
+Isaiah Thomas,2014,MIP,10
+Markieff Morris,2014,MIP,10
+Shaun Livingston,2014,MIP,12
+DJ Augustin,2014,MIP,13
+Reggie Jackson,2014,MIP,14
+Klay Thompson,2014,MIP,15
+Robin Lopez,2014,MIP,15
+DeMarcus Cousins,2014,MIP,17
+Kevin Durant,2014,MIP,17
+Al Jefferson,2014,MIP,19
+Andre Drummond,2014,MIP,20
+Bradley Beal,2014,MIP,20
+Jodie Meeks,2014,MIP,20
+LeBron James,2014,MIP,20
+Mike Conley,2014,MIP,20
+Taj Gibson,2014,MIP,20
+Terrence Jones,2014,MIP,20
+Alec Burks,2014,MIP,27
+Chandler Parsons,2014,MIP,27
+John Wall,2014,MIP,27
+LaMarcus Aldridge,2014,MIP,27
+Paul Millsap,2014,MIP,27
+Jimmy Butler,2015,MIP,1
+Draymond Green,2015,MIP,2
+Rudy Gobert,2015,MIP,3
+Hassan Whiteside,2015,MIP,4
+Klay Thompson,2015,MIP,5
+Anthony Davis,2015,MIP,6
+Giannis Antetokounmpo,2015,MIP,7
+Donatas Motiejunas,2015,MIP,8
+Dennis Schroeder,2015,MIP,9
+DeMarre Carroll,2015,MIP,10
+Tyler Zeller,2015,MIP,10
+DeMarcus Cousins,2015,MIP,12
+Khris Middleton,2015,MIP,12
+DeAndre Jordan,2015,MIP,14
+Jae Crowder,2015,MIP,14
+Kyrie Irving,2015,MIP,14
+Victor Oladipo,2015,MIP,14
+Kentavious Caldwell-Pope,2015,MIP,18
+Nikola Vucevic,2015,MIP,18
+Brandon Knight,2015,MIP,20
+Derrick Favors,2015,MIP,20
+Enes Kanter,2015,MIP,20
+George Hill,2015,MIP,20
+Gordon Hayward,2015,MIP,20
+Kawhi Leonard,2015,MIP,20
+Marc Gasol,2015,MIP,20
+Meyers Leonard,2015,MIP,20
+Robert Covington,2015,MIP,20
+Tobias Harris,2015,MIP,20
+Tyreke Evans,2015,MIP,20
+CJ McCollum,2016,MIP,1
+Kemba Walker,2016,MIP,2
+Giannis Antetokounmpo,2016,MIP,3
+Stephen Curry,2016,MIP,4
+Will Barton,2016,MIP,5
+Jae Crowder,2016,MIP,6
+Draymond Green,2016,MIP,7
+Isaiah Thomas,2016,MIP,8
+Hassan Whiteside,2016,MIP,9
+Kawhi Leonard,2016,MIP,10
+Andre Drummond,2016,MIP,11
+Gary Harris,2016,MIP,12
+Evan Fournier,2016,MIP,13
+Kent Bazemore,2016,MIP,13
+Ian Mahinmi,2016,MIP,15
+Reggie Jackson,2016,MIP,15
+Rodney Hood,2016,MIP,15
+Russell Westbrook,2016,MIP,15
+Kyle Lowry,2016,MIP,19
+Zach LaVine,2016,MIP,19
+Giannis Antetokounmpo,2017,MIP,1
+Nikola Jokic,2017,MIP,2
+Rudy Gobert,2017,MIP,3
+Otto Porter,2017,MIP,4
+Isaiah Thomas,2017,MIP,5
+James Johnson,2017,MIP,6
+Bradley Beal,2017,MIP,7
+Devin Booker,2017,MIP,8
+Tim Hardaway,2017,MIP,9
+Mike Conley,2017,MIP,10
+Dion Waiters,2017,MIP,11
+Dennis Schroeder,2017,MIP,12
+Gordon Hayward,2017,MIP,12
+Jusuf Nurkic,2017,MIP,12
+Kristaps Porzingis,2017,MIP,12
+Gary Harris,2017,MIP,16
+Harrison Barnes,2017,MIP,16
+Myles Turner,2017,MIP,16
+Seth Curry,2017,MIP,16
+Avery Bradley,2017,MIP,20
+Clint Capela,2017,MIP,20
+DeMar DeRozan,2017,MIP,20
+Hassan Whiteside,2017,MIP,20
+Joe Ingles,2017,MIP,20
+John Wall,2017,MIP,20
+Victor Oladipo,2018,MIP,1
+Clint Capela,2018,MIP,2
+Spencer Dinwiddie,2018,MIP,3
+Andre Drummond,2018,MIP,4
+Julius Randle,2018,MIP,5
+Steven Adams,2018,MIP,6
+Jaylen Brown,2018,MIP,7
+Jamal Murray,2018,MIP,8
+DeMar DeRozan,2018,MIP,9
+Louis Williams,2018,MIP,10
+Terry Rozier,2018,MIP,10
+Giannis Antetokounmpo,2018,MIP,12
+Domantas Sabonis,2018,MIP,13
+E'Twaun Moore,2018,MIP,13
+Fred VanVleet,2018,MIP,13
+Nikola Jokic,2018,MIP,13
+Brandon Ingram,2018,MIP,17
+Dejounte Murray,2018,MIP,17
+Tyreke Evans,2018,MIP,17
+Dario Saric,2018,MIP,20
+Joe Ingles,2018,MIP,20
+Tobias Harris,2018,MIP,20
+Aaron Gordon,2018,MIP,23
+Kris Dunn,2018,MIP,23
+Josh Richardson,2018,MIP,25
+Karl-Anthony Towns,2018,MIP,25
+Kristaps Porzingis,2018,MIP,25
+Montrezl Harrell,2018,MIP,25
+Pascal Siakam,2018,MIP,25
+Ricky Rubio,2018,MIP,25
+Taurean Prince,2018,MIP,25
+TJ Warren,2018,MIP,25
+Pascal Siakam,2019,MIP,1
+D'Angelo Russell,2019,MIP,2
+De'Aaron Fox,2019,MIP,3
+Buddy Hield,2019,MIP,4
+Nikola Vucevic,2019,MIP,5
+Domantas Sabonis,2019,MIP,6
+Montrezl Harrell,2019,MIP,7
+Derrick Rose,2019,MIP,8
+John Collins,2019,MIP,9
+Giannis Antetokounmpo,2019,MIP,10
+Danilo Gallinari,2019,MIP,11
+Malik Beasley,2019,MIP,11
+Paul George,2019,MIP,11
+Bojan Bogdanovic,2019,MIP,14
+Thomas Bryant,2019,MIP,14
+Bryn Forbes,2019,MIP,16
+Derrick White,2019,MIP,16
+Jerami Grant,2019,MIP,16
+Josh Richardson,2019,MIP,16
+Spencer Dinwiddie,2019,MIP,16
+Willie Cauley-Stein,2019,MIP,16
+Zach LaVine,2019,MIP,16
+Brandon Ingram,2020,MIP,1
+Bam Adebayo,2020,MIP,2
+Luka Doncic,2020,MIP,3
+Jayson Tatum,2020,MIP,4
+Devonte Graham,2020,MIP,5
+Shai Gilgeous-Alexander,2020,MIP,6
+Pascal Siakam,2020,MIP,7
+Christian Wood,2020,MIP,8
+Trae Young,2020,MIP,9
+Fred VanVleet,2020,MIP,10
+Davis Bertans,2020,MIP,11
+Jaylen Brown,2020,MIP,11
+Markelle Fultz,2020,MIP,13
+Duncan Robinson,2020,MIP,14
+Spencer Dinwiddie,2020,MIP,14
+Julius Randle,2021,MIP,1
+Jerami Grant,2021,MIP,2
+Michael Porter,2021,MIP,3
+Christian Wood,2021,MIP,4
+Zach LaVine,2021,MIP,5
+Chris Boucher,2021,MIP,6
+Jaylen Brown,2021,MIP,6
+Mikal Bridges,2021,MIP,8
+Zion Williamson,2021,MIP,9
+Clint Capela,2021,MIP,10
+Darius Garland,2021,MIP,10
+Jordan Clarkson,2021,MIP,10
+Jordan Poole,2021,MIP,10
+Luguentz Dort,2021,MIP,10
+Nikola Vucevic,2021,MIP,10
+Kyle Anderson,2021,MIP,16
+Miles Bridges,2021,MIP,16
+RJ Barrett,2021,MIP,16
+Andrew Wiggins,2021,MIP,19
+Bojan Bogdanovic,2021,MIP,19
+Lonzo Ball,2021,MIP,19
+Richaun Holmes,2021,MIP,19
+Shai Gilgeous-Alexander,2021,MIP,19
+Terry Rozier,2021,MIP,19
+TJ McConnell,2021,MIP,19
+Ja Morant,2022,MIP,1
+Dejounte Murray,2022,MIP,2
+Darius Garland,2022,MIP,3
+Jordan Poole,2022,MIP,4
+Desmond Bane,2022,MIP,5
+Tyrese Maxey,2022,MIP,6
+Miles Bridges,2022,MIP,7
+Anfernee Simons,2022,MIP,8
+Robert Williams,2022,MIP,9
+Jaren Jackson,2022,MIP,10
+Jalen Brunson,2022,MIP,11
+Max Strus,2022,MIP,12
+Lauri Markkanen,2023,MIP,1
+Shai Gilgeous-Alexander,2023,MIP,2
+Jalen Brunson,2023,MIP,3
+Mikal Bridges,2023,MIP,4
+Nicolas Claxton,2023,MIP,5
+Tyrese Haliburton,2023,MIP,6
+Trey Murphy,2023,MIP,7
+De'Aaron Fox,2023,MIP,8
+Kevon Looney,2023,MIP,8
+Austin Reaves,2023,MIP,10
+Aaron Gordon,2023,MIP,11
+Jaren Jackson,2023,MIP,11
+Malik Monk,2023,MIP,11
+Tyrese Maxey,2024,MIP,1
+Coby White,2024,MIP,2
+Alperen Sengun,2024,MIP,3
+Jalen Williams,2024,MIP,4
+Jalen Brunson,2024,MIP,5
+Deni Avdija,2024,MIP,6
+Cam Thomas,2024,MIP,7
+Jalen Suggs,2024,MIP,8
+Tyrese Haliburton,2024,MIP,9
+Duncan Robinson,2024,MIP,10
+Grayson Allen,2024,MIP,10
+Devin Vassell,2024,MIP,12
+Shai Gilgeous-Alexander,2024,MIP,12
+Aaron Nesmith,2024,MIP,14
+Shaquille O'Neal,2000,MVP,1
+Kevin Garnett,2000,MVP,2
+Alonzo Mourning,2000,MVP,3
+Karl Malone,2000,MVP,4
+Tim Duncan,2000,MVP,5
+Gary Payton,2000,MVP,6
+Allen Iverson,2000,MVP,7
+Grant Hill,2000,MVP,8
+Chris Webber,2000,MVP,9
+Vince Carter,2000,MVP,10
+Jason Kidd,2000,MVP,11
+Kobe Bryant,2000,MVP,12
+Darrell Armstrong,2000,MVP,13
+Jalen Rose,2000,MVP,13
+Michael Finley,2000,MVP,13
+Reggie Miller,2000,MVP,13
+Bob Pettit,1956,MVP,1
+Paul Arizin,1956,MVP,2
+Bob Cousy,1956,MVP,3
+Mel Hutchins,1956,MVP,4
+Bill Sharman,1956,MVP,5
+Dolph Schayes,1956,MVP,5
+Maurice Stokes,1956,MVP,7
+Tom Gola,1956,MVP,7
+Bob Cousy,1957,MVP,1
+Bob Pettit,1957,MVP,2
+Paul Arizin,1957,MVP,3
+Dolph Schayes,1957,MVP,4
+George Yardley,1957,MVP,5
+Maurice Stokes,1957,MVP,6
+Bill Russell,1957,MVP,7
+Harry Gallatin,1957,MVP,8
+Jack Twyman,1957,MVP,8
+Kenny Sears,1957,MVP,8
+Mel Hutchins,1957,MVP,8
+Ray Felix,1957,MVP,8
+Bill Russell,1958,MVP,1
+Dolph Schayes,1958,MVP,2
+George Yardley,1958,MVP,3
+Bob Pettit,1958,MVP,4
+Maurice Stokes,1958,MVP,5
+Bob Cousy,1958,MVP,6
+Bill Sharman,1958,MVP,7
+Paul Arizin,1958,MVP,8
+Walter Dukes,1958,MVP,9
+Vern Mikkelsen,1958,MVP,10
+Cliff Hagan,1958,MVP,11
+Clyde Lovellette,1958,MVP,12
+Kenny Sears,1958,MVP,12
+Neil Johnston,1958,MVP,12
+Bob Pettit,1959,MVP,1
+Bill Russell,1959,MVP,2
+Elgin Baylor,1959,MVP,3
+Bob Cousy,1959,MVP,4
+Paul Arizin,1959,MVP,5
+Dolph Schayes,1959,MVP,6
+Larry Costello,1959,MVP,7
+Kenny Sears,1959,MVP,8
+Cliff Hagan,1959,MVP,9
+Jack Twyman,1959,MVP,10
+Dick McGuire,1959,MVP,11
+Richie Guerin,1959,MVP,11
+Tom Gola,1959,MVP,11
+Al Bianchi,1959,MVP,14
+Gene Shue,1959,MVP,14
+Wilt Chamberlain,1960,MVP,1
+Bill Russell,1960,MVP,2
+Bob Pettit,1960,MVP,3
+Bob Cousy,1960,MVP,4
+Elgin Baylor,1960,MVP,5
+Jack Twyman,1960,MVP,6
+Gene Shue,1960,MVP,7
+Dolph Schayes,1960,MVP,8
+Tom Gola,1960,MVP,8
+Tommy Heinsohn,1960,MVP,10
+Walter Dukes,1960,MVP,11
+Richie Guerin,1960,MVP,12
+Willie Naulls,1960,MVP,12
+Cliff Hagan,1960,MVP,14
+Bill Russell,1961,MVP,1
+Bob Pettit,1961,MVP,2
+Elgin Baylor,1961,MVP,3
+Wilt Chamberlain,1961,MVP,4
+Oscar Robertson,1961,MVP,5
+Bob Cousy,1961,MVP,6
+Tommy Heinsohn,1961,MVP,7
+Dolph Schayes,1961,MVP,8
+Bailey Howell,1961,MVP,9
+Gene Shue,1961,MVP,10
+Jack Twyman,1961,MVP,11
+Jerry West,1961,MVP,12
+Clyde Lovellette,1961,MVP,13
+Cliff Hagan,1961,MVP,14
+Richie Guerin,1961,MVP,15
+Kenny Sears,1961,MVP,16
+Paul Arizin,1961,MVP,16
+Willie Naulls,1961,MVP,16
+Bill Russell,1962,MVP,1
+Wilt Chamberlain,1962,MVP,2
+Oscar Robertson,1962,MVP,3
+Elgin Baylor,1962,MVP,4
+Jerry West,1962,MVP,5
+Bob Pettit,1962,MVP,6
+Richie Guerin,1962,MVP,7
+Bob Cousy,1962,MVP,8
+Bill Russell,1963,MVP,1
+Elgin Baylor,1963,MVP,2
+Oscar Robertson,1963,MVP,3
+Bob Pettit,1963,MVP,4
+Jerry West,1963,MVP,5
+Red Kerr,1963,MVP,6
+Wilt Chamberlain,1963,MVP,7
+Bob Cousy,1963,MVP,8
+Terry Dischinger,1963,MVP,8
+John Havlicek,1963,MVP,10
+John Barnhill,1963,MVP,11
+Walt Bellamy,1963,MVP,11
+Oscar Robertson,1964,MVP,1
+Wilt Chamberlain,1964,MVP,2
+Bill Russell,1964,MVP,3
+Bob Pettit,1964,MVP,4
+Jerry West,1964,MVP,5
+Elgin Baylor,1964,MVP,6
+Gus Johnson,1964,MVP,6
+Hal Greer,1964,MVP,6
+Jerry Lucas,1964,MVP,9
+Sam Jones,1964,MVP,9
+Wayne Embry,1964,MVP,9
+Bill Russell,1965,MVP,1
+Oscar Robertson,1965,MVP,2
+Jerry West,1965,MVP,3
+Sam Jones,1965,MVP,4
+Wilt Chamberlain,1965,MVP,5
+Wilt Chamberlain,1966,MVP,1
+Jerry West,1966,MVP,2
+Oscar Robertson,1966,MVP,3
+Bill Russell,1966,MVP,4
+Jerry Lucas,1966,MVP,5
+Sam Jones,1966,MVP,5
+Wilt Chamberlain,1967,MVP,1
+Nate Thurmond,1967,MVP,2
+Bill Russell,1967,MVP,3
+Oscar Robertson,1967,MVP,4
+Rick Barry,1967,MVP,5
+Wilt Chamberlain,1968,MVP,1
+Lenny Wilkens,1968,MVP,2
+Elgin Baylor,1968,MVP,3
+Dave Bing,1968,MVP,4
+Oscar Robertson,1968,MVP,5
+Wes Unseld,1969,MVP,1
+Willis Reed,1969,MVP,2
+Billy Cunningham,1969,MVP,3
+Bill Russell,1969,MVP,4
+Elgin Baylor,1969,MVP,5
+Willis Reed,1970,MVP,1
+Jerry West,1970,MVP,2
+Kareem Abdul-Jabbar,1970,MVP,3
+Walt Frazier,1970,MVP,4
+Billy Cunningham,1970,MVP,5
+Connie Hawkins,1970,MVP,5
+Lou Hudson,1970,MVP,7
+Bill Bridges,1970,MVP,8
+Wes Unseld,1970,MVP,8
+John Havlicek,1970,MVP,10
+Nate Thurmond,1970,MVP,11
+Joe Caldwell,1970,MVP,12
+Walt Bellamy,1970,MVP,12
+Walt Hazzard,1970,MVP,12
+Elgin Baylor,1970,MVP,15
+Bob Love,1970,MVP,16
+Earl Monroe,1970,MVP,16
+Oscar Robertson,1970,MVP,16
+Otto Moore,1970,MVP,16
+Kareem Abdul-Jabbar,1971,MVP,1
+Jerry West,1971,MVP,2
+Dave Bing,1971,MVP,3
+Willis Reed,1971,MVP,4
+Oscar Robertson,1971,MVP,5
+John Havlicek,1971,MVP,6
+Bob Love,1971,MVP,7
+Nate Thurmond,1971,MVP,8
+Billy Cunningham,1971,MVP,9
+Gus Johnson,1971,MVP,10
+Kareem Abdul-Jabbar,1972,MVP,1
+Jerry West,1972,MVP,2
+Wilt Chamberlain,1972,MVP,3
+John Havlicek,1972,MVP,4
+Spencer Haywood,1972,MVP,5
+Bob Love,1972,MVP,6
+Dave Cowens,1972,MVP,7
+Nate Thurmond,1972,MVP,8
+Bob Lanier,1972,MVP,9
+Dave DeBusschere,1972,MVP,10
+Walt Frazier,1972,MVP,11
+Archie Clark,1972,MVP,12
+Jerry Lucas,1972,MVP,13
+Paul Silas,1972,MVP,14
+Oscar Robertson,1972,MVP,15
+Tiny Archibald,1972,MVP,15
+Cazzie Russell,1972,MVP,17
+Connie Hawkins,1972,MVP,17
+Elvin Hayes,1972,MVP,17
+Sidney Wicks,1972,MVP,17
+Billy Cunningham,1972,MVP,21
+Gail Goodrich,1972,MVP,21
+Jerry Sloan,1972,MVP,21
+Pete Maravich,1972,MVP,21
+Bill Bradley,1972,MVP,25
+Fred Carter,1972,MVP,25
+Walt Bellamy,1972,MVP,25
+Dave Cowens,1973,MVP,1
+Kareem Abdul-Jabbar,1973,MVP,2
+Tiny Archibald,1973,MVP,3
+Wilt Chamberlain,1973,MVP,4
+John Havlicek,1973,MVP,5
+Jerry West,1973,MVP,6
+Spencer Haywood,1973,MVP,7
+Walt Frazier,1973,MVP,7
+Nate Thurmond,1973,MVP,9
+Elvin Hayes,1973,MVP,10
+Bob Love,1973,MVP,11
+Dave DeBusschere,1973,MVP,11
+Elmore Smith,1973,MVP,13
+Bob Lanier,1973,MVP,14
+Wes Unseld,1973,MVP,14
+Lenny Wilkens,1973,MVP,16
+Sidney Wicks,1973,MVP,16
+Lou Hudson,1973,MVP,18
+Dave Bing,1973,MVP,19
+Lucius Allen,1973,MVP,19
+Pete Maravich,1973,MVP,19
+Rick Barry,1973,MVP,19
+Kareem Abdul-Jabbar,1974,MVP,1
+Bob McAdoo,1974,MVP,2
+Bob Lanier,1974,MVP,3
+Dave Cowens,1974,MVP,4
+Elvin Hayes,1974,MVP,5
+Walt Frazier,1974,MVP,6
+Rick Barry,1974,MVP,7
+Nate Thurmond,1974,MVP,8
+John Havlicek,1974,MVP,9
+Norm Van Lier,1974,MVP,9
+Clifford Ray,1974,MVP,11
+Dave Bing,1974,MVP,11
+Dave DeBusschere,1974,MVP,11
+Phil Chenier,1974,MVP,11
+Bob Love,1974,MVP,15
+Lucius Allen,1974,MVP,15
+Clyde Lee,1974,MVP,17
+Pete Maravich,1974,MVP,17
+Rudy Tomjanovich,1974,MVP,17
+Spencer Haywood,1974,MVP,17
+Bob McAdoo,1975,MVP,1
+Marvin Barnes,1975,MVP,1
+Bobby Jones,1975,MVP,2
+Dave Cowens,1975,MVP,2
+Elvin Hayes,1975,MVP,3
+Mack Calvin,1975,MVP,3
+Moses Malone,1975,MVP,3
+Bobby Jones,1975,MVP,4
+Rick Barry,1975,MVP,4
+Kareem Abdul-Jabbar,1975,MVP,5
+Tiny Archibald,1975,MVP,6
+John Havlicek,1975,MVP,7
+Phil Chenier,1975,MVP,8
+Wes Unseld,1975,MVP,9
+Sam Lacey,1975,MVP,10
+Norm Van Lier,1975,MVP,11
+Sidney Wicks,1975,MVP,12
+Bob Lanier,1975,MVP,13
+Spencer Haywood,1975,MVP,13
+Walt Frazier,1975,MVP,15
+Chet Walker,1975,MVP,16
+Earl Monroe,1975,MVP,16
+Mike Bantom,1975,MVP,16
+Bob Love,1975,MVP,19
+Jim Chones,1975,MVP,20
+Fred Brown,1975,MVP,21
+Rudy Tomjanovich,1975,MVP,21
+Kareem Abdul-Jabbar,1976,MVP,1
+Bob McAdoo,1976,MVP,2
+Dave Cowens,1976,MVP,3
+Rick Barry,1976,MVP,4
+George McGinnis,1976,MVP,5
+Dave Bing,1976,MVP,6
+Phil Smith,1976,MVP,7
+Elvin Hayes,1976,MVP,8
+Jim Chones,1976,MVP,9
+Tiny Archibald,1976,MVP,9
+Wes Unseld,1976,MVP,11
+Earl Monroe,1976,MVP,12
+Fred Brown,1976,MVP,13
+Paul Silas,1976,MVP,14
+Pete Maravich,1976,MVP,15
+Clifford Ray,1976,MVP,16
+Jamaal Wilkes,1976,MVP,17
+Phil Chenier,1976,MVP,17
+Walt Frazier,1976,MVP,17
+Doug Collins,1976,MVP,20
+Jo Jo White,1976,MVP,20
+John Drew,1976,MVP,20
+Steve Mix,1976,MVP,20
+Bill Walton,1976,MVP,24
+Bob Dandridge,1976,MVP,24
+John Havlicek,1976,MVP,24
+Norm Van Lier,1976,MVP,24
+Paul Westphal,1976,MVP,24
+Randy Smith,1976,MVP,24
+Truck Robinson,1976,MVP,24
+Kareem Abdul-Jabbar,1977,MVP,1
+Bill Walton,1977,MVP,2
+Pete Maravich,1977,MVP,3
+Bob Lanier,1977,MVP,4
+Julius Erving,1977,MVP,5
+Moses Malone,1977,MVP,6
+David Thompson,1977,MVP,7
+Elvin Hayes,1977,MVP,7
+Maurice Lucas,1977,MVP,9
+Artis Gilmore,1977,MVP,10
+George Gervin,1977,MVP,11
+George McGinnis,1977,MVP,11
+Jo Jo White,1977,MVP,11
+Norm Van Lier,1977,MVP,11
+Bill Walton,1978,MVP,1
+George Gervin,1978,MVP,2
+David Thompson,1978,MVP,3
+Kareem Abdul-Jabbar,1978,MVP,4
+Walter Davis,1978,MVP,5
+Maurice Lucas,1978,MVP,6
+Paul Westphal,1978,MVP,6
+Artis Gilmore,1978,MVP,8
+Truck Robinson,1978,MVP,8
+Bob Lanier,1978,MVP,10
+Bob McAdoo,1978,MVP,10
+Julius Erving,1978,MVP,10
+Marques Johnson,1978,MVP,10
+Marvin Webster,1978,MVP,10
+Moses Malone,1979,MVP,1
+George Gervin,1979,MVP,2
+Elvin Hayes,1979,MVP,3
+Kareem Abdul-Jabbar,1979,MVP,4
+Bob Dandridge,1979,MVP,5
+World B. Free,1979,MVP,6
+Jack Sikma,1979,MVP,7
+David Thompson,1979,MVP,8
+Phil Ford,1979,MVP,8
+Walter Davis,1979,MVP,10
+Kareem Abdul-Jabbar,1980,MVP,1
+Julius Erving,1980,MVP,2
+George Gervin,1980,MVP,3
+Larry Bird,1980,MVP,4
+Dan Roundfield,1980,MVP,5
+Dennis Johnson,1980,MVP,5
+Tiny Archibald,1980,MVP,5
+Gus Williams,1980,MVP,8
+Moses Malone,1980,MVP,9
+Julius Erving,1981,MVP,1
+Larry Bird,1981,MVP,2
+Kareem Abdul-Jabbar,1981,MVP,3
+Moses Malone,1981,MVP,4
+George Gervin,1981,MVP,5
+Marques Johnson,1981,MVP,6
+Robert Parish,1981,MVP,7
+Dennis Johnson,1981,MVP,8
+Tiny Archibald,1981,MVP,9
+Jamaal Wilkes,1981,MVP,10
+Magic Johnson,1981,MVP,11
+Adrian Dantley,1981,MVP,12
+Phil Ford,1981,MVP,12
+Bernard King,1981,MVP,14
+Jack Sikma,1981,MVP,15
+Kelvin Ransey,1981,MVP,15
+Micheal Ray Richardson,1981,MVP,17
+Otis Birdsong,1981,MVP,17
+Reggie Theus,1981,MVP,19
+Truck Robinson,1981,MVP,19
+Norm Nixon,1981,MVP,21
+Artis Gilmore,1981,MVP,22
+Bob Lanier,1981,MVP,22
+Bobby Jones,1981,MVP,24
+George Johnson (1948),1981,MVP,24
+James Silas,1981,MVP,24
+Michael Cooper,1981,MVP,24
+Mike Mitchell,1981,MVP,24
+Walter Davis,1981,MVP,24
+Caldwell Jones,1981,MVP,30
+Quinn Buckner,1981,MVP,30
+Moses Malone,1982,MVP,1
+Larry Bird,1982,MVP,2
+Julius Erving,1982,MVP,3
+Robert Parish,1982,MVP,4
+Gus Williams,1982,MVP,5
+George Gervin,1982,MVP,6
+Sidney Moncrief,1982,MVP,7
+Magic Johnson,1982,MVP,8
+Jack Sikma,1982,MVP,9
+Kareem Abdul-Jabbar,1982,MVP,10
+Dan Roundfield,1982,MVP,11
+Kelly Tripucka,1982,MVP,11
+Alex English,1982,MVP,13
+Bernard King,1982,MVP,14
+Adrian Dantley,1982,MVP,15
+Ray Williams,1982,MVP,16
+Dan Issel,1982,MVP,17
+Isiah Thomas,1982,MVP,17
+Marques Johnson,1982,MVP,17
+Michael Cooper,1982,MVP,17
+Buck Williams,1982,MVP,21
+Dennis Johnson,1982,MVP,21
+Jamaal Wilkes,1982,MVP,21
+Jay Vincent,1982,MVP,21
+Mychal Thompson,1982,MVP,21
+Moses Malone,1983,MVP,1
+Larry Bird,1983,MVP,2
+Magic Johnson,1983,MVP,3
+Sidney Moncrief,1983,MVP,4
+Julius Erving,1983,MVP,5
+Alex English,1983,MVP,6
+Buck Williams,1983,MVP,7
+Artis Gilmore,1983,MVP,8
+George Gervin,1983,MVP,9
+Kareem Abdul-Jabbar,1983,MVP,10
+Jack Sikma,1983,MVP,11
+Jeff Ruland,1983,MVP,12
+Terry Cummings,1983,MVP,13
+Maurice Lucas,1983,MVP,14
+Alton Lister,1983,MVP,15
+Bernard King,1983,MVP,16
+Isiah Thomas,1983,MVP,16
+Gus Williams,1983,MVP,18
+Larry Drew,1983,MVP,18
+Dan Roundfield,1983,MVP,20
+Marques Johnson,1983,MVP,21
+Kiki Vandeweghe,1983,MVP,22
+Norm Nixon,1983,MVP,22
+Larry Bird,1984,MVP,1
+Ralph Sampson,1984,MVP,1
+Bernard King,1984,MVP,2
+Magic Johnson,1984,MVP,3
+Kareem Abdul-Jabbar,1984,MVP,4
+Isiah Thomas,1984,MVP,5
+Julius Erving,1984,MVP,6
+Adrian Dantley,1984,MVP,7
+Sidney Moncrief,1984,MVP,8
+Jeff Ruland,1984,MVP,9
+Moses Malone,1984,MVP,10
+Mark Aguirre,1984,MVP,11
+Bill Laimbeer,1984,MVP,12
+Rickey Green,1984,MVP,13
+Marques Johnson,1984,MVP,14
+World B. Free,1984,MVP,14
+Larry Bird,1985,MVP,1
+Magic Johnson,1985,MVP,2
+Moses Malone,1985,MVP,3
+Kareem Abdul-Jabbar,1985,MVP,4
+Terry Cummings,1985,MVP,5
+Michael Jordan,1985,MVP,6
+Bernard King,1985,MVP,7
+Sidney Moncrief,1985,MVP,8
+Isiah Thomas,1985,MVP,9
+Ralph Sampson,1985,MVP,10
+Calvin Natt,1985,MVP,11
+Alex English,1985,MVP,12
+Hakeem Olajuwon,1985,MVP,12
+Micheal Ray Richardson,1985,MVP,14
+Andrew Toney,1985,MVP,15
+Mark Eaton,1985,MVP,16
+Dominique Wilkins,1985,MVP,17
+Jack Sikma,1985,MVP,17
+Paul Pressey,1985,MVP,17
+Purvis Short,1985,MVP,20
+World B. Free,1985,MVP,20
+Clyde Drexler,1985,MVP,22
+Julius Erving,1985,MVP,22
+Larry Bird,1986,MVP,1
+Dominique Wilkins,1986,MVP,2
+Magic Johnson,1986,MVP,3
+Hakeem Olajuwon,1986,MVP,4
+Kareem Abdul-Jabbar,1986,MVP,5
+Charles Barkley,1986,MVP,6
+Sidney Moncrief,1986,MVP,7
+Alex English,1986,MVP,8
+Isiah Thomas,1986,MVP,9
+Moses Malone,1986,MVP,10
+Terry Cummings,1986,MVP,11
+James Worthy,1986,MVP,12
+Alvin Robertson,1986,MVP,13
+Kevin McHale,1986,MVP,13
+Paul Pressey,1986,MVP,13
+Adrian Dantley,1986,MVP,16
+Buck Williams,1986,MVP,16
+Dennis Johnson,1986,MVP,18
+Magic Johnson,1987,MVP,1
+Michael Jordan,1987,MVP,2
+Larry Bird,1987,MVP,3
+Kevin McHale,1987,MVP,4
+Dominique Wilkins,1987,MVP,5
+Charles Barkley,1987,MVP,6
+Hakeem Olajuwon,1987,MVP,7
+Isiah Thomas,1987,MVP,8
+Fat Lever,1987,MVP,9
+Moses Malone,1987,MVP,10
+Steve Johnson,1987,MVP,11
+Karl Malone,1987,MVP,12
+Robert Parish,1987,MVP,12
+Alex English,1987,MVP,14
+Joe Barry Carroll,1987,MVP,15
+Mark Aguirre,1987,MVP,15
+Rolando Blackman,1987,MVP,15
+Michael Jordan,1988,MVP,1
+Larry Bird,1988,MVP,2
+Magic Johnson,1988,MVP,3
+Charles Barkley,1988,MVP,4
+Clyde Drexler,1988,MVP,5
+Dominique Wilkins,1988,MVP,6
+Hakeem Olajuwon,1988,MVP,7
+Karl Malone,1988,MVP,8
+Fat Lever,1988,MVP,9
+John Stockton,1988,MVP,10
+Alex English,1988,MVP,11
+Isiah Thomas,1988,MVP,12
+Mark Jackson,1988,MVP,13
+Adrian Dantley,1988,MVP,14
+Buck Williams,1988,MVP,14
+Mark Aguirre,1988,MVP,14
+Michael Adams,1988,MVP,14
+Magic Johnson,1989,MVP,1
+Michael Jordan,1989,MVP,2
+Karl Malone,1989,MVP,3
+Patrick Ewing,1989,MVP,4
+Hakeem Olajuwon,1989,MVP,5
+Charles Barkley,1989,MVP,6
+John Stockton,1989,MVP,7
+Kevin Johnson,1989,MVP,8
+Tom Chambers,1989,MVP,9
+Mark Price,1989,MVP,10
+Brad Daugherty,1989,MVP,11
+Robert Parish,1989,MVP,11
+Chris Mullin,1989,MVP,13
+Larry Nance,1989,MVP,13
+Mark Eaton,1989,MVP,13
+Moses Malone,1989,MVP,13
+Isiah Thomas,1989,MVP,17
+Joe Dumars,1989,MVP,17
+Terry Cummings,1989,MVP,17
+Magic Johnson,1990,MVP,1
+Charles Barkley,1990,MVP,2
+Michael Jordan,1990,MVP,3
+Karl Malone,1990,MVP,4
+Patrick Ewing,1990,MVP,5
+David Robinson,1990,MVP,6
+Hakeem Olajuwon,1990,MVP,7
+Tom Chambers,1990,MVP,8
+John Stockton,1990,MVP,9
+Buck Williams,1990,MVP,10
+Larry Bird,1990,MVP,10
+Clyde Drexler,1990,MVP,12
+Isiah Thomas,1990,MVP,13
+Joe Dumars,1990,MVP,13
+Michael Jordan,1991,MVP,1
+Magic Johnson,1991,MVP,2
+David Robinson,1991,MVP,3
+Charles Barkley,1991,MVP,4
+Karl Malone,1991,MVP,5
+Clyde Drexler,1991,MVP,6
+Kevin Johnson,1991,MVP,7
+Dominique Wilkins,1991,MVP,8
+Larry Bird,1991,MVP,9
+Terry Porter,1991,MVP,9
+Patrick Ewing,1991,MVP,11
+John Stockton,1991,MVP,12
+Isiah Thomas,1991,MVP,13
+Robert Parish,1991,MVP,14
+Joe Dumars,1991,MVP,15
+Bernard King,1991,MVP,16
+Kenny Smith,1991,MVP,17
+Hakeem Olajuwon,1991,MVP,18
+Kevin McHale,1991,MVP,19
+Tim Hardaway,1991,MVP,19
+Michael Jordan,1992,MVP,1
+Clyde Drexler,1992,MVP,2
+David Robinson,1992,MVP,3
+Karl Malone,1992,MVP,4
+Patrick Ewing,1992,MVP,5
+Chris Mullin,1992,MVP,6
+Mark Price,1992,MVP,7
+Tim Hardaway,1992,MVP,8
+Scottie Pippen,1992,MVP,9
+Dennis Rodman,1992,MVP,10
+Brad Daugherty,1992,MVP,11
+Charles Barkley,1992,MVP,12
+John Stockton,1992,MVP,12
+Larry Bird,1992,MVP,14
+Kevin Johnson,1992,MVP,15
+Danny Manning,1992,MVP,16
+Detlef Schrempf,1992,MVP,16
+Charles Barkley,1993,MVP,1
+Hakeem Olajuwon,1993,MVP,2
+Michael Jordan,1993,MVP,3
+Patrick Ewing,1993,MVP,4
+Dominique Wilkins,1993,MVP,5
+David Robinson,1993,MVP,6
+Shaquille O'Neal,1993,MVP,7
+Karl Malone,1993,MVP,8
+Mark Price,1993,MVP,8
+Brad Daugherty,1993,MVP,10
+Clyde Drexler,1993,MVP,10
+Joe Dumars,1993,MVP,10
+John Stockton,1993,MVP,10
+Shawn Kemp,1993,MVP,10
+Hakeem Olajuwon,1994,MVP,1
+David Robinson,1994,MVP,2
+Scottie Pippen,1994,MVP,3
+Shaquille O'Neal,1994,MVP,4
+Patrick Ewing,1994,MVP,5
+Gary Payton,1994,MVP,6
+Karl Malone,1994,MVP,7
+Shawn Kemp,1994,MVP,7
+Mark Price,1994,MVP,9
+Charles Barkley,1994,MVP,10
+Dennis Rodman,1994,MVP,11
+Dominique Wilkins,1994,MVP,11
+John Stockton,1994,MVP,11
+Kevin Johnson,1994,MVP,11
+Kevin Willis,1994,MVP,11
+Latrell Sprewell,1994,MVP,11
+Mookie Blaylock,1994,MVP,11
+David Robinson,1995,MVP,1
+Shaquille O'Neal,1995,MVP,2
+Karl Malone,1995,MVP,3
+Patrick Ewing,1995,MVP,4
+Hakeem Olajuwon,1995,MVP,5
+Charles Barkley,1995,MVP,6
+Scottie Pippen,1995,MVP,7
+John Stockton,1995,MVP,8
+Gary Payton,1995,MVP,9
+Anfernee Hardaway,1995,MVP,10
+Michael Jordan,1995,MVP,11
+Dennis Rodman,1995,MVP,12
+Jason Kidd,1995,MVP,13
+Clyde Drexler,1995,MVP,14
+Cedric Ceballos,1995,MVP,15
+Michael Jordan,1996,MVP,1
+David Robinson,1996,MVP,2
+Anfernee Hardaway,1996,MVP,3
+Hakeem Olajuwon,1996,MVP,4
+Scottie Pippen,1996,MVP,5
+Gary Payton,1996,MVP,6
+Karl Malone,1996,MVP,7
+Shawn Kemp,1996,MVP,8
+Grant Hill,1996,MVP,9
+Shaquille O'Neal,1996,MVP,9
+John Stockton,1996,MVP,11
+Charles Barkley,1996,MVP,12
+Magic Johnson,1996,MVP,12
+Alonzo Mourning,1996,MVP,14
+Dennis Rodman,1996,MVP,15
+Mitch Richmond,1996,MVP,16
+Terrell Brandon,1996,MVP,16
+Karl Malone,1997,MVP,1
+Michael Jordan,1997,MVP,2
+Grant Hill,1997,MVP,3
+Tim Hardaway,1997,MVP,4
+Glen Rice,1997,MVP,5
+Gary Payton,1997,MVP,6
+Hakeem Olajuwon,1997,MVP,7
+Patrick Ewing,1997,MVP,8
+Anthony Mason,1997,MVP,9
+Shaquille O'Neal,1997,MVP,9
+Scottie Pippen,1997,MVP,11
+Alonzo Mourning,1997,MVP,12
+Dikembe Mutombo,1997,MVP,13
+Mitch Richmond,1997,MVP,13
+John Stockton,1997,MVP,15
+Charles Barkley,1997,MVP,16
+Allen Iverson,1997,MVP,17
+Kevin Johnson,1997,MVP,17
+Steve Smith,1997,MVP,17
+Tom Gugliotta,1997,MVP,17
+Michael Jordan,1998,MVP,1
+Karl Malone,1998,MVP,2
+Gary Payton,1998,MVP,3
+Shaquille O'Neal,1998,MVP,4
+Tim Duncan,1998,MVP,5
+Tim Hardaway,1998,MVP,6
+David Robinson,1998,MVP,7
+Vin Baker,1998,MVP,8
+Grant Hill,1998,MVP,9
+Scottie Pippen,1998,MVP,10
+Glen Rice,1998,MVP,11
+Antoine Walker,1998,MVP,12
+Jason Kidd,1998,MVP,13
+John Stockton,1998,MVP,13
+Mitch Richmond,1998,MVP,15
+Reggie Miller,1998,MVP,16
+Rik Smits,1998,MVP,16
+Michael Finley,1998,MVP,18
+Rod Strickland,1998,MVP,18
+Karl Malone,1999,MVP,1
+Alonzo Mourning,1999,MVP,2
+Tim Duncan,1999,MVP,3
+Allen Iverson,1999,MVP,4
+Jason Kidd,1999,MVP,5
+Shaquille O'Neal,1999,MVP,6
+Chris Webber,1999,MVP,7
+Grant Hill,1999,MVP,8
+Gary Payton,1999,MVP,9
+Kevin Garnett,1999,MVP,10
+Shawn Kemp,1999,MVP,11
+David Robinson,1999,MVP,12
+Arvydas Sabonis,1999,MVP,13
+Hakeem Olajuwon,1999,MVP,13
+Darrell Armstrong,1999,MVP,15
+Anfernee Hardaway,1999,MVP,16
+Glenn Robinson,1999,MVP,16
+Mark Jackson,1999,MVP,16
+Rasheed Wallace,1999,MVP,16
+Steve Smith,1999,MVP,16
+Vince Carter,1999,MVP,16
+Allen Iverson,2001,MVP,1
+Tim Duncan,2001,MVP,2
+Shaquille O'Neal,2001,MVP,3
+Chris Webber,2001,MVP,4
+Kevin Garnett,2001,MVP,5
+Tracy McGrady,2001,MVP,6
+Karl Malone,2001,MVP,7
+Jason Kidd,2001,MVP,8
+Kobe Bryant,2001,MVP,9
+David Robinson,2001,MVP,10
+Ray Allen,2001,MVP,11
+Vince Carter,2001,MVP,11
+Paul Pierce,2001,MVP,13
+Jerry Stackhouse,2001,MVP,14
+Anthony Mason,2001,MVP,15
+John Stockton,2001,MVP,15
+Michael Finley,2001,MVP,15
+Tim Duncan,2002,MVP,1
+Jason Kidd,2002,MVP,2
+Shaquille O'Neal,2002,MVP,3
+Tracy McGrady,2002,MVP,4
+Kobe Bryant,2002,MVP,5
+Gary Payton,2002,MVP,6
+Chris Webber,2002,MVP,7
+Dirk Nowitzki,2002,MVP,8
+Allen Iverson,2002,MVP,9
+Ben Wallace,2002,MVP,10
+Paul Pierce,2002,MVP,11
+Kevin Garnett,2002,MVP,12
+Michael Jordan,2002,MVP,13
+Steve Nash,2002,MVP,14
+Jerry Stackhouse,2002,MVP,15
+Elton Brand,2002,MVP,16
+Mike Bibby,2002,MVP,16
+Predrag Stojakovic,2002,MVP,16
+Tim Duncan,2003,MVP,1
+Kevin Garnett,2003,MVP,2
+Kobe Bryant,2003,MVP,3
+Tracy McGrady,2003,MVP,4
+Shaquille O'Neal,2003,MVP,5
+Allen Iverson,2003,MVP,6
+Dirk Nowitzki,2003,MVP,7
+Ben Wallace,2003,MVP,8
+Jason Kidd,2003,MVP,9
+Chris Webber,2003,MVP,10
+Jamal Mashburn,2003,MVP,11
+Paul Pierce,2003,MVP,11
+Steve Nash,2003,MVP,11
+Kevin Garnett,2004,MVP,1
+Tim Duncan,2004,MVP,2
+Jermaine O'Neal,2004,MVP,3
+Predrag Stojakovic,2004,MVP,4
+Kobe Bryant,2004,MVP,5
+Shaquille O'Neal,2004,MVP,6
+Ben Wallace,2004,MVP,7
+Jason Kidd,2004,MVP,8
+LeBron James,2004,MVP,9
+Baron Davis,2004,MVP,10
+Dirk Nowitzki,2004,MVP,10
+Sam Cassell,2004,MVP,10
+Andrei Kirilenko,2004,MVP,13
+Carmelo Anthony,2004,MVP,14
+Michael Redd,2004,MVP,14
+Yao Ming,2004,MVP,14
+Steve Nash,2005,MVP,1
+Shaquille O'Neal,2005,MVP,2
+Dirk Nowitzki,2005,MVP,3
+Tim Duncan,2005,MVP,4
+Allen Iverson,2005,MVP,5
+LeBron James,2005,MVP,6
+Tracy McGrady,2005,MVP,7
+Dwyane Wade,2005,MVP,8
+Amare Stoudemire,2005,MVP,9
+Ray Allen,2005,MVP,9
+Kevin Garnett,2005,MVP,11
+Gilbert Arenas,2005,MVP,12
+Vince Carter,2005,MVP,13
+Marcus Camby,2005,MVP,14
+PJ Brown,2005,MVP,14
+Shawn Marion,2005,MVP,14
+Steve Nash,2006,MVP,1
+LeBron James,2006,MVP,2
+Dirk Nowitzki,2006,MVP,3
+Kobe Bryant,2006,MVP,4
+Chauncey Billups,2006,MVP,5
+Dwyane Wade,2006,MVP,6
+Elton Brand,2006,MVP,7
+Tim Duncan,2006,MVP,8
+Tony Parker,2006,MVP,9
+Allen Iverson,2006,MVP,10
+Shawn Marion,2006,MVP,10
+Dirk Nowitzki,2007,MVP,1
+Steve Nash,2007,MVP,2
+Kobe Bryant,2007,MVP,3
+Tim Duncan,2007,MVP,4
+LeBron James,2007,MVP,5
+Tracy McGrady,2007,MVP,6
+Chris Bosh,2007,MVP,7
+Gilbert Arenas,2007,MVP,8
+Carlos Boozer,2007,MVP,9
+Kevin Garnett,2007,MVP,9
+Chauncey Billups,2007,MVP,11
+Dwyane Wade,2007,MVP,12
+Shaquille O'Neal,2007,MVP,12
+Amare Stoudemire,2007,MVP,14
+Baron Davis,2007,MVP,15
+Carmelo Anthony,2007,MVP,15
+Tony Parker,2007,MVP,15
+Kobe Bryant,2008,MVP,1
+Chris Paul,2008,MVP,2
+Kevin Garnett,2008,MVP,3
+LeBron James,2008,MVP,4
+Dwight Howard,2008,MVP,5
+Amare Stoudemire,2008,MVP,6
+Tim Duncan,2008,MVP,7
+Tracy McGrady,2008,MVP,8
+Steve Nash,2008,MVP,9
+Manu Ginobili,2008,MVP,10
+Dirk Nowitzki,2008,MVP,11
+Deron Williams,2008,MVP,12
+Carmelo Anthony,2008,MVP,13
+Antawn Jamison,2008,MVP,14
+Carlos Boozer,2008,MVP,14
+Paul Pierce,2008,MVP,14
+Rasheed Wallace,2008,MVP,14
+LeBron James,2009,MVP,1
+Kobe Bryant,2009,MVP,2
+Dwyane Wade,2009,MVP,3
+Dwight Howard,2009,MVP,4
+Chris Paul,2009,MVP,5
+Chauncey Billups,2009,MVP,6
+Paul Pierce,2009,MVP,7
+Tony Parker,2009,MVP,8
+Brandon Roy,2009,MVP,9
+Dirk Nowitzki,2009,MVP,10
+Tim Duncan,2009,MVP,11
+Yao Ming,2009,MVP,12
+LeBron James,2010,MVP,1
+Kevin Durant,2010,MVP,2
+Kobe Bryant,2010,MVP,3
+Dwight Howard,2010,MVP,4
+Dwyane Wade,2010,MVP,5
+Carmelo Anthony,2010,MVP,6
+Dirk Nowitzki,2010,MVP,7
+Steve Nash,2010,MVP,8
+Deron Williams,2010,MVP,9
+Amare Stoudemire,2010,MVP,10
+Manu Ginobili,2010,MVP,11
+Chauncey Billups,2010,MVP,12
+Chris Bosh,2010,MVP,12
+Joe Johnson,2010,MVP,12
+Stephen Jackson,2010,MVP,12
+Derrick Rose,2011,MVP,1
+Dwight Howard,2011,MVP,2
+LeBron James,2011,MVP,3
+Kobe Bryant,2011,MVP,4
+Kevin Durant,2011,MVP,5
+Dirk Nowitzki,2011,MVP,6
+Dwyane Wade,2011,MVP,7
+Manu Ginobili,2011,MVP,8
+Amare Stoudemire,2011,MVP,9
+Blake Griffin,2011,MVP,10
+Rajon Rondo,2011,MVP,10
+Tony Parker,2011,MVP,12
+Chris Paul,2011,MVP,13
+LeBron James,2012,MVP,1
+Kevin Durant,2012,MVP,2
+Chris Paul,2012,MVP,3
+Kobe Bryant,2012,MVP,4
+Tony Parker,2012,MVP,5
+Kevin Love,2012,MVP,6
+Dwight Howard,2012,MVP,7
+Rajon Rondo,2012,MVP,8
+Steve Nash,2012,MVP,9
+Dwyane Wade,2012,MVP,10
+Derrick Rose,2012,MVP,11
+Dirk Nowitzki,2012,MVP,12
+Russell Westbrook,2012,MVP,12
+Tim Duncan,2012,MVP,14
+Joe Johnson,2012,MVP,15
+LeBron James,2013,MVP,1
+Kevin Durant,2013,MVP,2
+Carmelo Anthony,2013,MVP,3
+Chris Paul,2013,MVP,4
+Kobe Bryant,2013,MVP,5
+Tony Parker,2013,MVP,6
+Tim Duncan,2013,MVP,7
+James Harden,2013,MVP,8
+Russell Westbrook,2013,MVP,9
+Dwyane Wade,2013,MVP,10
+Stephen Curry,2013,MVP,11
+David Lee,2013,MVP,12
+Joakim Noah,2013,MVP,12
+Kevin Garnett,2013,MVP,12
+Marc Gasol,2013,MVP,12
+Ty Lawson,2013,MVP,12
+Kevin Durant,2014,MVP,1
+LeBron James,2014,MVP,2
+Blake Griffin,2014,MVP,3
+Joakim Noah,2014,MVP,4
+James Harden,2014,MVP,5
+Stephen Curry,2014,MVP,6
+Chris Paul,2014,MVP,7
+Al Jefferson,2014,MVP,8
+Paul George,2014,MVP,9
+LaMarcus Aldridge,2014,MVP,10
+Kevin Love,2014,MVP,11
+Tim Duncan,2014,MVP,12
+Tony Parker,2014,MVP,12
+Dirk Nowitzki,2014,MVP,14
+Carmelo Anthony,2014,MVP,15
+Goran Dragic,2014,MVP,16
+Mike Conley,2014,MVP,17
+Stephen Curry,2015,MVP,1
+James Harden,2015,MVP,2
+LeBron James,2015,MVP,3
+Russell Westbrook,2015,MVP,4
+Anthony Davis,2015,MVP,5
+Chris Paul,2015,MVP,6
+LaMarcus Aldridge,2015,MVP,7
+Blake Griffin,2015,MVP,8
+Marc Gasol,2015,MVP,8
+Kawhi Leonard,2015,MVP,10
+Klay Thompson,2015,MVP,10
+Tim Duncan,2015,MVP,10
+Stephen Curry,2016,MVP,1
+Kawhi Leonard,2016,MVP,2
+LeBron James,2016,MVP,3
+Russell Westbrook,2016,MVP,4
+Kevin Durant,2016,MVP,5
+Chris Paul,2016,MVP,6
+Draymond Green,2016,MVP,7
+Damian Lillard,2016,MVP,8
+James Harden,2016,MVP,9
+Kyle Lowry,2016,MVP,10
+Russell Westbrook,2017,MVP,1
+James Harden,2017,MVP,2
+Kawhi Leonard,2017,MVP,3
+LeBron James,2017,MVP,4
+Isaiah Thomas,2017,MVP,5
+Stephen Curry,2017,MVP,6
+Giannis Antetokounmpo,2017,MVP,7
+John Wall,2017,MVP,7
+Anthony Davis,2017,MVP,9
+Kevin Durant,2017,MVP,9
+DeMar DeRozan,2017,MVP,11
+James Harden,2018,MVP,1
+LeBron James,2018,MVP,2
+Anthony Davis,2018,MVP,3
+Damian Lillard,2018,MVP,4
+Russell Westbrook,2018,MVP,5
+Giannis Antetokounmpo,2018,MVP,6
+Kevin Durant,2018,MVP,7
+DeMar DeRozan,2018,MVP,8
+LaMarcus Aldridge,2018,MVP,9
+Jimmy Butler,2018,MVP,10
+Stephen Curry,2018,MVP,10
+Joel Embiid,2018,MVP,12
+Victor Oladipo,2018,MVP,13
+Giannis Antetokounmpo,2019,MVP,1
+James Harden,2019,MVP,2
+Paul George,2019,MVP,3
+Nikola Jokic,2019,MVP,4
+Stephen Curry,2019,MVP,5
+Damian Lillard,2019,MVP,6
+Joel Embiid,2019,MVP,7
+Kevin Durant,2019,MVP,8
+Kawhi Leonard,2019,MVP,9
+Russell Westbrook,2019,MVP,10
+LeBron James,2019,MVP,11
+Rudy Gobert,2019,MVP,11
+Giannis Antetokounmpo,2020,MVP,1
+LeBron James,2020,MVP,2
+James Harden,2020,MVP,3
+Luka Doncic,2020,MVP,4
+Kawhi Leonard,2020,MVP,5
+Anthony Davis,2020,MVP,6
+Chris Paul,2020,MVP,7
+Damian Lillard,2020,MVP,8
+Nikola Jokic,2020,MVP,9
+Pascal Siakam,2020,MVP,10
+Jimmy Butler,2020,MVP,11
+Jayson Tatum,2020,MVP,12
+Nikola Jokic,2021,MVP,1
+Joel Embiid,2021,MVP,2
+Stephen Curry,2021,MVP,3
+Giannis Antetokounmpo,2021,MVP,4
+Chris Paul,2021,MVP,5
+Luka Doncic,2021,MVP,6
+Damian Lillard,2021,MVP,7
+Julius Randle,2021,MVP,8
+Derrick Rose,2021,MVP,9
+Rudy Gobert,2021,MVP,10
+Russell Westbrook,2021,MVP,11
+Ben Simmons,2021,MVP,12
+James Harden,2021,MVP,13
+Kawhi Leonard,2021,MVP,13
+LeBron James,2021,MVP,13
+Nikola Jokic,2022,MVP,1
+Joel Embiid,2022,MVP,2
+Giannis Antetokounmpo,2022,MVP,3
+Devin Booker,2022,MVP,4
+Luka Doncic,2022,MVP,5
+Jayson Tatum,2022,MVP,6
+Ja Morant,2022,MVP,7
+Stephen Curry,2022,MVP,8
+Chris Paul,2022,MVP,9
+DeMar DeRozan,2022,MVP,10
+Kevin Durant,2022,MVP,10
+LeBron James,2022,MVP,10
+Joel Embiid,2023,MVP,1
+Nikola Jokic,2023,MVP,2
+Giannis Antetokounmpo,2023,MVP,3
+Jayson Tatum,2023,MVP,4
+Shai Gilgeous-Alexander,2023,MVP,5
+Donovan Mitchell,2023,MVP,6
+Domantas Sabonis,2023,MVP,7
+Luka Doncic,2023,MVP,8
+Stephen Curry,2023,MVP,9
+Jimmy Butler,2023,MVP,10
+De'Aaron Fox,2023,MVP,11
+Ja Morant,2023,MVP,12
+Jalen Brunson,2023,MVP,12
+Nikola Jokic,2024,MVP,1
+Shai Gilgeous-Alexander,2024,MVP,2
+Luka Doncic,2024,MVP,3
+Giannis Antetokounmpo,2024,MVP,4
+Jalen Brunson,2024,MVP,5
+Jayson Tatum,2024,MVP,6
+Anthony Edwards,2024,MVP,7
+Domantas Sabonis,2024,MVP,8
+Kevin Durant,2024,MVP,9
+Shai Gilgeous-Alexander,2025,MVP,1
+Nikola Jokic,2025,MVP,2
+Giannis Antetokounmpo,2025,MVP,3
+Jayson Tatum,2025,MVP,4
+Donovan Mitchell,2025,MVP,5
+LeBron James,2025,MVP,6
+Cade Cunningham,2025,MVP,7
+Anthony Edwards,2025,MVP,7
+Stephen Curry,2025,MVP,9
+Jalen Brunson,2025,MVP,10
+James Harden,2025,MVP,10
+Evan Mobley,2025,MVP,10
+Elton Brand,2000,ROY,1
+Steve Francis,2000,ROY,1
+Lamar Odom,2000,ROY,3
+Andre Miller,2000,ROY,4
+Jerry Lucas,1964,ROY,1
+Gus Johnson,1964,ROY,2
+Nate Thurmond,1964,ROY,3
+Willis Reed,1965,ROY,1
+Luke Jackson,1965,ROY,2
+Jim Barnes,1965,ROY,3
+Howard Komives,1965,ROY,4
+Joe Caldwell,1965,ROY,4
+Ron Bonham,1965,ROY,4
+Rick Barry,1966,ROY,1
+Billy Cunningham,1966,ROY,2
+Dave Bing,1967,ROY,1
+Lou Hudson,1967,ROY,2
+Archie Clark,1967,ROY,3
+Earl Monroe,1968,ROY,1
+Bill Bradley,1968,ROY,2
+Wes Unseld,1969,ROY,1
+Elvin Hayes,1969,ROY,2
+Kareem Abdul-Jabbar,1970,ROY,1
+Dave Cowens,1971,ROY,1
+Geoff Petrie,1971,ROY,1
+Pete Maravich,1971,ROY,3
+Calvin Murphy,1971,ROY,4
+Bob Lanier,1971,ROY,5
+Sidney Wicks,1972,ROY,1
+Elmore Smith,1972,ROY,2
+Austin Carr,1972,ROY,3
+Clifford Ray,1972,ROY,4
+Curtis Rowe,1972,ROY,5
+Mike Newlin,1972,ROY,6
+Bob McAdoo,1973,ROY,1
+Lloyd Neal,1973,ROY,2
+Chris Ford,1973,ROY,3
+Jim Price,1973,ROY,4
+Bud Stallworth,1973,ROY,5
+Ernie DiGregorio,1974,ROY,1
+Ron Behagen,1974,ROY,2
+Slick Watts,1974,ROY,3
+Jamaal Wilkes,1975,ROY,1
+John Drew,1975,ROY,2
+Scott Wedman,1975,ROY,3
+Leonard Gray,1975,ROY,4
+Mike Sojourner,1975,ROY,5
+Alvan Adams,1976,ROY,1
+Gus Williams,1976,ROY,2
+World B. Free,1976,ROY,3
+Lionel Hollins,1976,ROY,4
+John Shumate,1976,ROY,5
+Adrian Dantley,1977,ROY,1
+John Lucas,1977,ROY,2
+Walter Davis,1978,ROY,1
+Marques Johnson,1978,ROY,2
+Bernard King,1978,ROY,3
+Jack Sikma,1978,ROY,4
+Norm Nixon,1978,ROY,5
+Phil Ford,1979,ROY,1
+Reggie Theus,1979,ROY,2
+Larry Bird,1980,ROY,1
+Magic Johnson,1980,ROY,2
+Darrell Griffith,1981,ROY,1
+Kelvin Ransey,1981,ROY,2
+Larry Smith,1981,ROY,3
+Kevin McHale,1981,ROY,4
+Joe Barry Carroll,1981,ROY,5
+Michael Brooks,1981,ROY,6
+Andrew Toney,1981,ROY,7
+Mike O'Koren,1981,ROY,7
+Buck Williams,1982,ROY,1
+Kelly Tripucka,1982,ROY,2
+Jay Vincent,1982,ROY,3
+Terry Cummings,1983,ROY,1
+Clark Kellogg,1983,ROY,2
+James Worthy,1983,ROY,3
+Michael Jordan,1985,ROY,1
+Hakeem Olajuwon,1985,ROY,2
+Patrick Ewing,1986,ROY,1
+Xavier McDaniel,1986,ROY,2
+Karl Malone,1986,ROY,3
+Spud Webb,1986,ROY,4
+Charles Oakley,1986,ROY,5
+Manute Bol,1986,ROY,5
+Benoit Benjamin,1986,ROY,7
+Chuck Person,1987,ROY,1
+Ron Harper,1987,ROY,2
+Mark Jackson,1988,ROY,1
+Greg Anderson,1988,ROY,2
+Kenny Smith,1988,ROY,2
+Winston Garland,1988,ROY,2
+Mitch Richmond,1989,ROY,1
+Willie Anderson,1989,ROY,2
+Chris Morris,1989,ROY,3
+David Robinson,1990,ROY,1
+Derrick Coleman,1991,ROY,1
+Lionel Simmons,1991,ROY,2
+Dennis Scott,1991,ROY,3
+Dee Brown,1991,ROY,4
+Larry Johnson (1969),1992,ROY,1
+Dikembe Mutombo,1992,ROY,2
+Billy Owens,1992,ROY,3
+Shaquille O'Neal,1993,ROY,1
+Alonzo Mourning,1993,ROY,2
+Chris Webber,1994,ROY,1
+Anfernee Hardaway,1994,ROY,2
+Jamal Mashburn,1994,ROY,3
+Grant Hill,1995,ROY,1
+Jason Kidd,1995,ROY,1
+Glenn Robinson,1995,ROY,3
+Eddie Jones,1995,ROY,4
+Brian Grant,1995,ROY,5
+Juwan Howard,1995,ROY,5
+Damon Stoudamire,1996,ROY,1
+Arvydas Sabonis,1996,ROY,2
+Joe Smith,1996,ROY,3
+Jerry Stackhouse,1996,ROY,4
+Michael Finley,1996,ROY,4
+Kevin Garnett,1996,ROY,6
+Allen Iverson,1997,ROY,1
+Stephon Marbury,1997,ROY,2
+Shareef Abdur-Rahim,1997,ROY,3
+Antoine Walker,1997,ROY,4
+Kerry Kittles,1997,ROY,5
+Tim Duncan,1998,ROY,1
+Keith Van Horn,1998,ROY,2
+Vince Carter,1999,ROY,1
+Jason Williams,1999,ROY,2
+Paul Pierce,1999,ROY,3
+Mike Miller,2001,ROY,1
+Kenyon Martin,2001,ROY,2
+Marc Jackson,2001,ROY,3
+Darius Miles,2001,ROY,4
+Morris Peterson,2001,ROY,4
+Pau Gasol,2002,ROY,1
+Richard Jefferson,2002,ROY,2
+Andrei Kirilenko,2002,ROY,3
+Jamaal Tinsley,2002,ROY,3
+Jason Richardson,2002,ROY,3
+Amare Stoudemire,2003,ROY,1
+Yao Ming,2003,ROY,2
+Caron Butler,2003,ROY,3
+Manu Ginobili,2003,ROY,4
+Drew Gooden,2003,ROY,5
+Nenê,2003,ROY,6
+Carlos Boozer,2003,ROY,7
+LeBron James,2004,ROY,1
+Carmelo Anthony,2004,ROY,2
+Dwyane Wade,2004,ROY,3
+Kirk Hinrich,2004,ROY,4
+Chris Bosh,2004,ROY,5
+Marquis Daniels,2004,ROY,6
+Emeka Okafor,2005,ROY,1
+Ben Gordon,2005,ROY,2
+Dwight Howard,2005,ROY,3
+Andre Iguodala,2005,ROY,4
+JR Smith,2005,ROY,5
+Luol Deng,2005,ROY,5
+Chris Paul,2006,ROY,1
+Charlie Villanueva,2006,ROY,2
+Andrew Bogut,2006,ROY,3
+Raymond Felton,2006,ROY,4
+Channing Frye,2006,ROY,5
+Deron Williams,2006,ROY,6
+Danny Granger,2006,ROY,7
+Luther Head,2006,ROY,7
+Ryan Gomes,2006,ROY,9
+Brandon Roy,2007,ROY,1
+Andrea Bargnani,2007,ROY,2
+Rudy Gay,2007,ROY,3
+Adam Morrison,2007,ROY,4
+Randy Foye,2007,ROY,5
+Paul Millsap,2007,ROY,6
+LaMarcus Aldridge,2007,ROY,7
+Jorge Garbajosa,2007,ROY,8
+Tyrus Thomas,2007,ROY,9
+Walter Herrmann,2007,ROY,10
+Craig Smith,2007,ROY,11
+Rajon Rondo,2007,ROY,12
+Kevin Durant,2008,ROY,1
+Al Horford,2008,ROY,2
+Luis Scola,2008,ROY,3
+Al Thornton,2008,ROY,4
+Jamario Moon,2008,ROY,5
+Juan Carlos Navarro,2008,ROY,6
+Thaddeus Young,2008,ROY,7
+Carl Landry,2008,ROY,8
+Mike Conley,2008,ROY,8
+Derrick Rose,2009,ROY,1
+OJ Mayo,2009,ROY,2
+Brook Lopez,2009,ROY,3
+Russell Westbrook,2009,ROY,4
+Eric Gordon,2009,ROY,5
+Kevin Love,2009,ROY,6
+Michael Beasley,2009,ROY,7
+Marc Gasol,2009,ROY,8
+Robin Lopez,2009,ROY,9
+Rudy Fernandez,2009,ROY,9
+Courtney Lee,2009,ROY,11
+Mario Chalmers,2009,ROY,11
+Nicolas Batum,2009,ROY,13
+Tyreke Evans,2010,ROY,1
+Stephen Curry,2010,ROY,2
+Brandon Jennings,2010,ROY,3
+Darren Collison,2010,ROY,4
+Jonny Flynn,2010,ROY,5
+Taj Gibson,2010,ROY,5
+Blake Griffin,2011,ROY,1
+John Wall,2011,ROY,2
+DeMarcus Cousins,2011,ROY,3
+Landry Fields,2011,ROY,4
+Gary Neal,2011,ROY,5
+Greg Monroe,2011,ROY,6
+Kyrie Irving,2012,ROY,1
+Ricky Rubio,2012,ROY,2
+Kenneth Faried,2012,ROY,3
+Kawhi Leonard,2012,ROY,4
+Iman Shumpert,2012,ROY,5
+Klay Thompson,2012,ROY,6
+Isaiah Thomas,2012,ROY,7
+Brandon Knight,2012,ROY,8
+Chandler Parsons,2012,ROY,9
+MarShon Brooks,2012,ROY,10
+Kemba Walker,2012,ROY,11
+Josh Selby,2012,ROY,12
+Damian Lillard,2013,ROY,1
+Anthony Davis,2013,ROY,2
+Bradley Beal,2013,ROY,3
+Andre Drummond,2013,ROY,4
+Dion Waiters,2013,ROY,5
+Chris Copeland,2013,ROY,6
+Harrison Barnes,2013,ROY,6
+Michael Kidd-Gilchrist,2013,ROY,8
+Jonas Valanciunas,2013,ROY,9
+John Jenkins,2013,ROY,10
+Michael Carter-Williams,2014,ROY,1
+Victor Oladipo,2014,ROY,2
+Trey Burke,2014,ROY,3
+Mason Plumlee,2014,ROY,4
+Tim Hardaway,2014,ROY,5
+Gorgui Dieng,2014,ROY,6
+Giannis Antetokounmpo,2014,ROY,7
+Nick Calathes,2014,ROY,7
+Steven Adams,2014,ROY,7
+Andrew Wiggins,2015,ROY,1
+Nikola Mirotic,2015,ROY,2
+Nerlens Noel,2015,ROY,3
+Elfrid Payton,2015,ROY,4
+Marcus Smart,2015,ROY,5
+Jusuf Nurkic,2015,ROY,6
+Jordan Clarkson,2015,ROY,7
+Karl-Anthony Towns,2016,ROY,1
+Kristaps Porzingis,2016,ROY,2
+Nikola Jokic,2016,ROY,3
+Devin Booker,2016,ROY,4
+Jahlil Okafor,2016,ROY,5
+Justise Winslow,2016,ROY,6
+Emmanuel Mudiay,2016,ROY,7
+Myles Turner,2016,ROY,8
+D'Angelo Russell,2016,ROY,9
+Malcolm Brogdon,2017,ROY,1
+Dario Saric,2017,ROY,2
+Joel Embiid,2017,ROY,3
+Buddy Hield,2017,ROY,4
+Jamal Murray,2017,ROY,5
+Willy Hernangomez,2017,ROY,5
+Marquese Chriss,2017,ROY,7
+Jaylen Brown,2017,ROY,8
+Rodney McGruder,2017,ROY,8
+Yogi Ferrell,2017,ROY,8
+Ben Simmons,2018,ROY,1
+Donovan Mitchell,2018,ROY,2
+Jayson Tatum,2018,ROY,3
+Kyle Kuzma,2018,ROY,4
+Dennis Smith,2018,ROY,5
+Luka Doncic,2019,ROY,1
+Trae Young,2019,ROY,2
+Deandre Ayton,2019,ROY,3
+Jaren Jackson,2019,ROY,4
+Collin Sexton,2019,ROY,5
+Shai Gilgeous-Alexander,2019,ROY,6
+Marvin Bagley,2019,ROY,7
+Josh Okogie,2019,ROY,8
+Mitchell Robinson,2019,ROY,8
+Ja Morant,2020,ROY,1
+Kendrick Nunn,2020,ROY,2
+Zion Williamson,2020,ROY,3
+Brandon Clarke,2020,ROY,4
+Coby White,2020,ROY,5
+Eric Paschall,2020,ROY,6
+Terence Davis,2020,ROY,6
+RJ Barrett,2020,ROY,8
+LaMelo Ball,2021,ROY,1
+Anthony Edwards,2021,ROY,2
+Tyrese Haliburton,2021,ROY,3
+Saddiq Bey,2021,ROY,4
+Scottie Barnes,2022,ROY,1
+Evan Mobley,2022,ROY,2
+Cade Cunningham,2022,ROY,3
+Jalen Green,2022,ROY,4
+Franz Wagner,2022,ROY,5
+Herb Jones,2022,ROY,6
+Paolo Banchero,2023,ROY,1
+Jalen Williams,2023,ROY,2
+Walker Kessler,2023,ROY,3
+Bennedict Mathurin,2023,ROY,4
+Keegan Murray,2023,ROY,5
+Jaden Ivey,2023,ROY,6
+Victor Wembanyama,2024,ROY,1
+Chet Holmgren,2024,ROY,2
+Brandon Miller,2024,ROY,3
+Jaime Jaquez,2024,ROY,4
+Brandin Podziemski,2024,ROY,5
+Dereck Lively,2024,ROY,6
+Stephon Castle,2025,ROY,1
+Zaccharie Risacher,2025,ROY,2
+Jaylen Wells,2025,ROY,3
+Alex Sarr,2025,ROY,4
+Zach Edey,2025,ROY,5
+Kel'el Ware,2025,ROY,6
+Matas Buzelis,2025,ROY,7
+Jared McCain,2025,ROY,7
+Rodney Rogers,2000,Sixth Man,1
+Cuttino Mobley,2000,Sixth Man,2
+Cedric Ceballos,2000,Sixth Man,3
+Tracy McGrady,2000,Sixth Man,3
+Jerome Williams,2000,Sixth Man,5
+Marcus Camby,2000,Sixth Man,6
+Predrag Stojakovic,2000,Sixth Man,6
+Payton Pritchard,2025,Sixth Man,1
+Malik Beasley,2025,Sixth Man,2
+Ty Jerome,2025,Sixth Man,3
+De'Andre Hunter,2025,Sixth Man,4
+Naz Reid,2025,Sixth Man,5
+Nickeil Alexander-Walker,2025,Sixth Man,6
+Russell Westbrook,2025,Sixth Man,7
+Alex Caruso,2025,Sixth Man,8
+Kevin McHale,1984,Sixth Man,1
+John Drew,1984,Sixth Man,2
+Bobby Jones,1984,Sixth Man,3
+Kenny Carr,1984,Sixth Man,3
+Phil Hubbard,1984,Sixth Man,3
+Kevin McHale,1985,Sixth Man,1
+Clyde Drexler,1985,Sixth Man,2
+Dan Issel,1985,Sixth Man,2
+Michael Cooper,1985,Sixth Man,4
+Jay Vincent,1985,Sixth Man,5
+Bob McAdoo,1985,Sixth Man,6
+Bobby Jones,1985,Sixth Man,6
+Mike Woodson,1985,Sixth Man,6
+Quintin Dailey,1985,Sixth Man,6
+Terry Tyler,1985,Sixth Man,6
+Bill Walton,1986,Sixth Man,1
+Ricky Pierce,1986,Sixth Man,2
+Eddie Johnson,1986,Sixth Man,3
+Michael Cooper,1986,Sixth Man,4
+Thurl Bailey,1986,Sixth Man,5
+Ricky Pierce,1987,Sixth Man,1
+Vinnie Johnson,1987,Sixth Man,2
+Michael Cooper,1987,Sixth Man,3
+Roy Tarpley,1988,Sixth Man,1
+Thurl Bailey,1988,Sixth Man,2
+Eddie Johnson,1989,Sixth Man,1
+Thurl Bailey,1989,Sixth Man,2
+Dennis Rodman,1989,Sixth Man,3
+John Williams,1989,Sixth Man,4
+Xavier McDaniel,1989,Sixth Man,5
+Hot Rod Williams,1989,Sixth Man,6
+Ricky Pierce,1989,Sixth Man,6
+Ron Anderson,1989,Sixth Man,6
+Ricky Pierce,1990,Sixth Man,1
+Detlef Schrempf,1990,Sixth Man,2
+Eddie Johnson,1990,Sixth Man,3
+John Williams,1990,Sixth Man,3
+Orlando Woolridge,1990,Sixth Man,3
+Antoine Carr,1990,Sixth Man,6
+Detlef Schrempf,1991,Sixth Man,1
+Dan Majerle,1991,Sixth Man,2
+Kevin McHale,1991,Sixth Man,3
+Ricky Pierce,1991,Sixth Man,4
+Danny Ainge,1991,Sixth Man,5
+Jerry Reynolds,1991,Sixth Man,6
+Larry Smith,1991,Sixth Man,6
+Moses Malone,1991,Sixth Man,6
+Thurl Bailey,1991,Sixth Man,6
+Detlef Schrempf,1992,Sixth Man,1
+Sarunas Marciulionis,1992,Sixth Man,2
+Dan Majerle,1992,Sixth Man,3
+John Starks,1992,Sixth Man,4
+Tyrone Corbin,1992,Sixth Man,4
+Clifford Robinson,1993,Sixth Man,1
+Anthony Mason,1993,Sixth Man,2
+Danny Ainge,1993,Sixth Man,2
+Dell Curry,1993,Sixth Man,4
+Tom Chambers,1993,Sixth Man,5
+Dell Curry,1994,Sixth Man,1
+Nate McMillan,1994,Sixth Man,2
+Craig Ehlo,1994,Sixth Man,3
+Ricky Pierce,1994,Sixth Man,4
+Armen Gilliam,1994,Sixth Man,5
+Anthony Mason,1994,Sixth Man,6
+Dennis Rodman,1994,Sixth Man,6
+Johnny Newman,1994,Sixth Man,6
+Mario Elie,1994,Sixth Man,6
+Orlando Woolridge,1994,Sixth Man,6
+Steve Kerr,1994,Sixth Man,6
+Anthony Mason,1995,Sixth Man,1
+Dell Curry,1995,Sixth Man,2
+Chuck Person,1995,Sixth Man,3
+Nate McMillan,1995,Sixth Man,4
+Dennis Scott,1995,Sixth Man,5
+Byron Scott,1995,Sixth Man,6
+Antoine Carr,1995,Sixth Man,7
+Chris Gatling,1995,Sixth Man,8
+Armen Gilliam,1995,Sixth Man,9
+Toni Kukoc,1996,Sixth Man,1
+Arvydas Sabonis,1996,Sixth Man,2
+Jayson Williams,1996,Sixth Man,3
+Sam Cassell,1996,Sixth Man,4
+Magic Johnson,1996,Sixth Man,5
+Chuck Person,1996,Sixth Man,6
+Chris Gatling,1996,Sixth Man,7
+Dell Curry,1996,Sixth Man,7
+Steve Kerr,1996,Sixth Man,9
+John Starks,1997,Sixth Man,1
+Toni Kukoc,1997,Sixth Man,2
+Chris Gatling,1997,Sixth Man,3
+Terry Mills,1997,Sixth Man,4
+Dell Curry,1997,Sixth Man,5
+Sam Perkins,1997,Sixth Man,5
+Bo Outlaw,1997,Sixth Man,7
+Danny Manning,1997,Sixth Man,7
+Dominique Wilkins,1997,Sixth Man,7
+Isaac Austin,1997,Sixth Man,7
+Mark Davis,1997,Sixth Man,7
+Danny Manning,1998,Sixth Man,1
+Kobe Bryant,1998,Sixth Man,2
+Dale Ellis,1998,Sixth Man,3
+John Starks,1998,Sixth Man,4
+Jerry Stackhouse,1998,Sixth Man,5
+Michael Curry,1998,Sixth Man,6
+Tracy Murray,1998,Sixth Man,6
+Darrell Armstrong,1999,Sixth Man,1
+Rasheed Wallace,1999,Sixth Man,2
+Antonio Davis,1999,Sixth Man,3
+Jalen Rose,1999,Sixth Man,3
+Dee Brown,1999,Sixth Man,5
+Dell Curry,1999,Sixth Man,5
+Terry Porter,1999,Sixth Man,5
+Howard Eisley,1999,Sixth Man,8
+Aaron McKie,2001,Sixth Man,1
+Tim Thomas,2001,Sixth Man,2
+LaPhonso Ellis,2001,Sixth Man,3
+Bobby Jackson,2001,Sixth Man,4
+Travis Best,2001,Sixth Man,5
+Rodney Rogers,2001,Sixth Man,6
+Ruben Patterson,2001,Sixth Man,6
+Steve Smith,2001,Sixth Man,6
+Donyell Marshall,2001,Sixth Man,9
+Austin Croshere,2001,Sixth Man,10
+Tony Delk,2001,Sixth Man,10
+Corliss Williamson,2002,Sixth Man,1
+Bobby Jackson,2002,Sixth Man,2
+Quentin Richardson,2002,Sixth Man,3
+Malik Rose,2002,Sixth Man,4
+Desmond Mason,2002,Sixth Man,5
+Troy Hudson,2002,Sixth Man,5
+Hidayet Turkoglu,2002,Sixth Man,7
+Jacque Vaughn,2002,Sixth Man,8
+Ricky Davis,2002,Sixth Man,8
+Robert Horry,2002,Sixth Man,8
+Bobby Jackson,2003,Sixth Man,1
+Michael Redd,2003,Sixth Man,2
+Andrei Kirilenko,2003,Sixth Man,3
+Nick Van Exel,2003,Sixth Man,4
+Corliss Williamson,2003,Sixth Man,5
+Malik Rose,2003,Sixth Man,6
+Earl Boykins,2003,Sixth Man,7
+Al Harrington,2003,Sixth Man,8
+Jon Barry,2003,Sixth Man,9
+Toni Kukoc,2003,Sixth Man,10
+Joe Johnson,2003,Sixth Man,11
+Keon Clark,2003,Sixth Man,11
+Lucious Harris,2003,Sixth Man,11
+Antawn Jamison,2004,Sixth Man,1
+Al Harrington,2004,Sixth Man,2
+Manu Ginobili,2004,Sixth Man,3
+Bobby Jackson,2004,Sixth Man,4
+Earl Boykins,2004,Sixth Man,5
+Desmond Mason,2004,Sixth Man,6
+Rafer Alston,2004,Sixth Man,7
+Shane Battier,2004,Sixth Man,8
+Raja Bell,2004,Sixth Man,9
+Corliss Williamson,2004,Sixth Man,10
+Maurice Taylor,2004,Sixth Man,10
+Bonzi Wells,2004,Sixth Man,12
+Darrell Armstrong,2004,Sixth Man,13
+Ricky Davis,2004,Sixth Man,14
+Fred Hoiberg,2004,Sixth Man,15
+Vladimir Radmanovic,2004,Sixth Man,15
+Ben Gordon,2005,Sixth Man,1
+Ricky Davis,2005,Sixth Man,2
+Earl Boykins,2005,Sixth Man,3
+Jerry Stackhouse,2005,Sixth Man,4
+Vladimir Radmanovic,2005,Sixth Man,5
+Wally Szczerbiak,2005,Sixth Man,6
+Antonio McDyess,2005,Sixth Man,7
+Antonio Daniels,2005,Sixth Man,8
+Donyell Marshall,2005,Sixth Man,9
+Jim Jackson,2005,Sixth Man,10
+Kyle Korver,2005,Sixth Man,11
+Mehmet Okur,2005,Sixth Man,11
+Tyson Chandler,2005,Sixth Man,11
+Hidayet Turkoglu,2005,Sixth Man,14
+Mike Miller,2006,Sixth Man,1
+Speedy Claxton,2006,Sixth Man,2
+Jerry Stackhouse,2006,Sixth Man,3
+Antonio McDyess,2006,Sixth Man,4
+Earl Boykins,2006,Sixth Man,5
+Alonzo Mourning,2006,Sixth Man,6
+Leandro Barbosa,2006,Sixth Man,7
+Maurice Williams,2006,Sixth Man,8
+Michael Finley,2006,Sixth Man,9
+Shareef Abdur-Rahim,2006,Sixth Man,10
+Antoine Walker,2006,Sixth Man,11
+Channing Frye,2006,Sixth Man,11
+Eddie House,2006,Sixth Man,13
+Clifford Robinson,2006,Sixth Man,14
+Jamal Crawford,2006,Sixth Man,14
+Bobby Jackson,2006,Sixth Man,16
+Danny Granger,2006,Sixth Man,16
+Derek Fisher,2006,Sixth Man,16
+Matt Harpring,2006,Sixth Man,16
+Charlie Villanueva,2006,Sixth Man,20
+Devin Harris,2006,Sixth Man,20
+Erick Dampier,2006,Sixth Man,20
+Leandro Barbosa,2007,Sixth Man,1
+Manu Ginobili,2007,Sixth Man,2
+Jerry Stackhouse,2007,Sixth Man,3
+David Lee,2007,Sixth Man,4
+Kyle Korver,2007,Sixth Man,5
+Antonio McDyess,2007,Sixth Man,6
+Corey Maggette,2007,Sixth Man,7
+Chucky Atkins,2007,Sixth Man,8
+Luther Head,2007,Sixth Man,8
+Matt Harpring,2007,Sixth Man,8
+Chris Duhon,2007,Sixth Man,11
+Jose Calderon,2007,Sixth Man,11
+Josh Childress,2007,Sixth Man,11
+JR Smith,2007,Sixth Man,14
+Manu Ginobili,2008,Sixth Man,1
+Leandro Barbosa,2008,Sixth Man,2
+Jason Terry,2008,Sixth Man,3
+Kyle Korver,2008,Sixth Man,4
+Ben Gordon,2008,Sixth Man,5
+Josh Childress,2008,Sixth Man,6
+JR Smith,2008,Sixth Man,7
+James Posey,2008,Sixth Man,8
+Jason Maxiell,2008,Sixth Man,9
+Travis Outlaw,2008,Sixth Man,9
+Jordan Farmar,2008,Sixth Man,11
+Linas Kleiza,2008,Sixth Man,11
+Jerry Stackhouse,2008,Sixth Man,13
+David Lee,2008,Sixth Man,14
+Jarrett Jack,2008,Sixth Man,14
+Louis Williams,2008,Sixth Man,14
+Rashad McCants,2008,Sixth Man,14
+Andres Nocioni,2008,Sixth Man,18
+Jason Terry,2009,Sixth Man,1
+JR Smith,2009,Sixth Man,2
+Nate Robinson,2009,Sixth Man,3
+Lamar Odom,2009,Sixth Man,4
+Travis Outlaw,2009,Sixth Man,5
+Manu Ginobili,2009,Sixth Man,6
+Ronald Murray,2009,Sixth Man,7
+Chris Andersen,2009,Sixth Man,8
+Andrei Kirilenko,2009,Sixth Man,9
+Corey Maggette,2009,Sixth Man,10
+Leandro Barbosa,2009,Sixth Man,10
+Louis Williams,2009,Sixth Man,10
+Eddie House,2009,Sixth Man,13
+Kirk Hinrich,2009,Sixth Man,14
+Jason Kapono,2009,Sixth Man,15
+James Posey,2009,Sixth Man,16
+Hakim Warrick,2009,Sixth Man,17
+Michael Beasley,2009,Sixth Man,17
+Paul Millsap,2009,Sixth Man,17
+Trevor Ariza,2009,Sixth Man,17
+Jamal Crawford,2010,Sixth Man,1
+Jason Terry,2010,Sixth Man,2
+Anderson Varejao,2010,Sixth Man,3
+Manu Ginobili,2010,Sixth Man,4
+JR Smith,2010,Sixth Man,5
+Lamar Odom,2010,Sixth Man,6
+Paul Millsap,2010,Sixth Man,7
+Carl Landry,2010,Sixth Man,8
+Udonis Haslem,2010,Sixth Man,9
+Marcus Thornton,2010,Sixth Man,10
+Al Harrington,2010,Sixth Man,11
+Jared Dudley,2010,Sixth Man,11
+Kevin Love,2010,Sixth Man,11
+Kyle Lowry,2010,Sixth Man,11
+Lamar Odom,2011,Sixth Man,1
+Jason Terry,2011,Sixth Man,2
+Thaddeus Young,2011,Sixth Man,3
+Glen Davis,2011,Sixth Man,4
+Jamal Crawford,2011,Sixth Man,5
+Louis Williams,2011,Sixth Man,6
+James Harden,2011,Sixth Man,7
+George Hill,2011,Sixth Man,8
+Marcin Gortat,2011,Sixth Man,9
+JR Smith,2011,Sixth Man,10
+OJ Mayo,2011,Sixth Man,11
+Tony Allen,2011,Sixth Man,11
+Ty Lawson,2011,Sixth Man,11
+Toney Douglas,2011,Sixth Man,14
+JJ Redick,2011,Sixth Man,15
+Matt Bonner,2011,Sixth Man,15
+James Harden,2012,Sixth Man,1
+Louis Williams,2012,Sixth Man,2
+Jason Terry,2012,Sixth Man,3
+Al Harrington,2012,Sixth Man,4
+Manu Ginobili,2012,Sixth Man,5
+Taj Gibson,2012,Sixth Man,5
+OJ Mayo,2012,Sixth Man,7
+Maurice Williams,2012,Sixth Man,8
+Thaddeus Young,2012,Sixth Man,9
+Kyle Korver,2012,Sixth Man,10
+Carl Landry,2012,Sixth Man,11
+CJ Watson,2012,Sixth Man,11
+Jamal Crawford,2012,Sixth Man,11
+Zach Randolph,2012,Sixth Man,11
+Gary Neal,2012,Sixth Man,15
+Mike Dunleavy,2012,Sixth Man,15
+Tyler Hansbrough,2012,Sixth Man,15
+Andre Miller,2012,Sixth Man,18
+George Hill,2012,Sixth Man,18
+JR Smith,2012,Sixth Man,18
+JR Smith,2013,Sixth Man,1
+Jamal Crawford,2013,Sixth Man,2
+Jarrett Jack,2013,Sixth Man,3
+Kevin Martin,2013,Sixth Man,4
+Ryan Anderson,2013,Sixth Man,5
+Andre Miller,2013,Sixth Man,6
+Jordan Crawford,2013,Sixth Man,7
+Carl Landry,2013,Sixth Man,8
+Corey Brewer,2013,Sixth Man,8
+Manu Ginobili,2013,Sixth Man,8
+Nate Robinson,2013,Sixth Man,8
+Ramon Sessions,2013,Sixth Man,12
+Shane Battier,2013,Sixth Man,12
+Gordon Hayward,2013,Sixth Man,14
+JJ Redick,2013,Sixth Man,14
+Luke Babbitt,2013,Sixth Man,14
+Vince Carter,2013,Sixth Man,14
+Jamal Crawford,2014,Sixth Man,1
+Taj Gibson,2014,Sixth Man,2
+Manu Ginobili,2014,Sixth Man,3
+Markieff Morris,2014,Sixth Man,4
+Reggie Jackson,2014,Sixth Man,5
+Vince Carter,2014,Sixth Man,6
+DJ Augustin,2014,Sixth Man,7
+Dion Waiters,2014,Sixth Man,8
+Enes Kanter,2014,Sixth Man,8
+Nick Young,2014,Sixth Man,8
+Chris Andersen,2014,Sixth Man,11
+Marco Belinelli,2014,Sixth Man,11
+Andray Blatche,2014,Sixth Man,13
+Greivis Vasquez,2014,Sixth Man,13
+Maurice Williams,2014,Sixth Man,13
+Patrick Mills,2014,Sixth Man,13
+Tim Hardaway,2014,Sixth Man,13
+Timofey Mozgov,2014,Sixth Man,13
+Louis Williams,2015,Sixth Man,1
+Isaiah Thomas,2015,Sixth Man,2
+Jamal Crawford,2015,Sixth Man,3
+Andre Iguodala,2015,Sixth Man,4
+Tristan Thompson,2015,Sixth Man,5
+Nikola Mirotic,2015,Sixth Man,6
+Marreese Speights,2015,Sixth Man,7
+Corey Brewer,2015,Sixth Man,8
+Manu Ginobili,2015,Sixth Man,8
+Taj Gibson,2015,Sixth Man,10
+Aaron Brooks,2015,Sixth Man,11
+Anthony Morrow,2015,Sixth Man,11
+Chris Kaman,2015,Sixth Man,11
+Dennis Schroeder,2015,Sixth Man,11
+Jamal Crawford,2016,Sixth Man,1
+Andre Iguodala,2016,Sixth Man,2
+Enes Kanter,2016,Sixth Man,3
+Will Barton,2016,Sixth Man,4
+Evan Turner,2016,Sixth Man,5
+Ryan Anderson,2016,Sixth Man,6
+Jeremy Lin,2016,Sixth Man,7
+Ed Davis,2016,Sixth Man,8
+Dennis Schroeder,2016,Sixth Man,9
+Tristan Thompson,2016,Sixth Man,10
+Shaun Livingston,2016,Sixth Man,11
+Boris Diaw,2016,Sixth Man,12
+Jose Juan Barea,2016,Sixth Man,12
+Zach LaVine,2016,Sixth Man,14
+Darren Collison,2016,Sixth Man,15
+Allen Crabbe,2016,Sixth Man,16
+Jrue Holiday,2016,Sixth Man,16
+Mirza Teletovic,2016,Sixth Man,16
+Patrick Patterson,2016,Sixth Man,16
+Eric Gordon,2017,Sixth Man,1
+Andre Iguodala,2017,Sixth Man,2
+Louis Williams,2017,Sixth Man,3
+Zach Randolph,2017,Sixth Man,4
+James Johnson,2017,Sixth Man,5
+Greg Monroe,2017,Sixth Man,6
+Jamal Crawford,2017,Sixth Man,7
+Enes Kanter,2017,Sixth Man,8
+Patrick Mills,2017,Sixth Man,8
+Tim Hardaway,2017,Sixth Man,10
+Malcolm Brogdon,2017,Sixth Man,11
+Tyler Johnson,2017,Sixth Man,11
+Vince Carter,2017,Sixth Man,11
+Louis Williams,2018,Sixth Man,1
+Eric Gordon,2018,Sixth Man,2
+Fred VanVleet,2018,Sixth Man,3
+Will Barton,2018,Sixth Man,4
+Wayne Ellington,2018,Sixth Man,5
+Kelly Olynyk,2018,Sixth Man,6
+Jordan Clarkson,2018,Sixth Man,7
+Nikola Mirotic,2018,Sixth Man,7
+Kyle Kuzma,2018,Sixth Man,9
+Dwyane Wade,2018,Sixth Man,10
+Terry Rozier,2018,Sixth Man,10
+Jakob Poeltl,2018,Sixth Man,12
+Jose Juan Barea,2018,Sixth Man,12
+Luc Mbah a Moute,2018,Sixth Man,12
+Marco Belinelli,2018,Sixth Man,12
+Rodney Hood,2018,Sixth Man,12
+Tomas Satoransky,2018,Sixth Man,12
+Louis Williams,2019,Sixth Man,1
+Domantas Sabonis,2019,Sixth Man,2
+Montrezl Harrell,2019,Sixth Man,3
+Spencer Dinwiddie,2019,Sixth Man,4
+Terrence Ross,2019,Sixth Man,5
+Derrick Rose,2019,Sixth Man,6
+Dwyane Wade,2019,Sixth Man,7
+Dennis Schroeder,2019,Sixth Man,8
+Monte Morris,2019,Sixth Man,9
+Andre Iguodala,2019,Sixth Man,10
+Davis Bertans,2019,Sixth Man,11
+Ed Davis,2019,Sixth Man,11
+Jae Crowder,2019,Sixth Man,11
+Malik Beasley,2019,Sixth Man,11
+Montrezl Harrell,2020,Sixth Man,1
+Dennis Schroeder,2020,Sixth Man,2
+Louis Williams,2020,Sixth Man,3
+Christian Wood,2020,Sixth Man,4
+George Hill,2020,Sixth Man,4
+Goran Dragic,2020,Sixth Man,6
+Derrick Rose,2020,Sixth Man,7
+Davis Bertans,2020,Sixth Man,8
+Dwight Howard,2020,Sixth Man,9
+Jordan Clarkson,2021,Sixth Man,1
+Joe Ingles,2021,Sixth Man,2
+Derrick Rose,2021,Sixth Man,3
+Jalen Brunson,2021,Sixth Man,4
+Tim Hardaway,2021,Sixth Man,5
+Montrezl Harrell,2021,Sixth Man,6
+Carmelo Anthony,2021,Sixth Man,7
+Chris Boucher,2021,Sixth Man,8
+Bobby Portis,2021,Sixth Man,9
+Enes Kanter,2021,Sixth Man,10
+TJ McConnell,2021,Sixth Man,11
+Miles Bridges,2021,Sixth Man,12
+Shake Milton,2021,Sixth Man,12
+Thaddeus Young,2021,Sixth Man,14
+Facundo Campazzo,2021,Sixth Man,15
+Tyler Herro,2022,Sixth Man,1
+Kevin Love,2022,Sixth Man,2
+Cameron Johnson,2022,Sixth Man,3
+Jordan Clarkson,2022,Sixth Man,4
+Luke Kennard,2022,Sixth Man,5
+Bogdan Bogdanovic,2022,Sixth Man,6
+Kelly Oubre,2022,Sixth Man,7
+De'Anthony Melton,2022,Sixth Man,8
+Montrezl Harrell,2022,Sixth Man,9
+Immanuel Quickley,2022,Sixth Man,10
+Brandon Clarke,2022,Sixth Man,11
+Maxi Kleber,2022,Sixth Man,11
+Tyus Jones,2022,Sixth Man,11
+Malcolm Brogdon,2023,Sixth Man,1
+Immanuel Quickley,2023,Sixth Man,2
+Bobby Portis,2023,Sixth Man,3
+Norman Powell,2023,Sixth Man,4
+Malik Monk,2023,Sixth Man,5
+Tyus Jones,2023,Sixth Man,6
+Austin Reaves,2023,Sixth Man,7
+Bennedict Mathurin,2023,Sixth Man,8
+Christian Wood,2023,Sixth Man,9
+Russell Westbrook,2023,Sixth Man,9
+Naz Reid,2024,Sixth Man,1
+Malik Monk,2024,Sixth Man,2
+Bobby Portis,2024,Sixth Man,3
+Norman Powell,2024,Sixth Man,4
+Bogdan Bogdanovic,2024,Sixth Man,5
+Jose Alvarado,2024,Sixth Man,6
+Russell Westbrook,2024,Sixth Man,7
+TJ McConnell,2024,Sixth Man,7
+Bojan Bogdanovic,2024,Sixth Man,9
+Jaime Jaquez,2024,Sixth Man,9
+Jonathan Isaac,2024,Sixth Man,9
+Tim Hardaway,2024,Sixth Man,9
