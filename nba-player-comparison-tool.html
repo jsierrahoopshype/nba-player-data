@@ -290,88 +290,107 @@
     </div>
 
     <script>
-        // CONFIGURATION: Using GitHub Pages (different CDN, more reliable)
-        const GITHUB_BASE_URL = 'https://jsierrahoopshype.github.io/nba-player-data/';
-        
-        // CSV file names
-        const CSV_FILES = {
-            comparisons: 'player-comparisons.csv',
-            awards: 'Awards.csv',
-            allStar: 'All-Star.csv',
-            awardVotes: 'Award-Votes.csv',
-            combine: 'Combine.csv',
-            nba2k: 'NBA2K.csv',
-            poSeries: 'PO-series.csv',
-            poStats: 'PO-Stats.csv',
-            rsStats: 'RS-Stats.csv',
-            salaries: 'Salaries.csv',
-            sneakers: 'Sneakers.csv'
+        // CONFIGURATION: Using separate JSON files (under 25MB each)
+        const DATA_BASE_URL = 'https://jsierrahoopshype.github.io/nba-player-data/';
+        const DATA_FILES = {
+            awards: 'awards.json',
+            allStar: 'allStar.json',
+            awardVotes: 'awardVotes.json',
+            combine: 'combine.json',
+            nba2k: 'nba2k.json',
+            poSeries: 'poSeries.json',
+            poStats: 'poStats.json',
+            rsStats: 'rsStats.json',
+            salaries: 'salaries.json',
+            sneakers: 'sneakers.json',
+            comparisons: 'comparisons.json'
         };
 
         let playerData = {};
         let players = [];
         let dataLoaded = false;
 
-        // CSV Parser - Enhanced to handle empty headers
-        function parseCSV(csvText) {
-            if (!csvText || csvText.trim() === '') return [];
+        // Load JSON data from GitHub
+        async function loadData() {
+            console.log('Loading player data from GitHub (JSON format)...');
             
-            const lines = csvText.trim().split('\n');
-            if (lines.length === 0) return [];
-            
-            const headers = lines[0].split(',').map(h => h.trim());
-            
-            // Debug: log headers to console
-            console.log('CSV Headers:', headers);
-            
-            const data = [];
-            
-            for (let i = 1; i < lines.length; i++) {
-                const values = parseCSVLine(lines[i]);
-                if (values.length > 0) {
-                    const row = {};
-                    headers.forEach((header, index) => {
-                        // Use index as key if header is empty
-                        const key = header || `col_${index}`;
-                        row[key] = values[index] ? values[index].trim() : '';
-                    });
-                    data.push(row);
-                }
-            }
-            
-            return data;
-        }
-
-        function parseCSVLine(line) {
-            const values = [];
-            let current = '';
-            let inQuotes = false;
-            
-            for (let i = 0; i < line.length; i++) {
-                const char = line[i];
+            try {
+                // Load all JSON files in parallel
+                const results = await Promise.all([
+                    fetch(DATA_BASE_URL + DATA_FILES.awards).then(r => r.json()),
+                    fetch(DATA_BASE_URL + DATA_FILES.allStar).then(r => r.json()),
+                    fetch(DATA_BASE_URL + DATA_FILES.awardVotes).then(r => r.json()),
+                    fetch(DATA_BASE_URL + DATA_FILES.combine).then(r => r.json()),
+                    fetch(DATA_BASE_URL + DATA_FILES.nba2k).then(r => r.json()),
+                    fetch(DATA_BASE_URL + DATA_FILES.poSeries).then(r => r.json()),
+                    fetch(DATA_BASE_URL + DATA_FILES.poStats).then(r => r.json()),
+                    fetch(DATA_BASE_URL + DATA_FILES.rsStats).then(r => r.json()),
+                    fetch(DATA_BASE_URL + DATA_FILES.salaries).then(r => r.json()),
+                    fetch(DATA_BASE_URL + DATA_FILES.sneakers).then(r => r.json()),
+                    fetch(DATA_BASE_URL + DATA_FILES.comparisons).then(r => r.json())
+                ]);
                 
-                if (char === '"') {
-                    inQuotes = !inQuotes;
-                } else if (char === ',' && !inQuotes) {
-                    values.push(current);
-                    current = '';
-                } else {
-                    current += char;
+                // Assign results to playerData
+                playerData.awards = results[0];
+                playerData.allStar = results[1];
+                playerData.awardVotes = results[2];
+                playerData.combine = results[3];
+                playerData.nba2k = results[4];
+                playerData.poSeries = results[5];
+                playerData.poStats = results[6];
+                playerData.rsStats = results[7];
+                playerData.salaries = results[8];
+                playerData.sneakers = results[9];
+                playerData.comparisons = results[10];
+                
+                console.log('Data loaded successfully:', {
+                    comparisons: playerData.comparisons.length,
+                    awards: playerData.awards.length,
+                    rsStats: playerData.rsStats.length
+                });
+                
+                // Debug: Check sample data structure
+                if (playerData.rsStats.length > 0) {
+                    console.log('Sample RS-Stats row:', playerData.rsStats[0]);
                 }
+                if (playerData.awards.length > 0) {
+                    console.log('Sample Awards row:', playerData.awards[0]);
+                }
+                
+                // Debug: Test LeBron James data
+                const lebronRS = playerData.rsStats.filter(r => r.PLAYER && r.PLAYER.includes('LeBron'));
+                const lebronAwards = playerData.awards.filter(r => r['PLAYER / COACH'] && r['PLAYER / COACH'].includes('LeBron'));
+                console.log('LeBron RS-Stats rows:', lebronRS.length);
+                console.log('LeBron Awards rows:', lebronAwards.length);
+                if (lebronRS.length > 0) {
+                    console.log('LeBron RS sample:', lebronRS[0]);
+                }
+                if (lebronAwards.length > 0) {
+                    console.log('LeBron Award sample:', lebronAwards[0]);
+                }
+                
+                // Extract unique players
+                const playersSet = new Set();
+                
+                playerData.rsStats.forEach(row => {
+                    if (row.PLAYER) playersSet.add(row.PLAYER.trim());
+                });
+                
+                playerData.awards.forEach(row => {
+                    if (row['PLAYER / COACH']) playersSet.add(row['PLAYER / COACH'].trim());
+                });
+                
+                players = Array.from(playersSet).sort();
+                dataLoaded = true;
+                
+                console.log(`Found ${players.length} unique players`);
+                
+                return Promise.resolve();
+                
+            } catch (error) {
+                console.error('Error loading data:', error);
+                throw error;
             }
-            values.push(current);
-            
-            return values.map(v => v.replace(/^"|"$/g, ''));
-        }
-
-        // Load CSV from GitHub
-        async function loadCSV(filename) {
-            const url = GITHUB_BASE_URL + filename;
-            const response = await fetch(url);
-            if (!response.ok) {
-                throw new Error(`Failed to load ${filename}`);
-            }
-            return await response.text();
         }
 
         // Initialize
@@ -400,7 +419,7 @@
                 showLoading(false);
                 document.getElementById('mainContent').style.display = 'block';
             } catch (error) {
-                showError('Failed to load player data. Please make sure the CSV files are uploaded to GitHub. Error: ' + error.message);
+                showError('Failed to load player data. Error: ' + error.message);
                 showLoading(false);
             }
         });
@@ -427,84 +446,6 @@
                 .replace(/\s+/g, '-')
                 .replace(/[^a-z0-9-]/g, '')
                 .replace(/--+/g, '-');
-        }
-
-        async function loadData() {
-            console.log('Loading CSV data from GitHub...');
-            
-            // Load all CSV files
-            const [comparisonsCSV, awardsCSV, allStarCSV, awardVotesCSV, combineCSV, 
-                   nba2kCSV, poSeriesCSV, poStatsCSV, rsStatsCSV, salariesCSV, sneakersCSV] = 
-                await Promise.all([
-                    loadCSV(CSV_FILES.comparisons),
-                    loadCSV(CSV_FILES.awards),
-                    loadCSV(CSV_FILES.allStar),
-                    loadCSV(CSV_FILES.awardVotes),
-                    loadCSV(CSV_FILES.combine),
-                    loadCSV(CSV_FILES.nba2k),
-                    loadCSV(CSV_FILES.poSeries),
-                    loadCSV(CSV_FILES.poStats),
-                    loadCSV(CSV_FILES.rsStats),
-                    loadCSV(CSV_FILES.salaries),
-                    loadCSV(CSV_FILES.sneakers)
-                ]);
-            
-            // Parse CSVs
-            playerData.comparisons = parseCSV(comparisonsCSV);
-            playerData.awards = parseCSV(awardsCSV);
-            playerData.allStar = parseCSV(allStarCSV);
-            playerData.awardVotes = parseCSV(awardVotesCSV);
-            playerData.combine = parseCSV(combineCSV);
-            playerData.nba2k = parseCSV(nba2kCSV);
-            playerData.poSeries = parseCSV(poSeriesCSV);
-            playerData.poStats = parseCSV(poStatsCSV);
-            playerData.rsStats = parseCSV(rsStatsCSV);
-            playerData.salaries = parseCSV(salariesCSV);
-            playerData.sneakers = parseCSV(sneakersCSV);
-            
-            console.log('Data loaded:', {
-                comparisons: playerData.comparisons.length,
-                awards: playerData.awards.length,
-                rsStats: playerData.rsStats.length
-            });
-            
-            // Debug: Check sample data structure
-            if (playerData.rsStats.length > 0) {
-                console.log('Sample RS-Stats row:', playerData.rsStats[0]);
-            }
-            if (playerData.awards.length > 0) {
-                console.log('Sample Awards row:', playerData.awards[0]);
-            }
-            
-            // Debug: Test LeBron James data
-            const lebronRS = playerData.rsStats.filter(r => r.PLAYER && r.PLAYER.includes('LeBron'));
-            const lebronAwards = playerData.awards.filter(r => r['PLAYER / COACH'] && r['PLAYER / COACH'].includes('LeBron'));
-            console.log('LeBron RS-Stats rows:', lebronRS.length);
-            console.log('LeBron Awards rows:', lebronAwards.length);
-            if (lebronRS.length > 0) {
-                console.log('LeBron RS sample:', lebronRS[0]);
-            }
-            if (lebronAwards.length > 0) {
-                console.log('LeBron Award sample:', lebronAwards[0]);
-            }
-            
-            // Extract unique players
-            const playersSet = new Set();
-            
-            playerData.rsStats.forEach(row => {
-                if (row.PLAYER) playersSet.add(row.PLAYER.trim());
-            });
-            
-            playerData.awards.forEach(row => {
-                if (row['PLAYER / COACH']) playersSet.add(row['PLAYER / COACH'].trim());
-            });
-            
-            players = Array.from(playersSet).sort();
-            dataLoaded = true;
-            
-            console.log(`Found ${players.length} unique players`);
-            
-            return Promise.resolve();
         }
 
         function populatePlayerDropdowns() {
@@ -936,3 +877,28 @@
                     const rowClass = item.winner === 'player1' ? 'winner-left' : 
                                     item.winner === 'player2' ? 'winner-right' : 'tie';
                     
+                    const p1Class = item.winner === 'player1' ? 'player-value winner' : 'player-value';
+                    const p2Class = item.winner === 'player2' ? 'player-value winner' : 'player-value';
+                    
+                    const p1Display = item.player1Value !== null ? item.player1Value : '<span class="no-data">–</span>';
+                    const p2Display = item.player2Value !== null ? item.player2Value : '<span class="no-data">–</span>';
+                    
+                    html += `
+                        <div class="comparison-row ${rowClass}">
+                            <div class="${p1Class}">${p1Display}</div>
+                            <div class="player-value" style="font-weight: normal; font-size: 16px;">${player1Name}</div>
+                            <div class="metric-name">${item.metric}</div>
+                            <div class="player-value" style="font-weight: normal; font-size: 16px;">${player2Name}</div>
+                            <div class="${p2Class}">${p2Display}</div>
+                        </div>
+                    `;
+                });
+                
+                html += `</div>`;
+            });
+            
+            resultsDiv.innerHTML = html;
+        }
+    </script>
+</body>
+</html>
