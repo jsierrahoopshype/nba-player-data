@@ -565,6 +565,13 @@
                 });
             });
             
+            // Remove empty comparisons (where both players have no data)
+            Object.keys(categories).forEach(sectionName => {
+                categories[sectionName] = categories[sectionName].filter(item => 
+                    item.player1Value !== null || item.player2Value !== null
+                );
+            });
+            
             return {
                 player1: player1Name,
                 player2: player2Name,
@@ -604,6 +611,47 @@
         }
 
         function getAwardCount(playerName, awardType) {
+            // Handle combined awards
+            if (awardType === 'All-NBA selections') {
+                const first = playerData.awards.filter(row => 
+                    row['PLAYER / COACH'] === playerName && row.AWARD === 'All-NBA First Team'
+                ).length;
+                const second = playerData.awards.filter(row => 
+                    row['PLAYER / COACH'] === playerName && row.AWARD === 'All-NBA Second Team'
+                ).length;
+                const third = playerData.awards.filter(row => 
+                    row['PLAYER / COACH'] === playerName && row.AWARD === 'All-NBA Third Team'
+                ).length;
+                const total = first + second + third;
+                return total > 0 ? total : null;
+            }
+            
+            if (awardType === 'All-Defensive Team selections') {
+                const first = playerData.awards.filter(row => 
+                    row['PLAYER / COACH'] === playerName && row.AWARD === 'All-Defensive First Team'
+                ).length;
+                const second = playerData.awards.filter(row => 
+                    row['PLAYER / COACH'] === playerName && row.AWARD === 'All-Defensive Second Team'
+                ).length;
+                const total = first + second;
+                return total > 0 ? total : null;
+            }
+            
+            if (awardType === 'Olympic medals') {
+                const gold = playerData.awards.filter(row => 
+                    row['PLAYER / COACH'] === playerName && row.AWARD === 'Olympic gold'
+                ).length;
+                const silver = playerData.awards.filter(row => 
+                    row['PLAYER / COACH'] === playerName && row.AWARD === 'Olympic silver'
+                ).length;
+                const bronze = playerData.awards.filter(row => 
+                    row['PLAYER / COACH'] === playerName && row.AWARD === 'Olympic bronze'
+                ).length;
+                const total = gold + silver + bronze;
+                return total > 0 ? total : null;
+            }
+            
+            // Regular award count
             const playerAwards = playerData.awards.filter(row => 
                 row['PLAYER / COACH'] === playerName && row.AWARD === awardType
             );
@@ -637,18 +685,63 @@
             const column = columnMap[metric];
             if (!column) return null;
             
-            // For career averages, calculate average
-            if (metric.includes('per game') || metric.includes('%')) {
-                let total = 0;
-                let count = 0;
+            // For per-game stats, calculate total/games
+            if (metric.includes('per game')) {
+                const baseStatMap = {
+                    'Points per game': 'PTS',
+                    'Rebounds per game': 'REB',
+                    'Assists per game': 'AST',
+                    'Steals per game': 'STL',
+                    'Blocks per game': 'BLK',
+                    'Turnovers per game': 'TOV'
+                };
+                
+                const totalColumn = baseStatMap[metric];
+                if (!totalColumn) return null;
+                
+                let totalStat = 0;
+                let totalGames = 0;
+                
                 playerRows.forEach(row => {
-                    const val = parseFloat(row[column]);
-                    if (!isNaN(val)) {
-                        total += val;
-                        count++;
+                    const stat = parseFloat(row[totalColumn]);
+                    const games = parseFloat(row['GP']);
+                    if (!isNaN(stat) && !isNaN(games)) {
+                        totalStat += stat;
+                        totalGames += games;
                     }
                 });
-                return count > 0 ? (total / count).toFixed(1) : null;
+                
+                return totalGames > 0 ? (totalStat / totalGames).toFixed(1) : null;
+            }
+            
+            // For percentages, calculate weighted average
+            if (metric.includes('%')) {
+                const percentageMap = {
+                    'Field Goal %': { pct: 'FG%', made: 'FGM', att: 'FGA' },
+                    'Three Point %': { pct: '3P%', made: '3PM', att: '3PA' },
+                    'Free Throw %': { pct: 'FT%', made: 'FTM', att: 'FTA' }
+                };
+                
+                const pctInfo = percentageMap[metric];
+                if (!pctInfo) return null;
+                
+                let totalMade = 0;
+                let totalAtt = 0;
+                
+                playerRows.forEach(row => {
+                    const made = parseFloat(row[pctInfo.made]);
+                    const att = parseFloat(row[pctInfo.att]);
+                    if (!isNaN(made) && !isNaN(att)) {
+                        totalMade += made;
+                        totalAtt += att;
+                    }
+                });
+                
+                if (totalAtt > 0) {
+                    const pct = (totalMade / totalAtt) * 100;
+                    return pct.toFixed(1) + '%';
+                }
+                return null;
             }
             
             // For totals, sum up
@@ -689,19 +782,66 @@
             const column = columnMap[metric];
             if (!column) return null;
             
-            if (metric.includes('per game') || metric.includes('%')) {
-                let total = 0;
-                let count = 0;
+            // For per-game stats, calculate total/games
+            if (metric.includes('per game')) {
+                const baseStatMap = {
+                    'Points per game PO': 'PTS',
+                    'Rebounds per game PO': 'REB',
+                    'Assists per game PO': 'AST',
+                    'Steals per game PO': 'STL',
+                    'Blocks per game PO': 'BLK',
+                    'Turnovers per game PO': 'TOV'
+                };
+                
+                const totalColumn = baseStatMap[metric];
+                if (!totalColumn) return null;
+                
+                let totalStat = 0;
+                let totalGames = 0;
+                
                 playerRows.forEach(row => {
-                    const val = parseFloat(row[column]);
-                    if (!isNaN(val)) {
-                        total += val;
-                        count++;
+                    const stat = parseFloat(row[totalColumn]);
+                    const games = parseFloat(row['GP']);
+                    if (!isNaN(stat) && !isNaN(games)) {
+                        totalStat += stat;
+                        totalGames += games;
                     }
                 });
-                return count > 0 ? (total / count).toFixed(1) : null;
+                
+                return totalGames > 0 ? (totalStat / totalGames).toFixed(1) : null;
             }
             
+            // For percentages, calculate weighted average
+            if (metric.includes('%')) {
+                const percentageMap = {
+                    'Field Goal % PO': { pct: 'FG%', made: 'FGM', att: 'FGA' },
+                    'Three Point % PO': { pct: '3P%', made: '3PM', att: '3PA' },
+                    'Free Throw % PO': { pct: 'FT%', made: 'FTM', att: 'FTA' }
+                };
+                
+                const pctInfo = percentageMap[metric];
+                if (!pctInfo) return null;
+                
+                let totalMade = 0;
+                let totalAtt = 0;
+                
+                playerRows.forEach(row => {
+                    const made = parseFloat(row[pctInfo.made]);
+                    const att = parseFloat(row[pctInfo.att]);
+                    if (!isNaN(made) && !isNaN(att)) {
+                        totalMade += made;
+                        totalAtt += att;
+                    }
+                });
+                
+                if (totalAtt > 0) {
+                    const pct = (totalMade / totalAtt) * 100;
+                    return pct.toFixed(1) + '%';
+                }
+                return null;
+            }
+            
+            // For totals, sum up
             let total = 0;
             playerRows.forEach(row => {
                 const val = parseFloat(row[column]);
@@ -761,144 +901,4 @@
                 'Wingspan': 'WINGSPAN',
                 'Lane agility time': 'LANE AGILITY',
                 'Shuttle run': 'SHUTTLE RUN',
-                'Three quarter sprint': '3/4 SPRINT',
-                'Standing vertical leap': 'STANDING VERT',
-                'Max vertical leap': 'MAX VERT',
-                'Max bench press': 'MAX BENCH'
-            };
-            
-            const column = columnMap[metric];
-            return column ? playerRow[column] : null;
-        }
-
-        function getVotingStat(playerName, metric) {
-            const playerVotes = playerData.awardVotes.filter(row => row.PLAYER === playerName);
-            
-            if (metric.includes('BEST VOTE RANKING')) {
-                // Get best ranking for specific award
-                const awardMap = {
-                    'MVP': 'MVP',
-                    'DPOY': 'DPOY',
-                    'ROY': 'ROY',
-                    'Sixth Man': 'Sixth Man',
-                    'MIP': 'MIP'
-                };
-                // Simplified - would need more logic
-                return playerVotes.length > 0 ? playerVotes[0].RNK : null;
-            }
-            
-            // Years with votes
-            return playerVotes.length > 0 ? playerVotes.length : null;
-        }
-
-        function getSneakerCount(playerName) {
-            const playerRow = playerData.sneakers.find(row => row.Player === playerName);
-            return playerRow ? playerRow['# of shoes'] : null;
-        }
-
-        function get2KRating(playerName, metric) {
-            const playerRow = playerData.nba2k.find(row => 
-                row['Full Name'] === playerName || 
-                row['First Name'] + ' ' + row['Last Name'] === playerName
-            );
-            
-            if (!playerRow) return null;
-            
-            if (metric === 'Average') {
-                // Calculate average of all ratings
-                let sum = 0;
-                let count = 0;
-                for (let key in playerRow) {
-                    if (key.startsWith('2K') || key.startsWith('2k')) {
-                        const val = parseInt(playerRow[key]);
-                        if (!isNaN(val)) {
-                            sum += val;
-                            count++;
-                        }
-                    }
-                }
-                return count > 0 ? (sum / count).toFixed(0) : null;
-            }
-            
-            // Highest/Lowest would need more logic
-            return null;
-        }
-
-        function getAllStarContestWins(playerName, metric) {
-            const playerWins = playerData.allStar.filter(row => 
-                row.NAME === playerName && row['WINNER?'] === 'WINNER'
-            );
-            
-            if (metric === 'Dunk Contest') {
-                return playerWins.filter(r => r.CONTEST === 'Dunk Contest').length || null;
-            } else if (metric === 'Three-Point Contest') {
-                return playerWins.filter(r => r.CONTEST === 'Three-Point Contest').length || null;
-            } else if (metric === 'Skills Challenge') {
-                return playerWins.filter(r => r.CONTEST === 'Skills Challenge').length || null;
-            }
-            
-            return null;
-        }
-
-        function displayResults(results, player1Name, player2Name) {
-            const resultsDiv = document.getElementById('results');
-            
-            let html = `
-                <div class="score-summary">
-                    <div class="player-score">
-                        <div class="player-name-score">${player1Name}</div>
-                        <div class="score-value">${results.player1Score}</div>
-                    </div>
-                    <div class="score-divider">–</div>
-                    <div class="player-score">
-                        <div class="player-name-score">${player2Name}</div>
-                        <div class="score-value">${results.player2Score}</div>
-                    </div>
-                </div>
-            `;
-            
-            const shareURL = updateShareURL();
-            html += `
-                <div class="share-url">
-                    <h3>📤 Share This Comparison</h3>
-                    <input type="text" class="share-url-input" value="${shareURL}" readonly onclick="this.select(); try { document.execCommand('copy'); alert('URL copied!'); } catch(e) { console.log('Copy failed'); }">
-                </div>
-            `;
-            
-            // Display categories
-            Object.keys(results.categories).forEach(categoryName => {
-                const items = results.categories[categoryName];
-                if (items.length === 0) return;
-                
-                html += `<div class="category-section">
-                    <div class="category-title">${categoryName}</div>`;
-                
-                items.forEach(item => {
-                    const rowClass = item.winner === 'player1' ? 'winner-left' : 
-                                    item.winner === 'player2' ? 'winner-right' : 'tie';
-                    
-                    const p1Class = item.winner === 'player1' ? 'player-value winner' : 'player-value';
-                    const p2Class = item.winner === 'player2' ? 'player-value winner' : 'player-value';
-                    
-                    const p1Display = item.player1Value !== null ? item.player1Value : '<span class="no-data">–</span>';
-                    const p2Display = item.player2Value !== null ? item.player2Value : '<span class="no-data">–</span>';
-                    
-                    html += `
-                        <div class="comparison-row ${rowClass}">
-                            <div class="${p1Class}">${p1Display}</div>
-                            <div class="player-value" style="font-weight: normal; font-size: 16px;">${player1Name}</div>
-                            <div class="metric-name">${item.metric}</div>
-                            <div class="player-value" style="font-weight: normal; font-size: 16px;">${player2Name}</div>
-                            <div class="${p2Class}">${p2Display}</div>
-                        </div>
-                    `;
-                });
-                
-                html += `</div>`;
-            });
-            
-            resultsDiv.innerHTML = html;
-        }
-    </script>
-</body>
-</html>
+                'Three quarte
