@@ -901,4 +901,144 @@
                 'Wingspan': 'WINGSPAN',
                 'Lane agility time': 'LANE AGILITY',
                 'Shuttle run': 'SHUTTLE RUN',
-                'Three quarte
+                'Three quarter sprint': '3/4 SPRINT',
+                'Standing vertical leap': 'STANDING VERT',
+                'Max vertical leap': 'MAX VERT',
+                'Max bench press': 'MAX BENCH'
+            };
+            
+            const column = columnMap[metric];
+            return column ? playerRow[column] : null;
+        }
+
+        function getVotingStat(playerName, metric) {
+            const playerVotes = playerData.awardVotes.filter(row => row.PLAYER === playerName);
+            
+            if (metric.includes('BEST VOTE RANKING')) {
+                // Get best ranking for specific award
+                const awardMap = {
+                    'MVP': 'MVP',
+                    'DPOY': 'DPOY',
+                    'ROY': 'ROY',
+                    'Sixth Man': 'Sixth Man',
+                    'MIP': 'MIP'
+                };
+                // Simplified - would need more logic
+                return playerVotes.length > 0 ? playerVotes[0].RNK : null;
+            }
+            
+            // Years with votes
+            return playerVotes.length > 0 ? playerVotes.length : null;
+        }
+
+        function getSneakerCount(playerName) {
+            const playerRow = playerData.sneakers.find(row => row.Player === playerName);
+            return playerRow ? playerRow['# of shoes'] : null;
+        }
+
+        function get2KRating(playerName, metric) {
+            const playerRow = playerData.nba2k.find(row => 
+                row['Full Name'] === playerName || 
+                row['First Name'] + ' ' + row['Last Name'] === playerName
+            );
+            
+            if (!playerRow) return null;
+            
+            if (metric === 'Average') {
+                // Calculate average of all ratings
+                let sum = 0;
+                let count = 0;
+                for (let key in playerRow) {
+                    if (key.startsWith('2K') || key.startsWith('2k')) {
+                        const val = parseInt(playerRow[key]);
+                        if (!isNaN(val)) {
+                            sum += val;
+                            count++;
+                        }
+                    }
+                }
+                return count > 0 ? (sum / count).toFixed(0) : null;
+            }
+            
+            // Highest/Lowest would need more logic
+            return null;
+        }
+
+        function getAllStarContestWins(playerName, metric) {
+            const playerWins = playerData.allStar.filter(row => 
+                row.NAME === playerName && row['WINNER?'] === 'WINNER'
+            );
+            
+            if (metric === 'Dunk Contest') {
+                return playerWins.filter(r => r.CONTEST === 'Dunk Contest').length || null;
+            } else if (metric === 'Three-Point Contest') {
+                return playerWins.filter(r => r.CONTEST === 'Three-Point Contest').length || null;
+            } else if (metric === 'Skills Challenge') {
+                return playerWins.filter(r => r.CONTEST === 'Skills Challenge').length || null;
+            }
+            
+            return null;
+        }
+
+        function displayResults(results, player1Name, player2Name) {
+            const resultsDiv = document.getElementById('results');
+            
+            let html = `
+                <div class="score-summary">
+                    <div class="player-score">
+                        <div class="player-name-score">${player1Name}</div>
+                        <div class="score-value">${results.player1Score}</div>
+                    </div>
+                    <div class="score-divider">–</div>
+                    <div class="player-score">
+                        <div class="player-name-score">${player2Name}</div>
+                        <div class="score-value">${results.player2Score}</div>
+                    </div>
+                </div>
+            `;
+            
+            const shareURL = updateShareURL();
+            html += `
+                <div class="share-url">
+                    <h3>📤 Share This Comparison</h3>
+                    <input type="text" class="share-url-input" value="${shareURL}" readonly onclick="this.select(); try { document.execCommand('copy'); alert('URL copied!'); } catch(e) { console.log('Copy failed'); }">
+                </div>
+            `;
+            
+            // Display categories
+            Object.keys(results.categories).forEach(categoryName => {
+                const items = results.categories[categoryName];
+                if (items.length === 0) return;
+                
+                html += `<div class="category-section">
+                    <div class="category-title">${categoryName}</div>`;
+                
+                items.forEach(item => {
+                    const rowClass = item.winner === 'player1' ? 'winner-left' : 
+                                    item.winner === 'player2' ? 'winner-right' : 'tie';
+                    
+                    const p1Class = item.winner === 'player1' ? 'player-value winner' : 'player-value';
+                    const p2Class = item.winner === 'player2' ? 'player-value winner' : 'player-value';
+                    
+                    const p1Display = item.player1Value !== null ? item.player1Value : '<span class="no-data">–</span>';
+                    const p2Display = item.player2Value !== null ? item.player2Value : '<span class="no-data">–</span>';
+                    
+                    html += `
+                        <div class="comparison-row ${rowClass}">
+                            <div class="${p1Class}">${p1Display}</div>
+                            <div class="player-value" style="font-weight: normal; font-size: 16px;">${player1Name}</div>
+                            <div class="metric-name">${item.metric}</div>
+                            <div class="player-value" style="font-weight: normal; font-size: 16px;">${player2Name}</div>
+                            <div class="${p2Class}">${p2Display}</div>
+                        </div>
+                    `;
+                });
+                
+                html += `</div>`;
+            });
+            
+            resultsDiv.innerHTML = html;
+        }
+    </script>
+</body>
+</html>
