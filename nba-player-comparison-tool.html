@@ -515,7 +515,7 @@
             playerData.comparisons.forEach(comp => {
                 const category = comp['Comparison points'];
                 const winCondition = comp['Who wins?'];
-                const dataSource = comp["Where's the data?"] || comp["Where\x92s the data?"];
+                const dataSource = comp['Wheres the data?']; // Fixed: no apostrophe
                 
                 // Check if this is a section header
                 if (!winCondition && !dataSource) {
