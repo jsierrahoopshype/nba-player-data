@@ -312,7 +312,7 @@
         let players = [];
         let dataLoaded = false;
 
-        // CSV Parser
+        // CSV Parser - Enhanced to handle empty headers
         function parseCSV(csvText) {
             if (!csvText || csvText.trim() === '') return [];
             
@@ -320,6 +320,10 @@
             if (lines.length === 0) return [];
             
             const headers = lines[0].split(',').map(h => h.trim());
+            
+            // Debug: log headers to console
+            console.log('CSV Headers:', headers);
+            
             const data = [];
             
             for (let i = 1; i < lines.length; i++) {
@@ -327,7 +331,9 @@
                 if (values.length > 0) {
                     const row = {};
                     headers.forEach((header, index) => {
-                        row[header] = values[index] ? values[index].trim() : '';
+                        // Use index as key if header is empty
+                        const key = header || `col_${index}`;
+                        row[key] = values[index] ? values[index].trim() : '';
                     });
                     data.push(row);
                 }
@@ -461,6 +467,26 @@
                 awards: playerData.awards.length,
                 rsStats: playerData.rsStats.length
             });
+            
+            // Debug: Check sample data structure
+            if (playerData.rsStats.length > 0) {
+                console.log('Sample RS-Stats row:', playerData.rsStats[0]);
+            }
+            if (playerData.awards.length > 0) {
+                console.log('Sample Awards row:', playerData.awards[0]);
+            }
+            
+            // Debug: Test LeBron James data
+            const lebronRS = playerData.rsStats.filter(r => r.PLAYER && r.PLAYER.includes('LeBron'));
+            const lebronAwards = playerData.awards.filter(r => r['PLAYER / COACH'] && r['PLAYER / COACH'].includes('LeBron'));
+            console.log('LeBron RS-Stats rows:', lebronRS.length);
+            console.log('LeBron Awards rows:', lebronAwards.length);
+            if (lebronRS.length > 0) {
+                console.log('LeBron RS sample:', lebronRS[0]);
+            }
+            if (lebronAwards.length > 0) {
+                console.log('LeBron Award sample:', lebronAwards[0]);
+            }
             
             // Extract unique players
             const playersSet = new Set();
@@ -910,28 +936,3 @@
                     const rowClass = item.winner === 'player1' ? 'winner-left' : 
                                     item.winner === 'player2' ? 'winner-right' : 'tie';
                     
-                    const p1Class = item.winner === 'player1' ? 'player-value winner' : 'player-value';
-                    const p2Class = item.winner === 'player2' ? 'player-value winner' : 'player-value';
-                    
-                    const p1Display = item.player1Value !== null ? item.player1Value : '<span class="no-data">–</span>';
-                    const p2Display = item.player2Value !== null ? item.player2Value : '<span class="no-data">–</span>';
-                    
-                    html += `
-                        <div class="comparison-row ${rowClass}">
-                            <div class="${p1Class}">${p1Display}</div>
-                            <div class="player-value" style="font-weight: normal; font-size: 16px;">${player1Name}</div>
-                            <div class="metric-name">${item.metric}</div>
-                            <div class="player-value" style="font-weight: normal; font-size: 16px;">${player2Name}</div>
-                            <div class="${p2Class}">${p2Display}</div>
-                        </div>
-                    `;
-                });
-                
-                html += `</div>`;
-            });
-            
-            resultsDiv.innerHTML = html;
-        }
-    </script>
-</body>
-</html>
