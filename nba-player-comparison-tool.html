@@ -716,14 +716,22 @@
                 let maxValue = -Infinity;
                 
                 playerRows.forEach(row => {
-                    const val = parseFloat(row[column]);
+                    let val = row[column];
+                    
+                    // Handle percentage strings (remove % if present)
+                    if (typeof val === 'string') {
+                        val = val.replace('%', '');
+                    }
+                    
+                    val = parseFloat(val);
+                    
                     if (!isNaN(val) && val > maxValue) {
                         maxValue = val;
                     }
                 });
                 
                 if (maxValue > -Infinity) {
-                    // For percentages, add % symbol
+                    // For percentages, format as XX.XX%
                     if (metric.includes('%')) {
                         return maxValue.toFixed(2) + '%';
                     }
@@ -849,14 +857,22 @@
                 let maxValue = -Infinity;
                 
                 playerRows.forEach(row => {
-                    const val = parseFloat(row[column]);
+                    let val = row[column];
+                    
+                    // Handle percentage strings (remove % if present)
+                    if (typeof val === 'string') {
+                        val = val.replace('%', '');
+                    }
+                    
+                    val = parseFloat(val);
+                    
                     if (!isNaN(val) && val > maxValue) {
                         maxValue = val;
                     }
                 });
                 
                 if (maxValue > -Infinity) {
-                    // For percentages, add % symbol
+                    // For percentages, format as XX.XX%
                     if (metric.includes('%')) {
                         return maxValue.toFixed(2) + '%';
                     }
@@ -961,16 +977,36 @@
             const playerRows = playerData.salaries.filter(row => row.PLAYER === playerName);
             if (playerRows.length === 0) return null;
             
+            const salaries = [];
+            playerRows.forEach(row => {
+                const salary = parseFloat(String(row.SALARY || '').replace(/[$,]/g, ''));
+                if (!isNaN(salary) && salary > 0) {
+                    salaries.push(salary);
+                }
+            });
+            
+            if (salaries.length === 0) return null;
+            
             if (metric === 'Career earnings') {
-                let total = 0;
-                playerRows.forEach(row => {
-                    const salary = parseFloat(String(row.SALARY || '').replace(/[$,]/g, ''));
-                    if (!isNaN(salary)) total += salary;
-                });
-                return total > 0 ? total : null;
+                const total = salaries.reduce((sum, val) => sum + val, 0);
+                return '$' + total.toLocaleString();
             }
             
-            // Average, highest, lowest would need more logic
+            if (metric === 'Average salary') {
+                const avg = salaries.reduce((sum, val) => sum + val, 0) / salaries.length;
+                return '$' + Math.round(avg).toLocaleString();
+            }
+            
+            if (metric === 'Highest salary') {
+                const max = Math.max(...salaries);
+                return '$' + max.toLocaleString();
+            }
+            
+            if (metric === 'Lowest salary') {
+                const min = Math.min(...salaries);
+                return '$' + min.toLocaleString();
+            }
+            
             return null;
         }
 
@@ -1000,21 +1036,47 @@
         function getVotingStat(playerName, metric) {
             const playerVotes = playerData.awardVotes.filter(row => row.PLAYER === playerName);
             
-            if (metric.includes('BEST VOTE RANKING')) {
-                // Get best ranking for specific award
-                const awardMap = {
-                    'MVP': 'MVP',
-                    'DPOY': 'DPOY',
-                    'ROY': 'ROY',
-                    'Sixth Man': 'Sixth Man',
-                    'MIP': 'MIP'
-                };
-                // Simplified - would need more logic
-                return playerVotes.length > 0 ? playerVotes[0].RNK : null;
+            // Best awards ranking - find lowest (best) rank for each award
+            const awardRankingMap = {
+                'Most Valuable Player': 'MVP',
+                'Defensive Player of the Year': 'DPOY',
+                'Rookie of the Year': 'ROY',
+                'Most Improved Player': 'MIP'
+            };
+            
+            if (awardRankingMap[metric]) {
+                const awardType = awardRankingMap[metric];
+                const relevantVotes = playerVotes.filter(row => row.AWARD === awardType);
+                
+                if (relevantVotes.length === 0) return null;
+                
+                let bestRank = Infinity;
+                relevantVotes.forEach(row => {
+                    const rank = parseInt(row.RNK);
+                    if (!isNaN(rank) && rank < bestRank) {
+                        bestRank = rank;
+                    }
+                });
+                
+                return bestRank < Infinity ? bestRank : null;
             }
             
-            // Years with votes
-            return playerVotes.length > 0 ? playerVotes.length : null;
+            // Years receiving votes
+            const yearsVotesMap = {
+                'Years with MVP votes': 'MVP',
+                'Years with DPOY votes': 'DPOY',
+                'Years with ROY votes': 'ROY',
+                'Years with Sixth Man votes': 'Sixth Man',
+                'Years with MIP votes': 'MIP'
+            };
+            
+            if (yearsVotesMap[metric]) {
+                const awardType = yearsVotesMap[metric];
+                const relevantVotes = playerVotes.filter(row => row.AWARD === awardType);
+                return relevantVotes.length > 0 ? relevantVotes.length : null;
+            }
+            
+            return null;
         }
 
         function getSneakerCount(playerName) {
@@ -1030,23 +1092,32 @@
             
             if (!playerRow) return null;
             
-            if (metric === 'Average') {
-                // Calculate average of all ratings
-                let sum = 0;
-                let count = 0;
-                for (let key in playerRow) {
-                    if (key.startsWith('2K') || key.startsWith('2k')) {
-                        const val = parseInt(playerRow[key]);
-                        if (!isNaN(val)) {
-                            sum += val;
-                            count++;
-                        }
+            // Collect all ratings
+            const ratings = [];
+            for (let key in playerRow) {
+                if (key.startsWith('2K') || key.startsWith('2k')) {
+                    const val = parseInt(playerRow[key]);
+                    if (!isNaN(val)) {
+                        ratings.push(val);
                     }
                 }
-                return count > 0 ? (sum / count).toFixed(0) : null;
             }
             
-            // Highest/Lowest would need more logic
+            if (ratings.length === 0) return null;
+            
+            if (metric === 'Average career rating') {
+                const avg = ratings.reduce((sum, val) => sum + val, 0) / ratings.length;
+                return avg.toFixed(0);
+            }
+            
+            if (metric === 'Highest rating') {
+                return Math.max(...ratings);
+            }
+            
+            if (metric === 'Lowest rating') {
+                return Math.min(...ratings);
+            }
+            
             return null;
         }
 
