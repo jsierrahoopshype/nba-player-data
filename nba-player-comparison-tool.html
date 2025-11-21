@@ -612,7 +612,7 @@
 
         function getAwardCount(playerName, awardType) {
             // Handle combined awards
-            if (awardType === 'All-NBA selections') {
+            if (awardType === 'All-NBA Selections') {
                 const first = playerData.awards.filter(row => 
                     row['PLAYER / COACH'] === playerName && row.AWARD === 'All-NBA First Team'
                 ).length;
@@ -626,7 +626,7 @@
                 return total > 0 ? total : null;
             }
             
-            if (awardType === 'All-Defensive Team selections') {
+            if (awardType === 'All-Defensive Team Selections') {
                 const first = playerData.awards.filter(row => 
                     row['PLAYER / COACH'] === playerName && row.AWARD === 'All-Defensive First Team'
                 ).length;
@@ -637,7 +637,7 @@
                 return total > 0 ? total : null;
             }
             
-            if (awardType === 'Olympic medals') {
+            if (awardType === 'Olympic Medals') {
                 const gold = playerData.awards.filter(row => 
                     row['PLAYER / COACH'] === playerName && row.AWARD === 'Olympic gold'
                 ).length;
@@ -651,7 +651,7 @@
                 return total > 0 ? total : null;
             }
             
-            if (awardType === 'World Cup medals') {
+            if (awardType === 'World Cup Medals') {
                 const gold = playerData.awards.filter(row => 
                     row['PLAYER / COACH'] === playerName && row.AWARD === 'World Cup gold'
                 ).length;
