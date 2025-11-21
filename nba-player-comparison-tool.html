@@ -651,6 +651,20 @@
                 return total > 0 ? total : null;
             }
             
+            if (awardType === 'World Cup medals') {
+                const gold = playerData.awards.filter(row => 
+                    row['PLAYER / COACH'] === playerName && row.AWARD === 'World Cup gold'
+                ).length;
+                const silver = playerData.awards.filter(row => 
+                    row['PLAYER / COACH'] === playerName && row.AWARD === 'World Cup silver'
+                ).length;
+                const bronze = playerData.awards.filter(row => 
+                    row['PLAYER / COACH'] === playerName && row.AWARD === 'World Cup bronze'
+                ).length;
+                const total = gold + silver + bronze;
+                return total > 0 ? total : null;
+            }
+            
             // Regular award count
             const playerAwards = playerData.awards.filter(row => 
                 row['PLAYER / COACH'] === playerName && row.AWARD === awardType
@@ -679,8 +693,44 @@
                 'Assists': 'AST',
                 'Steals': 'STL',
                 'Blocks': 'BLK',
-                'Turnovers': 'TOV'
+                'Turnovers': 'TOV',
+                '3P%': '3P%'
             };
+            
+            // Season peak metrics - find highest single-season average
+            const peakMetrics = {
+                'Points per game peak': 'PTS / G',
+                'Rebounds per game peak': 'REB / G',
+                'Assists per game peak': 'AST / G',
+                'Steals per game peak': 'STL / G',
+                'Blocks per game peak': 'BLK / G',
+                'Field Goal % peak': 'FG%',
+                'Three Point % peak': '3P%',
+                'Free Throw % peak': 'FT%',
+                'Turnovers per game peak': 'TOV / G'
+            };
+            
+            // Check if this is a peak metric
+            if (peakMetrics[metric]) {
+                const column = peakMetrics[metric];
+                let maxValue = -Infinity;
+                
+                playerRows.forEach(row => {
+                    const val = parseFloat(row[column]);
+                    if (!isNaN(val) && val > maxValue) {
+                        maxValue = val;
+                    }
+                });
+                
+                if (maxValue > -Infinity) {
+                    // For percentages, add % symbol
+                    if (metric.includes('%')) {
+                        return maxValue.toFixed(2) + '%';
+                    }
+                    return maxValue.toFixed(1);
+                }
+                return null;
+            }
             
             const column = columnMap[metric];
             if (!column) return null;
@@ -719,7 +769,8 @@
                 const percentageMap = {
                     'Field Goal %': { pct: 'FG%', made: 'FGM', att: 'FGA' },
                     'Three Point %': { pct: '3P%', made: '3PM', att: '3PA' },
-                    'Free Throw %': { pct: 'FT%', made: 'FTM', att: 'FTA' }
+                    'Free Throw %': { pct: 'FT%', made: 'FTM', att: 'FTA' },
+                    '3P%': { pct: '3P%', made: '3PM', att: '3PA' }
                 };
                 
                 const pctInfo = percentageMap[metric];
@@ -778,6 +829,41 @@
                 'Blocks PO': 'BLK',
                 'Turnovers PO': 'TOV'
             };
+            
+            // Playoff peak metrics - find highest single-postseason average
+            const peakMetrics = {
+                'Points per game PO peak': 'PTS / G',
+                'Rebounds per game PO peak': 'REB / G',
+                'Assists per game PO peak': 'AST / G',
+                'Steals per game PO peak': 'STL / G',
+                'Blocks per game PO peak': 'BLK / G',
+                'Field Goal % PO peak': 'FG%',
+                'Three Point % PO peak': '3P%',
+                'Free Throw % PO peak': 'FT%',
+                'Turnovers per game PO peak': 'TOV / G'
+            };
+            
+            // Check if this is a peak metric
+            if (peakMetrics[metric]) {
+                const column = peakMetrics[metric];
+                let maxValue = -Infinity;
+                
+                playerRows.forEach(row => {
+                    const val = parseFloat(row[column]);
+                    if (!isNaN(val) && val > maxValue) {
+                        maxValue = val;
+                    }
+                });
+                
+                if (maxValue > -Infinity) {
+                    // For percentages, add % symbol
+                    if (metric.includes('%')) {
+                        return maxValue.toFixed(2) + '%';
+                    }
+                    return maxValue.toFixed(1);
+                }
+                return null;
+            }
             
             const column = columnMap[metric];
             if (!column) return null;
