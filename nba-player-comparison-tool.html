@@ -733,7 +733,7 @@
                 if (maxValue > -Infinity) {
                     // For percentages, format as XX.XX%
                     if (metric.includes('%')) {
-                        return maxValue.toFixed(2) + '%';
+                        return maxValue.toFixed(1) + '%';
                     }
                     return maxValue.toFixed(1);
                 }
@@ -874,7 +874,7 @@
                 if (maxValue > -Infinity) {
                     // For percentages, format as XX.XX%
                     if (metric.includes('%')) {
-                        return maxValue.toFixed(2) + '%';
+                        return maxValue.toFixed(1) + '%';
                     }
                     return maxValue.toFixed(1);
                 }
@@ -979,7 +979,8 @@
             
             const salaries = [];
             playerRows.forEach(row => {
-                const salary = parseFloat(String(row.SALARY || '').replace(/[$,]/g, ''));
+                // Column name is "SALARY" (all caps)
+                const salary = parseFloat(String(row.SALARY || row.Salary || '').replace(/[$,]/g, ''));
                 if (!isNaN(salary) && salary > 0) {
                     salaries.push(salary);
                 }
@@ -1026,11 +1027,15 @@
                 'Three quarter sprint': '3/4 SPRINT',
                 'Standing vertical leap': 'STANDING VERT',
                 'Max vertical leap': 'MAX VERT',
-                'Max bench press': 'MAX BENCH'
+                'Max bench press': 'MAX BENCH',
+                'Height': 'HEIGHT'
             };
             
             const column = columnMap[metric];
-            return column ? playerRow[column] : null;
+            if (!column) return null;
+            
+            const value = playerRow[column];
+            return value && value.trim() !== '' ? value : null;
         }
 
         function getVotingStat(playerName, metric) {
@@ -1107,7 +1112,7 @@
             
             if (metric === 'Average career rating') {
                 const avg = ratings.reduce((sum, val) => sum + val, 0) / ratings.length;
-                return avg.toFixed(0);
+                return avg.toFixed(1);
             }
             
             if (metric === 'Highest rating') {
