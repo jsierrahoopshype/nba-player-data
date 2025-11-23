@@ -776,9 +776,9 @@
             if (metric.includes('%')) {
                 const percentageMap = {
                     'Field Goal %': { pct: 'FG%', made: 'FGM', att: 'FGA' },
-                    'Three Point %': { pct: '3P%', made: '3PM', att: '3PA' },
+                    'Three Point %': { pct: '3P%', made: '3P', att: '3PA' },
                     'Free Throw %': { pct: 'FT%', made: 'FTM', att: 'FTA' },
-                    '3P%': { pct: '3P%', made: '3PM', att: '3PA' }
+                    '3P%': { pct: '3P%', made: '3P', att: '3PA' }
                 };
                 
                 const pctInfo = percentageMap[metric];
@@ -917,7 +917,7 @@
             if (metric.includes('%')) {
                 const percentageMap = {
                     'Field Goal % PO': { pct: 'FG%', made: 'FGM', att: 'FGA' },
-                    'Three Point % PO': { pct: '3P%', made: '3PM', att: '3PA' },
+                    'Three Point % PO': { pct: '3P%', made: '3P', att: '3PA' },
                     'Free Throw % PO': { pct: 'FT%', made: 'FTM', att: 'FTA' }
                 };
                 
