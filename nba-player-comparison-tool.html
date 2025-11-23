@@ -639,13 +639,13 @@
             
             if (awardType === 'Olympic Medals') {
                 const gold = playerData.awards.filter(row => 
-                    row['PLAYER / COACH'] === playerName && row.AWARD === 'Olympic gold'
+                    row['PLAYER / COACH'] === playerName && row.AWARD === 'Olympic Gold'
                 ).length;
                 const silver = playerData.awards.filter(row => 
-                    row['PLAYER / COACH'] === playerName && row.AWARD === 'Olympic silver'
+                    row['PLAYER / COACH'] === playerName && row.AWARD === 'Olympic Silver'
                 ).length;
                 const bronze = playerData.awards.filter(row => 
-                    row['PLAYER / COACH'] === playerName && row.AWARD === 'Olympic bronze'
+                    row['PLAYER / COACH'] === playerName && row.AWARD === 'Olympic Bronze'
                 ).length;
                 const total = gold + silver + bronze;
                 return total > 0 ? total : null;
@@ -653,13 +653,13 @@
             
             if (awardType === 'World Cup Medals') {
                 const gold = playerData.awards.filter(row => 
-                    row['PLAYER / COACH'] === playerName && row.AWARD === 'World Cup gold'
+                    row['PLAYER / COACH'] === playerName && row.AWARD === 'World Cup Gold'
                 ).length;
                 const silver = playerData.awards.filter(row => 
-                    row['PLAYER / COACH'] === playerName && row.AWARD === 'World Cup silver'
+                    row['PLAYER / COACH'] === playerName && row.AWARD === 'World Cup Silver'
                 ).length;
                 const bronze = playerData.awards.filter(row => 
-                    row['PLAYER / COACH'] === playerName && row.AWARD === 'World Cup bronze'
+                    row['PLAYER / COACH'] === playerName && row.AWARD === 'World Cup Bronze'
                 ).length;
                 const total = gold + silver + bronze;
                 return total > 0 ? total : null;
