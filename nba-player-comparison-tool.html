@@ -1012,19 +1012,45 @@
             const playerRows = playerData.poStats.filter(row => row.PLAYER === playerName);
             if (playerRows.length === 0) return null;
             
-            // Map comparison metrics to RESULT values in PO-Stats
-            const resultMap = {
-                'First Round': 'First Round',
-                'Conference Semis': 'Conf Semis',
-                'Conference Finals': 'Conf Finalist',  // Note: data has "Conf Finalist" not "Conf Finals"
-                'Finalist': 'Finalist',
-                'Champion': 'Champion'
+            // Count each result type
+            const resultCounts = {
+                'First Round': 0,
+                'Conf Semis': 0,
+                'Conf Finalist': 0,
+                'Finalist': 0,
+                'Champion': 0
             };
             
-            // For playoff success metrics, count how many times player reached this round
-            if (resultMap[metric]) {
-                const targetResult = resultMap[metric];
-                const count = playerRows.filter(row => row.RESULT === targetResult).length;
+            playerRows.forEach(row => {
+                const result = row.RESULT;
+                if (resultCounts.hasOwnProperty(result)) {
+                    resultCounts[result]++;
+                }
+            });
+            
+            // For playoff success metrics, calculate cumulative counts
+            // If you reached Champion, you also reached all earlier rounds that year
+            if (metric === 'Champion') {
+                return resultCounts['Champion'] > 0 ? resultCounts['Champion'] : null;
+            }
+            
+            if (metric === 'Finalist') {
+                const count = resultCounts['Finalist'] + resultCounts['Champion'];
+                return count > 0 ? count : null;
+            }
+            
+            if (metric === 'Conference Finals') {
+                const count = resultCounts['Conf Finalist'] + resultCounts['Finalist'] + resultCounts['Champion'];
+                return count > 0 ? count : null;
+            }
+            
+            if (metric === 'Conference Semis') {
+                const count = resultCounts['Conf Semis'] + resultCounts['Conf Finalist'] + resultCounts['Finalist'] + resultCounts['Champion'];
+                return count > 0 ? count : null;
+            }
+            
+            if (metric === 'First Round') {
+                const count = resultCounts['First Round'] + resultCounts['Conf Semis'] + resultCounts['Conf Finalist'] + resultCounts['Finalist'] + resultCounts['Champion'];
                 return count > 0 ? count : null;
             }
             
