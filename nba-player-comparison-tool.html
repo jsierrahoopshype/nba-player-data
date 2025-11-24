@@ -713,12 +713,42 @@
             // Check if this is a peak metric
             if (peakMetrics[metric]) {
                 const column = peakMetrics[metric];
+                
+                // For percentage peaks, calculate from makes/attempts for each season
+                if (metric.includes('%')) {
+                    let maxPct = -Infinity;
+                    
+                    const pctMap = {
+                        'Field Goal % peak': { made: 'FGM', att: 'FGA' },
+                        'Three Point % peak': { made: '3P', att: '3PA' },
+                        'Free Throw % peak': { made: 'FTM', att: 'FTA' }
+                    };
+                    
+                    const pctInfo = pctMap[metric];
+                    if (pctInfo) {
+                        playerRows.forEach(row => {
+                            const made = parseFloat(row[pctInfo.made]);
+                            const att = parseFloat(row[pctInfo.att]);
+                            
+                            // Only calculate if player had attempts
+                            if (!isNaN(made) && !isNaN(att) && att > 0) {
+                                const pct = (made / att) * 100;
+                                if (pct > maxPct) {
+                                    maxPct = pct;
+                                }
+                            }
+                        });
+                        
+                        return maxPct > -Infinity ? maxPct.toFixed(1) + '%' : null;
+                    }
+                }
+                
+                // For non-percentage peaks, find max value
                 let maxValue = -Infinity;
                 
                 playerRows.forEach(row => {
                     let val = row[column];
                     
-                    // Handle percentage strings (remove % if present)
                     if (typeof val === 'string') {
                         val = val.replace('%', '');
                     }
@@ -731,14 +761,6 @@
                 });
                 
                 if (maxValue > -Infinity) {
-                    // For percentages, format as XX.X%
-                    if (metric.includes('%')) {
-                        // If stored as decimal (0.532), convert to percentage (53.2)
-                        if (maxValue < 1) {
-                            maxValue = maxValue * 100;
-                        }
-                        return maxValue.toFixed(1) + '%';
-                    }
                     return maxValue.toFixed(1);
                 }
                 return null;
@@ -858,12 +880,42 @@
             // Check if this is a peak metric
             if (peakMetrics[metric]) {
                 const column = peakMetrics[metric];
+                
+                // For percentage peaks, calculate from makes/attempts for each season
+                if (metric.includes('%')) {
+                    let maxPct = -Infinity;
+                    
+                    const pctMap = {
+                        'Field Goal % PO peak': { made: 'FGM', att: 'FGA' },
+                        'Three Point % PO peak': { made: '3:00 PM', att: '3PA' },
+                        'Free Throw % PO peak': { made: 'FTM', att: 'FTA' }
+                    };
+                    
+                    const pctInfo = pctMap[metric];
+                    if (pctInfo) {
+                        playerRows.forEach(row => {
+                            const made = parseFloat(row[pctInfo.made]);
+                            const att = parseFloat(row[pctInfo.att]);
+                            
+                            // Only calculate if player had attempts
+                            if (!isNaN(made) && !isNaN(att) && att > 0) {
+                                const pct = (made / att) * 100;
+                                if (pct > maxPct) {
+                                    maxPct = pct;
+                                }
+                            }
+                        });
+                        
+                        return maxPct > -Infinity ? maxPct.toFixed(1) + '%' : null;
+                    }
+                }
+                
+                // For non-percentage peaks, find max value
                 let maxValue = -Infinity;
                 
                 playerRows.forEach(row => {
                     let val = row[column];
                     
-                    // Handle percentage strings (remove % if present)
                     if (typeof val === 'string') {
                         val = val.replace('%', '');
                     }
@@ -876,14 +928,6 @@
                 });
                 
                 if (maxValue > -Infinity) {
-                    // For percentages, format as XX.X%
-                    if (metric.includes('%')) {
-                        // If stored as decimal (0.532), convert to percentage (53.2)
-                        if (maxValue < 1) {
-                            maxValue = maxValue * 100;
-                        }
-                        return maxValue.toFixed(1) + '%';
-                    }
                     return maxValue.toFixed(1);
                 }
                 return null;
