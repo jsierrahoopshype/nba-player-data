@@ -731,8 +731,12 @@
                 });
                 
                 if (maxValue > -Infinity) {
-                    // For percentages, format as XX.XX%
+                    // For percentages, format as XX.X%
                     if (metric.includes('%')) {
+                        // If stored as decimal (0.532), convert to percentage (53.2)
+                        if (maxValue < 1) {
+                            maxValue = maxValue * 100;
+                        }
                         return maxValue.toFixed(1) + '%';
                     }
                     return maxValue.toFixed(1);
@@ -872,8 +876,12 @@
                 });
                 
                 if (maxValue > -Infinity) {
-                    // For percentages, format as XX.XX%
+                    // For percentages, format as XX.X%
                     if (metric.includes('%')) {
+                        // If stored as decimal (0.532), convert to percentage (53.2)
+                        if (maxValue < 1) {
+                            maxValue = maxValue * 100;
+                        }
                         return maxValue.toFixed(1) + '%';
                     }
                     return maxValue.toFixed(1);
