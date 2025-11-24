@@ -1007,22 +1007,43 @@
         }
 
         function getPlayoffSeriesStat(playerName, metric) {
-            const playerRow = playerData.poSeries.find(row => row.NAME === playerName);
-            if (!playerRow) return null;
+            // Get all playoff rows for this player from poStats
+            const playerRows = playerData.poStats.filter(row => row.NAME === playerName);
+            if (playerRows.length === 0) return null;
             
-            const columnMap = {
-                'First Round': 'W',
-                'Conference Semis': 'W',
-                'Conference Finals': 'W',
-                'Finalist': 'W',
-                'Champion': 'W',
-                'Playoff series played': 'TOT',
-                'Playoff series won': 'W',
-                'Playoff series win %': '% W'
+            // Map comparison metrics to RESULT values in PO-Stats
+            const resultMap = {
+                'First Round': 'First Round',
+                'Conference Semis': 'Conf Semis',
+                'Conference Finals': 'Conf Finals',
+                'Finalist': 'Finalist',
+                'Champion': 'Champion'
             };
             
-            // This is simplified - you'd need more logic here
-            return playerRow.W || playerRow['% W'] || null;
+            // For playoff success metrics, count how many times player reached this round
+            if (resultMap[metric]) {
+                const targetResult = resultMap[metric];
+                const count = playerRows.filter(row => row.RESULT === targetResult).length;
+                return count > 0 ? count : null;
+            }
+            
+            // For other playoff series stats, use poSeries data
+            const playerSeriesRow = playerData.poSeries.find(row => row.NAME === playerName);
+            if (!playerSeriesRow) return null;
+            
+            if (metric === 'Playoff series played') {
+                return playerSeriesRow.TOT || null;
+            }
+            
+            if (metric === 'Playoff series won') {
+                return playerSeriesRow.W || null;
+            }
+            
+            if (metric === 'Playoff series win %') {
+                return playerSeriesRow['% W'] || null;
+            }
+            
+            return null;
         }
 
         function getSalaryStat(playerName, metric) {
