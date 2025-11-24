@@ -1008,7 +1008,8 @@
 
         function getPlayoffSeriesStat(playerName, metric) {
             // Get all playoff rows for this player from poStats
-            const playerRows = playerData.poStats.filter(row => row.NAME === playerName);
+            // Note: poStats uses "PLAYER" field, not "NAME"
+            const playerRows = playerData.poStats.filter(row => row.PLAYER === playerName);
             if (playerRows.length === 0) return null;
             
             // Map comparison metrics to RESULT values in PO-Stats
