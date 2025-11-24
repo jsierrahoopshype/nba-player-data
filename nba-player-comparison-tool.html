@@ -1029,35 +1029,48 @@
             const playerRows = playerData.salaries.filter(row => row.PLAYER === playerName);
             if (playerRows.length === 0) return null;
             
-            const salaries = [];
+            // Group by year to avoid counting same salary multiple times in one season
+            const salariesByYear = {};
             playerRows.forEach(row => {
-                // Column name is "SALARY" (all caps)
-                const salary = parseFloat(String(row.SALARY || row.Salary || '').replace(/[$,]/g, ''));
-                if (!isNaN(salary) && salary > 0) {
-                    salaries.push(salary);
+                const year = row.YEAR;
+                const salary = parseFloat(String(row.SALARY || '').replace(/[$,]/g, ''));
+                
+                if (!isNaN(salary) && salary > 0 && year) {
+                    // Keep track of salaries per year, store in array in case of mid-season trades
+                    if (!salariesByYear[year]) {
+                        salariesByYear[year] = [];
+                    }
+                    salariesByYear[year].push(salary);
                 }
             });
             
-            if (salaries.length === 0) return null;
+            // For each year, sum all salaries (in case of mid-season trades)
+            const yearlyTotals = [];
+            for (const year in salariesByYear) {
+                const yearTotal = salariesByYear[year].reduce((sum, val) => sum + val, 0);
+                yearlyTotals.push(yearTotal);
+            }
+            
+            if (yearlyTotals.length === 0) return null;
             
             if (metric === 'Career earnings') {
-                const total = salaries.reduce((sum, val) => sum + val, 0);
-                return '$' + total.toLocaleString();
+                const total = yearlyTotals.reduce((sum, val) => sum + val, 0);
+                return '$' + Math.round(total).toLocaleString();
             }
             
             if (metric === 'Average salary') {
-                const avg = salaries.reduce((sum, val) => sum + val, 0) / salaries.length;
+                const avg = yearlyTotals.reduce((sum, val) => sum + val, 0) / yearlyTotals.length;
                 return '$' + Math.round(avg).toLocaleString();
             }
             
             if (metric === 'Highest salary') {
-                const max = Math.max(...salaries);
-                return '$' + max.toLocaleString();
+                const max = Math.max(...yearlyTotals);
+                return '$' + Math.round(max).toLocaleString();
             }
             
             if (metric === 'Lowest salary') {
-                const min = Math.min(...salaries);
-                return '$' + min.toLocaleString();
+                const min = Math.min(...yearlyTotals);
+                return '$' + Math.round(min).toLocaleString();
             }
             
             return null;
