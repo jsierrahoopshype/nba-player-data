@@ -1164,8 +1164,20 @@
             const column = columnMap[metric];
             if (!column) return null;
             
-            const value = playerRow[column];
-            return value && value.trim() !== '' ? value : null;
+            let value = playerRow[column];
+            if (!value || value.trim() === '') return null;
+            
+            // Convert HEIGHT and STANDING from inches to feet-inches format
+            if (metric === 'Height' || metric === 'Standing reach (inches)') {
+                const inches = parseFloat(value);
+                if (!isNaN(inches)) {
+                    const feet = Math.floor(inches / 12);
+                    const remainingInches = inches % 12;
+                    value = `${feet}' ${remainingInches.toFixed(2)}''`;
+                }
+            }
+            
+            return value;
         }
 
         function getVotingStat(playerName, metric) {
