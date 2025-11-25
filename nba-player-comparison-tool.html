@@ -665,6 +665,18 @@
                 return total > 0 ? total : null;
             }
             
+            // Conference Finals MVP combines EC Finals MVP and WC Finals MVP
+            if (awardType === 'Conference Finals MVP') {
+                const ec = playerData.awards.filter(row => 
+                    row['PLAYER / COACH'] === playerName && row.AWARD === 'EC Finals MVP'
+                ).length;
+                const wc = playerData.awards.filter(row => 
+                    row['PLAYER / COACH'] === playerName && row.AWARD === 'WC Finals MVP'
+                ).length;
+                const total = ec + wc;
+                return total > 0 ? total : null;
+            }
+            
             // Regular award count
             const playerAwards = playerData.awards.filter(row => 
                 row['PLAYER / COACH'] === playerName && row.AWARD === awardType
