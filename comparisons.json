@@ -1,777 +1,1002 @@
-[
-  {
-    "Comparison points": "ACCOLADES",
-    "Who wins?": "",
-    "Wheres the data?": ""
-  },
-  {
-    "Comparison points": "NBA Champion",
-    "Who wins?": "Most",
-    "Wheres the data?": "Awards.csv"
-  },
-  {
-    "Comparison points": "Finals MVP",
-    "Who wins?": "Most",
-    "Wheres the data?": "Awards.csv"
-  },
-  {
-    "Comparison points": "Most Valuable Player",
-    "Who wins?": "Most",
-    "Wheres the data?": "Awards.csv"
-  },
-  {
-    "Comparison points": "Conference Finals MVP",
-    "Who wins?": "Most",
-    "Wheres the data?": "Awards.csv"
-  },
-  {
-    "Comparison points": "Bubble MVP",
-    "Who wins?": "Most",
-    "Wheres the data?": "Awards.csv"
-  },
-  {
-    "Comparison points": "All-NBA First Team",
-    "Who wins?": "Most",
-    "Wheres the data?": "Awards.csv"
-  },
-  {
-    "Comparison points": "All-NBA Selections",
-    "Who wins?": "Most",
-    "Wheres the data?": "Awards.csv"
-  },
-  {
-    "Comparison points": "All-Star",
-    "Who wins?": "Most",
-    "Wheres the data?": "Awards.csv"
-  },
-  {
-    "Comparison points": "All-Star MVP",
-    "Who wins?": "Most",
-    "Wheres the data?": "Awards.csv"
-  },
-  {
-    "Comparison points": "Defensive Player of the Year",
-    "Who wins?": "Most",
-    "Wheres the data?": "Awards.csv"
-  },
-  {
-    "Comparison points": "All-Defensive First Team",
-    "Who wins?": "Most",
-    "Wheres the data?": "Awards.csv"
-  },
-  {
-    "Comparison points": "All-Defensive Team Selections",
-    "Who wins?": "Most",
-    "Wheres the data?": "Awards.csv"
-  },
-  {
-    "Comparison points": "Rookie of the Year",
-    "Who wins?": "Most",
-    "Wheres the data?": "Awards.csv"
-  },
-  {
-    "Comparison points": "All-Rookie First Team",
-    "Who wins?": "Most",
-    "Wheres the data?": "Awards.csv"
-  },
-  {
-    "Comparison points": "All-Rookie Second Team",
-    "Who wins?": "Most",
-    "Wheres the data?": "Awards.csv"
-  },
-  {
-    "Comparison points": "NBA Cup Champion",
-    "Who wins?": "Most",
-    "Wheres the data?": "Awards.csv"
-  },
-  {
-    "Comparison points": "NBA Cup MVP",
-    "Who wins?": "Most",
-    "Wheres the data?": "Awards.csv"
-  },
-  {
-    "Comparison points": "All-Tournament Cup Team",
-    "Who wins?": "Most",
-    "Wheres the data?": "Awards.csv"
-  },
-  {
-    "Comparison points": "Sixth Man of the Year",
-    "Who wins?": "Most",
-    "Wheres the data?": "Awards.csv"
-  },
-  {
-    "Comparison points": "Most Improved Player",
-    "Who wins?": "Most",
-    "Wheres the data?": "Awards.csv"
-  },
-  {
-    "Comparison points": "Clutch Player of the Year",
-    "Who wins?": "Most",
-    "Wheres the data?": "Awards.csv"
-  },
-  {
-    "Comparison points": "Player of the Week",
-    "Who wins?": "Most",
-    "Wheres the data?": "Awards.csv"
-  },
-  {
-    "Comparison points": "Player of the Month",
-    "Who wins?": "Most",
-    "Wheres the data?": "Awards.csv"
-  },
-  {
-    "Comparison points": "Rookie of the Month",
-    "Who wins?": "Most",
-    "Wheres the data?": "Awards.csv"
-  },
-  {
-    "Comparison points": "Defensive Player of the Month",
-    "Who wins?": "Most",
-    "Wheres the data?": "Awards.csv"
-  },
-  {
-    "Comparison points": "Scoring Leader",
-    "Who wins?": "Most",
-    "Wheres the data?": "Awards.csv"
-  },
-  {
-    "Comparison points": "Rebounding Leader",
-    "Who wins?": "Most",
-    "Wheres the data?": "Awards.csv"
-  },
-  {
-    "Comparison points": "Assists Leader",
-    "Who wins?": "Most",
-    "Wheres the data?": "Awards.csv"
-  },
-  {
-    "Comparison points": "Blocks Leader",
-    "Who wins?": "Most",
-    "Wheres the data?": "Awards.csv"
-  },
-  {
-    "Comparison points": "Steals Leader",
-    "Who wins?": "Most",
-    "Wheres the data?": "Awards.csv"
-  },
-  {
-    "Comparison points": "Dunk Contest",
-    "Who wins?": "Most",
-    "Wheres the data?": "All-Star.csv"
-  },
-  {
-    "Comparison points": "Three-Point Contest",
-    "Who wins?": "Most",
-    "Wheres the data?": "All-Star.csv"
-  },
-  {
-    "Comparison points": "Skills Challenge",
-    "Who wins?": "Most",
-    "Wheres the data?": "All-Star.csv"
-  },
-  {
-    "Comparison points": "Olympic Gold",
-    "Who wins?": "Most",
-    "Wheres the data?": "Awards.csv"
-  },
-  {
-    "Comparison points": "Olympic Medals",
-    "Who wins?": "Most",
-    "Wheres the data?": "Awards.csv"
-  },
-  {
-    "Comparison points": "Olympic MVP",
-    "Who wins?": "Most",
-    "Wheres the data?": "Awards.csv"
-  },
-  {
-    "Comparison points": "FIBA Olympics All-Star Five",
-    "Who wins?": "Most",
-    "Wheres the data?": "Awards.csv"
-  },
-  {
-    "Comparison points": "World Cup Gold",
-    "Who wins?": "Most",
-    "Wheres the data?": "Awards.csv"
-  },
-  {
-    "Comparison points": "World Cup Medals",
-    "Who wins?": "Most",
-    "Wheres the data?": "Awards.csv"
-  },
-  {
-    "Comparison points": "World Cup MVP",
-    "Who wins?": "Most",
-    "Wheres the data?": "Awards.csv"
-  },
-  {
-    "Comparison points": "NBA CAREER AVERAGES",
-    "Who wins?": "",
-    "Wheres the data?": ""
-  },
-  {
-    "Comparison points": "Points per game",
-    "Who wins?": "Most",
-    "Wheres the data?": "RS-Stats.csv"
-  },
-  {
-    "Comparison points": "Rebounds per game",
-    "Who wins?": "Most",
-    "Wheres the data?": "RS-Stats.csv"
-  },
-  {
-    "Comparison points": "Assists per game",
-    "Who wins?": "Most",
-    "Wheres the data?": "RS-Stats.csv"
-  },
-  {
-    "Comparison points": "Steals per game",
-    "Who wins?": "Most",
-    "Wheres the data?": "RS-Stats.csv"
-  },
-  {
-    "Comparison points": "Blocks per game",
-    "Who wins?": "Most",
-    "Wheres the data?": "RS-Stats.csv"
-  },
-  {
-    "Comparison points": "Field Goal %",
-    "Who wins?": "Most",
-    "Wheres the data?": "RS-Stats.csv"
-  },
-  {
-    "Comparison points": "Three Point %",
-    "Who wins?": "Most",
-    "Wheres the data?": "RS-Stats.csv"
-  },
-  {
-    "Comparison points": "Free Throw %",
-    "Who wins?": "Most",
-    "Wheres the data?": "RS-Stats.csv"
-  },
-  {
-    "Comparison points": "Turnovers per game",
-    "Who wins?": "Least",
-    "Wheres the data?": "RS-Stats.csv"
-  },
-  {
-    "Comparison points": "Points per game PO",
-    "Who wins?": "Most",
-    "Wheres the data?": "PO-Stats.csv"
-  },
-  {
-    "Comparison points": "Rebounds per game PO",
-    "Who wins?": "Most",
-    "Wheres the data?": "PO-Stats.csv"
-  },
-  {
-    "Comparison points": "Assists per game PO",
-    "Who wins?": "Most",
-    "Wheres the data?": "PO-Stats.csv"
-  },
-  {
-    "Comparison points": "Steals per game PO",
-    "Who wins?": "Most",
-    "Wheres the data?": "PO-Stats.csv"
-  },
-  {
-    "Comparison points": "Blocks per game PO",
-    "Who wins?": "Most",
-    "Wheres the data?": "PO-Stats.csv"
-  },
-  {
-    "Comparison points": "Field Goal % PO",
-    "Who wins?": "Most",
-    "Wheres the data?": "PO-Stats.csv"
-  },
-  {
-    "Comparison points": "Three Point % PO",
-    "Who wins?": "Most",
-    "Wheres the data?": "PO-Stats.csv"
-  },
-  {
-    "Comparison points": "Free Throw % PO",
-    "Who wins?": "Most",
-    "Wheres the data?": "PO-Stats.csv"
-  },
-  {
-    "Comparison points": "Turnovers per game PO",
-    "Who wins?": "Least",
-    "Wheres the data?": "PO-Stats.csv"
-  },
-  {
-    "Comparison points": "NBA CAREER TOTALS",
-    "Who wins?": "",
-    "Wheres the data?": ""
-  },
-  {
-    "Comparison points": "Games",
-    "Who wins?": "Most",
-    "Wheres the data?": "RS-Stats.csv"
-  },
-  {
-    "Comparison points": "Points",
-    "Who wins?": "Most",
-    "Wheres the data?": "RS-Stats.csv"
-  },
-  {
-    "Comparison points": "Rebounds",
-    "Who wins?": "Most",
-    "Wheres the data?": "RS-Stats.csv"
-  },
-  {
-    "Comparison points": "Assists",
-    "Who wins?": "Most",
-    "Wheres the data?": "RS-Stats.csv"
-  },
-  {
-    "Comparison points": "Steals",
-    "Who wins?": "Most",
-    "Wheres the data?": "RS-Stats.csv"
-  },
-  {
-    "Comparison points": "Blocks",
-    "Who wins?": "Most",
-    "Wheres the data?": "RS-Stats.csv"
-  },
-  {
-    "Comparison points": "Turnovers",
-    "Who wins?": "Least",
-    "Wheres the data?": "RS-Stats.csv"
-  },
-  {
-    "Comparison points": "Games PO",
-    "Who wins?": "Most",
-    "Wheres the data?": "PO-Stats.csv"
-  },
-  {
-    "Comparison points": "Points PO",
-    "Who wins?": "Most",
-    "Wheres the data?": "PO-Stats.csv"
-  },
-  {
-    "Comparison points": "Rebounds PO",
-    "Who wins?": "Most",
-    "Wheres the data?": "PO-Stats.csv"
-  },
-  {
-    "Comparison points": "Assists PO",
-    "Who wins?": "Most",
-    "Wheres the data?": "PO-Stats.csv"
-  },
-  {
-    "Comparison points": "Steals PO",
-    "Who wins?": "Most",
-    "Wheres the data?": "PO-Stats.csv"
-  },
-  {
-    "Comparison points": "Blocks PO",
-    "Who wins?": "Most",
-    "Wheres the data?": "PO-Stats.csv"
-  },
-  {
-    "Comparison points": "Turnovers PO",
-    "Who wins?": "Least",
-    "Wheres the data?": "PO-Stats.csv"
-  },
-  {
-    "Comparison points": "NBA SEASON PEAK",
-    "Who wins?": "",
-    "Wheres the data?": ""
-  },
-  {
-    "Comparison points": "Points per game peak",
-    "Who wins?": "Most",
-    "Wheres the data?": "RS-Stats.csv"
-  },
-  {
-    "Comparison points": "Rebounds per game peak",
-    "Who wins?": "Most",
-    "Wheres the data?": "RS-Stats.csv"
-  },
-  {
-    "Comparison points": "Assists per game peak",
-    "Who wins?": "Most",
-    "Wheres the data?": "RS-Stats.csv"
-  },
-  {
-    "Comparison points": "Steals per game peak",
-    "Who wins?": "Most",
-    "Wheres the data?": "RS-Stats.csv"
-  },
-  {
-    "Comparison points": "Blocks per game peak",
-    "Who wins?": "Most",
-    "Wheres the data?": "RS-Stats.csv"
-  },
-  {
-    "Comparison points": "Field Goal % peak",
-    "Who wins?": "Most",
-    "Wheres the data?": "RS-Stats.csv"
-  },
-  {
-    "Comparison points": "Three Point % peak",
-    "Who wins?": "Most",
-    "Wheres the data?": "RS-Stats.csv"
-  },
-  {
-    "Comparison points": "Free Throw % peak",
-    "Who wins?": "Most",
-    "Wheres the data?": "RS-Stats.csv"
-  },
-  {
-    "Comparison points": "Turnovers per game peak",
-    "Who wins?": "Least",
-    "Wheres the data?": "RS-Stats.csv"
-  },
-  {
-    "Comparison points": "Points per game PO peak",
-    "Who wins?": "Most",
-    "Wheres the data?": "PO-Stats.csv"
-  },
-  {
-    "Comparison points": "Rebounds per game PO peak",
-    "Who wins?": "Most",
-    "Wheres the data?": "PO-Stats.csv"
-  },
-  {
-    "Comparison points": "Assists per game PO peak",
-    "Who wins?": "Most",
-    "Wheres the data?": "PO-Stats.csv"
-  },
-  {
-    "Comparison points": "Steals per game PO peak",
-    "Who wins?": "Most",
-    "Wheres the data?": "PO-Stats.csv"
-  },
-  {
-    "Comparison points": "Blocks per game PO peak",
-    "Who wins?": "Most",
-    "Wheres the data?": "PO-Stats.csv"
-  },
-  {
-    "Comparison points": "Field Goal % PO peak",
-    "Who wins?": "Most",
-    "Wheres the data?": "PO-Stats.csv"
-  },
-  {
-    "Comparison points": "Three Point % PO peak",
-    "Who wins?": "Most",
-    "Wheres the data?": "PO-Stats.csv"
-  },
-  {
-    "Comparison points": "Free Throw % PO peak",
-    "Who wins?": "Most",
-    "Wheres the data?": "PO-Stats.csv"
-  },
-  {
-    "Comparison points": "Turnovers per game PO peak",
-    "Who wins?": "Least",
-    "Wheres the data?": "PO-Stats.csv"
-  },
-  {
-    "Comparison points": "PLAYOFF SUCCESS",
-    "Who wins?": "",
-    "Wheres the data?": ""
-  },
-  {
-    "Comparison points": "First Round",
-    "Who wins?": "Most",
-    "Wheres the data?": "PO-series.csv"
-  },
-  {
-    "Comparison points": "Conference Semis",
-    "Who wins?": "Most",
-    "Wheres the data?": "PO-series.csv"
-  },
-  {
-    "Comparison points": "Conference Finals",
-    "Who wins?": "Most",
-    "Wheres the data?": "PO-series.csv"
-  },
-  {
-    "Comparison points": "Finalist",
-    "Who wins?": "Most",
-    "Wheres the data?": "PO-series.csv"
-  },
-  {
-    "Comparison points": "Champion",
-    "Who wins?": "Most",
-    "Wheres the data?": "PO-series.csv"
-  },
-  {
-    "Comparison points": "SALARIES",
-    "Who wins?": "",
-    "Wheres the data?": ""
-  },
-  {
-    "Comparison points": "Career earnings",
-    "Who wins?": "Most",
-    "Wheres the data?": "Salaries.csv"
-  },
-  {
-    "Comparison points": "Average salary",
-    "Who wins?": "Most",
-    "Wheres the data?": "Salaries.csv"
-  },
-  {
-    "Comparison points": "Highest salary",
-    "Who wins?": "Most",
-    "Wheres the data?": "Salaries.csv"
-  },
-  {
-    "Comparison points": "Lowest salary",
-    "Who wins?": "Most",
-    "Wheres the data?": "Salaries.csv"
-  },
-  {
-    "Comparison points": "DRAFT COMBINE",
-    "Who wins?": "",
-    "Wheres the data?": ""
-  },
-  {
-    "Comparison points": "Body fat",
-    "Who wins?": "Least",
-    "Wheres the data?": "Combine.csv"
-  },
-  {
-    "Comparison points": "Hand size",
-    "Who wins?": "Most",
-    "Wheres the data?": "Combine.csv"
-  },
-  {
-    "Comparison points": "Height without shoes",
-    "Who wins?": "Most",
-    "Wheres the data?": "Combine.csv"
-  },
-  {
-    "Comparison points": "Standing reach",
-    "Who wins?": "Most",
-    "Wheres the data?": "Combine.csv"
-  },
-  {
-    "Category": "DRAFT COMBINE",
-    "Comparison points": "Standing reach (inches)",
-    "Who wins?": "Most"
-  },
-  {
-    "Comparison points": "Weight",
-    "Who wins?": "Least",
-    "Wheres the data?": "Combine.csv"
-  },
-  {
-    "Comparison points": "Wingspan",
-    "Who wins?": "Most",
-    "Wheres the data?": "Combine.csv"
-  },
-  {
-    "Comparison points": "Lane agility time",
-    "Who wins?": "Least",
-    "Wheres the data?": "Combine.csv"
-  },
-  {
-    "Comparison points": "Shuttle run",
-    "Who wins?": "Least",
-    "Wheres the data?": "Combine.csv"
-  },
-  {
-    "Comparison points": "Threequartersprint",
-    "Who wins?": "Least",
-    "Wheres the data?": "Combine.csv"
-  },
-  {
-    "Comparison points": "Standingverticalleap",
-    "Who wins?": "Most",
-    "Wheres the data?": "Combine.csv"
-  },
-  {
-    "Comparison points": "Maxverticalleap",
-    "Who wins?": "Most",
-    "Wheres the data?": "Combine.csv"
-  },
-  {
-    "Comparison points": "Maxbenchpress",
-    "Who wins?": "Most",
-    "Wheres the data?": "Combine.csv"
-  },
-  {
-    "Comparison points": "BEST VOTE RANKING",
-    "Who wins?": "",
-    "Wheres the data?": ""
-  },
-  {
-    "Comparison points": "MVP",
-    "Who wins?": "Most",
-    "Wheres the data?": "Award-Votes.csv"
-  },
-  {
-    "Comparison points": "DPOY",
-    "Who wins?": "Most",
-    "Wheres the data?": "Award-Votes.csv"
-  },
-  {
-    "Comparison points": "ROY",
-    "Who wins?": "Most",
-    "Wheres the data?": "Award-Votes.csv"
-  },
-  {
-    "Comparison points": "Sixth Man",
-    "Who wins?": "Most",
-    "Wheres the data?": "Award-Votes.csv"
-  },
-  {
-    "Comparison points": "MIP",
-    "Who wins?": "Most",
-    "Wheres the data?": "Award-Votes.csv"
-  },
-  {
-    "Comparison points": "BEST AWARDS RANKING",
-    "Who wins?": "",
-    "Wheres the data?": ""
-  },
-  {
-    "Comparison points": "Most Valuable Player",
-    "Who wins?": "Least",
-    "Wheres the data?": "Award-Votes.csv"
-  },
-  {
-    "Comparison points": "Defensive Player of the Year",
-    "Who wins?": "Least",
-    "Wheres the data?": "Award-Votes.csv"
-  },
-  {
-    "Comparison points": "Rookie of the Year",
-    "Who wins?": "Least",
-    "Wheres the data?": "Award-Votes.csv"
-  },
-  {
-    "Comparison points": "Most Improved Player",
-    "Who wins?": "Least",
-    "Wheres the data?": "Award-Votes.csv"
-  },
-  {
-    "Comparison points": "YEARS RECEIVING VOTES",
-    "Who wins?": "",
-    "Wheres the data?": ""
-  },
-  {
-    "Comparison points": "Years with MVP votes",
-    "Who wins?": "Most",
-    "Wheres the data?": "Award-Votes.csv"
-  },
-  {
-    "Comparison points": "Years with DPOY votes",
-    "Who wins?": "Most",
-    "Wheres the data?": "Award-Votes.csv"
-  },
-  {
-    "Comparison points": "Years with ROY votes",
-    "Who wins?": "Most",
-    "Wheres the data?": "Award-Votes.csv"
-  },
-  {
-    "Comparison points": "Years with Sixth Man votes",
-    "Who wins?": "Most",
-    "Wheres the data?": "Award-Votes.csv"
-  },
-  {
-    "Comparison points": "Years with MIP votes",
-    "Who wins?": "Most",
-    "Wheres the data?": "Award-Votes.csv"
-  },
-  {
-    "Comparison points": "SIGNATURE SHOES",
-    "Who wins?": "",
-    "Wheres the data?": ""
-  },
-  {
-    "Comparison points": "Number of Shoes",
-    "Who wins?": "Most",
-    "Wheres the data?": "Sneakers.csv"
-  },
-  {
-    "Comparison points": "NBA 2K",
-    "Who wins?": "",
-    "Wheres the data?": ""
-  },
-  {
-    "Comparison points": "Average career rating",
-    "Who wins?": "Most",
-    "Wheres the data?": "NBA2K.csv"
-  },
-  {
-    "Comparison points": "Highest rating",
-    "Who wins?": "Most",
-    "Wheres the data?": "NBA2K.csv"
-  },
-  {
-    "Comparison points": "Lowest rating",
-    "Who wins?": "Most",
-    "Wheres the data?": "NBA2K.csv"
-  },
-  {
-    "Category": "DRAFT COMBINE",
-    "Comparison points": "Body fat",
-    "Who wins?": "Least"
-  },
-  {
-    "Category": "DRAFT COMBINE",
-    "Comparison points": "Hand size",
-    "Who wins?": "Most"
-  },
-  {
-    "Category": "DRAFT COMBINE",
-    "Comparison points": "Weight",
-    "Who wins?": "Most"
-  },
-  {
-    "Category": "DRAFT COMBINE",
-    "Comparison points": "Height",
-    "Who wins?": "Most"
-  },
-  {
-    "Category": "DRAFT COMBINE",
-    "Comparison points": "Height without shoes",
-    "Who wins?": "Most"
-  },
-  {
-    "Category": "DRAFT COMBINE",
-    "Comparison points": "Standing reach",
-    "Who wins?": "Most"
-  },
-  {
-    "Category": "DRAFT COMBINE",
-    "Comparison points": "Wingspan",
-    "Who wins?": "Most"
-  },
-  {
-    "Category": "DRAFT COMBINE",
-    "Comparison points": "Lane agility time",
-    "Who wins?": "Least"
-  },
-  {
-    "Category": "DRAFT COMBINE",
-    "Comparison points": "Shuttle run",
-    "Who wins?": "Least"
-  },
-  {
-    "Category": "DRAFT COMBINE",
-    "Comparison points": "Three quarter sprint",
-    "Who wins?": "Least"
-  },
-  {
-    "Category": "DRAFT COMBINE",
-    "Comparison points": "Standing vertical leap",
-    "Who wins?": "Most"
-  },
-  {
-    "Category": "DRAFT COMBINE",
-    "Comparison points": "Max vertical leap",
-    "Who wins?": "Most"
-  },
-  {
-    "Category": "DRAFT COMBINE",
-    "Comparison points": "Max bench press",
-    "Who wins?": "Most"
-  }
-]
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NBA Podcast Stream</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container { max-width: 1600px; margin: 0 auto; }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #e74c3c;
+        }
+        
+        .header h1 { font-size: 36px; color: #2c3e50; margin-bottom: 10px; }
+        .header p { color: #7f8c8d; font-size: 16px; }
+        
+        .controls {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .search-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .search-bar {
+            flex: 1;
+            padding: 12px 20px;
+            font-size: 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+        }
+        
+        .search-bar:focus { outline: none; border-color: #e74c3c; }
+        
+        .clear-btn {
+            padding: 12px 24px;
+            background: #95a5a6;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+        
+        .clear-btn:hover { background: #7f8c8d; }
+        
+        .filters, .sort-controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+        
+        .filter-btn, .sort-btn {
+            padding: 8px 16px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .filter-btn:hover, .sort-btn:hover { border-color: #e74c3c; color: #e74c3c; }
+        .filter-btn.active, .sort-btn.active { background: #e74c3c; color: white; border-color: #e74c3c; }
+        
+        .sort-label { font-weight: 600; color: #555; align-self: center; }
+        
+        .trending-section {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .trending-section h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .trending-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+        
+        .trending-category {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .trending-category h4 {
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .trending-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+            border-bottom: 1px solid #e0e0e0;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .trending-item:last-child { border-bottom: none; }
+        .trending-item:hover { color: #e74c3c; padding-left: 5px; }
+        
+        .trending-name {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .trending-count {
+            background: #3498db;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .video-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+            position: relative;
+        }
+        
+        .video-card:hover { transform: translateY(-4px); box-shadow: 0 4px 16px rgba(0,0,0,0.15); }
+        
+        .badge {
+            position: absolute;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: bold;
+            z-index: 15;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .new-badge { top: 10px; right: 10px; background: #e74c3c; color: white; }
+        .trending-badge { top: 10px; left: 10px; background: #f39c12; color: white; }
+        .episode-badge { top: 45px; right: 10px; background: #9b59b6; color: white; }
+        
+        .duration-badge {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(231, 76, 60, 0.95);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: bold;
+            z-index: 15;
+            letter-spacing: 0.5px;
+        }
+        
+        .video-thumbnail {
+            position: relative;
+            padding-bottom: 56.25%;
+            background: #000;
+            cursor: pointer;
+        }
+        
+        .video-thumbnail img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .video-thumbnail.playing img { display: none; }
+        
+        .play-button {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 70px;
+            height: 70px;
+            background: rgba(231, 76, 60, 0.9);
+            border-radius: 50%;
+            z-index: 10;
+            transition: all 0.3s;
+        }
+        
+        .play-button::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 52%;
+            transform: translate(-50%, -50%);
+            width: 0;
+            height: 0;
+            border-left: 18px solid white;
+            border-top: 11px solid transparent;
+            border-bottom: 11px solid transparent;
+        }
+        
+        .play-button:hover { background: rgba(231, 76, 60, 1); transform: translate(-50%, -50%) scale(1.1); }
+        .video-thumbnail.playing .play-button { display: none; }
+        
+        .video-content { padding: 20px; }
+        
+        .video-title {
+            font-size: 16px;
+            font-weight: 600;
+            line-height: 1.4;
+            margin-bottom: 10px;
+        }
+        
+        .video-title a {
+            color: #2c3e50;
+            text-decoration: none;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .video-title a:hover { color: #e74c3c; }
+        
+        .video-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 12px;
+            font-size: 13px;
+            color: #7f8c8d;
+            align-items: center;
+        }
+        
+        .channel-name {
+            font-weight: 600;
+            color: #e74c3c;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        
+        .channel-name:hover { 
+            color: #c0392b;
+            text-decoration: underline; 
+        }
+        
+        .duration-display {
+            background: #e74c3c;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 14px;
+            letter-spacing: 0.5px;
+        }
+        
+        .stats-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            padding: 8px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            font-size: 11px;
+        }
+        
+        .stat-item { display: flex; align-items: center; gap: 4px; }
+        
+        .topic-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 8px;
+        }
+        
+        .topic-tag {
+            padding: 4px 9px;
+            background: #e3f2fd;
+            color: #1976d2;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .topic-tag:hover {
+            background: #1976d2;
+            color: white;
+            transform: scale(1.05);
+        }
+        
+        .player-mentions, .team-mentions {
+            margin-top: 8px;
+            font-size: 11px;
+            color: #666;
+            padding: 6px 8px;
+            border-radius: 4px;
+        }
+        
+        .player-mentions { background: #fff3cd; }
+        .team-mentions { background: #d1ecf1; }
+        
+        .clickable-name {
+            color: #0056b3;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: underline;
+            transition: color 0.2s;
+        }
+        
+        .clickable-name:hover { color: #003d82; }
+        
+        .related-content {
+            margin-top: 10px;
+            padding: 8px;
+            background: #f0f8ff;
+            border-radius: 6px;
+            border-left: 3px solid #3498db;
+            font-size: 11px;
+            color: #555;
+        }
+        
+        .related-link {
+            color: #2980b9;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: underline;
+            margin-right: 8px;
+        }
+        
+        .related-link:hover { color: #1c5a85; }
+        
+        .video-description {
+            font-size: 12px;
+            line-height: 1.5;
+            color: #666;
+            margin-top: 10px;
+            padding: 8px;
+            background: #f8f9fa;
+            border-left: 3px solid #e74c3c;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .video-description.collapsed {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .video-description.expanded {
+            display: block;
+            max-height: none;
+        }
+        
+        .expand-hint {
+            font-size: 10px;
+            color: #3498db;
+            font-weight: 600;
+            margin-top: 4px;
+            text-align: right;
+        }
+        
+        .video-summary {
+            font-size: 13px;
+            line-height: 1.6;
+            color: #555;
+            margin-top: 10px;
+            padding: 12px;
+            background: linear-gradient(135deg, #e8f4f8 0%, #d4e9f7 100%);
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+            box-shadow: 0 2px 4px rgba(52, 152, 219, 0.1);
+        }
+        
+        .summary-label { 
+            font-weight: 700;
+            color: #2980b9; 
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .no-summary-note {
+            font-size: 11px;
+            color: #95a5a6;
+            font-style: italic;
+            margin-top: 8px;
+            padding: 6px;
+            background: #ecf0f1;
+            border-radius: 4px;
+        }
+        
+        .loading-spinner, .loading, .error, .no-videos {
+            text-align: center;
+            padding: 40px 20px;
+            color: #7f8c8d;
+        }
+        
+        .error { color: #e74c3c; }
+        
+        @media (max-width: 1400px) {
+            .video-grid { grid-template-columns: repeat(2, 1fr); }
+            .trending-grid { grid-template-columns: 1fr; }
+        }
+        
+        @media (max-width: 900px) {
+            .video-grid { grid-template-columns: 1fr; }
+            .header h1 { font-size: 28px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏀 NBA Podcast Stream</h1>
+            <p>Latest episodes with AI summaries and insights</p>
+        </div>
+
+        <div class="controls">
+            <div class="search-row">
+                <input 
+                    type="text" 
+                    class="search-bar" 
+                    id="searchBar" 
+                    placeholder="🔍 Search title, channel, description, topics, players, teams..."
+                >
+                <button class="clear-btn" id="clearBtn">✕ Clear All</button>
+            </div>
+            
+            <div class="filters">
+                <button class="filter-btn active" data-filter="all">All Episodes</button>
+                <button class="filter-btn" data-filter="summaries">With AI Summaries</button>
+                <button class="filter-btn" data-filter="trending">🔥 Trending</button>
+                <button class="filter-btn" data-filter="new">🆕 New Today</button>
+            </div>
+
+            <div class="sort-controls">
+                <span class="sort-label">Sort:</span>
+                <button class="sort-btn active" data-sort="date">Latest</button>
+                <button class="sort-btn" data-sort="views">Most Viewed</button>
+                <button class="sort-btn" data-sort="duration">Duration</button>
+                <button class="sort-btn" data-sort="channel">Channel A-Z</button>
+            </div>
+        </div>
+
+        <div class="trending-section" id="trendingSection" style="display: none;">
+            <h3>🔥 Trending in Last 36 Hours</h3>
+            <div class="trending-grid" id="trendingGrid"></div>
+        </div>
+
+        <div id="videoGrid" class="video-grid">
+            <div class="loading">Loading episodes...</div>
+        </div>
+
+        <div class="loading-spinner" id="loadingSpinner" style="display: none;">
+            Loading more...
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script>
+        const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRr8GiFRfKLquD0j49JqKIL11tnulG7--WeJsvP3nqFc72EeQM3RsQjnWeXlgcVoR2RL5y7oqYbfpSs/pub?gid=162816128&single=true&output=csv';
+        const ITEMS_PER_LOAD = 15;
+        const TRENDING_HOURS = 36;
+        
+        const NBA_PLAYERS = {
+            'LeBron James': 'LeBron James', 'LeBron': 'LeBron James',
+            'Stephen Curry': 'Stephen Curry', 'Steph Curry': 'Stephen Curry',
+            'Kevin Durant': 'Kevin Durant', 'KD': 'Kevin Durant',
+            'Giannis Antetokounmpo': 'Giannis Antetokounmpo', 'Giannis': 'Giannis Antetokounmpo',
+            'Nikola Jokic': 'Nikola Jokic', 'Jokic': 'Nikola Jokic',
+            'Joel Embiid': 'Joel Embiid', 'Embiid': 'Joel Embiid',
+            'Jayson Tatum': 'Jayson Tatum', 'Luka Doncic': 'Luka Doncic', 'Luka': 'Luka Doncic',
+            'James Harden': 'James Harden', 'Devin Booker': 'Devin Booker',
+            'Anthony Davis': 'Anthony Davis', 'AD': 'Anthony Davis',
+            'Victor Wembanyama': 'Victor Wembanyama', 'Wembanyama': 'Victor Wembanyama', 'Wemby': 'Victor Wembanyama',
+            'Michael Jordan': 'Michael Jordan', 'MJ': 'Michael Jordan',
+            'Kobe Bryant': 'Kobe Bryant', 'Kobe': 'Kobe Bryant',
+            'Shaquille O\'Neal': 'Shaquille O\'Neal', 'Shaq': 'Shaquille O\'Neal'
+        };
+        
+        const NBA_TEAMS = ['Lakers', 'Warriors', 'Celtics', 'Heat', 'Bucks', 'Nuggets', 'Suns', 'Mavericks', 'Sixers', '76ers', 'Knicks', 'Clippers', 'Kings'];
+        const TOPICS = ['Trade', 'Playoff', 'Draft', 'MVP', 'Championship', 'Finals', 'Injury', 'Analysis', 'Recap', 'Preview', 'Breaking'];
+        
+        let allVideos = [], filteredVideos = [], displayedCount = ITEMS_PER_LOAD;
+        let currentFilter = 'all', currentSort = 'date', searchQuery = '', isLoading = false;
+        let channelFilter = null, players = {}, currentPlayingId = null;
+        
+        function formatNumber(num) {
+            const n = parseInt(num);
+            if (isNaN(n)) return num;
+            if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
+            if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
+            return n.toLocaleString();
+        }
+        
+        function formatDate(dateString) {
+            try {
+                const date = new Date(dateString);
+                if (isNaN(date.getTime())) return 'Unknown';
+                return date.toLocaleString('en-US', { 
+                    month: 'short', day: 'numeric', year: 'numeric',
+                    hour: 'numeric', minute: '2-digit', hour12: true
+                });
+            } catch { return 'Unknown'; }
+        }
+        
+        function parseDuration(duration) {
+            if (!duration) return 0;
+            const parts = duration.split(':').map(Number);
+            if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
+            if (parts.length === 2) return parts[0] * 60 + parts[1];
+            return 0;
+        }
+        
+        function getAgeInHours(dateString) {
+            try {
+                return (new Date() - new Date(dateString)) / (1000 * 60 * 60);
+            } catch { return 999; }
+        }
+        
+        function isNew(dateString) { return getAgeInHours(dateString) < 24; }
+        function isTrending(viewCount) { return parseInt(viewCount) > 50000; }
+        
+        function extractEpisode(title) {
+            const patterns = [/ep\.?\s*#?(\d+)/i, /episode\s*#?(\d+)/i, /#(\d+)/, /\[(\d+)\]/, /\((\d+)\)/];
+            for (const pattern of patterns) {
+                const match = title.match(pattern);
+                if (match) return `EP ${match[1]}`;
+            }
+            return null;
+        }
+        
+        function extractTopics(text) {
+            if (!text) return [];
+            return TOPICS.filter(t => text.toLowerCase().includes(t.toLowerCase())).slice(0, 5);
+        }
+        
+        function detectPlayers(text) {
+            if (!text) return {};
+            const mentions = {};
+            Object.entries(NBA_PLAYERS).forEach(([key, fullName]) => {
+                const regex = new RegExp('\\b' + key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'gi');
+                const matches = text.match(regex);
+                if (matches) mentions[fullName] = (mentions[fullName] || 0) + matches.length;
+            });
+            return mentions;
+        }
+        
+        function detectTeams(text) {
+            if (!text) return [];
+            return [...new Set(NBA_TEAMS.filter(team => text.toLowerCase().includes(team.toLowerCase())))];
+        }
+        
+        function calculateTrending() {
+            const cutoffTime = new Date();
+            cutoffTime.setHours(cutoffTime.getHours() - TRENDING_HOURS);
+            const recentVideos = allVideos.filter(v => new Date(v.publishedDate) >= cutoffTime);
+            
+            const playerCounts = {}, teamCounts = {}, topicCounts = {};
+            
+            recentVideos.forEach(video => {
+                const fullText = `${video.title} ${video.description}`;
+                Object.keys(detectPlayers(fullText)).forEach(player => {
+                    playerCounts[player] = (playerCounts[player] || 0) + 1;
+                });
+                detectTeams(fullText).forEach(team => {
+                    teamCounts[team] = (teamCounts[team] || 0) + 1;
+                });
+                extractTopics(fullText).forEach(topic => {
+                    topicCounts[topic] = (topicCounts[topic] || 0) + 1;
+                });
+            });
+            
+            return {
+                topPlayers: Object.entries(playerCounts).sort((a, b) => b[1] - a[1]).slice(0, 5),
+                topTeams: Object.entries(teamCounts).sort((a, b) => b[1] - a[1]).slice(0, 5),
+                topTopics: Object.entries(topicCounts).sort((a, b) => b[1] - a[1]).slice(0, 5)
+            };
+        }
+        
+        function renderTrending() {
+            const { topPlayers, topTeams, topTopics } = calculateTrending();
+            
+            if (topPlayers.length === 0 && topTeams.length === 0 && topTopics.length === 0) {
+                document.getElementById('trendingSection').style.display = 'none';
+                return;
+            }
+            
+            document.getElementById('trendingSection').style.display = 'block';
+            let html = '';
+            
+            if (topPlayers.length > 0) {
+                html += '<div class="trending-category"><h4>🏀 Most Mentioned Players</h4>';
+                topPlayers.forEach(([name, count]) => {
+                    html += `<div class="trending-item" onclick="filterByName('${name.replace(/'/g, "\\'")}')">
+                        <span class="trending-name">${name}</span>
+                        <span class="trending-count">${count}</span>
+                    </div>`;
+                });
+                html += '</div>';
+            }
+            
+            if (topTeams.length > 0) {
+                html += '<div class="trending-category"><h4>🏆 Most Discussed Teams</h4>';
+                topTeams.forEach(([name, count]) => {
+                    html += `<div class="trending-item" onclick="filterByName('${name}')">
+                        <span class="trending-name">${name}</span>
+                        <span class="trending-count">${count}</span>
+                    </div>`;
+                });
+                html += '</div>';
+            }
+            
+            if (topTopics.length > 0) {
+                html += '<div class="trending-category"><h4>🔥 Hot Topics</h4>';
+                topTopics.forEach(([name, count]) => {
+                    html += `<div class="trending-item" onclick="filterByTopic('${name}')">
+                        <span class="trending-name">#${name}</span>
+                        <span class="trending-count">${count}</span>
+                    </div>`;
+                });
+                html += '</div>';
+            }
+            
+            document.getElementById('trendingGrid').innerHTML = html;
+        }
+        
+        function getRelatedContent(video) {
+            const fullText = `${video.title} ${video.description}`;
+            const topics = extractTopics(fullText);
+            const teams = detectTeams(fullText);
+            const related = [];
+            
+            if (topics.length > 0) {
+                const count = allVideos.filter(v => v.id !== video.id && extractTopics(`${v.title} ${v.description}`).includes(topics[0])).length;
+                if (count > 0) related.push({ label: `${count} more about #${topics[0]}`, filter: topics[0] });
+            }
+            
+            if (teams.length > 0) {
+                const count = allVideos.filter(v => v.id !== video.id && detectTeams(`${v.title} ${v.description}`).includes(teams[0])).length;
+                if (count > 0) related.push({ label: `${count} more about ${teams[0]}`, filter: teams[0] });
+            }
+            
+            const weekAgo = new Date();
+            weekAgo.setDate(weekAgo.getDate() - 7);
+            const channelRecent = allVideos.filter(v => v.channelName === video.channelName && v.id !== video.id && new Date(v.publishedDate) >= weekAgo).length;
+            if (channelRecent > 0) related.push({ label: `${channelRecent} more from this channel this week`, filter: video.channelName });
+            
+            return related;
+        }
+        
+        function toggleDescription(event) {
+            const desc = event.currentTarget;
+            desc.classList.toggle('collapsed');
+            desc.classList.toggle('expanded');
+        }
+        
+        function clearAllFilters() {
+            searchQuery = '';
+            channelFilter = null;
+            currentFilter = 'all';
+            currentSort = 'date';
+            document.getElementById('searchBar').value = '';
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.filter === 'all'));
+            document.querySelectorAll('.sort-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.sort === 'date'));
+            filterVideos();
+        }
+        
+        function filterByChannel(channelName) {
+            channelFilter = channelFilter === channelName ? null : channelName;
+            filterVideos();
+        }
+        
+        function filterByName(name) {
+            searchQuery = name;
+            document.getElementById('searchBar').value = name;
+            channelFilter = null;
+            filterVideos();
+        }
+        
+        function filterByTopic(topic) {
+            searchQuery = topic;
+            document.getElementById('searchBar').value = topic;
+            channelFilter = null;
+            filterVideos();
+        }
+        
+        let YTReady = false;
+        function onYouTubeIframeAPIReady() { YTReady = true; }
+        
+        function playVideo(videoId, cardIndex, event) {
+            event.preventDefault();
+            event.stopPropagation();
+            
+            const card = document.querySelectorAll('.video-card')[cardIndex];
+            const thumbnail = card.querySelector('.video-thumbnail');
+            const playerId = `player-${videoId}`;
+            
+            let playerDiv = thumbnail.querySelector(`#${playerId}`);
+            if (!playerDiv) {
+                playerDiv = document.createElement('div');
+                playerDiv.id = playerId;
+                playerDiv.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%';
+                thumbnail.appendChild(playerDiv);
+            }
+            
+            thumbnail.classList.add('playing');
+            currentPlayingId = videoId;
+            
+            if (YTReady && !players[videoId]) {
+                players[videoId] = new YT.Player(playerId, {
+                    videoId: videoId,
+                    playerVars: { 'autoplay': 1, 'modestbranding': 1, 'rel': 0 },
+                    events: {
+                        'onStateChange': (e) => { if (e.data === YT.PlayerState.ENDED) playNextVideo(cardIndex); }
+                    }
+                });
+            } else if (!YTReady) {
+                playerDiv.innerHTML = `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${videoId}?autoplay=1" frameborder="0" allow="autoplay" allowfullscreen></iframe>`;
+            }
+        }
+        
+        function playNextVideo(currentIndex) {
+            const nextIndex = currentIndex + 1;
+            const cards = document.querySelectorAll('.video-card');
+            if (nextIndex < cards.length) {
+                cards[nextIndex].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                setTimeout(() => {
+                    const video = filteredVideos[nextIndex];
+                    if (video) playVideo(video.id, nextIndex, { preventDefault: () => {}, stopPropagation: () => {} });
+                }, 1000);
+            }
+        }
+        
+        function createVideoCard(video, index) {
+            const episodeNum = extractEpisode(video.title);
+            const fullText = `${video.title} ${video.description}`;
+            const topics = extractTopics(fullText);
+            const playerMentions = detectPlayers(fullText);
+            const teams = detectTeams(fullText);
+            const relatedContent = getRelatedContent(video);
+            const topPlayers = Object.entries(playerMentions).sort((a, b) => b[1] - a[1]).slice(0, 3);
+            
+            const card = document.createElement('div');
+            card.className = 'video-card';
+            
+            let statsHtml = `<div class="stat-item">👁️ <strong>${formatNumber(video.viewCount)}</strong></div>`;
+            if (video.subscriberCount !== 'N/A' && video.subscriberCount !== 'Hidden') {
+                statsHtml += `<div class="stat-item">👥 <strong>${formatNumber(video.subscriberCount)}</strong></div>`;
+            }
+            if (video.likeCount !== '0') statsHtml += `<div class="stat-item">👍 <strong>${formatNumber(video.likeCount)}</strong></div>`;
+            if (video.commentCount !== '0') statsHtml += `<div class="stat-item">💬 <strong>${formatNumber(video.commentCount)}</strong></div>`;
+            
+            let relatedHtml = '';
+            if (relatedContent.length > 0) {
+                relatedHtml = '<div class="related-content">📊 ' + 
+                    relatedContent.map(r => `<span class="related-link" onclick="filterByName('${r.filter.replace(/'/g, "\\'")}')">${r.label}</span>`).join(' • ') +
+                    '</div>';
+            }
+            
+            const durationDisplay = video.duration ? `<span class="duration-display">⏱️ ${video.duration}</span>` : '';
+            const durationBadge = video.duration ? `<div class="duration-badge">${video.duration}</div>` : '';
+            
+            let summaryHtml = '';
+            if (video.summary && video.summary.trim().length > 0) {
+                summaryHtml = `<div class="video-summary">
+                    <div class="summary-label">🤖 AI Summary (from transcript):</div>
+                    ${video.summary}
+                </div>`;
+            } else if (video.transcriptAvailable === 'Yes') {
+                summaryHtml = `<div class="no-summary-note">⏳ AI summary pending (transcript available, will be generated next run)</div>`;
+            }
+            
+            card.innerHTML = `
+                ${isNew(video.publishedDate) ? '<div class="badge new-badge">NEW</div>' : ''}
+                ${isTrending(video.viewCount) ? '<div class="badge trending-badge">🔥 TRENDING</div>' : ''}
+                ${episodeNum ? `<div class="badge episode-badge">${episodeNum}</div>` : ''}
+                
+                <div class="video-thumbnail" onclick="playVideo('${video.id}', ${index}, event)">
+                    <img src="${video.thumbnail}" alt="${video.title.replace(/"/g, '&quot;')}">
+                    ${durationBadge}
+                    <div class="play-button"></div>
+                </div>
+                
+                <div class="video-content">
+                    <h3 class="video-title">
+                        <a href="https://www.youtube.com/watch?v=${video.id}" target="_blank">${video.title}</a>
+                    </h3>
+                    <div class="video-meta">
+                        <span class="channel-name" onclick="filterByChannel('${video.channelName.replace(/'/g, "\\'")}')">${video.channelName}</span>
+                        <span>📅 ${formatDate(video.publishedDate)}</span>
+                        ${durationDisplay}
+                    </div>
+                    <div class="stats-row">${statsHtml}</div>
+                    ${topics.length > 0 ? `<div class="topic-tags">${topics.map(t => `<span class="topic-tag" onclick="filterByTopic('${t}')">#${t}</span>`).join('')}</div>` : ''}
+                    ${topPlayers.length > 0 ? `<div class="player-mentions">🏀 ${topPlayers.map(([name, count]) => `<span class="clickable-name" onclick="filterByName('${name.replace(/'/g, "\\'")}')">${name}</span> (${count})`).join(', ')}</div>` : ''}
+                    ${teams.length > 0 ? `<div class="team-mentions">🏆 ${teams.slice(0, 3).map(team => `<span class="clickable-name" onclick="filterByName('${team}')">${team}</span>`).join(', ')}</div>` : ''}
+                    ${relatedHtml}
+                    ${video.description ? `<div class="video-description collapsed" onclick="toggleDescription(event)">${video.description}<div class="expand-hint">Click to expand ▼</div></div>` : ''}
+                    ${summaryHtml}
+                </div>
+            `;
+            
+            return card;
+        }
+        
+        function filterVideos() {
+            let result = allVideos;
+            
+            if (channelFilter) result = result.filter(v => v.channelName === channelFilter);
+            
+            if (searchQuery) {
+                const query = searchQuery.toLowerCase();
+                result = result.filter(v => {
+                    const fullText = `${v.title} ${v.channelName} ${v.description}`.toLowerCase();
+                    const topics = extractTopics(fullText).join(' ').toLowerCase();
+                    const playerNames = Object.keys(detectPlayers(fullText)).join(' ').toLowerCase();
+                    const teamNames = detectTeams(fullText).join(' ').toLowerCase();
+                    return fullText.includes(query) || topics.includes(query) || playerNames.includes(query) || teamNames.includes(query);
+                });
+            }
+            
+            switch(currentFilter) {
+                case 'summaries': result = result.filter(v => v.summary && v.summary.trim().length > 0); break;
+                case 'trending': result = result.filter(v => isTrending(v.viewCount)); break;
+                case 'new': result = result.filter(v => isNew(v.publishedDate)); break;
+            }
+            
+            switch(currentSort) {
+                case 'views': result.sort((a, b) => parseInt(b.viewCount) - parseInt(a.viewCount)); break;
+                case 'duration': result.sort((a, b) => parseDuration(b.duration) - parseDuration(a.duration)); break;
+                case 'channel': result.sort((a, b) => a.channelName.localeCompare(b.channelName)); break;
+                default: result.sort((a, b) => new Date(b.publishedDate) - new Date(a.publishedDate));
+            }
+            
+            filteredVideos = result;
+            displayedCount = ITEMS_PER_LOAD;
+            renderVideos();
+        }
+        
+        function renderVideos() {
+            const grid = document.getElementById('videoGrid');
+            const videosToShow = filteredVideos.slice(0, displayedCount);
+            
+            if (videosToShow.length === 0) {
+                grid.innerHTML = '<div class="no-videos">No episodes found.</div>';
+                return;
+            }
+            
+            grid.innerHTML = '';
+            videosToShow.forEach((video, i) => {
+                const card = createVideoCard(video, i);
+                grid.appendChild(card);
+            });
+        }
+        
+        function handleScroll() {
+            if (isLoading) return;
+            const scrollPos = window.innerHeight + window.scrollY;
+            const pageHeight = document.documentElement.scrollHeight;
+            
+            if (scrollPos >= pageHeight - 500 && displayedCount < filteredVideos.length) {
+                isLoading = true;
+                document.getElementById('loadingSpinner').style.display = 'block';
+                setTimeout(() => {
+                    displayedCount += ITEMS_PER_LOAD;
+                    renderVideos();
+                    isLoading = false;
+                    document.getElementById('loadingSpinner').style.display = 'none';
+                }, 500);
+            }
+        }
+        
+        async function loadVideos() {
+            try {
+                const response = await fetch(SHEET_CSV_URL);
+                if (!response.ok) throw new Error('Failed to fetch');
+                
+                const csvText = await response.text();
+                const parsed = Papa.parse(csvText, { header: true, skipEmptyLines: true });
+                
+                if (!parsed.data || parsed.data.length === 0) {
+                    document.getElementById('videoGrid').innerHTML = '<div class="no-videos">No videos yet.</div>';
+                    return;
+                }
+                
+                allVideos = parsed.data.map(row => ({
+                    id: row['Video ID'],
+                    title: row['Title'],
+                    channelName: row['Channel Name'],
+                    channelId: row['Channel ID'],
+                    publishedDate: row['Published Date'],
+                    thumbnail: row['Thumbnail URL'],
+                    description: row['Description'] || '',
+                    viewCount: row['View Count'] || '0',
+                    subscriberCount: row['Subscriber Count'] || 'N/A',
+                    duration: row['Duration'] || '',
+                    likeCount: row['Like Count'] || '0',
+                    commentCount: row['Comment Count'] || '0',
+                    transcriptAvailable: row['Transcript Available'] || 'No',
+                    summary: row['AI Summary'] || ''
+                })).filter(v => v.id);
+                
+                console.log('Loaded videos:', allVideos.length);
+                console.log('Sample video duration:', allVideos[0]?.duration);
+                
+                renderTrending();
+                filterVideos();
+            } catch (error) {
+                document.getElementById('videoGrid').innerHTML = `<div class="error">Unable to load: ${error.message}</div>`;
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            loadVideos();
+            document.getElementById('clearBtn').addEventListener('click', clearAllFilters);
+            
+            let searchTimeout;
+            document.getElementById('searchBar').addEventListener('input', (e) => {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    searchQuery = e.target.value;
+                    channelFilter = null;
+                    filterVideos();
+                }, 300);
+            });
+            
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentFilter = btn.dataset.filter;
+                    filterVideos();
+                });
+            });
+            
+            document.querySelectorAll('.sort-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentSort = btn.dataset.sort;
+                    filterVideos();
+                });
+            });
+            
+            window.addEventListener('scroll', handleScroll);
+        });
+        
+        setInterval(loadVideos, 60 * 60 * 1000);
+    </script>
+</body>
+</html>
