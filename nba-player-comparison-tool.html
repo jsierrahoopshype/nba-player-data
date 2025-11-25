@@ -315,19 +315,23 @@
             console.log('Loading player data from GitHub (JSON format)...');
             
             try {
+                // Add cache-busting timestamp to force fresh loads
+                const timestamp = Date.now();
+                const cacheBust = `?t=${timestamp}`;
+                
                 // Load all JSON files in parallel
                 const results = await Promise.all([
-                    fetch(DATA_BASE_URL + DATA_FILES.awards).then(r => r.json()),
-                    fetch(DATA_BASE_URL + DATA_FILES.allStar).then(r => r.json()),
-                    fetch(DATA_BASE_URL + DATA_FILES.awardVotes).then(r => r.json()),
-                    fetch(DATA_BASE_URL + DATA_FILES.combine).then(r => r.json()),
-                    fetch(DATA_BASE_URL + DATA_FILES.nba2k).then(r => r.json()),
-                    fetch(DATA_BASE_URL + DATA_FILES.poSeries).then(r => r.json()),
-                    fetch(DATA_BASE_URL + DATA_FILES.poStats).then(r => r.json()),
-                    fetch(DATA_BASE_URL + DATA_FILES.rsStats).then(r => r.json()),
-                    fetch(DATA_BASE_URL + DATA_FILES.salaries).then(r => r.json()),
-                    fetch(DATA_BASE_URL + DATA_FILES.sneakers).then(r => r.json()),
-                    fetch(DATA_BASE_URL + DATA_FILES.comparisons).then(r => r.json())
+                    fetch(DATA_BASE_URL + DATA_FILES.awards + cacheBust).then(r => r.json()),
+                    fetch(DATA_BASE_URL + DATA_FILES.allStar + cacheBust).then(r => r.json()),
+                    fetch(DATA_BASE_URL + DATA_FILES.awardVotes + cacheBust).then(r => r.json()),
+                    fetch(DATA_BASE_URL + DATA_FILES.combine + cacheBust).then(r => r.json()),
+                    fetch(DATA_BASE_URL + DATA_FILES.nba2k + cacheBust).then(r => r.json()),
+                    fetch(DATA_BASE_URL + DATA_FILES.poSeries + cacheBust).then(r => r.json()),
+                    fetch(DATA_BASE_URL + DATA_FILES.poStats + cacheBust).then(r => r.json()),
+                    fetch(DATA_BASE_URL + DATA_FILES.rsStats + cacheBust).then(r => r.json()),
+                    fetch(DATA_BASE_URL + DATA_FILES.salaries + cacheBust).then(r => r.json()),
+                    fetch(DATA_BASE_URL + DATA_FILES.sneakers + cacheBust).then(r => r.json()),
+                    fetch(DATA_BASE_URL + DATA_FILES.comparisons + cacheBust).then(r => r.json())
                 ]);
                 
                 // Assign results to playerData
