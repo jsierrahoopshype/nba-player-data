@@ -530,68 +530,8 @@
     "Wheres the data?": ""
   },
   {
-    "Comparison points": "Body fat",
-    "Who wins?": "Least",
-    "Wheres the data?": "Combine.csv"
-  },
-  {
-    "Comparison points": "Hand size",
-    "Who wins?": "Most",
-    "Wheres the data?": "Combine.csv"
-  },
-  {
-    "Comparison points": "Height without shoes",
-    "Who wins?": "Most",
-    "Wheres the data?": "Combine.csv"
-  },
-  {
-    "Comparison points": "Standing reach",
-    "Who wins?": "Most",
-    "Wheres the data?": "Combine.csv"
-  },
-  {
     "Category": "DRAFT COMBINE",
     "Comparison points": "Standing reach (inches)",
-    "Who wins?": "Most",
-    "Wheres the data?": "Combine.csv"
-  },
-  {
-    "Comparison points": "Weight",
-    "Who wins?": "Least",
-    "Wheres the data?": "Combine.csv"
-  },
-  {
-    "Comparison points": "Wingspan",
-    "Who wins?": "Most",
-    "Wheres the data?": "Combine.csv"
-  },
-  {
-    "Comparison points": "Lane agility time",
-    "Who wins?": "Least",
-    "Wheres the data?": "Combine.csv"
-  },
-  {
-    "Comparison points": "Shuttle run",
-    "Who wins?": "Least",
-    "Wheres the data?": "Combine.csv"
-  },
-  {
-    "Comparison points": "Threequartersprint",
-    "Who wins?": "Least",
-    "Wheres the data?": "Combine.csv"
-  },
-  {
-    "Comparison points": "Standingverticalleap",
-    "Who wins?": "Most",
-    "Wheres the data?": "Combine.csv"
-  },
-  {
-    "Comparison points": "Maxverticalleap",
-    "Who wins?": "Most",
-    "Wheres the data?": "Combine.csv"
-  },
-  {
-    "Comparison points": "Maxbenchpress",
     "Who wins?": "Most",
     "Wheres the data?": "Combine.csv"
   },
