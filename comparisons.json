@@ -550,6 +550,11 @@
     "Wheres the data?": "Combine.csv"
   },
   {
+    "Category": "DRAFT COMBINE",
+    "Comparison points": "Standing reach (inches)",
+    "Who wins?": "Most"
+  },
+  {
     "Comparison points": "Weight",
     "Who wins?": "Least",
     "Wheres the data?": "Combine.csv"
@@ -703,5 +708,70 @@
     "Comparison points": "Lowest rating",
     "Who wins?": "Most",
     "Wheres the data?": "NBA2K.csv"
+  },
+  {
+    "Category": "DRAFT COMBINE",
+    "Comparison points": "Body fat",
+    "Who wins?": "Least"
+  },
+  {
+    "Category": "DRAFT COMBINE",
+    "Comparison points": "Hand size",
+    "Who wins?": "Most"
+  },
+  {
+    "Category": "DRAFT COMBINE",
+    "Comparison points": "Weight",
+    "Who wins?": "Most"
+  },
+  {
+    "Category": "DRAFT COMBINE",
+    "Comparison points": "Height",
+    "Who wins?": "Most"
+  },
+  {
+    "Category": "DRAFT COMBINE",
+    "Comparison points": "Height without shoes",
+    "Who wins?": "Most"
+  },
+  {
+    "Category": "DRAFT COMBINE",
+    "Comparison points": "Standing reach",
+    "Who wins?": "Most"
+  },
+  {
+    "Category": "DRAFT COMBINE",
+    "Comparison points": "Wingspan",
+    "Who wins?": "Most"
+  },
+  {
+    "Category": "DRAFT COMBINE",
+    "Comparison points": "Lane agility time",
+    "Who wins?": "Least"
+  },
+  {
+    "Category": "DRAFT COMBINE",
+    "Comparison points": "Shuttle run",
+    "Who wins?": "Least"
+  },
+  {
+    "Category": "DRAFT COMBINE",
+    "Comparison points": "Three quarter sprint",
+    "Who wins?": "Least"
+  },
+  {
+    "Category": "DRAFT COMBINE",
+    "Comparison points": "Standing vertical leap",
+    "Who wins?": "Most"
+  },
+  {
+    "Category": "DRAFT COMBINE",
+    "Comparison points": "Max vertical leap",
+    "Who wins?": "Most"
+  },
+  {
+    "Category": "DRAFT COMBINE",
+    "Comparison points": "Max bench press",
+    "Who wins?": "Most"
   }
 ]
