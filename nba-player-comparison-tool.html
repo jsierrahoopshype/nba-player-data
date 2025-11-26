@@ -152,6 +152,26 @@
             margin-top: 8px;
             text-align: left;
         }
+        .suggestions-section {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+        .suggestion-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .suggestion-btn:hover {
+            background: #0056b3;
+        }
         .comparison-row {
             display: grid;
             grid-template-columns: 2fr 3fr 1fr 3fr 2fr;
@@ -272,7 +292,9 @@
         </div>
 
         <div id="mainContent" style="display: none;">
-            <div class="player-selector">
+            <div id="results"></div>
+            
+            <div class="player-selector" style="margin-top: 40px;">
                 <div class="player-select-wrapper">
                     <select id="player1" onchange="updateShareURL()">
                         <option value="">Select Player 1...</option>
@@ -289,8 +311,6 @@
             <button class="compare-button" onclick="compareFromSelectors()" id="compareBtn">
                 Compare Players
             </button>
-
-            <div id="results"></div>
         </div>
 
         <div id="errorMessage" style="display: none;"></div>
@@ -310,7 +330,8 @@
             rsStats: 'rsStats.json',
             salaries: 'salaries.json',
             sneakers: 'sneakers.json',
-            comparisons: 'comparisons.json'
+            comparisons: 'comparisons.json',
+            allStarsData: 'allstars-data.json'
         };
 
         let playerData = {};
@@ -338,7 +359,8 @@
                     fetch(DATA_BASE_URL + DATA_FILES.rsStats + cacheBust).then(r => r.json()),
                     fetch(DATA_BASE_URL + DATA_FILES.salaries + cacheBust).then(r => r.json()),
                     fetch(DATA_BASE_URL + DATA_FILES.sneakers + cacheBust).then(r => r.json()),
-                    fetch(DATA_BASE_URL + DATA_FILES.comparisons + cacheBust).then(r => r.json())
+                    fetch(DATA_BASE_URL + DATA_FILES.comparisons + cacheBust).then(r => r.json()),
+                    fetch(DATA_BASE_URL + DATA_FILES.allStarsData + cacheBust).then(r => r.json())
                 ]);
                 
                 // Assign results to playerData
@@ -353,6 +375,7 @@
                 playerData.salaries = results[8];
                 playerData.sneakers = results[9];
                 playerData.comparisons = results[10];
+                playerData.allStarsData = results[11];
                 
                 console.log('Data loaded successfully:', {
                     comparisons: playerData.comparisons.length,
@@ -418,6 +441,7 @@
                 populatePlayerDropdowns();
                 
                 if (p1 && p2) {
+                    // Load comparison from URL
                     const player1Name = formatPlayerName(p1);
                     const player2Name = formatPlayerName(p2);
                     
@@ -425,6 +449,16 @@
                     document.getElementById('player2').value = player2Name;
                     
                     setTimeout(() => compareFromSelectors(), 500);
+                } else {
+                    // Load random All-Star comparison
+                    const randomP1 = getRandomAllStar();
+                    const randomP2 = getRandomAllStar();
+                    
+                    if (randomP1 && randomP2 && randomP1 !== randomP2) {
+                        document.getElementById('player1').value = randomP1;
+                        document.getElementById('player2').value = randomP2;
+                        setTimeout(() => compareFromSelectors(), 500);
+                    }
                 }
                 
                 showLoading(false);
@@ -457,6 +491,71 @@
                 .replace(/\s+/g, '-')
                 .replace(/[^a-z0-9-]/g, '')
                 .replace(/--+/g, '-');
+        }
+
+        function getRandomAllStar() {
+            if (!playerData.allStarsData || !playerData.allStarsData.allStars1990Plus) return null;
+            const allStars = playerData.allStarsData.allStars1990Plus;
+            return allStars[Math.floor(Math.random() * allStars.length)];
+        }
+
+        function getSameEraAllStar(playerName) {
+            if (!playerData.allStarsData || !playerData.allStarsData.playerDebutYears) return getRandomAllStar();
+            
+            const debutYears = playerData.allStarsData.playerDebutYears;
+            const playerDebutYear = debutYears[playerName];
+            
+            if (!playerDebutYear) return getRandomAllStar();
+            
+            // Get All-Stars within ±5 years of debut
+            const candidates = Object.keys(debutYears).filter(p => {
+                const yearDiff = Math.abs(debutYears[p] - playerDebutYear);
+                return yearDiff <= 5 && p !== playerName;
+            });
+            
+            if (candidates.length === 0) return getRandomAllStar();
+            
+            return candidates[Math.floor(Math.random() * candidates.length)];
+        }
+
+        function makePlayerNamesClickable() {
+            // Make all player names in the page clickable
+            const resultsDiv = document.getElementById('results');
+            if (!resultsDiv) return;
+            
+            const playerValueDivs = resultsDiv.querySelectorAll('.player-value');
+            playerValueDivs.forEach(div => {
+                const text = div.textContent.trim();
+                // Check if it's a player name (not a stat value)
+                if (text && players.includes(text)) {
+                    div.style.cursor = 'pointer';
+                    div.style.textDecoration = 'underline';
+                    div.setAttribute('data-player-name', text);
+                    
+                    div.addEventListener('click', () => {
+                        const clickedPlayer = div.getAttribute('data-player-name');
+                        const currentP1 = document.getElementById('player1').value;
+                        const currentP2 = document.getElementById('player2').value;
+                        
+                        // Keep clicked player in position, randomize opponent
+                        if (clickedPlayer === currentP1) {
+                            // Player 1 was clicked, randomize Player 2
+                            const newP2 = getRandomAllStar();
+                            if (newP2 && newP2 !== clickedPlayer) {
+                                document.getElementById('player2').value = newP2;
+                                compareFromSelectors();
+                            }
+                        } else if (clickedPlayer === currentP2) {
+                            // Player 2 was clicked, randomize Player 1
+                            const newP1 = getRandomAllStar();
+                            if (newP1 && newP1 !== clickedPlayer) {
+                                document.getElementById('player1').value = newP1;
+                                compareFromSelectors();
+                            }
+                        }
+                    });
+                }
+            });
         }
 
         function populatePlayerDropdowns() {
@@ -1437,7 +1536,34 @@
                 html += `</div>`;
             });
             
+            // Add same-era suggestion button
+            const sameEraP1 = getSameEraAllStar(player1Name);
+            const sameEraP2 = getSameEraAllStar(player2Name);
+            
+            html += `
+                <div class="suggestions-section">
+                    <h3 style="margin-bottom: 15px; color: #1a1a1a;">✨ Try These Comparisons</h3>
+                    <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                        <button class="suggestion-btn" onclick="loadComparison('${player1Name}', '${sameEraP1}')">
+                            ${player1Name} vs ${sameEraP1} (same era)
+                        </button>
+                        <button class="suggestion-btn" onclick="loadComparison('${player2Name}', '${sameEraP2}')">
+                            ${player2Name} vs ${sameEraP2} (same era)
+                        </button>
+                    </div>
+                </div>
+            `;
+            
             resultsDiv.innerHTML = html;
+            
+            // Make player names clickable
+            makePlayerNamesClickable();
+        }
+        
+        function loadComparison(p1, p2) {
+            document.getElementById('player1').value = p1;
+            document.getElementById('player2').value = p2;
+            compareFromSelectors();
         }
     </script>
 </body>
