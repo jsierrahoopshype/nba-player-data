@@ -517,6 +517,24 @@
             }, 100);
         }
 
+        function parseNumericValue(value) {
+            // Helper function to convert values to numbers for comparison
+            if (!value) return NaN;
+            
+            const strValue = String(value);
+            
+            // Check if it's in feet-inches format (e.g., "6' 7.25''")
+            const feetInchesMatch = strValue.match(/(\d+)'\s*([\d.]+)['"]+/);
+            if (feetInchesMatch) {
+                const feet = parseFloat(feetInchesMatch[1]);
+                const inches = parseFloat(feetInchesMatch[2]);
+                return (feet * 12) + inches; // Convert to total inches
+            }
+            
+            // Otherwise strip currency symbols and commas
+            return parseFloat(strValue.replace(/[\$,]/g, ''));
+        }
+
         function performComparison(player1Name, player2Name) {
             let player1Score = 0;
             let player2Score = 0;
@@ -567,8 +585,8 @@
                 
                 if (p1Value !== null && p2Value !== null) {
                     // Both have data - normal comparison
-                    const p1Num = parseFloat(String(p1Value).replace(/[\$,]/g, ''));
-                    const p2Num = parseFloat(String(p2Value).replace(/[\$,]/g, ''));
+                    const p1Num = parseNumericValue(p1Value);
+                    const p2Num = parseNumericValue(p2Value);
                     
                     if (!isNaN(p1Num) && !isNaN(p2Num)) {
                         if (winCondition === 'Most') {
@@ -592,13 +610,13 @@
                 } else if (alwaysAward) {
                     // Only one has data - award point if in special sections
                     if (p1Value !== null && p2Value === null) {
-                        const p1Num = parseFloat(String(p1Value).replace(/[\$,]/g, ''));
+                        const p1Num = parseNumericValue(p1Value);
                         if (!isNaN(p1Num) && p1Num > 0) {
                             winner = 'player1';
                             awardPoint = true;
                         }
                     } else if (p2Value !== null && p1Value === null) {
-                        const p2Num = parseFloat(String(p2Value).replace(/[\$,]/g, ''));
+                        const p2Num = parseNumericValue(p2Value);
                         if (!isNaN(p2Num) && p2Num > 0) {
                             winner = 'player2';
                             awardPoint = true;
