@@ -144,6 +144,16 @@
             border-bottom: 4px solid #007bff;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .section-score {
+            font-size: 18px;
+            font-weight: 600;
+            color: #666;
+            text-transform: none;
+            letter-spacing: 0;
         }
         .comparison-row {
             display: grid;
@@ -514,6 +524,7 @@
             let player1Score = 0;
             let player2Score = 0;
             const categories = {};
+            const sectionScores = {}; // Track scores per section
             let currentSection = null;
             
             playerData.comparisons.forEach(comp => {
@@ -525,6 +536,7 @@
                 if (!winCondition && !dataSource) {
                     currentSection = category;
                     categories[currentSection] = [];
+                    sectionScores[currentSection] = { player1: 0, player2: 0 }; // Initialize section scores
                     return;
                 }
                 
@@ -545,17 +557,21 @@
                             if (p1Num > p2Num) {
                                 winner = 'player1';
                                 player1Score++;
+                                sectionScores[currentSection].player1++;
                             } else if (p2Num > p1Num) {
                                 winner = 'player2';
                                 player2Score++;
+                                sectionScores[currentSection].player2++;
                             }
                         } else if (winCondition === 'Least') {
                             if (p1Num < p2Num) {
                                 winner = 'player1';
                                 player1Score++;
+                                sectionScores[currentSection].player1++;
                             } else if (p2Num < p1Num) {
                                 winner = 'player2';
                                 player2Score++;
+                                sectionScores[currentSection].player2++;
                             }
                         }
                     }
@@ -581,7 +597,8 @@
                 player2: player2Name,
                 player1Score: player1Score,
                 player2Score: player2Score,
-                categories: categories
+                categories: categories,
+                sectionScores: sectionScores
             };
         }
 
@@ -1319,8 +1336,16 @@
                 const items = results.categories[categoryName];
                 if (items.length === 0) return;
                 
+                // Get section scores
+                const sectionScore = results.sectionScores[categoryName];
+                const sectionScoreHTML = sectionScore ? 
+                    `<div class="section-score">${player1Name} ${sectionScore.player1} – ${player2Name} ${sectionScore.player2}</div>` : '';
+                
                 html += `<div class="category-section">
-                    <div class="category-title">${categoryName}</div>`;
+                    <div class="category-title">
+                        <span>${categoryName}</span>
+                        ${sectionScoreHTML}
+                    </div>`;
                 
                 items.forEach(item => {
                     const rowClass = item.winner === 'player1' ? 'winner-left' : 
