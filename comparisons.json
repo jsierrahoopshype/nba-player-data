@@ -131,6 +131,12 @@
     "Category": "ACCOLADES"
   },
   {
+    "Category": "ACCOLADES",
+    "Comparison points": "Hustle Award",
+    "Who wins?": "Most",
+    "Wheres the data?": "Awards.csv"
+  },
+  {
     "Comparison points": "Player of the Week",
     "Who wins?": "Most",
     "Wheres the data?": "Awards.csv",
@@ -777,6 +783,24 @@
     "Category": "BEST AWARDS RANKING"
   },
   {
+    "Category": "BEST AWARDS RANKING",
+    "Comparison points": "Clutch Player of the Year",
+    "Who wins?": "Most",
+    "Wheres the data?": "Award-Votes.csv"
+  },
+  {
+    "Category": "BEST AWARDS RANKING",
+    "Comparison points": "Sixth Man of the Year",
+    "Who wins?": "Most",
+    "Wheres the data?": "Award-Votes.csv"
+  },
+  {
+    "Category": "BEST AWARDS RANKING",
+    "Comparison points": "Hustle Award",
+    "Who wins?": "Most",
+    "Wheres the data?": "Award-Votes.csv"
+  },
+  {
     "Comparison points": "YEARS RECEIVING VOTES",
     "Who wins?": "",
     "Wheres the data?": ""
@@ -810,6 +834,18 @@
     "Who wins?": "Most",
     "Wheres the data?": "Award-Votes.csv",
     "Category": "YEARS RECEIVING VOTES"
+  },
+  {
+    "Category": "YEARS RECEIVING VOTES",
+    "Comparison points": "Years with Clutch Player votes",
+    "Who wins?": "Most",
+    "Wheres the data?": "Award-Votes.csv"
+  },
+  {
+    "Category": "YEARS RECEIVING VOTES",
+    "Comparison points": "Years with Hustle Award votes",
+    "Who wins?": "Most",
+    "Wheres the data?": "Award-Votes.csv"
   },
   {
     "Comparison points": "SIGNATURE SHOES",
