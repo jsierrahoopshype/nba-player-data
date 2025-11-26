@@ -139,7 +139,7 @@
             font-size: 24px;
             font-weight: 700;
             color: #1a1a1a;
-            margin-bottom: 8px;
+            margin-bottom: 20px;
             padding-bottom: 12px;
             border-bottom: 4px solid #007bff;
             text-transform: uppercase;
@@ -149,8 +149,8 @@
             font-size: 16px;
             font-weight: 600;
             color: #666;
-            margin-bottom: 20px;
-            text-align: center;
+            margin-top: 8px;
+            text-align: left;
         }
         .comparison-row {
             display: grid;
@@ -567,8 +567,8 @@
                 
                 if (p1Value !== null && p2Value !== null) {
                     // Both have data - normal comparison
-                    const p1Num = parseFloat(String(p1Value).replace(/,/g, ''));
-                    const p2Num = parseFloat(String(p2Value).replace(/,/g, ''));
+                    const p1Num = parseFloat(String(p1Value).replace(/[\$,]/g, ''));
+                    const p2Num = parseFloat(String(p2Value).replace(/[\$,]/g, ''));
                     
                     if (!isNaN(p1Num) && !isNaN(p2Num)) {
                         if (winCondition === 'Most') {
@@ -592,13 +592,13 @@
                 } else if (alwaysAward) {
                     // Only one has data - award point if in special sections
                     if (p1Value !== null && p2Value === null) {
-                        const p1Num = parseFloat(String(p1Value).replace(/,/g, ''));
+                        const p1Num = parseFloat(String(p1Value).replace(/[\$,]/g, ''));
                         if (!isNaN(p1Num) && p1Num > 0) {
                             winner = 'player1';
                             awardPoint = true;
                         }
                     } else if (p2Value !== null && p1Value === null) {
-                        const p2Num = parseFloat(String(p2Value).replace(/,/g, ''));
+                        const p2Num = parseFloat(String(p2Value).replace(/[\$,]/g, ''));
                         if (!isNaN(p2Num) && p2Num > 0) {
                             winner = 'player2';
                             awardPoint = true;
@@ -1384,12 +1384,16 @@
                 
                 // Get section scores
                 const sectionScore = results.sectionScores[categoryName];
-                const sectionScoreHTML = sectionScore ? 
+                // Only show section score if at least one player has points
+                const showScore = sectionScore && (sectionScore.player1 > 0 || sectionScore.player2 > 0);
+                const sectionScoreHTML = showScore ? 
                     `<div class="section-score">${player1Name} ${sectionScore.player1} – ${player2Name} ${sectionScore.player2}</div>` : '';
                 
                 html += `<div class="category-section">
-                    <div class="category-title">${categoryName}</div>
-                    ${sectionScoreHTML}`;
+                    <div class="category-title">
+                        ${categoryName}
+                        ${sectionScoreHTML}
+                    </div>`;
                 
                 items.forEach(item => {
                     const rowClass = item.winner === 'player1' ? 'winner-left' : 
