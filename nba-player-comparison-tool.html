@@ -139,21 +139,18 @@
             font-size: 24px;
             font-weight: 700;
             color: #1a1a1a;
-            margin-bottom: 20px;
+            margin-bottom: 8px;
             padding-bottom: 12px;
             border-bottom: 4px solid #007bff;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
         }
         .section-score {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 600;
             color: #666;
-            text-transform: none;
-            letter-spacing: 0;
+            margin-bottom: 20px;
+            text-align: center;
         }
         .comparison-row {
             display: grid;
@@ -527,16 +524,28 @@
             const sectionScores = {}; // Track scores per section
             let currentSection = null;
             
+            // Sections that award points even when opponent has no data
+            const alwaysAwardSections = [
+                'ACCOLADES', 
+                'BEST AWARDS RANKING', 
+                'YEARS RECEIVING VOTES', 
+                'SIGNATURE SHOES',
+                'SALARIES'
+            ];
+            
+            // Sections excluded from overall score
+            const excludeFromOverall = ['DRAFT COMBINE'];
+            
             playerData.comparisons.forEach(comp => {
                 const category = comp['Comparison points'];
                 const winCondition = comp['Who wins?'];
-                const dataSource = comp['Wheres the data?']; // Fixed: no apostrophe
+                const dataSource = comp['Wheres the data?'];
                 
                 // Check if this is a section header
                 if (!winCondition && !dataSource) {
                     currentSection = category;
                     categories[currentSection] = [];
-                    sectionScores[currentSection] = { player1: 0, player2: 0 }; // Initialize section scores
+                    sectionScores[currentSection] = { player1: 0, player2: 0 };
                     return;
                 }
                 
@@ -548,7 +557,16 @@
                 
                 // Determine winner
                 let winner = 'tie';
+                let awardPoint = false;
+                
+                // Check if this section always awards points
+                const alwaysAward = alwaysAwardSections.includes(currentSection);
+                
+                // For DRAFT COMBINE, only compare if BOTH have data
+                const isDraftCombine = currentSection === 'DRAFT COMBINE';
+                
                 if (p1Value !== null && p2Value !== null) {
+                    // Both have data - normal comparison
                     const p1Num = parseFloat(String(p1Value).replace(/,/g, ''));
                     const p2Num = parseFloat(String(p2Value).replace(/,/g, ''));
                     
@@ -556,23 +574,51 @@
                         if (winCondition === 'Most') {
                             if (p1Num > p2Num) {
                                 winner = 'player1';
-                                player1Score++;
-                                sectionScores[currentSection].player1++;
+                                awardPoint = true;
                             } else if (p2Num > p1Num) {
                                 winner = 'player2';
-                                player2Score++;
-                                sectionScores[currentSection].player2++;
+                                awardPoint = true;
                             }
                         } else if (winCondition === 'Least') {
                             if (p1Num < p2Num) {
                                 winner = 'player1';
-                                player1Score++;
-                                sectionScores[currentSection].player1++;
+                                awardPoint = true;
                             } else if (p2Num < p1Num) {
                                 winner = 'player2';
-                                player2Score++;
-                                sectionScores[currentSection].player2++;
+                                awardPoint = true;
                             }
+                        }
+                    }
+                } else if (alwaysAward) {
+                    // Only one has data - award point if in special sections
+                    if (p1Value !== null && p2Value === null) {
+                        const p1Num = parseFloat(String(p1Value).replace(/,/g, ''));
+                        if (!isNaN(p1Num) && p1Num > 0) {
+                            winner = 'player1';
+                            awardPoint = true;
+                        }
+                    } else if (p2Value !== null && p1Value === null) {
+                        const p2Num = parseFloat(String(p2Value).replace(/,/g, ''));
+                        if (!isNaN(p2Num) && p2Num > 0) {
+                            winner = 'player2';
+                            awardPoint = true;
+                        }
+                    }
+                }
+                
+                // Award points
+                if (awardPoint) {
+                    if (winner === 'player1') {
+                        sectionScores[currentSection].player1++;
+                        // Add to overall score unless it's an excluded section
+                        if (!excludeFromOverall.includes(currentSection)) {
+                            player1Score++;
+                        }
+                    } else if (winner === 'player2') {
+                        sectionScores[currentSection].player2++;
+                        // Add to overall score unless it's an excluded section
+                        if (!excludeFromOverall.includes(currentSection)) {
+                            player2Score++;
                         }
                     }
                 }
@@ -1342,10 +1388,8 @@
                     `<div class="section-score">${player1Name} ${sectionScore.player1} – ${player2Name} ${sectionScore.player2}</div>` : '';
                 
                 html += `<div class="category-section">
-                    <div class="category-title">
-                        <span>${categoryName}</span>
-                        ${sectionScoreHTML}
-                    </div>`;
+                    <div class="category-title">${categoryName}</div>
+                    ${sectionScoreHTML}`;
                 
                 items.forEach(item => {
                     const rowClass = item.winner === 'player1' ? 'winner-left' : 
