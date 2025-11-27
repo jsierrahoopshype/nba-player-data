@@ -850,19 +850,39 @@
                     const p2Num = parseNumericValue(p2Value);
                     
                     if (!isNaN(p1Num) && !isNaN(p2Num)) {
+                        // Helper to check if stat wasn't tracked (0 or dash)
+                        const isUntrackedStat = () => {
+                            const untrackedSections = ['NBA CAREER AVERAGES', 'NBA CAREER TOTALS', 'NBA SEASON PEAK'];
+                            const untrackedCategories = ['steals', 'blocks', 'turnovers', 'three', '3p', 'stl', 'blk', 'tov'];
+                            
+                            const sectionMatch = untrackedSections.some(s => 
+                                currentSection && currentSection.toUpperCase().includes(s.toUpperCase())
+                            );
+                            
+                            const categoryMatch = untrackedCategories.some(c => 
+                                category && category.toLowerCase().includes(c)
+                            );
+                            
+                            if (sectionMatch && categoryMatch) {
+                                // Check if either player has zero (stat wasn't tracked for them)
+                                return p1Num === 0 || p2Num === 0;
+                            }
+                            return false;
+                        };
+                        
                         if (winCondition === 'Most') {
-                            if (p1Num > p2Num) {
+                            if (p1Num > p2Num && !isUntrackedStat()) {
                                 winner = 'player1';
                                 awardPoint = true;
-                            } else if (p2Num > p1Num) {
+                            } else if (p2Num > p1Num && !isUntrackedStat()) {
                                 winner = 'player2';
                                 awardPoint = true;
                             }
                         } else if (winCondition === 'Least') {
-                            if (p1Num < p2Num) {
+                            if (p1Num < p2Num && !isUntrackedStat()) {
                                 winner = 'player1';
                                 awardPoint = true;
-                            } else if (p2Num < p1Num) {
+                            } else if (p2Num < p1Num && !isUntrackedStat()) {
                                 winner = 'player2';
                                 awardPoint = true;
                             }
@@ -881,34 +901,6 @@
                         if (!isNaN(p2Num) && p2Num > 0) {
                             winner = 'player2';
                             awardPoint = true;
-                        }
-                    }
-                }
-                
-                // Check if we should skip awarding points for untracked stats (0 or "-")
-                if (awardPoint) {
-                    const statsNotTrackedSections = ['NBA CAREER AVERAGES', 'NBA CAREER TOTALS', 'NBA SEASON PEAK'];
-                    const statsNotTrackedCategories = ['Steals', 'Blocks', 'Turnovers', 'Three pointers', '3P', '3PA', '3P%', 'STL', 'BLK', 'TOV'];
-                    
-                    if (statsNotTrackedSections.includes(currentSection)) {
-                        // Check if this category is one that might not have been tracked
-                        const isUntrackedStat = statsNotTrackedCategories.some(stat => 
-                            category.includes(stat)
-                        );
-                        
-                        if (isUntrackedStat) {
-                            // Don't award point if EITHER player has 0, 0.0, or "-" (stat wasn't tracked)
-                            const p1Num = parseNumericValue(p1Value);
-                            const p1Str = String(p1Value);
-                            const p1IsZero = p1Value === '-' || p1Value === 0 || p1Num === 0 || p1Str === '0.0' || parseFloat(p1Str) === 0;
-                            
-                            const p2Num = parseNumericValue(p2Value);
-                            const p2Str = String(p2Value);
-                            const p2IsZero = p2Value === '-' || p2Value === 0 || p2Num === 0 || p2Str === '0.0' || parseFloat(p2Str) === 0;
-                            
-                            if (p1IsZero || p2IsZero) {
-                                awardPoint = false;
-                            }
                         }
                     }
                 }
