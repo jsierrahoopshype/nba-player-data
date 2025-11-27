@@ -642,8 +642,11 @@
                         return;
                     }
                     
+                    // Match on both exact and normalized names (handles apostrophes)
+                    const normalizedValue = normalizePlayerName(value);
                     const matches = players.filter(p => 
-                        p.toLowerCase().includes(value)
+                        p.toLowerCase().includes(value) || 
+                        normalizePlayerName(p).includes(normalizedValue)
                     ).slice(0, 10); // Limit to 10 suggestions
                     
                     if (matches.length === 0) {
@@ -697,23 +700,48 @@
             return '';
         }
 
-        function compareFromInputs() {
-            const p1 = document.getElementById('player1-top').value;
-            const p2 = document.getElementById('player2-top').value;
+        function normalizePlayerName(name) {
+            // Normalize by removing apostrophes, spaces, and converting to lowercase
+            return name.toLowerCase().replace(/['\s.-]/g, '');
+        }
+
+        function findPlayerName(inputName) {
+            // First try exact match
+            if (players.includes(inputName)) {
+                return inputName;
+            }
             
-            if (!p1 || !p2) {
+            // Then try normalized match
+            const normalized = normalizePlayerName(inputName);
+            for (let player of players) {
+                if (normalizePlayerName(player) === normalized) {
+                    return player;
+                }
+            }
+            
+            return null;
+        }
+
+        function compareFromInputs() {
+            const p1Input = document.getElementById('player1-top').value.trim();
+            const p2Input = document.getElementById('player2-top').value.trim();
+            
+            if (!p1Input || !p2Input) {
                 alert('Please enter both player names');
                 return;
             }
             
-            // Check if players exist
-            if (!players.includes(p1)) {
-                alert(`Player "${p1}" not found. Please select from suggestions.`);
+            // Find actual player names (handles apostrophes and special characters)
+            const p1 = findPlayerName(p1Input);
+            const p2 = findPlayerName(p2Input);
+            
+            if (!p1) {
+                alert(`Player "${p1Input}" not found. Please select from suggestions.`);
                 return;
             }
             
-            if (!players.includes(p2)) {
-                alert(`Player "${p2}" not found. Please select from suggestions.`);
+            if (!p2) {
+                alert(`Player "${p2Input}" not found. Please select from suggestions.`);
                 return;
             }
             
@@ -722,7 +750,9 @@
                 return;
             }
             
-            // Sync bottom inputs
+            // Update inputs with actual player names
+            document.getElementById('player1-top').value = p1;
+            document.getElementById('player2-top').value = p2;
             document.getElementById('player1-bottom').value = p1;
             document.getElementById('player2-bottom').value = p2;
             
@@ -867,15 +897,17 @@
                         );
                         
                         if (isUntrackedStat) {
-                            // Don't award point if winner has 0 or "-"
+                            // Don't award point if winner has 0, 0.0, or "-"
                             if (winner === 'player1') {
                                 const p1Num = parseNumericValue(p1Value);
-                                if (p1Value === '-' || p1Value === 0 || p1Num === 0) {
+                                const p1Str = String(p1Value);
+                                if (p1Value === '-' || p1Value === 0 || p1Num === 0 || p1Str === '0.0' || parseFloat(p1Str) === 0) {
                                     awardPoint = false;
                                 }
                             } else if (winner === 'player2') {
                                 const p2Num = parseNumericValue(p2Value);
-                                if (p2Value === '-' || p2Value === 0 || p2Num === 0) {
+                                const p2Str = String(p2Value);
+                                if (p2Value === '-' || p2Value === 0 || p2Num === 0 || p2Str === '0.0' || parseFloat(p2Str) === 0) {
                                     awardPoint = false;
                                 }
                             }
