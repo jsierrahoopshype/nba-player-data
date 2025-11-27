@@ -943,11 +943,43 @@
                 });
             });
             
-            // Remove empty comparisons (where both players have no data)
+            // Remove empty comparisons and untracked stats where both have 0
             Object.keys(categories).forEach(sectionName => {
-                categories[sectionName] = categories[sectionName].filter(item => 
-                    item.player1Value !== null || item.player2Value !== null
-                );
+                categories[sectionName] = categories[sectionName].filter(item => {
+                    // First check: at least one player has data
+                    if (item.player1Value === null && item.player2Value === null) {
+                        return false;
+                    }
+                    
+                    // Second check: for untracked stats, hide if BOTH have 0
+                    const untrackedSections = ['NBA CAREER AVERAGES', 'NBA CAREER TOTALS', 'NBA SEASON PEAK'];
+                    const untrackedCategories = ['steals', 'steal', 'blocks', 'block', 'turnovers', 'turnover', 'three', '3p', 'stl', 'blk', 'tov'];
+                    
+                    const inUntrackedSection = untrackedSections.some(s => 
+                        sectionName && sectionName.trim().toUpperCase() === s.toUpperCase()
+                    );
+                    
+                    const isUntrackedCategory = untrackedCategories.some(c => 
+                        item.metric && item.metric.toLowerCase().includes(c)
+                    );
+                    
+                    if (inUntrackedSection && isUntrackedCategory) {
+                        // Check if both values are 0
+                        const isZero = (val) => {
+                            if (val === null || val === undefined) return false;
+                            if (val === '-' || val === '–') return true;
+                            const strVal = String(val).trim();
+                            if (strVal === '0' || strVal === '0.0' || strVal === '0.00') return true;
+                            return parseFloat(strVal) === 0;
+                        };
+                        
+                        if (isZero(item.player1Value) && isZero(item.player2Value)) {
+                            return false; // Hide this row
+                        }
+                    }
+                    
+                    return true; // Show this row
+                });
             });
             
             return {
