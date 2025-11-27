@@ -560,13 +560,17 @@
             if (!playerData.allStarsData || !playerData.allStarsData.playerDebutYears) return getRandomAllStar();
             
             const debutYears = playerData.allStarsData.playerDebutYears;
+            // Use ALL All-Stars (all eras) for same-era suggestions
+            const allStarsList = playerData.allStarsData.allStarsAllEras || playerData.allStarsData.allStars1990Plus || [];
             const playerDebutYear = debutYears[playerName];
             
             if (!playerDebutYear) return getRandomAllStar();
             
-            // Get players (including yesteryear) within ±8 years of debut
-            const candidates = Object.keys(debutYears).filter(p => {
-                const yearDiff = Math.abs(debutYears[p] - playerDebutYear);
+            // Get ALL-STARS from any era within ±8 years of debut
+            const candidates = allStarsList.filter(p => {
+                const pDebut = debutYears[p];
+                if (!pDebut) return false;
+                const yearDiff = Math.abs(pDebut - playerDebutYear);
                 return yearDiff <= 8 && p !== playerName;
             });
             
@@ -847,6 +851,34 @@
                         if (!isNaN(p2Num) && p2Num > 0) {
                             winner = 'player2';
                             awardPoint = true;
+                        }
+                    }
+                }
+                
+                // Check if we should skip awarding points for untracked stats (0 or "-")
+                if (awardPoint) {
+                    const statsNotTrackedSections = ['NBA CAREER AVERAGES', 'NBA CAREER TOTALS', 'NBA SEASON PEAK'];
+                    const statsNotTrackedCategories = ['Steals', 'Blocks', 'Turnovers', 'Three pointers', '3P', '3PA', '3P%', 'STL', 'BLK', 'TOV'];
+                    
+                    if (statsNotTrackedSections.includes(currentSection)) {
+                        // Check if this category is one that might not have been tracked
+                        const isUntrackedStat = statsNotTrackedCategories.some(stat => 
+                            category.includes(stat)
+                        );
+                        
+                        if (isUntrackedStat) {
+                            // Don't award point if winner has 0 or "-"
+                            if (winner === 'player1') {
+                                const p1Num = parseNumericValue(p1Value);
+                                if (p1Value === '-' || p1Value === 0 || p1Num === 0) {
+                                    awardPoint = false;
+                                }
+                            } else if (winner === 'player2') {
+                                const p2Num = parseNumericValue(p2Value);
+                                if (p2Value === '-' || p2Value === 0 || p2Num === 0) {
+                                    awardPoint = false;
+                                }
+                            }
                         }
                     }
                 }
