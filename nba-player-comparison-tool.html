@@ -897,19 +897,17 @@
                         );
                         
                         if (isUntrackedStat) {
-                            // Don't award point if winner has 0, 0.0, or "-"
-                            if (winner === 'player1') {
-                                const p1Num = parseNumericValue(p1Value);
-                                const p1Str = String(p1Value);
-                                if (p1Value === '-' || p1Value === 0 || p1Num === 0 || p1Str === '0.0' || parseFloat(p1Str) === 0) {
-                                    awardPoint = false;
-                                }
-                            } else if (winner === 'player2') {
-                                const p2Num = parseNumericValue(p2Value);
-                                const p2Str = String(p2Value);
-                                if (p2Value === '-' || p2Value === 0 || p2Num === 0 || p2Str === '0.0' || parseFloat(p2Str) === 0) {
-                                    awardPoint = false;
-                                }
+                            // Don't award point if EITHER player has 0, 0.0, or "-" (stat wasn't tracked)
+                            const p1Num = parseNumericValue(p1Value);
+                            const p1Str = String(p1Value);
+                            const p1IsZero = p1Value === '-' || p1Value === 0 || p1Num === 0 || p1Str === '0.0' || parseFloat(p1Str) === 0;
+                            
+                            const p2Num = parseNumericValue(p2Value);
+                            const p2Str = String(p2Value);
+                            const p2IsZero = p2Value === '-' || p2Value === 0 || p2Num === 0 || p2Str === '0.0' || parseFloat(p2Str) === 0;
+                            
+                            if (p1IsZero || p2IsZero) {
+                                awardPoint = false;
                             }
                         }
                     }
