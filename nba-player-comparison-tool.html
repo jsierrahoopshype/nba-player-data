@@ -874,16 +874,44 @@
                             const untrackedCategories = ['steals', 'steal', 'blocks', 'block', 'turnovers', 'turnover', 'three', '3p', 'stl', 'blk', 'tov'];
                             
                             const inUntrackedSection = untrackedSections.some(s => 
-                                currentSection && currentSection.toUpperCase() === s.toUpperCase()
+                                currentSection && currentSection.trim().toUpperCase() === s.toUpperCase()
                             );
                             
                             const isUntrackedCategory = untrackedCategories.some(c => 
                                 category && category.toLowerCase().includes(c)
                             );
                             
+                            // Check if value is zero - check both raw and parsed
+                            const isZeroValue = (rawVal, numVal) => {
+                                if (numVal === 0) return true;
+                                const strVal = String(rawVal).trim();
+                                if (strVal === '0' || strVal === '0.0' || strVal === '0.00') return true;
+                                return parseFloat(strVal) === 0;
+                            };
+                            
+                            const p1IsZero = isZeroValue(p1Value, p1Num);
+                            const p2IsZero = isZeroValue(p2Value, p2Num);
+                            
+                            // DEBUG - log when we're checking untracked stats
+                            if (inUntrackedSection && isUntrackedCategory) {
+                                console.log('UNTRACKED STAT CHECK:', {
+                                    section: currentSection,
+                                    category: category,
+                                    p1Value: p1Value,
+                                    p1Num: p1Num,
+                                    p1IsZero: p1IsZero,
+                                    p2Value: p2Value,
+                                    p2Num: p2Num,
+                                    p2IsZero: p2IsZero,
+                                    willCancelPoint: p1IsZero || p2IsZero
+                                });
+                            }
+                            
                             // If either player has 0, don't award the point (stat wasn't tracked for them)
-                            if (inUntrackedSection && isUntrackedCategory && (p1Num === 0 || p2Num === 0)) {
-                                awardPoint = false;
+                            if (inUntrackedSection && isUntrackedCategory) {
+                                if (p1IsZero || p2IsZero) {
+                                    awardPoint = false;
+                                }
                             }
                         }
                     }
