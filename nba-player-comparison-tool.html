@@ -892,25 +892,11 @@
                             const p1IsZero = isZeroValue(p1Value, p1Num);
                             const p2IsZero = isZeroValue(p2Value, p2Num);
                             
-                            // DEBUG - log when we're checking untracked stats
-                            if (inUntrackedSection && isUntrackedCategory) {
-                                console.log('UNTRACKED STAT CHECK:', {
-                                    section: currentSection,
-                                    category: category,
-                                    p1Value: p1Value,
-                                    p1Num: p1Num,
-                                    p1IsZero: p1IsZero,
-                                    p2Value: p2Value,
-                                    p2Num: p2Num,
-                                    p2IsZero: p2IsZero,
-                                    willCancelPoint: p1IsZero || p2IsZero
-                                });
-                            }
-                            
                             // If either player has 0, don't award the point (stat wasn't tracked for them)
                             if (inUntrackedSection && isUntrackedCategory) {
                                 if (p1IsZero || p2IsZero) {
                                     awardPoint = false;
+                                    winner = 'tie';  // Also set to tie so row isn't highlighted
                                 }
                             }
                         }
@@ -934,20 +920,6 @@
                 
                 // Award points
                 if (awardPoint) {
-                    // DEBUG - log what we're about to award
-                    if (category && (category.toLowerCase().includes('block') || 
-                                     category.toLowerCase().includes('steal') || 
-                                     category.toLowerCase().includes('turnover'))) {
-                        console.log('AWARDING POINT:', {
-                            category: category,
-                            section: currentSection,
-                            winner: winner,
-                            awardPoint: awardPoint,
-                            p1Value: p1Value,
-                            p2Value: p2Value
-                        });
-                    }
-                    
                     if (winner === 'player1') {
                         sectionScores[currentSection].player1++;
                         // Add to overall score unless it's an excluded section
