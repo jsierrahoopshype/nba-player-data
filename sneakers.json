@@ -1,1 +1,667 @@
-[{"Player": "LeBron James", "Brand": "Nike", "# of shoes": "41", "First year": "2003", "Last year": "2025"}, {"Player": "Michael Jordan ", "Brand": "Jordan", "# of shoes": "40", "First year": "1984", "Last year": "2025"}, {"Player": "Kobe Bryant", "Brand": "adidas (prior), Nike", "# of shoes": "35", "First year": "1997", "Last year": "2021"}, {"Player": "Kevin Durant", "Brand": "Nike", "# of shoes": "26", "First year": "2009", "Last year": "2023"}, {"Player": "Dwyane Wade", "Brand": "Li-Ning, Jordan, Converse (prior)", "# of shoes": "21", "First year": "2005", "Last year": "2024"}, {"Player": "Allen Iverson", "Brand": "Reebok", "# of shoes": "18", "First year": "1996", "Last year": "2022"}, {"Player": "Derrick Rose", "Brand": "adidas", "# of shoes": "16", "First year": "2010", "Last year": "2022"}, {"Player": "Kevin Garnett", "Brand": "Anta, adidas, And1, Nike (prior)", "# of shoes": "15", "First year": "1998", "Last year": "2016"}, {"Player": "Carmelo Anthony", "Brand": "Jordan", "# of shoes": "13", "First year": "2004", "Last year": "2017"}, {"Player": "Chris Paul", "Brand": "Jordan", "# of shoes": "13", "First year": "2008", "Last year": "2020"}, {"Player": "Stephen Curry", "Brand": "Under Armour", "# of shoes": "12", "First year": "2014", "Last year": "2024"}, {"Player": "Shaquille O'Neal", "Brand": "Reebok, Li-Ning", "# of shoes": "12", "First year": "1993", "Last year": "2004"}, {"Player": "Shane Battier", "Brand": "Peak, Oakley (prior)", "# of shoes": "11", "First year": "2002", "Last year": "2014"}, {"Player": "Kyrie Irving", "Brand": "Nike (prior); ANTA", "# of shoes": "10", "First year": "2014", "Last year": "2024"}, {"Player": "Klay Thompson", "Brand": "Anta", "# of shoes": "10", "First year": "2015", "Last year": "2024"}, {"Player": "Damian Lillard", "Brand": "adidas", "# of shoes": "9", "First year": "2015", "Last year": "2024"}, {"Player": "Dwight Howard", "Brand": "Peak, adidas (prior)", "# of shoes": "9", "First year": "2010", "Last year": "2017"}, {"Player": "James Harden", "Brand": "adidas", "# of shoes": "8", "First year": "2016", "Last year": "2024"}, {"Player": "Metta World Peace", "Brand": "Panda's Friend, Peak, Ball'N, Protege, K1X, LA Gear", "# of shoes": "8", "First year": "2004", "Last year": "2011"}, {"Player": "Charles Barkley", "Brand": "Nike", "# of shoes": "8", "First year": "1993", "Last year": "1998"}, {"Player": "Tony Parker", "Brand": "Peak", "# of shoes": "7", "First year": "2014", "Last year": "2020"}, {"Player": "Scottie Pippen", "Brand": "Nike", "# of shoes": "7", "First year": "1996", "Last year": "2015"}, {"Player": "Gary Payton", "Brand": "Nike", "# of shoes": "7", "First year": "1997", "Last year": "2002"}, {"Player": "Tim Duncan", "Brand": "adidas, Nike (prior)", "# of shoes": "7", "First year": "1998", "Last year": "2007"}, {"Player": "Grant Hill", "Brand": "Fila", "# of shoes": "7", "First year": "1995", "Last year": "2001"}, {"Player": "Clyde Frazier", "Brand": "Puma", "# of shoes": "7", "First year": "1971", "Last year": "1976"}, {"Player": "Vince Carter", "Brand": "Nike, Puma (prior)", "# of shoes": "7", "First year": "1999", "Last year": "2006"}, {"Player": "LaMelo Ball", "Brand": "Puma, BBB (prior)", "# of shoes": "6", "First year": "2017", "Last year": "2025"}, {"Player": "Paul George", "Brand": "Nike", "# of shoes": "6", "First year": "2017", "Last year": "2022"}, {"Player": "Russell Westbrook", "Brand": "Jordan", "# of shoes": "6", "First year": "2018", "Last year": "2023"}, {"Player": "Giannis Antetokounmpo", "Brand": "Nike", "# of shoes": "6", "First year": "2019", "Last year": "2024"}, {"Player": "Rajon Rondo", "Brand": "Anta", "# of shoes": "6", "First year": "2014", "Last year": "2019"}, {"Player": "Hakeem Olajuwon", "Brand": "Etonic, Spalding (prior), LA Gear (prior)", "# of shoes": "6", "First year": "1984", "Last year": "2014"}, {"Player": "Bob Cousy", "Brand": "Randolph Manufacturing, PF", "# of shoes": "6", "First year": "1960", "Last year": "1964"}, {"Player": "Gordon Hayward", "Brand": "Anta", "# of shoes": "5", "First year": "2020", "Last year": "2024"}, {"Player": "Langston Galloway", "Brand": "ETHICS, Q4 (prior)", "# of shoes": "5", "First year": "2018", "Last year": "2022"}, {"Player": "John Wall", "Brand": "adidas, Reebok (prior)", "# of shoes": "5", "First year": "2010", "Last year": "2015"}, {"Player": "Chris Webber", "Brand": "Dada Supreme, Fila, Nike (prior)", "# of shoes": "5", "First year": "1995", "Last year": "2002"}, {"Player": "Dennis Rodman", "Brand": "Converse, Nike (prior)", "# of shoes": "5", "First year": "1996", "Last year": "1999"}, {"Player": "Shawn Kemp", "Brand": "Reebok", "# of shoes": "5", "First year": "1994", "Last year": "1998"}, {"Player": "Patrick Ewing", "Brand": "Ewing Athletics, adidas", "# of shoes": "5", "First year": "1986", "Last year": "1993"}, {"Player": "Luka Doncic", "Brand": "Jordan", "# of shoes": "4", "First year": "2022", "Last year": "2025"}, {"Player": "Jayson Tatum", "Brand": "Jordan", "# of shoes": "4", "First year": "2023", "Last year": "2025"}, {"Player": "Zion Williamson", "Brand": "Jordan", "# of shoes": "4", "First year": "2021", "Last year": "2025"}, {"Player": "Kawhi Leonard", "Brand": "New Balance", "# of shoes": "4", "First year": "2020", "Last year": "2023"}, {"Player": "Spencer Dinwiddie", "Brand": "361 Degrees, K8RIOS (prior)", "# of shoes": "4", "First year": "2018", "Last year": "2022"}, {"Player": "Julius Erving", "Brand": "Converse", "# of shoes": "4", "First year": "1976", "Last year": "2011"}, {"Player": "Kareem Abdul-Jabbar", "Brand": "LA Gear, adidas", "# of shoes": "4", "First year": "1977", "Last year": "2001"}, {"Player": "Xavier McDaniel", "Brand": "Xanthus, Spot-Bilt (prior)", "# of shoes": "4", "First year": "1987", "Last year": "1995"}, {"Player": "Austin Reaves", "Brand": "Rigorer", "# of shoes": "3", "First year": "2023", "Last year": "2025"}, {"Player": "Ja Morant", "Brand": "Nike", "# of shoes": "3", "First year": "2023", "Last year": "2025"}, {"Player": "CJ McCollum", "Brand": "Li-Ning", "# of shoes": "3", "First year": "2022", "Last year": "2024"}, {"Player": "Trae Young", "Brand": "adidas", "# of shoes": "3", "First year": "2021", "Last year": "2023"}, {"Player": "Lonzo Ball", "Brand": "BBB", "# of shoes": "3", "First year": "2017", "Last year": "2019"}, {"Player": "Jamal Crawford", "Brand": "Brandblack", "# of shoes": "3", "First year": "2014", "Last year": "2016"}, {"Player": "Baron Davis", "Brand": "Li-Ning", "# of shoes": "3", "First year": "2010", "Last year": "2011"}, {"Player": "Jason Kidd", "Brand": "Peak, Nike (prior)", "# of shoes": "3", "First year": "1997", "Last year": "2008"}, {"Player": "Latrell Sprewell", "Brand": "Dada Supreme, And1, Converse (prior)", "# of shoes": "3", "First year": "1994", "Last year": "2003"}, {"Player": "Jerry Stackhouse", "Brand": "Fila", "# of shoes": "3", "First year": "1996", "Last year": "1999"}, {"Player": "Karl Malone", "Brand": "Apex, LA Gear (prior)", "# of shoes": "3", "First year": "1991", "Last year": "1997"}, {"Player": "Magic Johnson", "Brand": "Converse, MVP", "# of shoes": "3", "First year": "1986", "Last year": "1996"}, {"Player": "Anthony Edwards", "Brand": "adidas", "# of shoes": "2", "First year": "2023", "Last year": "2025"}, {"Player": "Andrew Wiggins", "Brand": "Peak", "# of shoes": "2", "First year": "2023", "Last year": "2023"}, {"Player": "Jimmy Butler", "Brand": "Li-Ning", "# of shoes": "2", "First year": "2022", "Last year": "2023"}, {"Player": "Brandon Jennings", "Brand": "Under Armour", "# of shoes": "2", "First year": "2010", "Last year": "2011"}, {"Player": "Kevin Love", "Brand": "361", "# of shoes": "2", "First year": "2011", "Last year": "2012"}, {"Player": "Gilbert Arenas", "Brand": "adidas", "# of shoes": "2", "First year": "2006", "Last year": "2007"}, {"Player": "Steve Francis", "Brand": "Reebok", "# of shoes": "2", "First year": "2001", "Last year": "2002"}, {"Player": "Ben Wallace", "Brand": "And1, Starbury (prior)", "# of shoes": "2", "First year": "2003", "Last year": "2007"}, {"Player": "Eddie Jones", "Brand": "Jordan", "# of shoes": "2", "First year": "1999", "Last year": "2000"}, {"Player": "Antoine Walker", "Brand": "adidas", "# of shoes": "2", "First year": "1998", "Last year": "1999"}, {"Player": "David Robinson", "Brand": "Nike", "# of shoes": "2", "First year": "1979", "Last year": "1999"}, {"Player": "Vin Baker", "Brand": "Jordan", "# of shoes": "2", "First year": "1998", "Last year": "1999"}, {"Player": "Alonzo Mourning", "Brand": "Nike", "# of shoes": "2", "First year": "1997", "Last year": "1998"}, {"Player": "Stephon Marbury", "Brand": "And1", "# of shoes": "2", "First year": "1996", "Last year": "1997"}, {"Player": "Isiah Thomas", "Brand": "Asics, Puma (prior)", "# of shoes": "2", "First year": "1989", "Last year": "1990"}, {"Player": "James Worthy", "Brand": "New Balance", "# of shoes": "2", "First year": "1986", "Last year": "1986"}, {"Player": "Earl Monroe", "Brand": "Jordache, PONY", "# of shoes": "2", "First year": "1980", "Last year": "1981"}, {"Player": "Cade Cunningham", "Brand": "Nike", "# of shoes": "1", "First year": "2026", "Last year": "2026"}, {"Player": "Devin Booker", "Brand": "Nike", "# of shoes": "1", "First year": "2024", "Last year": "2024"}, {"Player": "Scoot Henderson", "Brand": "Puma", "# of shoes": "1", "First year": "2023", "Last year": "2023"}, {"Player": "Joel Embiid", "Brand": "Under Armour", "# of shoes": "1", "First year": "2020", "Last year": "2020"}, {"Player": "Matthew Dellavedova", "Brand": "Peak", "# of shoes": "1", "First year": "2017", "Last year": "2017"}, {"Player": "Monta Ellis", "Brand": "And1", "# of shoes": "1", "First year": "2011", "Last year": "2011"}, {"Player": "Luis Scola", "Brand": "Anta", "# of shoes": "1", "First year": "2007", "Last year": "2007"}, {"Player": "Larry Bird", "Brand": "Converse", "# of shoes": "1", "First year": "1986", "Last year": "1986"}, {"Player": "John Salley", "Brand": "Osaga", "# of shoes": "1", "First year": "1990", "Last year": "1990"}, {"Player": "Drazen Petrovic", "Brand": "Kronos", "# of shoes": "1", "First year": "1986", "Last year": "1986"}, {"Player": "Spud Webb", "Brand": "PONY", "# of shoes": "1", "First year": "1985", "Last year": "1985"}, {"Player": "Ralph Sampson", "Brand": "Puma", "# of shoes": "1", "First year": "1984", "Last year": "1984"}, {"Player": "LaPhonso Ellis", "Brand": "PONY", "# of shoes": "1", "First year": "1985", "Last year": "1985"}, {"Player": "Dominique Wilkins", "Brand": "Brooks", "# of shoes": "1", "First year": "1983", "Last year": "1983"}, {"Player": "David Thompson", "Brand": "PONY", "# of shoes": "1", "First year": "1979", "Last year": "1979"}, {"Player": "Bob McAdoo", "Brand": "PONY", "# of shoes": "1", "First year": "1976", "Last year": "1976"}, {"Player": "Willis Reed", "Brand": "Voit", "# of shoes": "1", "First year": "1970", "Last year": "1970"}]
+[
+  {
+    "PLAYER": "LeBron James",
+    "BRAND": "Nike",
+    "NUMBER_OF_SHOES": 41,
+    "FIRST_YEAR": 2003,
+    "LAST_YEAR": 2025
+  },
+  {
+    "PLAYER": "Michael Jordan",
+    "BRAND": "Jordan",
+    "NUMBER_OF_SHOES": 40,
+    "FIRST_YEAR": 1984,
+    "LAST_YEAR": 2025
+  },
+  {
+    "PLAYER": "Kobe Bryant",
+    "BRAND": "adidas (prior), Nike",
+    "NUMBER_OF_SHOES": 35,
+    "FIRST_YEAR": 1997,
+    "LAST_YEAR": 2021
+  },
+  {
+    "PLAYER": "Kevin Durant",
+    "BRAND": "Nike",
+    "NUMBER_OF_SHOES": 26,
+    "FIRST_YEAR": 2009,
+    "LAST_YEAR": 2023
+  },
+  {
+    "PLAYER": "Dwyane Wade",
+    "BRAND": "Li-Ning, Jordan, Converse (prior)",
+    "NUMBER_OF_SHOES": 21,
+    "FIRST_YEAR": 2005,
+    "LAST_YEAR": 2024
+  },
+  {
+    "PLAYER": "Allen Iverson",
+    "BRAND": "Reebok",
+    "NUMBER_OF_SHOES": 18,
+    "FIRST_YEAR": 1996,
+    "LAST_YEAR": 2022
+  },
+  {
+    "PLAYER": "Derrick Rose",
+    "BRAND": "adidas",
+    "NUMBER_OF_SHOES": 16,
+    "FIRST_YEAR": 2010,
+    "LAST_YEAR": 2022
+  },
+  {
+    "PLAYER": "Kevin Garnett",
+    "BRAND": "Anta, adidas, And1, Nike (prior)",
+    "NUMBER_OF_SHOES": 15,
+    "FIRST_YEAR": 1998,
+    "LAST_YEAR": 2016
+  },
+  {
+    "PLAYER": "Carmelo Anthony",
+    "BRAND": "Jordan",
+    "NUMBER_OF_SHOES": 13,
+    "FIRST_YEAR": 2004,
+    "LAST_YEAR": 2017
+  },
+  {
+    "PLAYER": "Chris Paul",
+    "BRAND": "Jordan",
+    "NUMBER_OF_SHOES": 13,
+    "FIRST_YEAR": 2008,
+    "LAST_YEAR": 2020
+  },
+  {
+    "PLAYER": "Stephen Curry",
+    "BRAND": "Under Armour",
+    "NUMBER_OF_SHOES": 12,
+    "FIRST_YEAR": 2014,
+    "LAST_YEAR": 2024
+  },
+  {
+    "PLAYER": "Shaquille O'Neal",
+    "BRAND": "Reebok, Li-Ning",
+    "NUMBER_OF_SHOES": 12,
+    "FIRST_YEAR": 1993,
+    "LAST_YEAR": 2004
+  },
+  {
+    "PLAYER": "Shane Battier",
+    "BRAND": "Peak, Oakley (prior)",
+    "NUMBER_OF_SHOES": 11,
+    "FIRST_YEAR": 2002,
+    "LAST_YEAR": 2014
+  },
+  {
+    "PLAYER": "Kyrie Irving",
+    "BRAND": "Nike (prior); ANTA",
+    "NUMBER_OF_SHOES": 10,
+    "FIRST_YEAR": 2014,
+    "LAST_YEAR": 2024
+  },
+  {
+    "PLAYER": "Klay Thompson",
+    "BRAND": "Anta",
+    "NUMBER_OF_SHOES": 10,
+    "FIRST_YEAR": 2015,
+    "LAST_YEAR": 2024
+  },
+  {
+    "PLAYER": "Damian Lillard",
+    "BRAND": "adidas",
+    "NUMBER_OF_SHOES": 9,
+    "FIRST_YEAR": 2015,
+    "LAST_YEAR": 2024
+  },
+  {
+    "PLAYER": "Dwight Howard",
+    "BRAND": "Peak, adidas (prior)",
+    "NUMBER_OF_SHOES": 9,
+    "FIRST_YEAR": 2010,
+    "LAST_YEAR": 2017
+  },
+  {
+    "PLAYER": "James Harden",
+    "BRAND": "adidas",
+    "NUMBER_OF_SHOES": 8,
+    "FIRST_YEAR": 2016,
+    "LAST_YEAR": 2024
+  },
+  {
+    "PLAYER": "Metta World Peace",
+    "BRAND": "Panda's Friend, Peak, Ball'N, Protege, K1X, LA Gear",
+    "NUMBER_OF_SHOES": 8,
+    "FIRST_YEAR": 2004,
+    "LAST_YEAR": 2011
+  },
+  {
+    "PLAYER": "Charles Barkley",
+    "BRAND": "Nike",
+    "NUMBER_OF_SHOES": 8,
+    "FIRST_YEAR": 1993,
+    "LAST_YEAR": 1998
+  },
+  {
+    "PLAYER": "Tony Parker",
+    "BRAND": "Peak",
+    "NUMBER_OF_SHOES": 7,
+    "FIRST_YEAR": 2014,
+    "LAST_YEAR": 2020
+  },
+  {
+    "PLAYER": "Scottie Pippen",
+    "BRAND": "Nike",
+    "NUMBER_OF_SHOES": 7,
+    "FIRST_YEAR": 1996,
+    "LAST_YEAR": 2015
+  },
+  {
+    "PLAYER": "Gary Payton",
+    "BRAND": "Nike",
+    "NUMBER_OF_SHOES": 7,
+    "FIRST_YEAR": 1997,
+    "LAST_YEAR": 2002
+  },
+  {
+    "PLAYER": "Tim Duncan",
+    "BRAND": "adidas, Nike (prior)",
+    "NUMBER_OF_SHOES": 7,
+    "FIRST_YEAR": 1998,
+    "LAST_YEAR": 2007
+  },
+  {
+    "PLAYER": "Grant Hill",
+    "BRAND": "Fila",
+    "NUMBER_OF_SHOES": 7,
+    "FIRST_YEAR": 1995,
+    "LAST_YEAR": 2001
+  },
+  {
+    "PLAYER": "Clyde Frazier",
+    "BRAND": "Puma",
+    "NUMBER_OF_SHOES": 7,
+    "FIRST_YEAR": 1971,
+    "LAST_YEAR": 1976
+  },
+  {
+    "PLAYER": "Vince Carter",
+    "BRAND": "Nike, Puma (prior)",
+    "NUMBER_OF_SHOES": 7,
+    "FIRST_YEAR": 1999,
+    "LAST_YEAR": 2006
+  },
+  {
+    "PLAYER": "LaMelo Ball",
+    "BRAND": "Puma, BBB (prior)",
+    "NUMBER_OF_SHOES": 6,
+    "FIRST_YEAR": 2017,
+    "LAST_YEAR": 2025
+  },
+  {
+    "PLAYER": "Paul George",
+    "BRAND": "Nike",
+    "NUMBER_OF_SHOES": 6,
+    "FIRST_YEAR": 2017,
+    "LAST_YEAR": 2022
+  },
+  {
+    "PLAYER": "Russell Westbrook",
+    "BRAND": "Jordan",
+    "NUMBER_OF_SHOES": 6,
+    "FIRST_YEAR": 2018,
+    "LAST_YEAR": 2023
+  },
+  {
+    "PLAYER": "Giannis Antetokounmpo",
+    "BRAND": "Nike",
+    "NUMBER_OF_SHOES": 6,
+    "FIRST_YEAR": 2019,
+    "LAST_YEAR": 2024
+  },
+  {
+    "PLAYER": "Rajon Rondo",
+    "BRAND": "Anta",
+    "NUMBER_OF_SHOES": 6,
+    "FIRST_YEAR": 2014,
+    "LAST_YEAR": 2019
+  },
+  {
+    "PLAYER": "Hakeem Olajuwon",
+    "BRAND": "Etonic, Spalding (prior), LA Gear (prior)",
+    "NUMBER_OF_SHOES": 6,
+    "FIRST_YEAR": 1984,
+    "LAST_YEAR": 2014
+  },
+  {
+    "PLAYER": "Bob Cousy",
+    "BRAND": "Randolph Manufacturing, PF",
+    "NUMBER_OF_SHOES": 6,
+    "FIRST_YEAR": 1960,
+    "LAST_YEAR": 1964
+  },
+  {
+    "PLAYER": "Gordon Hayward",
+    "BRAND": "Anta",
+    "NUMBER_OF_SHOES": 5,
+    "FIRST_YEAR": 2020,
+    "LAST_YEAR": 2024
+  },
+  {
+    "PLAYER": "Langston Galloway",
+    "BRAND": "ETHICS, Q4 (prior)",
+    "NUMBER_OF_SHOES": 5,
+    "FIRST_YEAR": 2018,
+    "LAST_YEAR": 2022
+  },
+  {
+    "PLAYER": "John Wall",
+    "BRAND": "adidas, Reebok (prior)",
+    "NUMBER_OF_SHOES": 5,
+    "FIRST_YEAR": 2010,
+    "LAST_YEAR": 2015
+  },
+  {
+    "PLAYER": "Chris Webber",
+    "BRAND": "Dada Supreme, Fila, Nike (prior)",
+    "NUMBER_OF_SHOES": 5,
+    "FIRST_YEAR": 1995,
+    "LAST_YEAR": 2002
+  },
+  {
+    "PLAYER": "Dennis Rodman",
+    "BRAND": "Converse, Nike (prior)",
+    "NUMBER_OF_SHOES": 5,
+    "FIRST_YEAR": 1996,
+    "LAST_YEAR": 1999
+  },
+  {
+    "PLAYER": "Shawn Kemp",
+    "BRAND": "Reebok",
+    "NUMBER_OF_SHOES": 5,
+    "FIRST_YEAR": 1994,
+    "LAST_YEAR": 1998
+  },
+  {
+    "PLAYER": "Patrick Ewing",
+    "BRAND": "Ewing Athletics, adidas",
+    "NUMBER_OF_SHOES": 5,
+    "FIRST_YEAR": 1986,
+    "LAST_YEAR": 1993
+  },
+  {
+    "PLAYER": "Luka Doncic",
+    "BRAND": "Jordan",
+    "NUMBER_OF_SHOES": 4,
+    "FIRST_YEAR": 2022,
+    "LAST_YEAR": 2025
+  },
+  {
+    "PLAYER": "Jayson Tatum",
+    "BRAND": "Jordan",
+    "NUMBER_OF_SHOES": 4,
+    "FIRST_YEAR": 2023,
+    "LAST_YEAR": 2025
+  },
+  {
+    "PLAYER": "Zion Williamson",
+    "BRAND": "Jordan",
+    "NUMBER_OF_SHOES": 4,
+    "FIRST_YEAR": 2021,
+    "LAST_YEAR": 2025
+  },
+  {
+    "PLAYER": "Kawhi Leonard",
+    "BRAND": "New Balance",
+    "NUMBER_OF_SHOES": 4,
+    "FIRST_YEAR": 2020,
+    "LAST_YEAR": 2023
+  },
+  {
+    "PLAYER": "Spencer Dinwiddie",
+    "BRAND": "361 Degrees, K8RIOS (prior)",
+    "NUMBER_OF_SHOES": 4,
+    "FIRST_YEAR": 2018,
+    "LAST_YEAR": 2022
+  },
+  {
+    "PLAYER": "Julius Erving",
+    "BRAND": "Converse",
+    "NUMBER_OF_SHOES": 4,
+    "FIRST_YEAR": 1976,
+    "LAST_YEAR": 2011
+  },
+  {
+    "PLAYER": "Kareem Abdul-Jabbar",
+    "BRAND": "LA Gear, adidas",
+    "NUMBER_OF_SHOES": 4,
+    "FIRST_YEAR": 1977,
+    "LAST_YEAR": 2001
+  },
+  {
+    "PLAYER": "Xavier McDaniel",
+    "BRAND": "Xanthus, Spot-Bilt (prior)",
+    "NUMBER_OF_SHOES": 4,
+    "FIRST_YEAR": 1987,
+    "LAST_YEAR": 1995
+  },
+  {
+    "PLAYER": "Austin Reaves",
+    "BRAND": "Rigorer",
+    "NUMBER_OF_SHOES": 3,
+    "FIRST_YEAR": 2023,
+    "LAST_YEAR": 2025
+  },
+  {
+    "PLAYER": "Ja Morant",
+    "BRAND": "Nike",
+    "NUMBER_OF_SHOES": 3,
+    "FIRST_YEAR": 2023,
+    "LAST_YEAR": 2025
+  },
+  {
+    "PLAYER": "CJ McCollum",
+    "BRAND": "Li-Ning",
+    "NUMBER_OF_SHOES": 3,
+    "FIRST_YEAR": 2022,
+    "LAST_YEAR": 2024
+  },
+  {
+    "PLAYER": "Trae Young",
+    "BRAND": "adidas",
+    "NUMBER_OF_SHOES": 3,
+    "FIRST_YEAR": 2021,
+    "LAST_YEAR": 2023
+  },
+  {
+    "PLAYER": "Lonzo Ball",
+    "BRAND": "BBB",
+    "NUMBER_OF_SHOES": 3,
+    "FIRST_YEAR": 2017,
+    "LAST_YEAR": 2019
+  },
+  {
+    "PLAYER": "Jamal Crawford",
+    "BRAND": "Brandblack",
+    "NUMBER_OF_SHOES": 3,
+    "FIRST_YEAR": 2014,
+    "LAST_YEAR": 2016
+  },
+  {
+    "PLAYER": "Baron Davis",
+    "BRAND": "Li-Ning",
+    "NUMBER_OF_SHOES": 3,
+    "FIRST_YEAR": 2010,
+    "LAST_YEAR": 2011
+  },
+  {
+    "PLAYER": "Jason Kidd",
+    "BRAND": "Peak, Nike (prior)",
+    "NUMBER_OF_SHOES": 3,
+    "FIRST_YEAR": 1997,
+    "LAST_YEAR": 2008
+  },
+  {
+    "PLAYER": "Latrell Sprewell",
+    "BRAND": "Dada Supreme, And1, Converse (prior)",
+    "NUMBER_OF_SHOES": 3,
+    "FIRST_YEAR": 1994,
+    "LAST_YEAR": 2003
+  },
+  {
+    "PLAYER": "Jerry Stackhouse",
+    "BRAND": "Fila",
+    "NUMBER_OF_SHOES": 3,
+    "FIRST_YEAR": 1996,
+    "LAST_YEAR": 1999
+  },
+  {
+    "PLAYER": "Karl Malone",
+    "BRAND": "Apex, LA Gear (prior)",
+    "NUMBER_OF_SHOES": 3,
+    "FIRST_YEAR": 1991,
+    "LAST_YEAR": 1997
+  },
+  {
+    "PLAYER": "Magic Johnson",
+    "BRAND": "Converse, MVP",
+    "NUMBER_OF_SHOES": 3,
+    "FIRST_YEAR": 1986,
+    "LAST_YEAR": 1996
+  },
+  {
+    "PLAYER": "Anthony Edwards",
+    "BRAND": "adidas",
+    "NUMBER_OF_SHOES": 2,
+    "FIRST_YEAR": 2023,
+    "LAST_YEAR": 2025
+  },
+  {
+    "PLAYER": "Devin Booker",
+    "BRAND": "Nike",
+    "NUMBER_OF_SHOES": 2,
+    "FIRST_YEAR": 2024,
+    "LAST_YEAR": 2025
+  },
+  {
+    "PLAYER": "Andrew Wiggins",
+    "BRAND": "Peak",
+    "NUMBER_OF_SHOES": 2,
+    "FIRST_YEAR": 2023,
+    "LAST_YEAR": 2023
+  },
+  {
+    "PLAYER": "Jimmy Butler",
+    "BRAND": "Li-Ning",
+    "NUMBER_OF_SHOES": 2,
+    "FIRST_YEAR": 2022,
+    "LAST_YEAR": 2023
+  },
+  {
+    "PLAYER": "Brandon Jennings",
+    "BRAND": "Under Armour",
+    "NUMBER_OF_SHOES": 2,
+    "FIRST_YEAR": 2010,
+    "LAST_YEAR": 2011
+  },
+  {
+    "PLAYER": "Kevin Love",
+    "BRAND": "361",
+    "NUMBER_OF_SHOES": 2,
+    "FIRST_YEAR": 2011,
+    "LAST_YEAR": 2012
+  },
+  {
+    "PLAYER": "Gilbert Arenas",
+    "BRAND": "adidas",
+    "NUMBER_OF_SHOES": 2,
+    "FIRST_YEAR": 2006,
+    "LAST_YEAR": 2007
+  },
+  {
+    "PLAYER": "Steve Francis",
+    "BRAND": "Reebok",
+    "NUMBER_OF_SHOES": 2,
+    "FIRST_YEAR": 2001,
+    "LAST_YEAR": 2002
+  },
+  {
+    "PLAYER": "Ben Wallace",
+    "BRAND": "And1, Starbury (prior)",
+    "NUMBER_OF_SHOES": 2,
+    "FIRST_YEAR": 2003,
+    "LAST_YEAR": 2007
+  },
+  {
+    "PLAYER": "Eddie Jones",
+    "BRAND": "Jordan",
+    "NUMBER_OF_SHOES": 2,
+    "FIRST_YEAR": 1999,
+    "LAST_YEAR": 2000
+  },
+  {
+    "PLAYER": "Antoine Walker",
+    "BRAND": "adidas",
+    "NUMBER_OF_SHOES": 2,
+    "FIRST_YEAR": 1998,
+    "LAST_YEAR": 1999
+  },
+  {
+    "PLAYER": "David Robinson",
+    "BRAND": "Nike",
+    "NUMBER_OF_SHOES": 2,
+    "FIRST_YEAR": 1979,
+    "LAST_YEAR": 1999
+  },
+  {
+    "PLAYER": "Vin Baker",
+    "BRAND": "Jordan",
+    "NUMBER_OF_SHOES": 2,
+    "FIRST_YEAR": 1998,
+    "LAST_YEAR": 1999
+  },
+  {
+    "PLAYER": "Alonzo Mourning",
+    "BRAND": "Nike",
+    "NUMBER_OF_SHOES": 2,
+    "FIRST_YEAR": 1997,
+    "LAST_YEAR": 1998
+  },
+  {
+    "PLAYER": "Stephon Marbury",
+    "BRAND": "And1",
+    "NUMBER_OF_SHOES": 2,
+    "FIRST_YEAR": 1996,
+    "LAST_YEAR": 1997
+  },
+  {
+    "PLAYER": "Isiah Thomas",
+    "BRAND": "Asics, Puma (prior)",
+    "NUMBER_OF_SHOES": 2,
+    "FIRST_YEAR": 1989,
+    "LAST_YEAR": 1990
+  },
+  {
+    "PLAYER": "James Worthy",
+    "BRAND": "New Balance",
+    "NUMBER_OF_SHOES": 2,
+    "FIRST_YEAR": 1986,
+    "LAST_YEAR": 1986
+  },
+  {
+    "PLAYER": "Earl Monroe",
+    "BRAND": "Jordache, PONY",
+    "NUMBER_OF_SHOES": 2,
+    "FIRST_YEAR": 1980,
+    "LAST_YEAR": 1981
+  },
+  {
+    "PLAYER": "Cade Cunningham",
+    "BRAND": "Nike",
+    "NUMBER_OF_SHOES": 1,
+    "FIRST_YEAR": 2026,
+    "LAST_YEAR": 2026
+  },
+  {
+    "PLAYER": "Scoot Henderson",
+    "BRAND": "Puma",
+    "NUMBER_OF_SHOES": 1,
+    "FIRST_YEAR": 2023,
+    "LAST_YEAR": 2023
+  },
+  {
+    "PLAYER": "Joel Embiid",
+    "BRAND": "Under Armour",
+    "NUMBER_OF_SHOES": 1,
+    "FIRST_YEAR": 2020,
+    "LAST_YEAR": 2020
+  },
+  {
+    "PLAYER": "Matthew Dellavedova",
+    "BRAND": "Peak",
+    "NUMBER_OF_SHOES": 1,
+    "FIRST_YEAR": 2017,
+    "LAST_YEAR": 2017
+  },
+  {
+    "PLAYER": "Monta Ellis",
+    "BRAND": "And1",
+    "NUMBER_OF_SHOES": 1,
+    "FIRST_YEAR": 2011,
+    "LAST_YEAR": 2011
+  },
+  {
+    "PLAYER": "Luis Scola",
+    "BRAND": "Anta",
+    "NUMBER_OF_SHOES": 1,
+    "FIRST_YEAR": 2007,
+    "LAST_YEAR": 2007
+  },
+  {
+    "PLAYER": "Larry Bird",
+    "BRAND": "Converse",
+    "NUMBER_OF_SHOES": 1,
+    "FIRST_YEAR": 1986,
+    "LAST_YEAR": 1986
+  },
+  {
+    "PLAYER": "John Salley",
+    "BRAND": "Osaga",
+    "NUMBER_OF_SHOES": 1,
+    "FIRST_YEAR": 1990,
+    "LAST_YEAR": 1990
+  },
+  {
+    "PLAYER": "Drazen Petrovic",
+    "BRAND": "Kronos",
+    "NUMBER_OF_SHOES": 1,
+    "FIRST_YEAR": 1986,
+    "LAST_YEAR": 1986
+  },
+  {
+    "PLAYER": "Spud Webb",
+    "BRAND": "PONY",
+    "NUMBER_OF_SHOES": 1,
+    "FIRST_YEAR": 1985,
+    "LAST_YEAR": 1985
+  },
+  {
+    "PLAYER": "Ralph Sampson",
+    "BRAND": "Puma",
+    "NUMBER_OF_SHOES": 1,
+    "FIRST_YEAR": 1984,
+    "LAST_YEAR": 1984
+  },
+  {
+    "PLAYER": "LaPhonso Ellis",
+    "BRAND": "PONY",
+    "NUMBER_OF_SHOES": 1,
+    "FIRST_YEAR": 1985,
+    "LAST_YEAR": 1985
+  },
+  {
+    "PLAYER": "Dominique Wilkins",
+    "BRAND": "Brooks",
+    "NUMBER_OF_SHOES": 1,
+    "FIRST_YEAR": 1983,
+    "LAST_YEAR": 1983
+  },
+  {
+    "PLAYER": "David Thompson",
+    "BRAND": "PONY",
+    "NUMBER_OF_SHOES": 1,
+    "FIRST_YEAR": 1979,
+    "LAST_YEAR": 1979
+  },
+  {
+    "PLAYER": "Bob McAdoo",
+    "BRAND": "PONY",
+    "NUMBER_OF_SHOES": 1,
+    "FIRST_YEAR": 1976,
+    "LAST_YEAR": 1976
+  },
+  {
+    "PLAYER": "Willis Reed",
+    "BRAND": "Voit",
+    "NUMBER_OF_SHOES": 1,
+    "FIRST_YEAR": 1970,
+    "LAST_YEAR": 1970
+  }
+]
