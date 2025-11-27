@@ -1011,7 +1011,7 @@
             } else if (dataSource === 'Award-Votes.csv') {
                 return getVotingStat(playerName, metric);
             } else if (dataSource === 'Sneakers.csv') {
-                return getSneakerCount(playerName);
+                return getSneakerStat(playerName, metric);
             } else if (dataSource === 'NBA2K.csv') {
                 return get2KRating(playerName, metric);
             } else if (dataSource === 'All-Star.csv') {
@@ -1638,9 +1638,19 @@
             return null;
         }
 
-        function getSneakerCount(playerName) {
-            const playerRow = playerData.sneakers.find(row => row.Player === playerName);
-            return playerRow ? playerRow['# of shoes'] : null;
+        function getSneakerStat(playerName, metric) {
+            const playerRow = playerData.sneakers.find(row => row.PLAYER === playerName);
+            if (!playerRow) return null;
+            
+            if (metric === 'Number of Shoes') {
+                return playerRow.NUMBER_OF_SHOES;
+            } else if (metric === 'Years from first to last') {
+                // Calculate span: Last year - First year
+                const span = playerRow.LAST_YEAR - playerRow.FIRST_YEAR;
+                return span;
+            }
+            
+            return null;
         }
 
         function get2KRating(playerName, metric) {
