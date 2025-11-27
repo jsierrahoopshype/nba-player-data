@@ -1669,20 +1669,14 @@
             const sameEraP2 = getSameEraAllStar(player2Name);
             
             if (sameEraP1 && sameEraP2) {
-                // Escape apostrophes for HTML attributes
-                const escapeP1 = player1Name.replace(/'/g, "\\'");
-                const escapeP2 = player2Name.replace(/'/g, "\\'");
-                const escapeSameP1 = sameEraP1.replace(/'/g, "\\'");
-                const escapeSameP2 = sameEraP2.replace(/'/g, "\\'");
-                
                 html += `
                     <div class="suggestions-section">
                         <h3 style="margin-bottom: 15px; color: #1a1a1a;">✨ Try These Comparisons</h3>
                         <div style="display: flex; gap: 15px; flex-wrap: wrap;">
-                            <button class="suggestion-btn" onclick="loadComparison('${escapeP1}', '${escapeSameP1}')">
+                            <button class="suggestion-btn" data-p1="${player1Name}" data-p2="${sameEraP1}">
                                 ${player1Name} vs ${sameEraP1}
                             </button>
-                            <button class="suggestion-btn" onclick="loadComparison('${escapeP2}', '${escapeSameP2}')">
+                            <button class="suggestion-btn" data-p1="${player2Name}" data-p2="${sameEraP2}">
                                 ${player2Name} vs ${sameEraP2}
                             </button>
                         </div>
@@ -1691,6 +1685,15 @@
             }
             
             resultsDiv.innerHTML = html;
+            
+            // Attach click handlers to suggestion buttons
+            resultsDiv.querySelectorAll('.suggestion-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const p1 = this.getAttribute('data-p1');
+                    const p2 = this.getAttribute('data-p2');
+                    loadComparison(p1, p2);
+                });
+            });
             
             // Make player names clickable
             makePlayerNamesClickable();
