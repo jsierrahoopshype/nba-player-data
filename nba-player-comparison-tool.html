@@ -44,20 +44,47 @@
             margin-bottom: 30px;
             align-items: center;
         }
-        select {
+        .player-autocomplete {
             width: 100%;
             padding: 12px;
             font-size: 16px;
             border: 2px solid #ddd;
             border-radius: 6px;
             background-color: white;
-            cursor: pointer;
             transition: border-color 0.3s;
         }
-        select:hover { border-color: #007bff; }
-        select:focus {
+        .player-autocomplete:hover { border-color: #007bff; }
+        .player-autocomplete:focus {
             outline: none;
             border-color: #007bff;
+        }
+        .player-select-wrapper {
+            position: relative;
+        }
+        .autocomplete-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 2px solid #007bff;
+            border-top: none;
+            border-radius: 0 0 6px 6px;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+        }
+        .autocomplete-suggestion {
+            padding: 10px 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+        }
+        .autocomplete-suggestion:hover {
+            background-color: #f0f8ff;
+        }
+        .autocomplete-suggestion:last-child {
+            border-bottom: none;
         }
         .vs-text {
             font-size: 24px;
@@ -292,23 +319,39 @@
         </div>
 
         <div id="mainContent" style="display: none;">
-            <div id="results"></div>
-            
-            <div class="player-selector" style="margin-top: 40px;">
+            <!-- Player selector at top -->
+            <div class="player-selector">
                 <div class="player-select-wrapper">
-                    <select id="player1" onchange="updateShareURL()">
-                        <option value="">Select Player 1...</option>
-                    </select>
+                    <input type="text" id="player1-top" class="player-autocomplete" placeholder="Type player name...">
+                    <div id="suggestions1-top" class="autocomplete-suggestions"></div>
                 </div>
                 <div class="vs-text">VS</div>
                 <div class="player-select-wrapper">
-                    <select id="player2" onchange="updateShareURL()">
-                        <option value="">Select Player 2...</option>
-                    </select>
+                    <input type="text" id="player2-top" class="player-autocomplete" placeholder="Type player name...">
+                    <div id="suggestions2-top" class="autocomplete-suggestions"></div>
                 </div>
             </div>
 
-            <button class="compare-button" onclick="compareFromSelectors()" id="compareBtn">
+            <button class="compare-button" onclick="compareFromInputs()" id="compareBtn">
+                Compare Players
+            </button>
+            
+            <div id="results"></div>
+            
+            <!-- Player selector at bottom -->
+            <div class="player-selector" style="margin-top: 40px;">
+                <div class="player-select-wrapper">
+                    <input type="text" id="player1-bottom" class="player-autocomplete" placeholder="Type player name...">
+                    <div id="suggestions1-bottom" class="autocomplete-suggestions"></div>
+                </div>
+                <div class="vs-text">VS</div>
+                <div class="player-select-wrapper">
+                    <input type="text" id="player2-bottom" class="player-autocomplete" placeholder="Type player name...">
+                    <div id="suggestions2-bottom" class="autocomplete-suggestions"></div>
+                </div>
+            </div>
+
+            <button class="compare-button" onclick="compareFromInputs()" style="margin-top: 20px;">
                 Compare Players
             </button>
         </div>
@@ -359,8 +402,7 @@
                     fetch(DATA_BASE_URL + DATA_FILES.rsStats + cacheBust).then(r => r.json()),
                     fetch(DATA_BASE_URL + DATA_FILES.salaries + cacheBust).then(r => r.json()),
                     fetch(DATA_BASE_URL + DATA_FILES.sneakers + cacheBust).then(r => r.json()),
-                    fetch(DATA_BASE_URL + DATA_FILES.comparisons + cacheBust).then(r => r.json()),
-                    fetch(DATA_BASE_URL + DATA_FILES.allStarsData + cacheBust).then(r => r.json())
+                    fetch(DATA_BASE_URL + DATA_FILES.comparisons + cacheBust).then(r => r.json())
                 ]);
                 
                 // Assign results to playerData
@@ -375,7 +417,18 @@
                 playerData.salaries = results[8];
                 playerData.sneakers = results[9];
                 playerData.comparisons = results[10];
-                playerData.allStarsData = results[11];
+                
+                // Try to load All-Stars data (optional - for random comparison feature)
+                try {
+                    const allStarsResponse = await fetch(DATA_BASE_URL + DATA_FILES.allStarsData + cacheBust);
+                    if (allStarsResponse.ok) {
+                        playerData.allStarsData = await allStarsResponse.json();
+                        console.log('All-Stars data loaded for random comparisons');
+                    }
+                } catch (e) {
+                    console.log('All-Stars data not available - random comparison features disabled');
+                    playerData.allStarsData = null;
+                }
                 
                 console.log('Data loaded successfully:', {
                     comparisons: playerData.comparisons.length,
@@ -438,26 +491,30 @@
                 const p1 = urlParams.get('p1');
                 const p2 = urlParams.get('p2');
                 
-                populatePlayerDropdowns();
+                setupAutocomplete();
                 
                 if (p1 && p2) {
                     // Load comparison from URL
                     const player1Name = formatPlayerName(p1);
                     const player2Name = formatPlayerName(p2);
                     
-                    document.getElementById('player1').value = player1Name;
-                    document.getElementById('player2').value = player2Name;
+                    document.getElementById('player1-top').value = player1Name;
+                    document.getElementById('player2-top').value = player2Name;
+                    document.getElementById('player1-bottom').value = player1Name;
+                    document.getElementById('player2-bottom').value = player2Name;
                     
-                    setTimeout(() => compareFromSelectors(), 500);
+                    setTimeout(() => compareFromInputs(), 500);
                 } else {
                     // Load random All-Star comparison
                     const randomP1 = getRandomAllStar();
                     const randomP2 = getRandomAllStar();
                     
                     if (randomP1 && randomP2 && randomP1 !== randomP2) {
-                        document.getElementById('player1').value = randomP1;
-                        document.getElementById('player2').value = randomP2;
-                        setTimeout(() => compareFromSelectors(), 500);
+                        document.getElementById('player1-top').value = randomP1;
+                        document.getElementById('player2-top').value = randomP2;
+                        document.getElementById('player1-bottom').value = randomP1;
+                        document.getElementById('player2-bottom').value = randomP2;
+                        setTimeout(() => compareFromInputs(), 500);
                     }
                 }
                 
@@ -507,10 +564,10 @@
             
             if (!playerDebutYear) return getRandomAllStar();
             
-            // Get All-Stars within ±5 years of debut
+            // Get All-Stars within ±8 years of debut
             const candidates = Object.keys(debutYears).filter(p => {
                 const yearDiff = Math.abs(debutYears[p] - playerDebutYear);
-                return yearDiff <= 5 && p !== playerName;
+                return yearDiff <= 8 && p !== playerName;
             });
             
             if (candidates.length === 0) return getRandomAllStar();
@@ -534,23 +591,25 @@
                     
                     div.addEventListener('click', () => {
                         const clickedPlayer = div.getAttribute('data-player-name');
-                        const currentP1 = document.getElementById('player1').value;
-                        const currentP2 = document.getElementById('player2').value;
+                        const currentP1 = document.getElementById('player1-top').value;
+                        const currentP2 = document.getElementById('player2-top').value;
                         
                         // Keep clicked player in position, randomize opponent
                         if (clickedPlayer === currentP1) {
                             // Player 1 was clicked, randomize Player 2
                             const newP2 = getRandomAllStar();
                             if (newP2 && newP2 !== clickedPlayer) {
-                                document.getElementById('player2').value = newP2;
-                                compareFromSelectors();
+                                document.getElementById('player2-top').value = newP2;
+                                document.getElementById('player2-bottom').value = newP2;
+                                compareFromInputs();
                             }
                         } else if (clickedPlayer === currentP2) {
                             // Player 2 was clicked, randomize Player 1
                             const newP1 = getRandomAllStar();
                             if (newP1 && newP1 !== clickedPlayer) {
-                                document.getElementById('player1').value = newP1;
-                                compareFromSelectors();
+                                document.getElementById('player1-top').value = newP1;
+                                document.getElementById('player1-bottom').value = newP1;
+                                compareFromInputs();
                             }
                         }
                     });
@@ -558,26 +617,74 @@
             });
         }
 
-        function populatePlayerDropdowns() {
-            const player1Select = document.getElementById('player1');
-            const player2Select = document.getElementById('player2');
+        function setupAutocomplete() {
+            // Setup autocomplete for all 4 inputs (top and bottom)
+            const inputs = [
+                { input: 'player1-top', suggestions: 'suggestions1-top' },
+                { input: 'player2-top', suggestions: 'suggestions2-top' },
+                { input: 'player1-bottom', suggestions: 'suggestions1-bottom' },
+                { input: 'player2-bottom', suggestions: 'suggestions2-bottom' }
+            ];
             
-            players.forEach(player => {
-                const option1 = document.createElement('option');
-                option1.value = player;
-                option1.textContent = player;
-                player1Select.appendChild(option1);
+            inputs.forEach(config => {
+                const inputEl = document.getElementById(config.input);
+                const suggestionsEl = document.getElementById(config.suggestions);
                 
-                const option2 = document.createElement('option');
-                option2.value = player;
-                option2.textContent = player;
-                player2Select.appendChild(option2);
+                inputEl.addEventListener('input', function() {
+                    const value = this.value.toLowerCase();
+                    
+                    if (value.length < 2) {
+                        suggestionsEl.style.display = 'none';
+                        return;
+                    }
+                    
+                    const matches = players.filter(p => 
+                        p.toLowerCase().includes(value)
+                    ).slice(0, 10); // Limit to 10 suggestions
+                    
+                    if (matches.length === 0) {
+                        suggestionsEl.style.display = 'none';
+                        return;
+                    }
+                    
+                    suggestionsEl.innerHTML = matches.map(player => 
+                        `<div class="autocomplete-suggestion" data-player="${player}">${player}</div>`
+                    ).join('');
+                    
+                    suggestionsEl.style.display = 'block';
+                    
+                    // Add click handlers to suggestions
+                    suggestionsEl.querySelectorAll('.autocomplete-suggestion').forEach(el => {
+                        el.addEventListener('click', function() {
+                            inputEl.value = this.getAttribute('data-player');
+                            suggestionsEl.style.display = 'none';
+                            
+                            // Sync with other input
+                            if (config.input.includes('top')) {
+                                const bottomId = config.input.replace('top', 'bottom');
+                                document.getElementById(bottomId).value = inputEl.value;
+                            } else {
+                                const topId = config.input.replace('bottom', 'top');
+                                document.getElementById(topId).value = inputEl.value;
+                            }
+                            
+                            updateShareURL();
+                        });
+                    });
+                });
+                
+                // Close suggestions when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!inputEl.contains(e.target) && !suggestionsEl.contains(e.target)) {
+                        suggestionsEl.style.display = 'none';
+                    }
+                });
             });
         }
 
         function updateShareURL() {
-            const p1 = document.getElementById('player1').value;
-            const p2 = document.getElementById('player2').value;
+            const p1 = document.getElementById('player1-top').value;
+            const p2 = document.getElementById('player2-top').value;
             
             if (p1 && p2) {
                 const shareURL = `${window.location.origin}${window.location.pathname}?p1=${playerNameToURL(p1)}&p2=${playerNameToURL(p2)}`;
@@ -586,12 +693,23 @@
             return '';
         }
 
-        function compareFromSelectors() {
-            const p1 = document.getElementById('player1').value;
-            const p2 = document.getElementById('player2').value;
+        function compareFromInputs() {
+            const p1 = document.getElementById('player1-top').value;
+            const p2 = document.getElementById('player2-top').value;
             
             if (!p1 || !p2) {
-                alert('Please select both players');
+                alert('Please enter both player names');
+                return;
+            }
+            
+            // Check if players exist
+            if (!players.includes(p1)) {
+                alert(`Player "${p1}" not found. Please select from suggestions.`);
+                return;
+            }
+            
+            if (!players.includes(p2)) {
+                alert(`Player "${p2}" not found. Please select from suggestions.`);
                 return;
             }
             
@@ -599,6 +717,10 @@
                 alert('Please select different players');
                 return;
             }
+            
+            // Sync bottom inputs
+            document.getElementById('player1-bottom').value = p1;
+            document.getElementById('player2-bottom').value = p2;
             
             comparePlayer(p1, p2);
         }
@@ -1536,23 +1658,25 @@
                 html += `</div>`;
             });
             
-            // Add same-era suggestion button
+            // Add same-era suggestion button (only if All-Stars data is available)
             const sameEraP1 = getSameEraAllStar(player1Name);
             const sameEraP2 = getSameEraAllStar(player2Name);
             
-            html += `
-                <div class="suggestions-section">
-                    <h3 style="margin-bottom: 15px; color: #1a1a1a;">✨ Try These Comparisons</h3>
-                    <div style="display: flex; gap: 15px; flex-wrap: wrap;">
-                        <button class="suggestion-btn" onclick="loadComparison('${player1Name}', '${sameEraP1}')">
-                            ${player1Name} vs ${sameEraP1} (same era)
-                        </button>
-                        <button class="suggestion-btn" onclick="loadComparison('${player2Name}', '${sameEraP2}')">
-                            ${player2Name} vs ${sameEraP2} (same era)
-                        </button>
+            if (sameEraP1 && sameEraP2) {
+                html += `
+                    <div class="suggestions-section">
+                        <h3 style="margin-bottom: 15px; color: #1a1a1a;">✨ Try These Comparisons</h3>
+                        <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                            <button class="suggestion-btn" onclick="loadComparison('${player1Name}', '${sameEraP1}')">
+                                ${player1Name} vs ${sameEraP1}
+                            </button>
+                            <button class="suggestion-btn" onclick="loadComparison('${player2Name}', '${sameEraP2}')">
+                                ${player2Name} vs ${sameEraP2}
+                            </button>
+                        </div>
                     </div>
-                </div>
-            `;
+                `;
+            }
             
             resultsDiv.innerHTML = html;
             
@@ -1561,9 +1685,11 @@
         }
         
         function loadComparison(p1, p2) {
-            document.getElementById('player1').value = p1;
-            document.getElementById('player2').value = p2;
-            compareFromSelectors();
+            document.getElementById('player1-top').value = p1;
+            document.getElementById('player2-top').value = p2;
+            document.getElementById('player1-bottom').value = p1;
+            document.getElementById('player2-bottom').value = p2;
+            compareFromInputs();
         }
     </script>
 </body>
