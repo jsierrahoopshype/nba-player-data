@@ -850,41 +850,40 @@
                     const p2Num = parseNumericValue(p2Value);
                     
                     if (!isNaN(p1Num) && !isNaN(p2Num)) {
-                        // Helper to check if stat wasn't tracked (0 or dash)
-                        const isUntrackedStat = () => {
-                            const untrackedSections = ['NBA CAREER AVERAGES', 'NBA CAREER TOTALS', 'NBA SEASON PEAK'];
-                            const untrackedCategories = ['steals', 'blocks', 'turnovers', 'three', '3p', 'stl', 'blk', 'tov'];
-                            
-                            const sectionMatch = untrackedSections.some(s => 
-                                currentSection && currentSection.toUpperCase().includes(s.toUpperCase())
-                            );
-                            
-                            const categoryMatch = untrackedCategories.some(c => 
-                                category && category.toLowerCase().includes(c)
-                            );
-                            
-                            if (sectionMatch && categoryMatch) {
-                                // Check if either player has zero (stat wasn't tracked for them)
-                                return p1Num === 0 || p2Num === 0;
-                            }
-                            return false;
-                        };
-                        
                         if (winCondition === 'Most') {
-                            if (p1Num > p2Num && !isUntrackedStat()) {
+                            if (p1Num > p2Num) {
                                 winner = 'player1';
                                 awardPoint = true;
-                            } else if (p2Num > p1Num && !isUntrackedStat()) {
+                            } else if (p2Num > p1Num) {
                                 winner = 'player2';
                                 awardPoint = true;
                             }
                         } else if (winCondition === 'Least') {
-                            if (p1Num < p2Num && !isUntrackedStat()) {
+                            if (p1Num < p2Num) {
                                 winner = 'player1';
                                 awardPoint = true;
-                            } else if (p2Num < p1Num && !isUntrackedStat()) {
+                            } else if (p2Num < p1Num) {
                                 winner = 'player2';
                                 awardPoint = true;
+                            }
+                        }
+                        
+                        // Check if this is an untracked stat (steals/blocks/turnovers/3P with a 0)
+                        if (awardPoint) {
+                            const untrackedSections = ['NBA CAREER AVERAGES', 'NBA CAREER TOTALS', 'NBA SEASON PEAK'];
+                            const untrackedCategories = ['steals', 'steal', 'blocks', 'block', 'turnovers', 'turnover', 'three', '3p', 'stl', 'blk', 'tov'];
+                            
+                            const inUntrackedSection = untrackedSections.some(s => 
+                                currentSection && currentSection.toUpperCase() === s.toUpperCase()
+                            );
+                            
+                            const isUntrackedCategory = untrackedCategories.some(c => 
+                                category && category.toLowerCase().includes(c)
+                            );
+                            
+                            // If either player has 0, don't award the point (stat wasn't tracked for them)
+                            if (inUntrackedSection && isUntrackedCategory && (p1Num === 0 || p2Num === 0)) {
+                                awardPoint = false;
                             }
                         }
                     }
