@@ -934,6 +934,20 @@
                 
                 // Award points
                 if (awardPoint) {
+                    // DEBUG - log what we're about to award
+                    if (category && (category.toLowerCase().includes('block') || 
+                                     category.toLowerCase().includes('steal') || 
+                                     category.toLowerCase().includes('turnover'))) {
+                        console.log('AWARDING POINT:', {
+                            category: category,
+                            section: currentSection,
+                            winner: winner,
+                            awardPoint: awardPoint,
+                            p1Value: p1Value,
+                            p2Value: p2Value
+                        });
+                    }
+                    
                     if (winner === 'player1') {
                         sectionScores[currentSection].player1++;
                         // Add to overall score unless it's an excluded section
