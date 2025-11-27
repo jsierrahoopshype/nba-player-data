@@ -1603,12 +1603,12 @@
             let html = `
                 <div class="score-summary">
                     <div class="player-score">
-                        <div class="player-name-score">${player1Name}</div>
+                        <div class="player-name-score clickable-player-name" data-player-name="${player1Name}" style="cursor: pointer; text-decoration: underline;">${player1Name}</div>
                         <div class="score-value">${results.player1Score}</div>
                     </div>
                     <div class="score-divider">–</div>
                     <div class="player-score">
-                        <div class="player-name-score">${player2Name}</div>
+                        <div class="player-name-score clickable-player-name" data-player-name="${player2Name}" style="cursor: pointer; text-decoration: underline;">${player2Name}</div>
                         <div class="score-value">${results.player2Score}</div>
                     </div>
                 </div>
@@ -1632,7 +1632,10 @@
                 // Only show section score if at least one player has points
                 const showScore = sectionScore && (sectionScore.player1 > 0 || sectionScore.player2 > 0);
                 const sectionScoreHTML = showScore ? 
-                    `<div class="section-score">${player1Name} ${sectionScore.player1} – ${player2Name} ${sectionScore.player2}</div>` : '';
+                    `<div class="section-score">
+                        <span class="clickable-player-name" data-player-name="${player1Name}" style="cursor: pointer; text-decoration: underline;">${player1Name}</span> ${sectionScore.player1} – 
+                        <span class="clickable-player-name" data-player-name="${player2Name}" style="cursor: pointer; text-decoration: underline;">${player2Name}</span> ${sectionScore.player2}
+                    </div>` : '';
                 
                 html += `<div class="category-section">
                     <div class="category-title">
@@ -1685,6 +1688,34 @@
             }
             
             resultsDiv.innerHTML = html;
+            
+            // Attach click handlers to clickable player names in scoreboards
+            resultsDiv.querySelectorAll('.clickable-player-name').forEach(nameEl => {
+                nameEl.addEventListener('click', function() {
+                    const clickedPlayer = this.getAttribute('data-player-name');
+                    const currentP1 = document.getElementById('player1-top').value;
+                    const currentP2 = document.getElementById('player2-top').value;
+                    
+                    // Keep clicked player in position, randomize opponent
+                    if (clickedPlayer === currentP1) {
+                        // Player 1 was clicked, randomize Player 2
+                        const newP2 = getRandomAllStar();
+                        if (newP2 && newP2 !== clickedPlayer) {
+                            document.getElementById('player2-top').value = newP2;
+                            document.getElementById('player2-bottom').value = newP2;
+                            compareFromInputs();
+                        }
+                    } else if (clickedPlayer === currentP2) {
+                        // Player 2 was clicked, randomize Player 1
+                        const newP1 = getRandomAllStar();
+                        if (newP1 && newP1 !== clickedPlayer) {
+                            document.getElementById('player1-top').value = newP1;
+                            document.getElementById('player1-bottom').value = newP1;
+                            compareFromInputs();
+                        }
+                    }
+                });
+            });
             
             // Attach click handlers to suggestion buttons
             resultsDiv.querySelectorAll('.suggestion-btn').forEach(btn => {
