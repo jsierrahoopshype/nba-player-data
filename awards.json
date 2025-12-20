@@ -38883,16 +38883,6 @@
     "": "",
     "AWARD": "All-Tournament Cup Team",
     "YEAR": "2025",
-    "RG CODE": "Shai Gilgeous-Alexander",
-    "PLAYER / COACH": "Shai Gilgeous-Alexander",
-    "TEAM": "Oklahoma City Thunder",
-    "CAREER AWARDS": "All-NBA First Team, All-Rookie Second Team, All-Star, All-Tournament Cup Team, Finals MVP, Most Valuable Player, NBA Champion, Player of the Month, Player of the Week, WC Finals MVP, Scoring Leader, World Cup Bronze",
-    "SEASON AWARDS": "All-NBA First Team, All-Star, All-Tournament Cup Team, Finals MVP, Most Valuable Player, NBA Champion, Player of the Month, Player of the Week, WC Finals MVP, Scoring Leader"
-  },
-  {
-    "": "",
-    "AWARD": "All-Tournament Cup Team",
-    "YEAR": "2025",
     "RG CODE": "Damian Lillard",
     "PLAYER / COACH": "Damian Lillard",
     "TEAM": "Milwaukee Bucks",
@@ -103053,7 +103043,7 @@
   },
   {
     "": "",
-    "AWARD": "NBA Cup champion",
+    "AWARD": "NBA Cup Champion",
     "YEAR": 2025,
     "RG CODE": "OG Anunoby",
     "PLAYER / COACH": "OG Anunoby",
@@ -103063,7 +103053,7 @@
   },
   {
     "": "",
-    "AWARD": "NBA Cup champion",
+    "AWARD": "NBA Cup Champion",
     "YEAR": 2025,
     "RG CODE": "Mikal Bridges",
     "PLAYER / COACH": "Mikal Bridges",
@@ -103073,7 +103063,7 @@
   },
   {
     "": "",
-    "AWARD": "NBA Cup champion",
+    "AWARD": "NBA Cup Champion",
     "YEAR": 2025,
     "RG CODE": "Jalen Brunson",
     "PLAYER / COACH": "Jalen Brunson",
@@ -103083,7 +103073,7 @@
   },
   {
     "": "",
-    "AWARD": "NBA Cup champion",
+    "AWARD": "NBA Cup Champion",
     "YEAR": 2025,
     "RG CODE": "Jordan Clarkson",
     "PLAYER / COACH": "Jordan Clarkson",
@@ -103093,7 +103083,7 @@
   },
   {
     "": "",
-    "AWARD": "NBA Cup champion",
+    "AWARD": "NBA Cup Champion",
     "YEAR": 2025,
     "RG CODE": "Pacome Dadiet",
     "PLAYER / COACH": "Pacome Dadiet",
@@ -103103,7 +103093,7 @@
   },
   {
     "": "",
-    "AWARD": "NBA Cup champion",
+    "AWARD": "NBA Cup Champion",
     "YEAR": 2025,
     "RG CODE": "Mohamed Diawara",
     "PLAYER / COACH": "Mohamed Diawara",
@@ -103113,7 +103103,7 @@
   },
   {
     "": "",
-    "AWARD": "NBA Cup champion",
+    "AWARD": "NBA Cup Champion",
     "YEAR": 2025,
     "RG CODE": "Tosan Evbuomwan",
     "PLAYER / COACH": "Tosan Evbuomwan",
@@ -103123,7 +103113,7 @@
   },
   {
     "": "",
-    "AWARD": "NBA Cup champion",
+    "AWARD": "NBA Cup Champion",
     "YEAR": 2025,
     "RG CODE": "Josh Hart",
     "PLAYER / COACH": "Josh Hart",
@@ -103133,7 +103123,7 @@
   },
   {
     "": "",
-    "AWARD": "NBA Cup champion",
+    "AWARD": "NBA Cup Champion",
     "YEAR": 2025,
     "RG CODE": "Ariel Hukporti",
     "PLAYER / COACH": "Ariel Hukporti",
@@ -103143,7 +103133,7 @@
   },
   {
     "": "",
-    "AWARD": "NBA Cup champion",
+    "AWARD": "NBA Cup Champion",
     "YEAR": 2025,
     "RG CODE": "Trey Jemison",
     "PLAYER / COACH": "Trey Jemison",
@@ -103153,7 +103143,7 @@
   },
   {
     "": "",
-    "AWARD": "NBA Cup champion",
+    "AWARD": "NBA Cup Champion",
     "YEAR": 2025,
     "RG CODE": "Tyler Kolek",
     "PLAYER / COACH": "Tyler Kolek",
@@ -103163,7 +103153,7 @@
   },
   {
     "": "",
-    "AWARD": "NBA Cup champion",
+    "AWARD": "NBA Cup Champion",
     "YEAR": 2025,
     "RG CODE": "Miles McBride",
     "PLAYER / COACH": "Miles McBride",
@@ -103173,7 +103163,7 @@
   },
   {
     "": "",
-    "AWARD": "NBA Cup champion",
+    "AWARD": "NBA Cup Champion",
     "YEAR": 2025,
     "RG CODE": "Kevin McCullar",
     "PLAYER / COACH": "Kevin McCullar",
@@ -103183,7 +103173,7 @@
   },
   {
     "": "",
-    "AWARD": "NBA Cup champion",
+    "AWARD": "NBA Cup Champion",
     "YEAR": 2025,
     "RG CODE": "Mitchell Robinson",
     "PLAYER / COACH": "Mitchell Robinson",
@@ -103193,7 +103183,7 @@
   },
   {
     "": "",
-    "AWARD": "NBA Cup champion",
+    "AWARD": "NBA Cup Champion",
     "YEAR": 2025,
     "RG CODE": "Landry Shamet",
     "PLAYER / COACH": "Landry Shamet",
@@ -103203,7 +103193,7 @@
   },
   {
     "": "",
-    "AWARD": "NBA Cup champion",
+    "AWARD": "NBA Cup Champion",
     "YEAR": 2025,
     "RG CODE": "Karl-Anthony Towns",
     "PLAYER / COACH": "Karl-Anthony Towns",
@@ -103213,7 +103203,7 @@
   },
   {
     "": "",
-    "AWARD": "NBA Cup champion",
+    "AWARD": "NBA Cup Champion",
     "YEAR": 2025,
     "RG CODE": "Guerschon Yabusele",
     "PLAYER / COACH": "Guerschon Yabusele",
@@ -103275,6 +103265,16 @@
     "": "",
     "AWARD": "All-Tournament Cup Team",
     "YEAR": 2024,
+    "RG CODE": "Shai Gilgeous-Alexander",
+    "PLAYER / COACH": "Shai Gilgeous-Alexander",
+    "TEAM": "Oklahoma City Thunder",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "All-Tournament Cup Team",
+    "YEAR": 2025,
     "RG CODE": "Shai Gilgeous-Alexander",
     "PLAYER / COACH": "Shai Gilgeous-Alexander",
     "TEAM": "Oklahoma City Thunder",
