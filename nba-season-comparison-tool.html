@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NBA Season Comparison Tool - HoopsHype</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --hh-red: #e31837;
+            --hh-red-dark: #c41230;
+            --winner-gold: #ffd700;
+            --winner-glow: rgba(255, 215, 0, 0.3);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0d0d0d 100%);
+            color: #fff;
+            min-height: 100vh;
+            line-height: 1.5;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+
+        .header {
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(180deg, rgba(227, 24, 55, 0.15) 0%, transparent 100%);
+            border-bottom: 2px solid var(--hh-red);
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            letter-spacing: 3px;
+            color: #fff;
+            text-shadow: 0 0 30px rgba(227, 24, 55, 0.5);
+            margin-bottom: 10px;
+        }
+
+        .header h1 span { color: var(--hh-red); }
+        .header p { font-size: 1.1rem; color: #aaa; max-width: 600px; margin: 0 auto; }
+
+        .loading { text-align: center; padding: 60px; font-size: 1.2rem; color: #888; }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 3px solid #333;
+            border-top-color: var(--hh-red);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .loading-status { font-size: 0.9rem; color: #666; margin-top: 10px; }
+
+        .selection-panel {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 30px;
+            align-items: start;
+            margin-bottom: 40px;
+        }
+
+        @media (max-width: 900px) {
+            .selection-panel { grid-template-columns: 1fr; gap: 20px; }
+        }
+
+        .player-select-card {
+            background: linear-gradient(145deg, #1e1e1e, #141414);
+            border-radius: 16px;
+            padding: 25px;
+            border: 1px solid #333;
+            transition: all 0.3s ease;
+        }
+
+        .player-select-card:hover {
+            border-color: var(--hh-red);
+            box-shadow: 0 0 30px rgba(227, 24, 55, 0.2);
+        }
+
+        .player-select-card h3 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.5rem;
+            letter-spacing: 2px;
+            color: var(--hh-red);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .select-group { margin-bottom: 15px; }
+
+        .select-group label {
+            display: block;
+            font-size: 0.85rem;
+            color: #888;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .custom-select { position: relative; width: 100%; }
+
+        .custom-select select {
+            width: 100%;
+            padding: 14px 16px;
+            font-size: 1rem;
+            font-family: inherit;
+            background: #0a0a0a;
+            border: 2px solid #333;
+            border-radius: 10px;
+            color: #fff;
+            cursor: pointer;
+            appearance: none;
+            transition: all 0.3s ease;
+        }
+
+        .custom-select select:focus {
+            outline: none;
+            border-color: var(--hh-red);
+            box-shadow: 0 0 15px rgba(227, 24, 55, 0.3);
+        }
+
+        .custom-select::after {
+            content: '▼';
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+            pointer-events: none;
+            font-size: 0.8rem;
+        }
+
+        .vs-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding-top: 60px;
+        }
+
+        @media (max-width: 900px) { .vs-badge { padding-top: 0; } }
+
+        .vs-badge span {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 3rem;
+            color: var(--hh-red);
+            text-shadow: 0 0 20px rgba(227, 24, 55, 0.5);
+            letter-spacing: 5px;
+        }
+
+        .compare-btn-container { text-align: center; margin-bottom: 40px; }
+
+        .compare-btn {
+            background: linear-gradient(135deg, var(--hh-red), var(--hh-red-dark));
+            color: #fff;
+            border: none;
+            padding: 18px 60px;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.5rem;
+            letter-spacing: 3px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(227, 24, 55, 0.4);
+        }
+
+        .compare-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(227, 24, 55, 0.6);
+        }
+
+        .compare-btn:disabled {
+            background: #333;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        #results { display: none; }
+        #results.active { display: block; animation: fadeIn 0.5s ease; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .score-summary {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 40px;
+            margin-bottom: 30px;
+            padding: 30px;
+            background: linear-gradient(145deg, #1a1a1a, #0d0d0d);
+            border-radius: 20px;
+            border: 2px solid #333;
+        }
+
+        .player-score { text-align: center; flex: 1; max-width: 300px; }
+
+        .player-name-score {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.4rem;
+            letter-spacing: 2px;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+
+        .player-season-label {
+            font-size: 0.9rem;
+            color: var(--hh-red);
+            margin-bottom: 5px;
+        }
+
+        .player-team-label {
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .score-value {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 4rem;
+            color: var(--hh-red);
+            text-shadow: 0 0 20px rgba(227, 24, 55, 0.5);
+        }
+
+        .score-divider {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 3rem;
+            color: #444;
+        }
+
+        .winner-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #ffd700, #ffb700);
+            color: #000;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 10px;
+        }
+
+        .share-url {
+            background: #111;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            border: 1px solid #333;
+        }
+
+        .share-url h3 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+            color: var(--hh-red);
+            margin-bottom: 12px;
+        }
+
+        .share-url-input {
+            width: 100%;
+            padding: 12px 16px;
+            background: #0a0a0a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .share-url-input:focus {
+            outline: none;
+            border-color: var(--hh-red);
+        }
+
+        .category-section {
+            margin-bottom: 30px;
+            background: linear-gradient(145deg, #151515, #0d0d0d);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid #222;
+        }
+
+        .category-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.3rem;
+            letter-spacing: 3px;
+            padding: 18px 25px;
+            background: linear-gradient(90deg, var(--hh-red), var(--hh-red-dark));
+            color: #fff;
+        }
+
+        .comparison-row {
+            display: grid;
+            grid-template-columns: 1fr 180px 1fr;
+            gap: 15px;
+            padding: 16px 25px;
+            border-bottom: 1px solid #1a1a1a;
+            align-items: center;
+            transition: background 0.2s ease;
+        }
+
+        .comparison-row:last-child { border-bottom: none; }
+        .comparison-row:hover { background: rgba(255, 255, 255, 0.02); }
+
+        .metric-name {
+            text-align: center;
+            font-size: 0.9rem;
+            color: #888;
+            font-weight: 500;
+        }
+
+        .player-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .player-value.left { text-align: right; }
+        .player-value.right { text-align: left; }
+
+        .player-value.winner {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 183, 0, 0.1));
+            color: var(--winner-gold);
+            box-shadow: 0 0 15px var(--winner-glow);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .player-value.no-data { color: #444; font-style: italic; }
+
+        .error-message {
+            background: rgba(227, 24, 55, 0.1);
+            border: 1px solid var(--hh-red);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            color: #ff6b6b;
+            margin: 20px 0;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: #555;
+            font-size: 0.85rem;
+            border-top: 1px solid #222;
+            margin-top: 40px;
+        }
+
+        .footer a { color: var(--hh-red); text-decoration: none; }
+
+        @media (max-width: 600px) {
+            .comparison-row {
+                grid-template-columns: 1fr 100px 1fr;
+                gap: 8px;
+                padding: 12px 15px;
+            }
+            .player-value { font-size: 0.95rem; padding: 6px 8px; }
+            .metric-name { font-size: 0.75rem; }
+            .score-summary { flex-direction: column; gap: 20px; }
+            .score-divider { transform: rotate(90deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🏀 NBA <span>SEASON</span> COMPARISON</h1>
+        <p>Compare any two player seasons head-to-head across 80+ statistical categories</p>
+    </div>
+
+    <div class="container">
+        <div id="loading" class="loading">
+            <div class="loading-spinner"></div>
+            <div>Loading player database...</div>
+            <div class="loading-status" id="loadingStatus">Connecting to data sources...</div>
+        </div>
+
+        <div id="app" style="display: none;">
+            <div class="selection-panel">
+                <div class="player-select-card">
+                    <h3>PLAYER 1</h3>
+                    <div class="select-group">
+                        <label>Select Player</label>
+                        <div class="custom-select">
+                            <select id="player1Select">
+                                <option value="">-- Choose Player --</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="select-group">
+                        <label>Select Season</label>
+                        <div class="custom-select">
+                            <select id="season1Select" disabled>
+                                <option value="">-- Choose Season --</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="vs-badge"><span>VS</span></div>
+
+                <div class="player-select-card">
+                    <h3>PLAYER 2</h3>
+                    <div class="select-group">
+                        <label>Select Player</label>
+                        <div class="custom-select">
+                            <select id="player2Select">
+                                <option value="">-- Choose Player --</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="select-group">
+                        <label>Select Season</label>
+                        <div class="custom-select">
+                            <select id="season2Select" disabled>
+                                <option value="">-- Choose Season --</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="compare-btn-container">
+                <button class="compare-btn" id="compareBtn" disabled>COMPARE SEASONS</button>
+            </div>
+
+            <div id="results"></div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>Data provided by <a href="https://hoopshype.com" target="_blank">HoopsHype</a> | Live data updates automatically</p>
+    </div>
+
+    <script>
+        // ===== GOOGLE SHEETS CONFIGURATION =====
+        const SHEETS = {
+            allTime: '1ZrDfzqiC31Hu3YCtxT4aZbZF4QVCVyGe6wBytR2LF30',
+            current2526: '1JH2FUBIyQ1zEHzZBxgP8vHBZ7d8EtP5-fSVG3zMgCgg',
+            historical: '1nPSI-VVKHkGYW9IY2KDP-v_xW6qi9_L9WpCnUFKRi8A'
+        };
+
+        // Tab GIDs
+        const TABS = {
+            rsStats: 0,  // RS Stats tab from All-Time Database
+        };
+
+        function getSheetURL(sheetId, gid) {
+            return `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&gid=${gid}`;
+        }
+
+        // ===== DATA STORAGE =====
+        let playerData = { rsStats: [] };
+        let playerList = [];
+        let playerSeasons = {};
+
+        // ===== COMPARISON CONFIG =====
+        const comparisonConfig = [
+            {
+                category: 'COUNTING STATS: AVERAGES',
+                metrics: [
+                    { name: 'Points', columns: ['PTS / G'], higher: true, format: 'decimal' },
+                    { name: 'Rebounds', columns: ['REB / G'], higher: true, format: 'decimal' },
+                    { name: 'Assists', columns: ['AST / G'], higher: true, format: 'decimal' },
+                    { name: 'Steals', columns: ['STL / G'], higher: true, format: 'decimal' },
+                    { name: 'Blocks', columns: ['BLK / G'], higher: true, format: 'decimal' },
+                    { name: 'Field Goal %', columns: ['FG%'], higher: true, format: 'pct' },
+                    { name: 'Three Point %', columns: ['3P%'], higher: true, format: 'pct' },
+                    { name: 'Free Throw %', columns: ['FT%'], higher: true, format: 'pct' },
+                    { name: 'Turnovers', columns: ['TOV / G'], higher: false, format: 'decimal' }
+                ]
+            },
+            {
+                category: 'COUNTING STATS: TOTALS',
+                metrics: [
+                    { name: 'Total Points', columns: ['PTS'], higher: true, format: 'int' },
+                    { name: 'Total Rebounds', columns: ['REB'], higher: true, format: 'int' },
+                    { name: 'Total Assists', columns: ['AST'], higher: true, format: 'int' },
+                    { name: 'Total Steals', columns: ['STL'], higher: true, format: 'int' },
+                    { name: 'Total Blocks', columns: ['BLK'], higher: true, format: 'int' },
+                    { name: 'Total Turnovers', columns: ['TOV'], higher: false, format: 'int' },
+                    { name: 'Games Played', columns: ['GP'], higher: true, format: 'int' },
+                    { name: 'Minutes Played', columns: ['MIN'], higher: true, format: 'int' }
+                ]
+            },
+            {
+                category: 'SHOOTING',
+                metrics: [
+                    { name: 'Field Goals Made', columns: ['FGM'], higher: true, format: 'int' },
+                    { name: 'Field Goals Attempted', columns: ['FGA'], higher: true, format: 'int' },
+                    { name: 'Three Pointers Made', columns: ['3P'], higher: true, format: 'int' },
+                    { name: 'Three Pointers Attempted', columns: ['3PA'], higher: true, format: 'int' },
+                    { name: 'Free Throws Made', columns: ['FTM'], higher: true, format: 'int' },
+                    { name: 'Free Throws Attempted', columns: ['FTA'], higher: true, format: 'int' }
+                ]
+            },
+            {
+                category: 'REBOUNDING',
+                metrics: [
+                    { name: 'Offensive Rebounds', columns: ['ORB'], higher: true, format: 'int' },
+                    { name: 'Defensive Rebounds', columns: ['DRB'], higher: true, format: 'int' }
+                ]
+            },
+            {
+                category: 'MISC',
+                metrics: [
+                    { name: 'Personal Fouls', columns: ['PF'], higher: false, format: 'int' }
+                ]
+            }
+        ];
+
+        // ===== CSV PARSING =====
+        function parseCSV(text) {
+            const lines = text.trim().split('\n');
+            if (lines.length < 2) return [];
+            
+            const headers = parseCSVLine(lines[0]);
+            const data = [];
+            
+            for (let i = 1; i < lines.length; i++) {
+                const values = parseCSVLine(lines[i]);
+                const row = {};
+                headers.forEach((header, index) => {
+                    const cleanHeader = header.trim().replace(/"/g, '');
+                    row[cleanHeader] = values[index] ? values[index].trim().replace(/"/g, '') : '';
+                });
+                data.push(row);
+            }
+            
+            return data;
+        }
+
+        function parseCSVLine(line) {
+            const result = [];
+            let current = '';
+            let inQuotes = false;
+            
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+                if (char === '"') {
+                    inQuotes = !inQuotes;
+                } else if (char === ',' && !inQuotes) {
+                    result.push(current);
+                    current = '';
+                } else {
+                    current += char;
+                }
+            }
+            result.push(current);
+            return result;
+        }
+
+        // ===== DATA LOADING =====
+        async function fetchSheet(sheetId, gid) {
+            const url = getSheetURL(sheetId, gid);
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                const text = await response.text();
+                return parseCSV(text);
+            } catch (error) {
+                console.error(`Error fetching sheet:`, error);
+                return [];
+            }
+        }
+
+        function updateLoadingStatus(message) {
+            const status = document.getElementById('loadingStatus');
+            if (status) status.textContent = message;
+        }
+
+        async function loadAllData() {
+            try {
+                updateLoadingStatus('Loading regular season stats...');
+                playerData.rsStats = await fetchSheet(SHEETS.allTime, TABS.rsStats);
+                console.log('RS Stats loaded:', playerData.rsStats.length, 'rows');
+                console.log('Sample row:', playerData.rsStats[0]);
+                
+                if (playerData.rsStats.length > 0) {
+                    buildPlayerList();
+                }
+
+                return playerData.rsStats.length > 0;
+            } catch (error) {
+                console.error('Error loading data:', error);
+                return false;
+            }
+        }
+
+        function buildPlayerList() {
+            const players = new Map();
+            const sampleRow = playerData.rsStats[0];
+            
+            // Find the player column
+            const playerCol = Object.keys(sampleRow).find(k => 
+                k.toUpperCase() === 'PLAYER' || 
+                k.toUpperCase() === 'PLAYER_NAME' || 
+                k.toUpperCase() === 'NAME'
+            ) || 'PLAYER';
+            
+            // Find the year column
+            const yearCol = Object.keys(sampleRow).find(k => 
+                k.toUpperCase() === 'YEAR' || 
+                k.toUpperCase() === 'SEASON' ||
+                k.toUpperCase() === 'SEASON_ID'
+            ) || 'YEAR';
+
+            // Find the team column
+            const teamCol = Object.keys(sampleRow).find(k => 
+                (k.toUpperCase() === 'TEAM' || k.toUpperCase() === 'TEAM_ABBREVIATION' || k.toUpperCase() === 'TM') &&
+                !k.toUpperCase().includes('_ID')
+            ) || 'TEAM';
+
+            console.log('Using columns:', { playerCol, yearCol, teamCol });
+
+            playerData.rsStats.forEach(row => {
+                const name = row[playerCol];
+                const year = row[yearCol];
+                const team = row[teamCol];
+                
+                if (name && year) {
+                    if (!players.has(name)) {
+                        players.set(name, []);
+                    }
+                    players.get(name).push({ year, team, data: row });
+                }
+            });
+
+            playerList = Array.from(players.keys()).sort();
+            
+            players.forEach((seasons, name) => {
+                playerSeasons[name] = seasons.sort((a, b) => parseInt(b.year) - parseInt(a.year));
+            });
+
+            console.log('Built player list:', playerList.length, 'players');
+        }
+
+        // ===== UI FUNCTIONS =====
+        function populatePlayerSelects() {
+            const player1Select = document.getElementById('player1Select');
+            const player2Select = document.getElementById('player2Select');
+            
+            playerList.forEach(player => {
+                const option1 = document.createElement('option');
+                option1.value = player;
+                option1.textContent = player;
+                player1Select.appendChild(option1);
+                
+                const option2 = document.createElement('option');
+                option2.value = player;
+                option2.textContent = player;
+                player2Select.appendChild(option2);
+            });
+        }
+
+        function populateSeasonSelect(selectId, playerName) {
+            const select = document.getElementById(selectId);
+            select.innerHTML = '<option value="">-- Choose Season --</option>';
+            
+            if (!playerName || !playerSeasons[playerName]) {
+                select.disabled = true;
+                return;
+            }
+            
+            const seasons = playerSeasons[playerName];
+            seasons.forEach(s => {
+                const option = document.createElement('option');
+                option.value = s.year;
+                option.textContent = formatSeasonYear(s.year) + (s.team ? ` (${s.team})` : '');
+                select.appendChild(option);
+            });
+            
+            select.disabled = false;
+        }
+
+        function formatSeasonYear(year) {
+            const endYear = parseInt(year);
+            if (isNaN(endYear)) return year;
+            const startYear = endYear - 1;
+            return `${startYear}-${year.toString().slice(-2)}`;
+        }
+
+        function updateCompareButton() {
+            const p1 = document.getElementById('player1Select').value;
+            const s1 = document.getElementById('season1Select').value;
+            const p2 = document.getElementById('player2Select').value;
+            const s2 = document.getElementById('season2Select').value;
+            
+            document.getElementById('compareBtn').disabled = !(p1 && s1 && p2 && s2);
+        }
+
+        // ===== URL HANDLING =====
+        function playerNameToURL(name) {
+            return name.toLowerCase()
+                .replace(/\./g, '').replace(/'/g, '').replace(/,/g, '')
+                .replace(/jr$/i, 'jr').replace(/sr$/i, 'sr')
+                .replace(/iii$/i, 'iii').replace(/ii$/i, 'ii').replace(/iv$/i, 'iv')
+                .replace(/\s+/g, '-');
+        }
+
+        function urlToPlayerName(url) {
+            const urlLower = url.toLowerCase();
+            return playerList.find(p => playerNameToURL(p) === urlLower) || null;
+        }
+
+        function loadFromURL() {
+            const params = new URLSearchParams(window.location.search);
+            const p1 = params.get('p1'), s1 = params.get('s1');
+            const p2 = params.get('p2'), s2 = params.get('s2');
+            
+            if (p1 && s1 && p2 && s2) {
+                const player1 = urlToPlayerName(p1);
+                const player2 = urlToPlayerName(p2);
+                
+                if (player1 && player2) {
+                    document.getElementById('player1Select').value = player1;
+                    populateSeasonSelect('season1Select', player1);
+                    document.getElementById('season1Select').value = s1;
+                    
+                    document.getElementById('player2Select').value = player2;
+                    populateSeasonSelect('season2Select', player2);
+                    document.getElementById('season2Select').value = s2;
+                    
+                    updateCompareButton();
+                    setTimeout(() => runComparison(), 100);
+                }
+            }
+        }
+
+        // ===== COMPARISON =====
+        function getPlayerSeasonData(playerName, season) {
+            const seasons = playerSeasons[playerName];
+            if (!seasons) return null;
+            const match = seasons.find(s => s.year === season);
+            return match ? match.data : null;
+        }
+
+        function getStatValue(data, columns) {
+            if (!data || !columns) return null;
+            for (const col of columns) {
+                if (data[col] !== undefined && data[col] !== '' && data[col] !== null) {
+                    return data[col];
+                }
+            }
+            return null;
+        }
+
+        function formatValue(value, format) {
+            if (value === null || value === undefined || value === '' || value === '-') return '-';
+            
+            const num = parseFloat(value);
+            if (isNaN(num)) return value;
+            
+            switch (format) {
+                case 'int': return Math.round(num).toLocaleString();
+                case 'decimal': return num.toFixed(1);
+                case 'pct':
+                    if (num > 1) return num.toFixed(1) + '%';
+                    return (num * 100).toFixed(1) + '%';
+                default: return value;
+            }
+        }
+
+        function compareValues(val1, val2, higherWins) {
+            const num1 = parseFloat(val1);
+            const num2 = parseFloat(val2);
+            
+            if (isNaN(num1) && isNaN(num2)) return 'tie';
+            if (isNaN(num1)) return 'p2';
+            if (isNaN(num2)) return 'p1';
+            if (Math.abs(num1 - num2) < 0.001) return 'tie';
+            
+            return higherWins ? (num1 > num2 ? 'p1' : 'p2') : (num1 < num2 ? 'p1' : 'p2');
+        }
+
+        function runComparison() {
+            const player1 = document.getElementById('player1Select').value;
+            const season1 = document.getElementById('season1Select').value;
+            const player2 = document.getElementById('player2Select').value;
+            const season2 = document.getElementById('season2Select').value;
+            
+            if (!player1 || !season1 || !player2 || !season2) return;
+            
+            const data1 = getPlayerSeasonData(player1, season1);
+            const data2 = getPlayerSeasonData(player2, season2);
+            
+            if (!data1 || !data2) {
+                document.getElementById('results').innerHTML = `
+                    <div class="error-message">
+                        Could not find data for one or both player seasons.
+                    </div>
+                `;
+                document.getElementById('results').classList.add('active');
+                return;
+            }
+
+            const team1 = data1.TEAM || data1.TEAM_ABBREVIATION || data1.TM || '';
+            const team2 = data2.TEAM || data2.TEAM_ABBREVIATION || data2.TM || '';
+            
+            let p1Score = 0, p2Score = 0;
+            let html = '';
+            
+            const shareURL = `${window.location.origin}${window.location.pathname}?p1=${playerNameToURL(player1)}&s1=${season1}&p2=${playerNameToURL(player2)}&s2=${season2}`;
+            window.history.replaceState({}, '', shareURL);
+            
+            comparisonConfig.forEach(category => {
+                let categoryHtml = '';
+                let hasData = false;
+                
+                category.metrics.forEach(metric => {
+                    const val1 = getStatValue(data1, metric.columns);
+                    const val2 = getStatValue(data2, metric.columns);
+                    
+                    if ((val1 === null || val1 === '') && (val2 === null || val2 === '')) return;
+                    
+                    hasData = true;
+                    const winner = compareValues(val1, val2, metric.higher);
+                    
+                    if (winner === 'p1') p1Score++;
+                    if (winner === 'p2') p2Score++;
+                    
+                    const formatted1 = formatValue(val1, metric.format);
+                    const formatted2 = formatValue(val2, metric.format);
+                    
+                    categoryHtml += `
+                        <div class="comparison-row">
+                            <div class="player-value left ${winner === 'p1' ? 'winner' : ''} ${formatted1 === '-' ? 'no-data' : ''}">${formatted1}</div>
+                            <div class="metric-name">${metric.name}</div>
+                            <div class="player-value right ${winner === 'p2' ? 'winner' : ''} ${formatted2 === '-' ? 'no-data' : ''}">${formatted2}</div>
+                        </div>
+                    `;
+                });
+                
+                if (hasData) {
+                    html += `
+                        <div class="category-section">
+                            <div class="category-title">${category.category}</div>
+                            ${categoryHtml}
+                        </div>
+                    `;
+                }
+            });
+            
+            let winnerBadge1 = '', winnerBadge2 = '';
+            if (p1Score > p2Score) winnerBadge1 = '<div class="winner-badge">WINNER</div>';
+            else if (p2Score > p1Score) winnerBadge2 = '<div class="winner-badge">WINNER</div>';
+            
+            document.getElementById('results').innerHTML = `
+                <div class="score-summary">
+                    <div class="player-score">
+                        <div class="player-name-score">${player1}</div>
+                        <div class="player-season-label">${formatSeasonYear(season1)}</div>
+                        ${team1 ? `<div class="player-team-label">${team1}</div>` : ''}
+                        <div class="score-value">${p1Score}</div>
+                        ${winnerBadge1}
+                    </div>
+                    <div class="score-divider">-</div>
+                    <div class="player-score">
+                        <div class="player-name-score">${player2}</div>
+                        <div class="player-season-label">${formatSeasonYear(season2)}</div>
+                        ${team2 ? `<div class="player-team-label">${team2}</div>` : ''}
+                        <div class="score-value">${p2Score}</div>
+                        ${winnerBadge2}
+                    </div>
+                </div>
+                
+                <div class="share-url">
+                    <h3>📤 SHARE THIS COMPARISON</h3>
+                    <input type="text" class="share-url-input" value="${shareURL}" readonly onclick="this.select(); document.execCommand('copy'); alert('URL copied!');">
+                </div>
+                
+                ${html}
+            `;
+            
+            document.getElementById('results').classList.add('active');
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // ===== EVENT LISTENERS =====
+        function setupEventListeners() {
+            document.getElementById('player1Select').addEventListener('change', (e) => {
+                populateSeasonSelect('season1Select', e.target.value);
+                updateCompareButton();
+            });
+            
+            document.getElementById('player2Select').addEventListener('change', (e) => {
+                populateSeasonSelect('season2Select', e.target.value);
+                updateCompareButton();
+            });
+            
+            document.getElementById('season1Select').addEventListener('change', updateCompareButton);
+            document.getElementById('season2Select').addEventListener('change', updateCompareButton);
+            document.getElementById('compareBtn').addEventListener('click', runComparison);
+        }
+
+        // ===== INIT =====
+        async function init() {
+            const success = await loadAllData();
+            
+            if (success && playerList.length > 0) {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('app').style.display = 'block';
+                
+                populatePlayerSelects();
+                setupEventListeners();
+                loadFromURL();
+            } else {
+                document.getElementById('loading').innerHTML = `
+                    <div class="error-message">
+                        <h3>Unable to load data</h3>
+                        <p>Please check that the Google Sheets are published and try refreshing.</p>
+                        <p style="margin-top: 15px; font-size: 0.85rem;">
+                            <strong>Debug info:</strong> Loaded ${playerData.rsStats.length} rows
+                        </p>
+                    </div>
+                `;
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>
