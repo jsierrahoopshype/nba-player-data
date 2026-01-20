@@ -4,448 +4,389 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NBA Season Comparison Tool - HoopsHype</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="description" content="Compare any two NBA player seasons across 80+ categories including stats, advanced metrics, and more.">
     <style>
-        :root {
-            --hh-red: #e31837;
-            --hh-red-dark: #c41230;
-            --winner-gold: #ffd700;
-            --winner-glow: rgba(255, 215, 0, 0.3);
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0d0d0d 100%);
-            color: #fff;
-            min-height: 100vh;
-            line-height: 1.5;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+            line-height: 1.6;
         }
-
-        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-
-        .header {
-            text-align: center;
-            padding: 40px 20px;
-            background: linear-gradient(180deg, rgba(227, 24, 55, 0.15) 0%, transparent 100%);
-            border-bottom: 2px solid var(--hh-red);
-            margin-bottom: 30px;
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
-
-        .header h1 {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: clamp(2.5rem, 6vw, 4rem);
-            letter-spacing: 3px;
-            color: #fff;
-            text-shadow: 0 0 30px rgba(227, 24, 55, 0.5);
+        h1 {
+            color: #1a1a1a;
             margin-bottom: 10px;
+            font-size: 2.5em;
+            text-align: center;
         }
-
-        .header h1 span { color: var(--hh-red); }
-        .header p { font-size: 1.1rem; color: #aaa; max-width: 600px; margin: 0 auto; }
-
-        .loading { text-align: center; padding: 60px; font-size: 1.2rem; color: #888; }
-
-        .loading-spinner {
-            display: inline-block;
-            width: 40px;
-            height: 40px;
-            border: 3px solid #333;
-            border-top-color: var(--hh-red);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 15px;
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
         }
-
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        .loading-status { font-size: 0.9rem; color: #666; margin-top: 10px; }
-
-        .selection-panel {
+        .player-selector {
             display: grid;
             grid-template-columns: 1fr auto 1fr;
-            gap: 30px;
+            gap: 20px;
+            margin-bottom: 30px;
             align-items: start;
-            margin-bottom: 40px;
         }
-
-        @media (max-width: 900px) {
-            .selection-panel { grid-template-columns: 1fr; gap: 20px; }
-        }
-
         .player-select-card {
-            background: linear-gradient(145deg, #1e1e1e, #141414);
-            border-radius: 16px;
-            padding: 25px;
-            border: 1px solid #333;
-            transition: all 0.3s ease;
+            background: #fafafa;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
         }
-
-        .player-select-card:hover {
-            border-color: var(--hh-red);
-            box-shadow: 0 0 30px rgba(227, 24, 55, 0.2);
-        }
-
         .player-select-card h3 {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 1.5rem;
-            letter-spacing: 2px;
-            color: var(--hh-red);
-            margin-bottom: 20px;
+            font-size: 14px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
             text-align: center;
         }
-
-        .select-group { margin-bottom: 15px; }
-
+        .select-group {
+            margin-bottom: 15px;
+        }
         .select-group label {
             display: block;
-            font-size: 0.85rem;
+            font-size: 12px;
             color: #888;
-            margin-bottom: 8px;
+            margin-bottom: 5px;
             text-transform: uppercase;
-            letter-spacing: 1px;
         }
-
-        .custom-select { position: relative; width: 100%; }
-
-        .custom-select select {
+        .player-autocomplete, .season-select {
             width: 100%;
-            padding: 14px 16px;
-            font-size: 1rem;
-            font-family: inherit;
-            background: #0a0a0a;
-            border: 2px solid #333;
-            border-radius: 10px;
-            color: #fff;
-            cursor: pointer;
-            appearance: none;
-            transition: all 0.3s ease;
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            background-color: white;
+            transition: border-color 0.3s;
         }
-
-        .custom-select select:focus {
+        .player-autocomplete:hover, .season-select:hover { border-color: #007bff; }
+        .player-autocomplete:focus, .season-select:focus {
             outline: none;
-            border-color: var(--hh-red);
-            box-shadow: 0 0 15px rgba(227, 24, 55, 0.3);
+            border-color: #007bff;
         }
-
-        .custom-select::after {
-            content: '▼';
+        .player-select-wrapper {
+            position: relative;
+        }
+        .autocomplete-suggestions {
             position: absolute;
-            right: 16px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #666;
-            pointer-events: none;
-            font-size: 0.8rem;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 2px solid #007bff;
+            border-top: none;
+            border-radius: 0 0 6px 6px;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
         }
-
-        .vs-badge {
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .autocomplete-suggestion {
+            padding: 10px 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+        }
+        .autocomplete-suggestion:hover {
+            background-color: #f0f8ff;
+        }
+        .autocomplete-suggestion:last-child {
+            border-bottom: none;
+        }
+        .vs-text {
+            font-size: 24px;
+            font-weight: bold;
+            color: #666;
+            text-align: center;
             padding-top: 60px;
         }
-
-        @media (max-width: 900px) { .vs-badge { padding-top: 0; } }
-
-        .vs-badge span {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 3rem;
-            color: var(--hh-red);
-            text-shadow: 0 0 20px rgba(227, 24, 55, 0.5);
-            letter-spacing: 5px;
-        }
-
-        .compare-btn-container { text-align: center; margin-bottom: 40px; }
-
-        .compare-btn {
-            background: linear-gradient(135deg, var(--hh-red), var(--hh-red-dark));
-            color: #fff;
+        .compare-button {
+            background-color: #007bff;
+            color: white;
             border: none;
-            padding: 18px 60px;
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 1.5rem;
-            letter-spacing: 3px;
-            border-radius: 50px;
+            padding: 15px 40px;
+            font-size: 18px;
+            border-radius: 6px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 20px rgba(227, 24, 55, 0.4);
+            display: block;
+            margin: 0 auto 30px;
+            transition: background-color 0.3s;
         }
-
-        .compare-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 30px rgba(227, 24, 55, 0.6);
-        }
-
-        .compare-btn:disabled {
-            background: #333;
+        .compare-button:hover { background-color: #0056b3; }
+        .compare-button:disabled {
+            background-color: #ccc;
             cursor: not-allowed;
-            box-shadow: none;
-            transform: none;
         }
-
-        #results { display: none; }
-        #results.active { display: block; animation: fadeIn 0.5s ease; }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .score-summary {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 40px;
-            margin-bottom: 30px;
-            padding: 30px;
-            background: linear-gradient(145deg, #1a1a1a, #0d0d0d);
-            border-radius: 20px;
-            border: 2px solid #333;
-        }
-
-        .player-score { text-align: center; flex: 1; max-width: 300px; }
-
-        .player-name-score {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 1.4rem;
-            letter-spacing: 2px;
-            color: #fff;
-            margin-bottom: 5px;
-        }
-
-        .player-season-label {
-            font-size: 0.9rem;
-            color: var(--hh-red);
-            margin-bottom: 5px;
-        }
-
-        .player-team-label {
-            font-size: 0.8rem;
+        .loading {
+            text-align: center;
+            padding: 40px;
+            font-size: 18px;
             color: #666;
-            margin-bottom: 10px;
         }
-
-        .score-value {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 4rem;
-            color: var(--hh-red);
-            text-shadow: 0 0 20px rgba(227, 24, 55, 0.5);
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #007bff;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
         }
-
-        .score-divider {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 3rem;
-            color: #444;
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
-
-        .winner-badge {
-            display: inline-block;
-            background: linear-gradient(135deg, #ffd700, #ffb700);
-            color: #000;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+        .loading-status {
+            font-size: 14px;
+            color: #888;
             margin-top: 10px;
         }
-
-        .share-url {
-            background: #111;
+        .score-summary {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+            padding: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 30px;
-            border: 1px solid #333;
+            color: white;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
-
-        .share-url h3 {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 1.2rem;
-            letter-spacing: 2px;
-            color: var(--hh-red);
-            margin-bottom: 12px;
+        .player-score { text-align: center; }
+        .player-name-score {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            opacity: 0.9;
         }
-
-        .share-url-input {
-            width: 100%;
-            padding: 12px 16px;
-            background: #0a0a0a;
-            border: 1px solid #333;
-            border-radius: 8px;
-            color: #fff;
-            font-size: 0.9rem;
-            cursor: pointer;
+        .player-season-label {
+            font-size: 14px;
+            opacity: 0.8;
+            margin-bottom: 5px;
         }
-
-        .share-url-input:focus {
-            outline: none;
-            border-color: var(--hh-red);
+        .player-team-label {
+            font-size: 12px;
+            opacity: 0.7;
+            margin-bottom: 15px;
         }
-
+        .score-value {
+            font-size: 56px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .score-divider {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            font-weight: 300;
+            opacity: 0.7;
+        }
         .category-section {
-            margin-bottom: 30px;
-            background: linear-gradient(145deg, #151515, #0d0d0d);
-            border-radius: 16px;
-            overflow: hidden;
-            border: 1px solid #222;
+            margin-bottom: 50px;
         }
-
         .category-title {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 1.3rem;
-            letter-spacing: 3px;
-            padding: 18px 25px;
-            background: linear-gradient(90deg, var(--hh-red), var(--hh-red-dark));
-            color: #fff;
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 4px solid #007bff;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
-
+        .section-score {
+            font-size: 16px;
+            font-weight: 600;
+            color: #666;
+            margin-top: 8px;
+            text-align: left;
+        }
         .comparison-row {
             display: grid;
-            grid-template-columns: 1fr 180px 1fr;
+            grid-template-columns: 2fr 3fr 1fr 3fr 2fr;
             gap: 15px;
-            padding: 16px 25px;
-            border-bottom: 1px solid #1a1a1a;
+            padding: 18px 20px;
+            margin-bottom: 12px;
+            border-radius: 8px;
+            background-color: #fafafa;
             align-items: center;
-            transition: background 0.2s ease;
+            transition: transform 0.2s, box-shadow 0.2s;
         }
-
-        .comparison-row:last-child { border-bottom: none; }
-        .comparison-row:hover { background: rgba(255, 255, 255, 0.02); }
-
-        .metric-name {
+        .comparison-row:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .comparison-row.winner-left {
+            background: linear-gradient(90deg, #d4edda 0%, #fafafa 50%, #fafafa 100%);
+            border-left: 4px solid #28a745;
+        }
+        .comparison-row.winner-right {
+            background: linear-gradient(90deg, #fafafa 0%, #fafafa 50%, #d4edda 100%);
+            border-right: 4px solid #28a745;
+        }
+        .comparison-row.tie {
+            background: linear-gradient(90deg, #fff3cd 0%, #fafafa 50%, #fff3cd 100%);
+            border-left: 4px solid #ffc107;
+            border-right: 4px solid #ffc107;
+        }
+        .player-value {
+            font-size: 19px;
+            font-weight: 600;
             text-align: center;
-            font-size: 0.9rem;
-            color: #888;
+            color: #333;
+        }
+        .player-value.winner {
+            color: #28a745;
+            font-size: 20px;
+        }
+        .metric-name {
+            font-size: 15px;
+            color: #555;
+            text-align: center;
             font-weight: 500;
         }
-
-        .player-value {
-            font-size: 1.1rem;
-            font-weight: 600;
-            padding: 8px 12px;
-            border-radius: 8px;
-            transition: all 0.3s ease;
+        .no-data {
+            color: #999;
+            font-style: italic;
+            font-weight: 400;
         }
-
-        .player-value.left { text-align: right; }
-        .player-value.right { text-align: left; }
-
-        .player-value.winner {
-            background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 183, 0, 0.1));
-            color: var(--winner-gold);
-            box-shadow: 0 0 15px var(--winner-glow);
-            border: 1px solid rgba(255, 215, 0, 0.3);
-        }
-
-        .player-value.no-data { color: #444; font-style: italic; }
-
-        .error-message {
-            background: rgba(227, 24, 55, 0.1);
-            border: 1px solid var(--hh-red);
-            border-radius: 12px;
-            padding: 20px;
-            text-align: center;
-            color: #ff6b6b;
-            margin: 20px 0;
-        }
-
-        .footer {
-            text-align: center;
-            padding: 40px 20px;
-            color: #555;
-            font-size: 0.85rem;
-            border-top: 1px solid #222;
+        .share-url {
             margin-top: 40px;
+            padding: 25px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
         }
-
-        .footer a { color: var(--hh-red); text-decoration: none; }
-
-        @media (max-width: 600px) {
-            .comparison-row {
-                grid-template-columns: 1fr 100px 1fr;
-                gap: 8px;
-                padding: 12px 15px;
+        .share-url h3 {
+            margin-bottom: 15px;
+            color: #333;
+            font-size: 18px;
+        }
+        .share-url-input {
+            width: 100%;
+            padding: 12px;
+            font-size: 14px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            background-color: white;
+            cursor: pointer;
+        }
+        .share-url-input:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+        .error-message {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            border: 1px solid #f5c6cb;
+        }
+        @media (max-width: 768px) {
+            h1 { font-size: 2em; }
+            .player-selector { grid-template-columns: 1fr; }
+            .vs-text {
+                padding-top: 0;
+                margin: 15px 0;
             }
-            .player-value { font-size: 0.95rem; padding: 6px 8px; }
-            .metric-name { font-size: 0.75rem; }
-            .score-summary { flex-direction: column; gap: 20px; }
-            .score-divider { transform: rotate(90deg); }
+            .comparison-row {
+                grid-template-columns: 1fr;
+                gap: 8px;
+                padding: 15px;
+            }
+            .player-value, .metric-name { text-align: left; }
+            .score-summary {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            .score-divider {
+                font-size: 28px;
+            }
+            .score-value { font-size: 42px; }
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>🏀 NBA <span>SEASON</span> COMPARISON</h1>
-        <p>Compare any two player seasons head-to-head across 80+ statistical categories</p>
-    </div>
-
     <div class="container">
-        <div id="loading" class="loading">
-            <div class="loading-spinner"></div>
+        <h1>🏀 NBA Season Comparison Tool</h1>
+        <div class="subtitle">Compare any two player seasons across 80+ categories</div>
+
+        <div id="loadingMessage" class="loading">
+            <div class="spinner"></div>
             <div>Loading player database...</div>
             <div class="loading-status" id="loadingStatus">Connecting to data sources...</div>
         </div>
 
-        <div id="app" style="display: none;">
-            <div class="selection-panel">
+        <div id="mainContent" style="display: none;">
+            <div class="player-selector">
+                <!-- Player 1 -->
                 <div class="player-select-card">
-                    <h3>PLAYER 1</h3>
+                    <h3>Player 1</h3>
                     <div class="select-group">
-                        <label>Select Player</label>
-                        <div class="custom-select">
-                            <select id="player1Select">
-                                <option value="">-- Choose Player --</option>
-                            </select>
+                        <label>Player Name</label>
+                        <div class="player-select-wrapper">
+                            <input type="text" id="player1Input" class="player-autocomplete" placeholder="Type player name...">
+                            <div id="suggestions1" class="autocomplete-suggestions"></div>
                         </div>
                     </div>
                     <div class="select-group">
-                        <label>Select Season</label>
-                        <div class="custom-select">
-                            <select id="season1Select" disabled>
-                                <option value="">-- Choose Season --</option>
-                            </select>
-                        </div>
+                        <label>Season</label>
+                        <select id="season1Select" class="season-select" disabled>
+                            <option value="">-- Select Player First --</option>
+                        </select>
                     </div>
                 </div>
 
-                <div class="vs-badge"><span>VS</span></div>
+                <div class="vs-text">VS</div>
 
+                <!-- Player 2 -->
                 <div class="player-select-card">
-                    <h3>PLAYER 2</h3>
+                    <h3>Player 2</h3>
                     <div class="select-group">
-                        <label>Select Player</label>
-                        <div class="custom-select">
-                            <select id="player2Select">
-                                <option value="">-- Choose Player --</option>
-                            </select>
+                        <label>Player Name</label>
+                        <div class="player-select-wrapper">
+                            <input type="text" id="player2Input" class="player-autocomplete" placeholder="Type player name...">
+                            <div id="suggestions2" class="autocomplete-suggestions"></div>
                         </div>
                     </div>
                     <div class="select-group">
-                        <label>Select Season</label>
-                        <div class="custom-select">
-                            <select id="season2Select" disabled>
-                                <option value="">-- Choose Season --</option>
-                            </select>
-                        </div>
+                        <label>Season</label>
+                        <select id="season2Select" class="season-select" disabled>
+                            <option value="">-- Select Player First --</option>
+                        </select>
                     </div>
                 </div>
             </div>
 
-            <div class="compare-btn-container">
-                <button class="compare-btn" id="compareBtn" disabled>COMPARE SEASONS</button>
-            </div>
-
+            <button class="compare-button" id="compareBtn" disabled>
+                Compare Seasons
+            </button>
+            
             <div id="results"></div>
         </div>
-    </div>
 
-    <div class="footer">
-        <p>Data provided by <a href="https://hoopshype.com" target="_blank">HoopsHype</a> | Live data updates automatically</p>
+        <div id="errorMessage" style="display: none;"></div>
     </div>
 
     <script>
@@ -456,9 +397,18 @@
             historical: '1nPSI-VVKHkGYW9IY2KDP-v_xW6qi9_L9WpCnUFKRi8A'
         };
 
-        // Tab GIDs
         const TABS = {
-            rsStats: 0,  // RS Stats tab from All-Time Database
+            rsStats: 0,
+            teamStats: 1735540905,
+            poStats: 1591736011,
+            advanced: 339737563,
+            scoring: 52077302,
+            shotLocation: 1205457990,
+            defense: 1957258468,
+            usage: 1415078232,
+            clutch: 10789411,
+            hustle: 439158060,
+            histTeamStats: 1299099447
         };
 
         function getSheetURL(sheetId, gid) {
@@ -466,84 +416,51 @@
         }
 
         // ===== DATA STORAGE =====
-        let playerData = { rsStats: [] };
-        let playerList = [];
+        let data = {
+            rsStats: [],
+            teamStats: [],
+            current: {
+                advanced: [],
+                scoring: [],
+                shotLocation: [],
+                defense: [],
+                usage: [],
+                clutch: [],
+                hustle: []
+            },
+            historical: {
+                advanced: [],
+                scoring: [],
+                shotLocation: [],
+                defense: [],
+                usage: [],
+                clutch: [],
+                hustle: []
+            }
+        };
+
+        let players = [];
         let playerSeasons = {};
 
-        // ===== COMPARISON CONFIG =====
-        const comparisonConfig = [
-            {
-                category: 'COUNTING STATS: AVERAGES',
-                metrics: [
-                    { name: 'Points', columns: ['PTS / G'], higher: true, format: 'decimal' },
-                    { name: 'Rebounds', columns: ['REB / G'], higher: true, format: 'decimal' },
-                    { name: 'Assists', columns: ['AST / G'], higher: true, format: 'decimal' },
-                    { name: 'Steals', columns: ['STL / G'], higher: true, format: 'decimal' },
-                    { name: 'Blocks', columns: ['BLK / G'], higher: true, format: 'decimal' },
-                    { name: 'Field Goal %', columns: ['FG%'], higher: true, format: 'pct' },
-                    { name: 'Three Point %', columns: ['3P%'], higher: true, format: 'pct' },
-                    { name: 'Free Throw %', columns: ['FT%'], higher: true, format: 'pct' },
-                    { name: 'Turnovers', columns: ['TOV / G'], higher: false, format: 'decimal' }
-                ]
-            },
-            {
-                category: 'COUNTING STATS: TOTALS',
-                metrics: [
-                    { name: 'Total Points', columns: ['PTS'], higher: true, format: 'int' },
-                    { name: 'Total Rebounds', columns: ['REB'], higher: true, format: 'int' },
-                    { name: 'Total Assists', columns: ['AST'], higher: true, format: 'int' },
-                    { name: 'Total Steals', columns: ['STL'], higher: true, format: 'int' },
-                    { name: 'Total Blocks', columns: ['BLK'], higher: true, format: 'int' },
-                    { name: 'Total Turnovers', columns: ['TOV'], higher: false, format: 'int' },
-                    { name: 'Games Played', columns: ['GP'], higher: true, format: 'int' },
-                    { name: 'Minutes Played', columns: ['MIN'], higher: true, format: 'int' }
-                ]
-            },
-            {
-                category: 'SHOOTING',
-                metrics: [
-                    { name: 'Field Goals Made', columns: ['FGM'], higher: true, format: 'int' },
-                    { name: 'Field Goals Attempted', columns: ['FGA'], higher: true, format: 'int' },
-                    { name: 'Three Pointers Made', columns: ['3P'], higher: true, format: 'int' },
-                    { name: 'Three Pointers Attempted', columns: ['3PA'], higher: true, format: 'int' },
-                    { name: 'Free Throws Made', columns: ['FTM'], higher: true, format: 'int' },
-                    { name: 'Free Throws Attempted', columns: ['FTA'], higher: true, format: 'int' }
-                ]
-            },
-            {
-                category: 'REBOUNDING',
-                metrics: [
-                    { name: 'Offensive Rebounds', columns: ['ORB'], higher: true, format: 'int' },
-                    { name: 'Defensive Rebounds', columns: ['DRB'], higher: true, format: 'int' }
-                ]
-            },
-            {
-                category: 'MISC',
-                metrics: [
-                    { name: 'Personal Fouls', columns: ['PF'], higher: false, format: 'int' }
-                ]
-            }
-        ];
-
         // ===== CSV PARSING =====
-        function parseCSV(text) {
+        function parseCSV(text, skipRows = 0) {
             const lines = text.trim().split('\n');
-            if (lines.length < 2) return [];
+            if (lines.length < skipRows + 2) return [];
             
-            const headers = parseCSVLine(lines[0]);
-            const data = [];
+            const headers = parseCSVLine(lines[skipRows]);
+            const result = [];
             
-            for (let i = 1; i < lines.length; i++) {
+            for (let i = skipRows + 1; i < lines.length; i++) {
                 const values = parseCSVLine(lines[i]);
                 const row = {};
                 headers.forEach((header, index) => {
                     const cleanHeader = header.trim().replace(/"/g, '');
                     row[cleanHeader] = values[index] ? values[index].trim().replace(/"/g, '') : '';
                 });
-                data.push(row);
+                result.push(row);
             }
             
-            return data;
+            return result;
         }
 
         function parseCSVLine(line) {
@@ -567,13 +484,13 @@
         }
 
         // ===== DATA LOADING =====
-        async function fetchSheet(sheetId, gid) {
+        async function fetchSheet(sheetId, gid, skipRows = 0) {
             const url = getSheetURL(sheetId, gid);
             try {
                 const response = await fetch(url);
                 if (!response.ok) throw new Error(`HTTP ${response.status}`);
                 const text = await response.text();
-                return parseCSV(text);
+                return parseCSV(text, skipRows);
             } catch (error) {
                 console.error(`Error fetching sheet:`, error);
                 return [];
@@ -587,16 +504,27 @@
 
         async function loadAllData() {
             try {
+                // Load RS Stats (main counting stats)
                 updateLoadingStatus('Loading regular season stats...');
-                playerData.rsStats = await fetchSheet(SHEETS.allTime, TABS.rsStats);
-                console.log('RS Stats loaded:', playerData.rsStats.length, 'rows');
-                console.log('Sample row:', playerData.rsStats[0]);
-                
-                if (playerData.rsStats.length > 0) {
-                    buildPlayerList();
-                }
+                data.rsStats = await fetchSheet(SHEETS.allTime, TABS.rsStats);
+                console.log('RS Stats loaded:', data.rsStats.length, 'rows');
 
-                return playerData.rsStats.length > 0;
+                // Load 2025-26 Advanced stats (skip 2 metadata rows)
+                updateLoadingStatus('Loading 2025-26 advanced stats...');
+                data.current.advanced = await fetchSheet(SHEETS.current2526, TABS.advanced, 2);
+                console.log('Current Advanced loaded:', data.current.advanced.length, 'rows');
+
+                // Load historical advanced stats
+                updateLoadingStatus('Loading historical stats...');
+                data.historical.advanced = await fetchSheet(SHEETS.historical, TABS.advanced, 2);
+                console.log('Historical Advanced loaded:', data.historical.advanced.length, 'rows');
+
+                // Build player list
+                if (data.rsStats.length > 0) {
+                    buildPlayerList();
+                    return true;
+                }
+                return false;
             } catch (error) {
                 console.error('Error loading data:', error);
                 return false;
@@ -604,77 +532,175 @@
         }
 
         function buildPlayerList() {
-            const players = new Map();
-            const sampleRow = playerData.rsStats[0];
+            const playersMap = new Map();
             
-            // Find the player column
-            const playerCol = Object.keys(sampleRow).find(k => 
-                k.toUpperCase() === 'PLAYER' || 
-                k.toUpperCase() === 'PLAYER_NAME' || 
-                k.toUpperCase() === 'NAME'
-            ) || 'PLAYER';
-            
-            // Find the year column
-            const yearCol = Object.keys(sampleRow).find(k => 
-                k.toUpperCase() === 'YEAR' || 
-                k.toUpperCase() === 'SEASON' ||
-                k.toUpperCase() === 'SEASON_ID'
-            ) || 'YEAR';
-
-            // Find the team column
-            const teamCol = Object.keys(sampleRow).find(k => 
-                (k.toUpperCase() === 'TEAM' || k.toUpperCase() === 'TEAM_ABBREVIATION' || k.toUpperCase() === 'TM') &&
-                !k.toUpperCase().includes('_ID')
-            ) || 'TEAM';
-
-            console.log('Using columns:', { playerCol, yearCol, teamCol });
-
-            playerData.rsStats.forEach(row => {
-                const name = row[playerCol];
-                const year = row[yearCol];
-                const team = row[teamCol];
+            data.rsStats.forEach(row => {
+                const name = row.PLAYER;
+                const year = row.YEAR;
+                const team = row.TEAM;
                 
                 if (name && year) {
-                    if (!players.has(name)) {
-                        players.set(name, []);
+                    if (!playersMap.has(name)) {
+                        playersMap.set(name, []);
                     }
-                    players.get(name).push({ year, team, data: row });
+                    playersMap.get(name).push({ year, team, data: row });
                 }
             });
 
-            playerList = Array.from(players.keys()).sort();
+            players = Array.from(playersMap.keys()).sort();
             
-            players.forEach((seasons, name) => {
+            playersMap.forEach((seasons, name) => {
                 playerSeasons[name] = seasons.sort((a, b) => parseInt(b.year) - parseInt(a.year));
             });
 
-            console.log('Built player list:', playerList.length, 'players');
+            console.log('Built player list:', players.length, 'players');
         }
 
+        // ===== COMPARISON CONFIGURATION =====
+        const comparisonConfig = [
+            {
+                category: 'COUNTING STATS: AVERAGES',
+                source: 'rsStats',
+                metrics: [
+                    { name: 'Points', column: 'PTS / G', higher: true, format: 'decimal' },
+                    { name: 'Rebounds', column: 'REB / G', higher: true, format: 'decimal' },
+                    { name: 'Assists', column: 'AST / G', higher: true, format: 'decimal' },
+                    { name: 'Steals', column: 'STL / G', higher: true, format: 'decimal' },
+                    { name: 'Blocks', column: 'BLK / G', higher: true, format: 'decimal' },
+                    { name: 'Field Goal %', column: 'FG%', higher: true, format: 'pct' },
+                    { name: 'Three Point %', column: '3P%', higher: true, format: 'pct' },
+                    { name: 'Free Throw %', column: 'FT%', higher: true, format: 'pct' },
+                    { name: 'Turnovers', column: 'TOV / G', higher: false, format: 'decimal' }
+                ]
+            },
+            {
+                category: 'COUNTING STATS: TOTALS',
+                source: 'rsStats',
+                metrics: [
+                    { name: 'Total Points', column: 'PTS', higher: true, format: 'int' },
+                    { name: 'Total Rebounds', column: 'REB', higher: true, format: 'int' },
+                    { name: 'Total Assists', column: 'AST', higher: true, format: 'int' },
+                    { name: 'Total Steals', column: 'STL', higher: true, format: 'int' },
+                    { name: 'Total Blocks', column: 'BLK', higher: true, format: 'int' },
+                    { name: 'Total Turnovers', column: 'TOV', higher: false, format: 'int' },
+                    { name: 'Games Played', column: 'GP', higher: true, format: 'int' },
+                    { name: 'Minutes Played', column: 'MIN', higher: true, format: 'int' }
+                ]
+            },
+            {
+                category: 'ADVANCED STATS',
+                source: 'advanced',
+                metrics: [
+                    { name: 'Offensive Rating', column: 'OFF_RATING', higher: true, format: 'decimal' },
+                    { name: 'Defensive Rating', column: 'DEF_RATING', higher: false, format: 'decimal' },
+                    { name: 'Net Rating', column: 'NET_RATING', higher: true, format: 'decimal' }
+                ]
+            },
+            {
+                category: 'SCORING EFFICIENCY',
+                source: 'advanced',
+                metrics: [
+                    { name: 'Effective FG %', column: 'EFG_PCT', higher: true, format: 'pct' },
+                    { name: 'True Shooting %', column: 'TS_PCT', higher: true, format: 'pct' }
+                ]
+            },
+            {
+                category: 'REBOUNDS',
+                source: 'advanced',
+                metrics: [
+                    { name: 'Offensive Reb %', column: 'OREB_PCT', higher: true, format: 'pct' },
+                    { name: 'Defensive Reb %', column: 'DREB_PCT', higher: true, format: 'pct' },
+                    { name: 'Total Reb %', column: 'REB_PCT', higher: true, format: 'pct' }
+                ]
+            },
+            {
+                category: 'ASSISTS & TURNOVERS',
+                source: 'advanced',
+                metrics: [
+                    { name: 'Assist %', column: 'AST_PCT', higher: true, format: 'pct' },
+                    { name: 'Assist Ratio', column: 'AST_RATIO', higher: true, format: 'decimal' },
+                    { name: 'Assist/TO Ratio', column: 'AST_TO', higher: true, format: 'decimal' },
+                    { name: 'Turnover %', column: 'TM_TOV_PCT', higher: false, format: 'pct' }
+                ]
+            },
+            {
+                category: 'USAGE',
+                source: 'advanced',
+                metrics: [
+                    { name: 'Usage %', column: 'USG_PCT', higher: true, format: 'pct' }
+                ]
+            },
+            {
+                category: 'TEAM SUCCESS',
+                source: 'rsStats',
+                metrics: [
+                    { name: 'Wins', column: 'W', higher: true, format: 'int', fromAdvanced: true },
+                    { name: 'Win %', column: 'W_PCT', higher: true, format: 'pct', fromAdvanced: true }
+                ]
+            }
+        ];
+
         // ===== UI FUNCTIONS =====
-        function populatePlayerSelects() {
-            const player1Select = document.getElementById('player1Select');
-            const player2Select = document.getElementById('player2Select');
+        function setupAutocomplete() {
+            const configs = [
+                { input: 'player1Input', suggestions: 'suggestions1', season: 'season1Select' },
+                { input: 'player2Input', suggestions: 'suggestions2', season: 'season2Select' }
+            ];
             
-            playerList.forEach(player => {
-                const option1 = document.createElement('option');
-                option1.value = player;
-                option1.textContent = player;
-                player1Select.appendChild(option1);
+            configs.forEach(config => {
+                const inputEl = document.getElementById(config.input);
+                const suggestionsEl = document.getElementById(config.suggestions);
+                const seasonEl = document.getElementById(config.season);
                 
-                const option2 = document.createElement('option');
-                option2.value = player;
-                option2.textContent = player;
-                player2Select.appendChild(option2);
+                inputEl.addEventListener('input', function() {
+                    const value = this.value.toLowerCase();
+                    
+                    if (value.length < 2) {
+                        suggestionsEl.style.display = 'none';
+                        return;
+                    }
+                    
+                    const matches = players.filter(p => 
+                        p.toLowerCase().includes(value)
+                    ).slice(0, 10);
+                    
+                    if (matches.length === 0) {
+                        suggestionsEl.style.display = 'none';
+                        return;
+                    }
+                    
+                    suggestionsEl.innerHTML = matches.map(player => 
+                        `<div class="autocomplete-suggestion" data-player="${player}">${player}</div>`
+                    ).join('');
+                    
+                    suggestionsEl.style.display = 'block';
+                    
+                    suggestionsEl.querySelectorAll('.autocomplete-suggestion').forEach(el => {
+                        el.addEventListener('click', function() {
+                            const selectedPlayer = this.getAttribute('data-player');
+                            inputEl.value = selectedPlayer;
+                            suggestionsEl.style.display = 'none';
+                            populateSeasonSelect(seasonEl, selectedPlayer);
+                            updateCompareButton();
+                        });
+                    });
+                });
+                
+                document.addEventListener('click', function(e) {
+                    if (!inputEl.contains(e.target) && !suggestionsEl.contains(e.target)) {
+                        suggestionsEl.style.display = 'none';
+                    }
+                });
+                
+                seasonEl.addEventListener('change', updateCompareButton);
             });
         }
 
-        function populateSeasonSelect(selectId, playerName) {
-            const select = document.getElementById(selectId);
-            select.innerHTML = '<option value="">-- Choose Season --</option>';
+        function populateSeasonSelect(selectEl, playerName) {
+            selectEl.innerHTML = '<option value="">-- Choose Season --</option>';
             
             if (!playerName || !playerSeasons[playerName]) {
-                select.disabled = true;
+                selectEl.disabled = true;
                 return;
             }
             
@@ -683,23 +709,23 @@
                 const option = document.createElement('option');
                 option.value = s.year;
                 option.textContent = formatSeasonYear(s.year) + (s.team ? ` (${s.team})` : '');
-                select.appendChild(option);
+                selectEl.appendChild(option);
             });
             
-            select.disabled = false;
+            selectEl.disabled = false;
         }
 
         function formatSeasonYear(year) {
             const endYear = parseInt(year);
             if (isNaN(endYear)) return year;
             const startYear = endYear - 1;
-            return `${startYear}-${year.toString().slice(-2)}`;
+            return `${startYear}-${String(endYear).slice(-2)}`;
         }
 
         function updateCompareButton() {
-            const p1 = document.getElementById('player1Select').value;
+            const p1 = document.getElementById('player1Input').value;
             const s1 = document.getElementById('season1Select').value;
-            const p2 = document.getElementById('player2Select').value;
+            const p2 = document.getElementById('player2Input').value;
             const s2 = document.getElementById('season2Select').value;
             
             document.getElementById('compareBtn').disabled = !(p1 && s1 && p2 && s2);
@@ -716,7 +742,7 @@
 
         function urlToPlayerName(url) {
             const urlLower = url.toLowerCase();
-            return playerList.find(p => playerNameToURL(p) === urlLower) || null;
+            return players.find(p => playerNameToURL(p) === urlLower) || null;
         }
 
         function loadFromURL() {
@@ -729,35 +755,78 @@
                 const player2 = urlToPlayerName(p2);
                 
                 if (player1 && player2) {
-                    document.getElementById('player1Select').value = player1;
-                    populateSeasonSelect('season1Select', player1);
+                    document.getElementById('player1Input').value = player1;
+                    populateSeasonSelect(document.getElementById('season1Select'), player1);
                     document.getElementById('season1Select').value = s1;
                     
-                    document.getElementById('player2Select').value = player2;
-                    populateSeasonSelect('season2Select', player2);
+                    document.getElementById('player2Input').value = player2;
+                    populateSeasonSelect(document.getElementById('season2Select'), player2);
                     document.getElementById('season2Select').value = s2;
                     
                     updateCompareButton();
                     setTimeout(() => runComparison(), 100);
+                    return true;
                 }
+            }
+            return false;
+        }
+
+        function loadDefaultComparison() {
+            // Default: Shai Gilgeous-Alexander vs Victor Wembanyama 2025-26
+            const defaultPlayer1 = 'Shai Gilgeous-Alexander';
+            const defaultPlayer2 = 'Victor Wembanyama';
+            const defaultSeason = '2026'; // 2025-26 season
+            
+            if (players.includes(defaultPlayer1) && players.includes(defaultPlayer2)) {
+                document.getElementById('player1Input').value = defaultPlayer1;
+                populateSeasonSelect(document.getElementById('season1Select'), defaultPlayer1);
+                if (playerSeasons[defaultPlayer1]?.some(s => s.year === defaultSeason)) {
+                    document.getElementById('season1Select').value = defaultSeason;
+                }
+                
+                document.getElementById('player2Input').value = defaultPlayer2;
+                populateSeasonSelect(document.getElementById('season2Select'), defaultPlayer2);
+                if (playerSeasons[defaultPlayer2]?.some(s => s.year === defaultSeason)) {
+                    document.getElementById('season2Select').value = defaultSeason;
+                }
+                
+                updateCompareButton();
+                setTimeout(() => runComparison(), 100);
             }
         }
 
-        // ===== COMPARISON =====
-        function getPlayerSeasonData(playerName, season) {
-            const seasons = playerSeasons[playerName];
-            if (!seasons) return null;
-            const match = seasons.find(s => s.year === season);
-            return match ? match.data : null;
-        }
-
-        function getStatValue(data, columns) {
-            if (!data || !columns) return null;
-            for (const col of columns) {
-                if (data[col] !== undefined && data[col] !== '' && data[col] !== null) {
-                    return data[col];
+        // ===== COMPARISON LOGIC =====
+        function getPlayerSeasonData(playerName, season, source) {
+            if (source === 'rsStats') {
+                const seasons = playerSeasons[playerName];
+                if (!seasons) return null;
+                const match = seasons.find(s => s.year === season);
+                return match ? match.data : null;
+            } else if (source === 'advanced') {
+                // Check if it's 2025-26 season (year = 2026)
+                if (season === '2026') {
+                    return data.current.advanced.find(row => 
+                        row.PLAYER_NAME === playerName
+                    );
+                } else {
+                    // Historical - need to find by player name AND season
+                    return data.historical.advanced.find(row => 
+                        row.PLAYER_NAME === playerName && 
+                        (row.SEASON_ID === season || row.SEASON === season || row.YEAR === season)
+                    );
                 }
             }
+            return null;
+        }
+
+        function getStatValue(playerData, column) {
+            if (!playerData) return null;
+            
+            // Try exact column match first
+            if (playerData[column] !== undefined && playerData[column] !== '') {
+                return playerData[column];
+            }
+            
             return null;
         }
 
@@ -790,144 +859,162 @@
         }
 
         function runComparison() {
-            const player1 = document.getElementById('player1Select').value;
+            const player1 = document.getElementById('player1Input').value;
             const season1 = document.getElementById('season1Select').value;
-            const player2 = document.getElementById('player2Select').value;
+            const player2 = document.getElementById('player2Input').value;
             const season2 = document.getElementById('season2Select').value;
             
             if (!player1 || !season1 || !player2 || !season2) return;
             
-            const data1 = getPlayerSeasonData(player1, season1);
-            const data2 = getPlayerSeasonData(player2, season2);
+            // Get data
+            const rsData1 = getPlayerSeasonData(player1, season1, 'rsStats');
+            const rsData2 = getPlayerSeasonData(player2, season2, 'rsStats');
+            const advData1 = getPlayerSeasonData(player1, season1, 'advanced');
+            const advData2 = getPlayerSeasonData(player2, season2, 'advanced');
             
-            if (!data1 || !data2) {
+            if (!rsData1 || !rsData2) {
                 document.getElementById('results').innerHTML = `
                     <div class="error-message">
-                        Could not find data for one or both player seasons.
+                        Could not find counting stats for one or both player seasons.
                     </div>
                 `;
-                document.getElementById('results').classList.add('active');
                 return;
             }
 
-            const team1 = data1.TEAM || data1.TEAM_ABBREVIATION || data1.TM || '';
-            const team2 = data2.TEAM || data2.TEAM_ABBREVIATION || data2.TM || '';
+            const team1 = rsData1.TEAM || advData1?.TEAM_ABBREVIATION || '';
+            const team2 = rsData2.TEAM || advData2?.TEAM_ABBREVIATION || '';
             
             let p1Score = 0, p2Score = 0;
             let html = '';
+            const sectionScores = {};
             
+            // Update URL
             const shareURL = `${window.location.origin}${window.location.pathname}?p1=${playerNameToURL(player1)}&s1=${season1}&p2=${playerNameToURL(player2)}&s2=${season2}`;
             window.history.replaceState({}, '', shareURL);
             
+            // Process each category
             comparisonConfig.forEach(category => {
                 let categoryHtml = '';
                 let hasData = false;
+                sectionScores[category.category] = { p1: 0, p2: 0 };
                 
                 category.metrics.forEach(metric => {
-                    const val1 = getStatValue(data1, metric.columns);
-                    const val2 = getStatValue(data2, metric.columns);
+                    let val1, val2;
                     
-                    if ((val1 === null || val1 === '') && (val2 === null || val2 === '')) return;
+                    if (category.source === 'rsStats') {
+                        if (metric.fromAdvanced) {
+                            val1 = getStatValue(advData1, metric.column);
+                            val2 = getStatValue(advData2, metric.column);
+                        } else {
+                            val1 = getStatValue(rsData1, metric.column);
+                            val2 = getStatValue(rsData2, metric.column);
+                        }
+                    } else if (category.source === 'advanced') {
+                        val1 = getStatValue(advData1, metric.column);
+                        val2 = getStatValue(advData2, metric.column);
+                    }
+                    
+                    if ((val1 === null || val1 === '') && (val2 === null || val2 === '')) {
+                        return;
+                    }
                     
                     hasData = true;
                     const winner = compareValues(val1, val2, metric.higher);
                     
-                    if (winner === 'p1') p1Score++;
-                    if (winner === 'p2') p2Score++;
+                    if (winner === 'p1') {
+                        p1Score++;
+                        sectionScores[category.category].p1++;
+                    }
+                    if (winner === 'p2') {
+                        p2Score++;
+                        sectionScores[category.category].p2++;
+                    }
                     
                     const formatted1 = formatValue(val1, metric.format);
                     const formatted2 = formatValue(val2, metric.format);
                     
+                    const rowClass = winner === 'p1' ? 'winner-left' : winner === 'p2' ? 'winner-right' : 'tie';
+                    const p1Class = winner === 'p1' ? 'player-value winner' : 'player-value';
+                    const p2Class = winner === 'p2' ? 'player-value winner' : 'player-value';
+                    
                     categoryHtml += `
-                        <div class="comparison-row">
-                            <div class="player-value left ${winner === 'p1' ? 'winner' : ''} ${formatted1 === '-' ? 'no-data' : ''}">${formatted1}</div>
+                        <div class="comparison-row ${rowClass}">
+                            <div class="${p1Class}">${formatted1 === '-' ? '<span class="no-data">–</span>' : formatted1}</div>
+                            <div class="player-value" style="font-weight: normal; font-size: 16px;">${player1}</div>
                             <div class="metric-name">${metric.name}</div>
-                            <div class="player-value right ${winner === 'p2' ? 'winner' : ''} ${formatted2 === '-' ? 'no-data' : ''}">${formatted2}</div>
+                            <div class="player-value" style="font-weight: normal; font-size: 16px;">${player2}</div>
+                            <div class="${p2Class}">${formatted2 === '-' ? '<span class="no-data">–</span>' : formatted2}</div>
                         </div>
                     `;
                 });
                 
                 if (hasData) {
+                    const sScore = sectionScores[category.category];
+                    const sectionScoreHTML = (sScore.p1 > 0 || sScore.p2 > 0) ? 
+                        `<div class="section-score">${player1} ${sScore.p1} – ${player2} ${sScore.p2}</div>` : '';
+                    
                     html += `
                         <div class="category-section">
-                            <div class="category-title">${category.category}</div>
+                            <div class="category-title">
+                                ${category.category}
+                                ${sectionScoreHTML}
+                            </div>
                             ${categoryHtml}
                         </div>
                     `;
                 }
             });
             
-            let winnerBadge1 = '', winnerBadge2 = '';
-            if (p1Score > p2Score) winnerBadge1 = '<div class="winner-badge">WINNER</div>';
-            else if (p2Score > p1Score) winnerBadge2 = '<div class="winner-badge">WINNER</div>';
-            
-            document.getElementById('results').innerHTML = `
+            // Build results HTML
+            const resultsHtml = `
                 <div class="score-summary">
                     <div class="player-score">
                         <div class="player-name-score">${player1}</div>
                         <div class="player-season-label">${formatSeasonYear(season1)}</div>
                         ${team1 ? `<div class="player-team-label">${team1}</div>` : ''}
                         <div class="score-value">${p1Score}</div>
-                        ${winnerBadge1}
                     </div>
-                    <div class="score-divider">-</div>
+                    <div class="score-divider">–</div>
                     <div class="player-score">
                         <div class="player-name-score">${player2}</div>
                         <div class="player-season-label">${formatSeasonYear(season2)}</div>
                         ${team2 ? `<div class="player-team-label">${team2}</div>` : ''}
                         <div class="score-value">${p2Score}</div>
-                        ${winnerBadge2}
                     </div>
                 </div>
                 
                 <div class="share-url">
-                    <h3>📤 SHARE THIS COMPARISON</h3>
+                    <h3>📤 Share This Comparison</h3>
                     <input type="text" class="share-url-input" value="${shareURL}" readonly onclick="this.select(); document.execCommand('copy'); alert('URL copied!');">
                 </div>
                 
                 ${html}
             `;
             
-            document.getElementById('results').classList.add('active');
+            document.getElementById('results').innerHTML = resultsHtml;
             document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
-        // ===== EVENT LISTENERS =====
-        function setupEventListeners() {
-            document.getElementById('player1Select').addEventListener('change', (e) => {
-                populateSeasonSelect('season1Select', e.target.value);
-                updateCompareButton();
-            });
-            
-            document.getElementById('player2Select').addEventListener('change', (e) => {
-                populateSeasonSelect('season2Select', e.target.value);
-                updateCompareButton();
-            });
-            
-            document.getElementById('season1Select').addEventListener('change', updateCompareButton);
-            document.getElementById('season2Select').addEventListener('change', updateCompareButton);
-            document.getElementById('compareBtn').addEventListener('click', runComparison);
-        }
-
-        // ===== INIT =====
+        // ===== INITIALIZATION =====
         async function init() {
             const success = await loadAllData();
             
-            if (success && playerList.length > 0) {
-                document.getElementById('loading').style.display = 'none';
-                document.getElementById('app').style.display = 'block';
+            if (success && players.length > 0) {
+                document.getElementById('loadingMessage').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'block';
                 
-                populatePlayerSelects();
-                setupEventListeners();
-                loadFromURL();
+                setupAutocomplete();
+                document.getElementById('compareBtn').addEventListener('click', runComparison);
+                
+                // Try URL first, then default comparison
+                if (!loadFromURL()) {
+                    loadDefaultComparison();
+                }
             } else {
-                document.getElementById('loading').innerHTML = `
+                document.getElementById('loadingMessage').innerHTML = `
                     <div class="error-message">
                         <h3>Unable to load data</h3>
                         <p>Please check that the Google Sheets are published and try refreshing.</p>
-                        <p style="margin-top: 15px; font-size: 0.85rem;">
-                            <strong>Debug info:</strong> Loaded ${playerData.rsStats.length} rows
-                        </p>
                     </div>
                 `;
             }
