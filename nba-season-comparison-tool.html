@@ -218,6 +218,12 @@
             text-align: center;
             border: 1px solid #f5c6cb;
         }
+        .data-timestamp {
+            text-align: center;
+            font-size: 12px;
+            color: #999;
+            margin-top: 10px;
+        }
         @media (max-width: 768px) {
             h1 { font-size: 2em; }
             .player-selector { grid-template-columns: 1fr; }
@@ -279,6 +285,7 @@
                 </div>
             </div>
             <button class="compare-button" id="compareBtn" disabled>Compare Seasons</button>
+            <div id="dataTimestamp" class="data-timestamp"></div>
             <div id="results"></div>
         </div>
         <div id="errorMessage" style="display: none;"></div>
@@ -286,15 +293,19 @@
 
     <script>
         // ===== CONFIGURATION =====
+        // JSON file for 2025-26 data (updated daily via GitHub Actions)
+        const JSON_URL = 'https://jsierrahoopshype.github.io/nba-player-data/nba-2025-26-data.json';
+        
+        // Google Sheets for historical data
         const SHEETS = {
             allTime: '1ZrDfzqiC31Hu3YCtxT4aZbZF4QVCVyGe6wBytR2LF30',
-            current2526: '1JH2FUBIyQ1zEHzZBxgP8vHBZ7d8EtP5-fSVG3zMgCgg',
             historical: '1nPSI-VVKHkGYW9IY2KDP-v_xW6qi9_L9WpCnUFKRi8A'
         };
 
         const TABS = {
             rsStats: 0,
             poStats: 1591736011,
+            teamStats: 1735540905,
             advanced: 339737563,
             scoring: 52077302,
             shotLocation: 1205457990,
@@ -322,13 +333,15 @@
         let data = {
             rsStats: [],
             poStats: [],
-            current: {},
+            teamStats: [],
+            current: {}, // 2025-26 from JSON
             historical: {}
         };
         let players = [];
         let playerSeasons = {};
         let playerPOSeasons = {};
         let current2526Players = {}; // Index by player name for fast lookup
+        let dataLastUpdated = null;
 
         // ===== CSV PARSING =====
         function parseCSV(text, skipRows = 0) {
@@ -377,6 +390,17 @@
             }
         }
 
+        async function fetchJSON(url) {
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                return await response.json();
+            } catch (error) {
+                console.error('Error fetching JSON:', error);
+                return null;
+            }
+        }
+
         function updateProgress(percent, message) {
             document.getElementById('progressFill').style.width = percent + '%';
             document.getElementById('loadingStatus').textContent = message;
@@ -384,61 +408,83 @@
 
         async function loadAllData() {
             try {
-                // Phase 1: Load essential data first (RS Stats + 2025-26 sheets in parallel)
-                updateProgress(5, 'Loading data sources...');
+                // Phase 1: Load JSON (2025-26) and essential historical data in parallel
+                updateProgress(5, 'Loading 2025-26 season data...');
                 
-                const allPromises = [
+                const [jsonData, rsStats, poStats] = await Promise.all([
+                    fetchJSON(JSON_URL),
                     fetchSheet(SHEETS.allTime, TABS.rsStats),
-                    fetchSheet(SHEETS.allTime, TABS.poStats),
-                    fetchSheet(SHEETS.current2526, TABS.advanced, 2),
-                    fetchSheet(SHEETS.current2526, TABS.scoring, 2),
-                    fetchSheet(SHEETS.current2526, TABS.shotLocation, 2),
-                    fetchSheet(SHEETS.current2526, TABS.defense, 2),
-                    fetchSheet(SHEETS.current2526, TABS.usage, 2),
-                    fetchSheet(SHEETS.current2526, TABS.clutch, 2),
-                    fetchSheet(SHEETS.current2526, TABS.hustle, 2)
-                ];
+                    fetchSheet(SHEETS.allTime, TABS.poStats)
+                ]);
+                
+                updateProgress(50, 'Processing data...');
+                
+                // Store RS and PO stats
+                data.rsStats = rsStats;
+                data.poStats = poStats;
+                
+                // Store 2025-26 data from JSON
+                if (jsonData) {
+                    dataLastUpdated = jsonData.lastUpdated;
+                    data.current = {
+                        rsStats: jsonData.rsStats || [],
+                        poStats: jsonData.poStats || [],
+                        teamStats: jsonData.teamStats || [],
+                        advanced: jsonData.advanced || [],
+                        scoring: jsonData.scoring || [],
+                        shotLocation: jsonData.shotLocation || [],
+                        defense: jsonData.defense || [],
+                        usage: jsonData.usage || [],
+                        clutch: jsonData.clutch || [],
+                        hustle: jsonData.hustle || []
+                    };
+                    
+                    // Build index of 2025-26 players
+                    const sources = ['advanced', 'scoring', 'shotLocation', 'defense', 'usage', 'clutch', 'hustle'];
+                    sources.forEach(key => {
+                        if (data.current[key]) {
+                            data.current[key].forEach(row => {
+                                const name = row.PLAYER_NAME || row.PLAYER;
+                                if (name) {
+                                    if (!current2526Players[name]) current2526Players[name] = {};
+                                    current2526Players[name][key] = row;
+                                }
+                            });
+                        }
+                    });
+                    
+                    // Also index RS stats for 2025-26
+                    if (data.current.rsStats) {
+                        data.current.rsStats.forEach(row => {
+                            const name = row.PLAYER;
+                            if (name) {
+                                if (!current2526Players[name]) current2526Players[name] = {};
+                                current2526Players[name].rsStats = row;
+                            }
+                        });
+                    }
+                    
+                    // Index PO stats for 2025-26
+                    if (data.current.poStats) {
+                        data.current.poStats.forEach(row => {
+                            const name = row.PLAYER;
+                            if (name) {
+                                if (!current2526Players[name]) current2526Players[name] = {};
+                                current2526Players[name].poStats = row;
+                            }
+                        });
+                    }
+                    
+                    console.log('2025-26 JSON data loaded:', Object.keys(current2526Players).length, 'players');
+                }
 
-                updateProgress(20, 'Downloading sheets (this may take a moment)...');
-                
-                const results = await Promise.all(allPromises);
-                
-                data.rsStats = results[0];
-                data.poStats = results[1];
-                data.current.advanced = results[2];
-                data.current.scoring = results[3];
-                data.current.shotLocation = results[4];
-                data.current.defense = results[5];
-                data.current.usage = results[6];
-                data.current.clutch = results[7];
-                data.current.hustle = results[8];
-                
                 updateProgress(70, 'Indexing players...');
                 console.log('RS Stats loaded:', data.rsStats.length);
                 console.log('PO Stats loaded:', data.poStats.length);
-                console.log('Advanced loaded:', data.current.advanced.length);
-                console.log('Scoring loaded:', data.current.scoring.length);
-                console.log('Shot Location loaded:', data.current.shotLocation.length);
-                console.log('Defense loaded:', data.current.defense.length);
-                console.log('Usage loaded:', data.current.usage.length);
-                console.log('Clutch loaded:', data.current.clutch.length);
-                console.log('Hustle loaded:', data.current.hustle.length);
-                
-                // Build index of current season players
-                Object.keys(data.current).forEach(key => {
-                    data.current[key].forEach(row => {
-                        const name = row.PLAYER_NAME || row.PLAYER;
-                        if (name) {
-                            if (!current2526Players[name]) current2526Players[name] = {};
-                            current2526Players[name][key] = row;
-                        }
-                    });
-                });
-                console.log('2025-26 players indexed:', Object.keys(current2526Players).length);
 
                 updateProgress(85, 'Building player database...');
 
-                // Load historical data in background (don't block UI)
+                // Load historical advanced data in background
                 loadHistoricalInBackground();
 
                 updateProgress(100, 'Ready!');
@@ -594,6 +640,7 @@
                 category: 'DEFENSE',
                 metrics: [
                     { name: 'Defended FG %', src: 'defense', col: 'D_FG_PCT', higher: false, fmt: 'pct' },
+                    { name: 'Opponent expected FG %', src: 'defense', col: 'NORMAL_FG_PCT', higher: false, fmt: 'pct' },
                     { name: 'Plus minus FG %', src: 'defense', col: 'PCT_PLUSMINUS', higher: false, fmt: 'pcts' }
                 ]
             },
@@ -656,7 +703,9 @@
                 category: 'TEAM SUCCESS',
                 metrics: [
                     { name: 'Wins', src: 'adv', col: 'W', higher: true, fmt: 'int' },
-                    { name: 'Winning percentage', src: 'adv', col: 'W_PCT', higher: true, fmt: 'pct' }
+                    { name: 'Winning percentage', src: 'adv', col: 'W_PCT', higher: true, fmt: 'pct' },
+                    { name: 'Wins PO', src: 'po', col: 'W', higher: true, fmt: 'int', altCol: 'GP' },
+                    { name: 'Winning percentage PO', src: 'po', col: 'W_PCT', higher: true, fmt: 'pct', calcFromWL: true }
                 ]
             },
             {
@@ -697,7 +746,7 @@
                             const selectedPlayer = this.getAttribute('data-player');
                             inputEl.value = selectedPlayer;
                             suggestionsEl.style.display = 'none';
-                            populateSeasonSelect(seasonEl, selectedPlayer, true); // Auto-select 2025-26
+                            populateSeasonSelect(seasonEl, selectedPlayer, true);
                             updateCompareButton();
                         });
                     });
@@ -726,13 +775,12 @@
             });
             selectEl.disabled = false;
             
-            // Auto-select 2025-26 if available, otherwise most recent
             if (autoSelect2526) {
                 const has2526 = seasons.some(s => s.year === '2026');
                 if (has2526) {
                     selectEl.value = '2026';
                 } else if (seasons.length > 0) {
-                    selectEl.value = seasons[0].year; // Most recent
+                    selectEl.value = seasons[0].year;
                 }
             }
         }
@@ -819,6 +867,11 @@
             const isCurrent = (season === '2026');
             
             if (source === 'rs') {
+                // For 2025-26, check JSON data first
+                if (isCurrent && current2526Players[playerName]?.rsStats) {
+                    return current2526Players[playerName].rsStats;
+                }
+                // Fall back to all-time database
                 const seasons = playerSeasons[playerName];
                 if (!seasons) return null;
                 const match = seasons.find(s => s.year === season);
@@ -826,13 +879,17 @@
             }
             
             if (source === 'po') {
+                // For 2025-26, check JSON data first
+                if (isCurrent && current2526Players[playerName]?.poStats) {
+                    return current2526Players[playerName].poStats;
+                }
+                // Fall back to all-time database
                 const seasons = playerPOSeasons[playerName];
                 if (!seasons) return null;
                 const match = seasons.find(s => s.year === season);
                 return match ? match.data : null;
             }
             
-            // For advanced stats sources
             const sourceMap = {
                 'adv': 'advanced',
                 'scoring': 'scoring',
@@ -846,14 +903,12 @@
             const dataKey = sourceMap[source] || source;
             
             if (isCurrent) {
-                // Use indexed lookup for 2025-26
                 const playerData = current2526Players[playerName];
                 if (playerData && playerData[dataKey]) {
                     return playerData[dataKey];
                 }
                 return null;
             } else {
-                // Historical lookup
                 const dataSource = data.historical[dataKey];
                 if (!dataSource || dataSource.length === 0) return null;
                 
@@ -866,9 +921,26 @@
             }
         }
 
-        function getStatValue(playerData, column, perGameCol = null) {
+        function getStatValue(playerData, column, perGameCol = null, metric = null) {
             if (!playerData || !column) return null;
+            
+            // Special handling for playoff win percentage calculation
+            if (metric && metric.calcFromWL) {
+                const wins = parseFloat(playerData['W'] || playerData['GP']);
+                const losses = parseFloat(playerData['L'] || 0);
+                if (!isNaN(wins) && !isNaN(losses) && (wins + losses) > 0) {
+                    return wins / (wins + losses);
+                }
+                return null;
+            }
+            
             let val = playerData[column];
+            
+            // Try alternate column if main one is empty
+            if ((val === undefined || val === '' || val === null) && metric && metric.altCol) {
+                val = playerData[metric.altCol];
+            }
+            
             if (val === undefined || val === '' || val === null) return null;
             
             if (perGameCol) {
@@ -918,7 +990,6 @@
             
             if (!player1 || !season1 || !player2 || !season2) return;
             
-            // Get RS data for team info
             const rsData1 = getPlayerData(player1, season1, 'rs');
             const rsData2 = getPlayerData(player2, season2, 'rs');
             const advData1 = getPlayerData(player1, season1, 'adv');
@@ -943,8 +1014,8 @@
                     const data1 = getPlayerData(player1, season1, metric.src);
                     const data2 = getPlayerData(player2, season2, metric.src);
                     
-                    let val1 = getStatValue(data1, metric.col, metric.pg);
-                    let val2 = getStatValue(data2, metric.col, metric.pg);
+                    let val1 = getStatValue(data1, metric.col, metric.pg, metric);
+                    let val2 = getStatValue(data2, metric.col, metric.pg, metric);
                     
                     if ((val1 === null || val1 === '') && (val2 === null || val2 === '')) return;
                     
@@ -1011,6 +1082,14 @@
             if (success && players.length > 0) {
                 document.getElementById('loadingMessage').style.display = 'none';
                 document.getElementById('mainContent').style.display = 'block';
+                
+                // Show last updated timestamp
+                if (dataLastUpdated) {
+                    const date = new Date(dataLastUpdated);
+                    document.getElementById('dataTimestamp').textContent = 
+                        `2025-26 data last updated: ${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+                }
+                
                 setupAutocomplete();
                 document.getElementById('compareBtn').addEventListener('click', runComparison);
                 if (!loadFromURL()) loadRandomStars();
@@ -1018,7 +1097,7 @@
                 document.getElementById('loadingMessage').innerHTML = `
                     <div class="error-message">
                         <h3>Unable to load data</h3>
-                        <p>Please check that the Google Sheets are published and try refreshing.</p>
+                        <p>Please check that the data sources are available and try refreshing.</p>
                     </div>
                 `;
             }
