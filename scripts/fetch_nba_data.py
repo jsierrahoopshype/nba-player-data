@@ -38,24 +38,60 @@ def get_sheet_url(sheet_id, gid):
     """Build Google Sheets CSV export URL"""
     return f"https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv&gid={gid}"
 
+def parse_csv_line(line):
+    """Parse a CSV line handling quoted fields"""
+    result = []
+    current = ''
+    in_quotes = False
+    for char in line:
+        if char == '"':
+            in_quotes = not in_quotes
+        elif char == ',' and not in_quotes:
+            result.append(current.strip().strip('"'))
+            current = ''
+        else:
+            current += char
+    result.append(current.strip().strip('"'))
+    return result
+
 def fetch_csv(url, skip_rows=0):
     """Fetch CSV data from URL and return as list of dicts"""
     try:
         req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
-        with urllib.request.urlopen(req, timeout=30) as response:
-            content = response.read().decode('utf-8')
+        with urllib.request.urlopen(req, timeout=60) as response:
+            content = response.read().decode('utf-8-sig')  # Handle BOM
             lines = content.strip().split('\n')
             
-            # Skip metadata rows if specified
-            if skip_rows > 0 and len(lines) > skip_rows:
+            # Skip metadata rows
+            if skip_rows > 0:
                 lines = lines[skip_rows:]
             
-            # Rejoin and parse
-            cleaned_content = '\n'.join(lines)
-            reader = csv.DictReader(StringIO(cleaned_content))
-            return list(reader)
+            if len(lines) < 2:
+                print(f"  Warning: Not enough lines after skipping {skip_rows} rows")
+                return []
+            
+            # First line is headers
+            headers = parse_csv_line(lines[0])
+            print(f"  Headers ({len(headers)}): {headers[:5]}...")  # Debug: show first 5 headers
+            
+            # Parse data rows
+            result = []
+            for i, line in enumerate(lines[1:], start=1):
+                if not line.strip():
+                    continue
+                values = parse_csv_line(line)
+                if len(values) >= len(headers):
+                    row = {}
+                    for j, header in enumerate(headers):
+                        if header:  # Skip empty headers
+                            row[header] = values[j] if j < len(values) else ''
+                    result.append(row)
+            
+            return result
     except Exception as e:
         print(f"Error fetching {url}: {e}")
+        import traceback
+        traceback.print_exc()
         return []
 
 def clean_numeric(value):
@@ -65,6 +101,8 @@ def clean_numeric(value):
     try:
         # Remove commas and percentage signs
         cleaned = str(value).replace(',', '').replace('%', '').strip()
+        if cleaned == '':
+            return None
         if '.' in cleaned:
             return float(cleaned)
         return int(cleaned)
@@ -161,6 +199,14 @@ def main():
     url = get_sheet_url(SHEETS['current2526'], TABS['current_hustle'])
     nba_data['hustle'] = [process_row(r) for r in fetch_csv(url, skip_rows=2)]
     print(f"  Found {len(nba_data['hustle'])} players")
+    
+    # Debug: Print sample of first advanced player
+    if nba_data['advanced']:
+        print("\n=== SAMPLE DATA (first advanced player) ===")
+        first = nba_data['advanced'][0]
+        print(f"  Keys: {list(first.keys())[:10]}...")
+        print(f"  PLAYER_NAME: {first.get('PLAYER_NAME', 'NOT FOUND')}")
+        print(f"  OFF_RATING: {first.get('OFF_RATING', 'NOT FOUND')}")
     
     # Write to JSON file
     output_path = 'nba-2025-26-data.json'
