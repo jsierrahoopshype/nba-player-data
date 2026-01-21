@@ -68,8 +68,10 @@ def process_row(row):
     return {k: clean_numeric(v) for k, v in row.items() if k}
 
 def filter_2025_26_season(data, season_col='YEAR'):
-    """Filter data to only 2025-26 season"""
-    return [row for row in data if row.get(season_col) in ['2025-26', '2025', 2025]]
+    """Filter data to only 2025-26 season
+    In All-Time Database, year is the END year: 2026 = 2025-26 season
+    """
+    return [row for row in data if row.get(season_col) in ['2025-26', '2026', 2026]]
 
 def main():
     print(f"Starting NBA data fetch at {datetime.now(timezone.utc).isoformat()}")
