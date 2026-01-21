@@ -1,0 +1,39 @@
+name: Update NBA 2025-26 Data
+
+on:
+  schedule:
+    # Run at 6:00 AM ET (11:00 UTC) every day
+    - cron: '0 11 * * *'
+  
+  # Allow manual trigger from GitHub Actions tab
+  workflow_dispatch:
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Fetch NBA data from Google Sheets
+        run: python scripts/fetch_nba_data.py
+      
+      - name: Check if data changed
+        id: check_changes
+        run: |
+          git diff --quiet nba-2025-26-data.json || echo "changed=true" >> $GITHUB_OUTPUT
+      
+      - name: Commit and push if changed
+        if: steps.check_changes.outputs.changed == 'true'
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add nba-2025-26-data.json
+          git commit -m "Update NBA 2025-26 data - $(date -u '+%Y-%m-%d %H:%M UTC')"
+          git push
