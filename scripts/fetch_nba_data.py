@@ -38,13 +38,21 @@ def get_sheet_url(sheet_id, gid):
     """Build Google Sheets CSV export URL"""
     return f"https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv&gid={gid}"
 
-def fetch_csv(url):
+def fetch_csv(url, skip_rows=0):
     """Fetch CSV data from URL and return as list of dicts"""
     try:
         req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
         with urllib.request.urlopen(req, timeout=30) as response:
             content = response.read().decode('utf-8')
-            reader = csv.DictReader(StringIO(content))
+            lines = content.strip().split('\n')
+            
+            # Skip metadata rows if specified
+            if skip_rows > 0 and len(lines) > skip_rows:
+                lines = lines[skip_rows:]
+            
+            # Rejoin and parse
+            cleaned_content = '\n'.join(lines)
+            reader = csv.DictReader(StringIO(cleaned_content))
             return list(reader)
     except Exception as e:
         print(f"Error fetching {url}: {e}")
@@ -112,46 +120,46 @@ def main():
     nba_data['teamStats'] = [process_row(r) for r in filter_2025_26_season(all_teams)]
     print(f"  Found {len(nba_data['teamStats'])} teams")
     
-    # Fetch 2025-26 Advanced Stats
+    # Fetch 2025-26 Advanced Stats (skip 2 metadata rows)
     print("Fetching Advanced Stats...")
     url = get_sheet_url(SHEETS['current2526'], TABS['current_advanced'])
-    nba_data['advanced'] = [process_row(r) for r in fetch_csv(url)]
+    nba_data['advanced'] = [process_row(r) for r in fetch_csv(url, skip_rows=2)]
     print(f"  Found {len(nba_data['advanced'])} players")
     
-    # Fetch 2025-26 Scoring
+    # Fetch 2025-26 Scoring (skip 2 metadata rows)
     print("Fetching Scoring Stats...")
     url = get_sheet_url(SHEETS['current2526'], TABS['current_scoring'])
-    nba_data['scoring'] = [process_row(r) for r in fetch_csv(url)]
+    nba_data['scoring'] = [process_row(r) for r in fetch_csv(url, skip_rows=2)]
     print(f"  Found {len(nba_data['scoring'])} players")
     
-    # Fetch 2025-26 Shot Location
+    # Fetch 2025-26 Shot Location (skip 2 metadata rows)
     print("Fetching Shot Location Stats...")
     url = get_sheet_url(SHEETS['current2526'], TABS['current_shotLocation'])
-    nba_data['shotLocation'] = [process_row(r) for r in fetch_csv(url)]
+    nba_data['shotLocation'] = [process_row(r) for r in fetch_csv(url, skip_rows=2)]
     print(f"  Found {len(nba_data['shotLocation'])} players")
     
-    # Fetch 2025-26 Defense
+    # Fetch 2025-26 Defense (skip 2 metadata rows)
     print("Fetching Defense Stats...")
     url = get_sheet_url(SHEETS['current2526'], TABS['current_defense'])
-    nba_data['defense'] = [process_row(r) for r in fetch_csv(url)]
+    nba_data['defense'] = [process_row(r) for r in fetch_csv(url, skip_rows=2)]
     print(f"  Found {len(nba_data['defense'])} players")
     
-    # Fetch 2025-26 Usage
+    # Fetch 2025-26 Usage (skip 2 metadata rows)
     print("Fetching Usage Stats...")
     url = get_sheet_url(SHEETS['current2526'], TABS['current_usage'])
-    nba_data['usage'] = [process_row(r) for r in fetch_csv(url)]
+    nba_data['usage'] = [process_row(r) for r in fetch_csv(url, skip_rows=2)]
     print(f"  Found {len(nba_data['usage'])} players")
     
-    # Fetch 2025-26 Clutch
+    # Fetch 2025-26 Clutch (skip 2 metadata rows)
     print("Fetching Clutch Stats...")
     url = get_sheet_url(SHEETS['current2526'], TABS['current_clutch'])
-    nba_data['clutch'] = [process_row(r) for r in fetch_csv(url)]
+    nba_data['clutch'] = [process_row(r) for r in fetch_csv(url, skip_rows=2)]
     print(f"  Found {len(nba_data['clutch'])} players")
     
-    # Fetch 2025-26 Hustle
+    # Fetch 2025-26 Hustle (skip 2 metadata rows)
     print("Fetching Hustle Stats...")
     url = get_sheet_url(SHEETS['current2526'], TABS['current_hustle'])
-    nba_data['hustle'] = [process_row(r) for r in fetch_csv(url)]
+    nba_data['hustle'] = [process_row(r) for r in fetch_csv(url, skip_rows=2)]
     print(f"  Found {len(nba_data['hustle'])} players")
     
     # Write to JSON file
