@@ -1067,19 +1067,13 @@
                 const dataSource = data.historical[dataKey];
                 if (!dataSource || dataSource.length === 0) return null;
                 
-                // Convert season to different formats for matching
+                // Convert season (e.g., "2025") to historical format (e.g., "2024-25")
                 const seasonYear = parseInt(season);
-                const seasonFormats = [
-                    season,
-                    String(seasonYear),
-                    `${seasonYear - 1}-${String(seasonYear).slice(-2)}`,  // "2024-25" format
-                    `${seasonYear - 1}-${seasonYear}`,  // "2024-2025" format
-                    `${seasonYear}`  // Just the ending year
-                ];
+                const historicalFormat = `${seasonYear - 1}-${String(seasonYear).slice(-2)}`;
                 
                 const normalizedPlayerName = normalizeName(playerName);
                 
-                return dataSource.find(row => {
+                const found = dataSource.find(row => {
                     const rowName = row.PLAYER_NAME || row.PLAYER;
                     if (!rowName) return false;
                     
@@ -1087,13 +1081,12 @@
                     const nameMatch = rowName === playerName || normalizeName(rowName) === normalizedPlayerName;
                     if (!nameMatch) return false;
                     
-                    // Match season
-                    const rowSeason = row.SEASON_ID || row.SEASON || row.YEAR || row.Season;
-                    if (!rowSeason) return false;
-                    
-                    const rowSeasonStr = String(rowSeason);
-                    return seasonFormats.some(fmt => rowSeasonStr === fmt || rowSeasonStr.includes(fmt));
+                    // Match season - historical data uses SEASON_ID in "2024-25" format
+                    const rowSeason = row.SEASON_ID || row.SEASON || row.GROUP_VALUE;
+                    return rowSeason === historicalFormat || rowSeason === season;
                 });
+                
+                return found;
             }
         }
 
