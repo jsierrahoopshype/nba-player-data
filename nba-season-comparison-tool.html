@@ -439,17 +439,51 @@
         }
 
         // ===== DATA LOADING =====
-        async function fetchSheet(sheetId, gid, knownHeaders = null) {
+        // Known column names for PO Stats (Google Sheets API sometimes returns empty headers)
+        const PO_STATS_COLUMNS = [
+            'CODE', 'RG CODE', 'NB CODE', 'PLAYER', 'YEAR', 'TEAM', 'GP', 'MIN', 'PTS', 
+            'FGM', 'FGA', 'FG%', '3PM', '3PA', '3P%', 'FTM', 'FTA', 'FT%', 
+            'ORB', 'DRB', 'REB', 'AST', 'STL', 'BLK', 'TOV', 'PF', '_EMPTY1',
+            'PTS / G', 'REB / G', 'AST / G', 'STL / G', 'BLK / G', 'TOV / G', 'FG%_PG', '3P%_PG', 'FT%_PG', '_EMPTY2', 'RESULT'
+        ];
+
+        async function fetchSheet(sheetId, gid, knownHeaders = null, usePositionalColumns = null) {
             const url = getSheetURL(sheetId, gid);
             try {
                 const response = await fetch(url);
                 if (!response.ok) throw new Error(`HTTP ${response.status}`);
                 const text = await response.text();
+                
+                // If positional columns provided, use position-based parsing
+                if (usePositionalColumns) {
+                    return parseCSVWithPositions(text, usePositionalColumns);
+                }
+                
                 return parseCSV(text, knownHeaders);
             } catch (error) {
                 console.error(`Error fetching sheet ${gid}:`, error);
                 return [];
             }
+        }
+
+        function parseCSVWithPositions(text, columnNames) {
+            const lines = text.trim().split('\n');
+            if (lines.length < 2) return [];
+            
+            const result = [];
+            // Skip header row (index 0), start from data rows
+            for (let i = 1; i < lines.length; i++) {
+                const values = parseCSVLine(lines[i]);
+                if (values.length < 2) continue;
+                const row = {};
+                columnNames.forEach((colName, index) => {
+                    if (colName && !colName.startsWith('_')) {
+                        row[colName] = values[index] || '';
+                    }
+                });
+                result.push(row);
+            }
+            return result;
         }
 
         async function fetchJSON(url) {
@@ -476,7 +510,7 @@
                 const [jsonData, rsStats, poStats] = await Promise.all([
                     fetchJSON(JSON_URL),
                     fetchSheet(SHEETS.allTime, TABS.rsStats, ['PLAYER', 'YEAR', 'TEAM', 'GP']),
-                    fetchSheet(SHEETS.allTime, TABS.poStats, ['PLAYER', 'YEAR', 'TEAM', 'GP'])
+                    fetchSheet(SHEETS.allTime, TABS.poStats, null, PO_STATS_COLUMNS)
                 ]);
                 
                 updateProgress(50, 'Processing data...');
@@ -489,6 +523,9 @@
                 console.log('PO Stats loaded:', poStats.length);
                 if (rsStats[0]) {
                     console.log('RS Stats columns:', Object.keys(rsStats[0]).slice(0, 10));
+                }
+                if (poStats[0]) {
+                    console.log('PO Stats columns:', Object.keys(poStats[0]).slice(0, 15));
                 }
                 
                 // Store 2025-26 data from JSON
