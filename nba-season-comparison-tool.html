@@ -146,6 +146,15 @@
         .player-score { text-align: center; }
         .player-name-score { font-size: 20px; font-weight: 600; margin-bottom: 5px; opacity: 0.9; cursor: pointer; transition: opacity 0.2s; }
         .player-name-score:hover { opacity: 1; text-decoration: underline; }
+        .clickable-name { cursor: pointer; transition: color 0.2s; }
+        .clickable-name:hover { color: #007bff; text-decoration: underline; }
+        .suggested-matchups { margin-top: 40px; padding: 20px; background: #f8f9fa; border-radius: 8px; }
+        .suggested-matchups h3 { font-size: 18px; color: #333; margin-bottom: 15px; text-align: center; }
+        .matchup-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 12px; }
+        .matchup-card { background: white; padding: 12px 15px; border-radius: 6px; border: 1px solid #ddd; cursor: pointer; transition: all 0.2s; text-align: center; }
+        .matchup-card:hover { border-color: #007bff; box-shadow: 0 2px 8px rgba(0,123,255,0.2); transform: translateY(-2px); }
+        .matchup-players { font-weight: 600; color: #333; margin-bottom: 4px; }
+        .matchup-seasons { font-size: 12px; color: #666; }
         .player-season-label { font-size: 14px; opacity: 0.8; margin-bottom: 5px; }
         .player-team-label { font-size: 12px; opacity: 0.7; margin-bottom: 15px; }
         .score-value { font-size: 56px; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
@@ -304,7 +313,7 @@
         };
 
         const TABS = {
-            rsStats: 0,
+            rsStats: 576369994,
             poStats: 1591736011,
             teamStats: 1735540905,
             advanced: 339737563,
@@ -1101,9 +1110,57 @@
                 return null;
             }
             
+            // Column name alternatives (JSON might have different names)
+            const columnAlternatives = {
+                'PLUS_MINUS': ['PLUS_MINUS', '+/-', 'PM', 'PLUSMINUS', 'PLUS MINUS'],
+                'OFF_RATING': ['OFF_RATING', 'OFFRTG', 'ORtg', 'O_RTG', 'E_OFF_RATING'],
+                'DEF_RATING': ['DEF_RATING', 'DEFRTG', 'DRtg', 'D_RTG', 'E_DEF_RATING'],
+                'NET_RATING': ['NET_RATING', 'NETRTG', 'NRtg', 'N_RTG', 'E_NET_RATING'],
+                'EFG_PCT': ['EFG_PCT', 'eFG%', 'EFG', 'EFF_FG_PCT'],
+                'TS_PCT': ['TS_PCT', 'TS%', 'TS', 'TRUE_SHOOTING_PCT'],
+                'OREB_PCT': ['OREB_PCT', 'ORB%', 'OREB'],
+                'DREB_PCT': ['DREB_PCT', 'DRB%', 'DREB'],
+                'REB_PCT': ['REB_PCT', 'TRB%', 'REB'],
+                'AST_PCT': ['AST_PCT', 'AST%'],
+                'AST_RATIO': ['AST_RATIO', 'AST/TO'],
+                'AST_TO': ['AST_TO', 'AST_TOV', 'A/TO'],
+                'TM_TOV_PCT': ['TM_TOV_PCT', 'TOV%', 'TOV_PCT'],
+                'USG_PCT': ['USG_PCT', 'USG%', 'USG'],
+                'W_PCT': ['W_PCT', 'WIN%', 'WPCT'],
+                'FG_PCT': ['FG_PCT', 'FG%'],
+                'FG3_PCT': ['FG3_PCT', 'FG3%', '3P%', '3PT_PCT'],
+                'FT_PCT': ['FT_PCT', 'FT%'],
+                'D_FG_PCT': ['D_FG_PCT', 'DFG%', 'DFG_PCT'],
+                'NORMAL_FG_PCT': ['NORMAL_FG_PCT', 'DFGM_PCT'],
+                'PCT_PLUSMINUS': ['PCT_PLUSMINUS', 'DIFF%', 'DIFF', 'PCT_PLUS_MINUS'],
+                'PTS_OFF_TOV': ['PTS_OFF_TOV', 'PTS_TOV'],
+                'PTS_2ND_CHANCE': ['PTS_2ND_CHANCE', '2ND_PTS'],
+                'PTS_FB': ['PTS_FB', 'FB_PTS'],
+                'PTS_PAINT': ['PTS_PAINT', 'PAINT_PTS'],
+                'PCT_PTS': ['PCT_PTS', 'PCT_TEAM_PTS'],
+                'PCT_REB': ['PCT_REB', 'PCT_TEAM_REB'],
+                'PCT_AST': ['PCT_AST', 'PCT_TEAM_AST'],
+                'PCT_BLK': ['PCT_BLK', 'PCT_TEAM_BLK'],
+                'PCT_STL': ['PCT_STL', 'PCT_TEAM_STL']
+            };
+            
+            // Try to find the value with primary column first
             let val = playerData[column];
             
-            // Try alternate column if main one is empty
+            // If not found, try alternate column names
+            if (val === undefined || val === null || val === '') {
+                const alternatives = columnAlternatives[column];
+                if (alternatives) {
+                    for (const alt of alternatives) {
+                        if (playerData[alt] !== undefined && playerData[alt] !== null && playerData[alt] !== '') {
+                            val = playerData[alt];
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            // Try altCol if specified in metric
             if ((val === undefined || val === '' || val === null) && metric && metric.altCol) {
                 val = playerData[metric.altCol];
             }
@@ -1202,9 +1259,9 @@
                     categoryHtml += `
                         <div class="comparison-row ${rowClass}">
                             <div class="${p1Class}">${formatted1 === '-' ? '<span class="no-data">–</span>' : formatted1}</div>
-                            <div class="player-value" style="font-weight: normal; font-size: 16px;">${player1}</div>
+                            <div class="player-value clickable-name" style="font-weight: normal; font-size: 16px;" onclick="randomizeOpponent(1)" title="Click to get a new random opponent">${player1}</div>
                             <div class="metric-name">${metric.name}</div>
-                            <div class="player-value" style="font-weight: normal; font-size: 16px;">${player2}</div>
+                            <div class="player-value clickable-name" style="font-weight: normal; font-size: 16px;" onclick="randomizeOpponent(2)" title="Click to get a new random opponent">${player2}</div>
                             <div class="${p2Class}">${formatted2 === '-' ? '<span class="no-data">–</span>' : formatted2}</div>
                         </div>
                     `;
@@ -1213,7 +1270,7 @@
                 if (hasData) {
                     const sScore = sectionScores[category.category];
                     const sectionScoreHTML = (sScore.p1 > 0 || sScore.p2 > 0) ? 
-                        `<div class="section-score">${player1} ${sScore.p1} – ${player2} ${sScore.p2}</div>` : '';
+                        `<div class="section-score"><span class="clickable-name" onclick="randomizeOpponent(1)">${player1}</span> ${sScore.p1} – <span class="clickable-name" onclick="randomizeOpponent(2)">${player2}</span> ${sScore.p2}</div>` : '';
                     html += `<div class="category-section"><div class="category-title">${category.category}${sectionScoreHTML}</div>${categoryHtml}</div>`;
                 }
             });
@@ -1239,8 +1296,85 @@
                     <input type="text" class="share-url-input" value="${shareURL}" readonly onclick="this.select(); document.execCommand('copy'); alert('URL copied!');">
                 </div>
                 ${html}
+                ${generateSuggestedMatchups(player1, player2)}
             `;
             document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function generateSuggestedMatchups(currentP1, currentP2) {
+            // Generate 6 random suggested matchups
+            const matchups = [];
+            const usedPairs = new Set([`${currentP1}-${currentP2}`, `${currentP2}-${currentP1}`]);
+            
+            const availableStars = STARS_2526.filter(name => {
+                const seasons = playerSeasons[name];
+                return seasons && seasons.some(s => s.year === '2026');
+            });
+            
+            // Generate matchups - mix of current players vs new opponents and completely random
+            const attempts = 0;
+            
+            // 2 matchups with current player 1 vs random
+            for (let i = 0; i < 2 && matchups.length < 6; i++) {
+                const opponent = availableStars[Math.floor(Math.random() * availableStars.length)];
+                const pairKey = `${currentP1}-${opponent}`;
+                if (opponent !== currentP1 && opponent !== currentP2 && !usedPairs.has(pairKey)) {
+                    matchups.push({ p1: currentP1, p2: opponent, s1: '2026', s2: '2026' });
+                    usedPairs.add(pairKey);
+                    usedPairs.add(`${opponent}-${currentP1}`);
+                }
+            }
+            
+            // 2 matchups with current player 2 vs random
+            for (let i = 0; i < 2 && matchups.length < 6; i++) {
+                const opponent = availableStars[Math.floor(Math.random() * availableStars.length)];
+                const pairKey = `${currentP2}-${opponent}`;
+                if (opponent !== currentP1 && opponent !== currentP2 && !usedPairs.has(pairKey)) {
+                    matchups.push({ p1: currentP2, p2: opponent, s1: '2026', s2: '2026' });
+                    usedPairs.add(pairKey);
+                    usedPairs.add(`${opponent}-${currentP2}`);
+                }
+            }
+            
+            // Fill remaining with completely random matchups
+            while (matchups.length < 6) {
+                const p1 = availableStars[Math.floor(Math.random() * availableStars.length)];
+                const p2 = availableStars[Math.floor(Math.random() * availableStars.length)];
+                const pairKey = `${p1}-${p2}`;
+                if (p1 !== p2 && !usedPairs.has(pairKey)) {
+                    matchups.push({ p1, p2, s1: '2026', s2: '2026' });
+                    usedPairs.add(pairKey);
+                    usedPairs.add(`${p2}-${p1}`);
+                }
+            }
+            
+            const matchupCards = matchups.map(m => `
+                <div class="matchup-card" onclick="loadMatchup('${m.p1}', '${m.s1}', '${m.p2}', '${m.s2}')">
+                    <div class="matchup-players">${m.p1} vs ${m.p2}</div>
+                    <div class="matchup-seasons">${formatSeasonYear(m.s1)}</div>
+                </div>
+            `).join('');
+            
+            return `
+                <div class="suggested-matchups">
+                    <h3>🔥 More Matchups to Explore</h3>
+                    <div class="matchup-grid">${matchupCards}</div>
+                </div>
+            `;
+        }
+
+        function loadMatchup(p1, s1, p2, s2) {
+            document.getElementById('player1Input').value = p1;
+            populateSeasonSelect(document.getElementById('season1Select'), p1);
+            document.getElementById('season1Select').value = s1;
+            
+            document.getElementById('player2Input').value = p2;
+            populateSeasonSelect(document.getElementById('season2Select'), p2);
+            document.getElementById('season2Select').value = s2;
+            
+            updateCompareButton();
+            runComparison();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         // ===== INIT =====
