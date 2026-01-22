@@ -1,235 +1,1276 @@
-#!/usr/bin/env python3
-"""
-Fetches NBA 2025-26 season data from Google Sheets and compiles into a single JSON file.
-Runs daily via GitHub Actions at 6 AM ET.
-"""
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NBA Season Comparison Tool - HoopsHype</title>
+    <meta name="description" content="Compare any two NBA player seasons across 80+ categories including stats, advanced metrics, and more.">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 { color: #1a1a1a; margin-bottom: 10px; font-size: 2.5em; text-align: center; }
+        .subtitle { text-align: center; color: #666; margin-bottom: 30px; font-size: 1.1em; }
+        .player-selector {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+            align-items: start;
+        }
+        .player-select-card {
+            background: #fafafa;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+        .player-select-card h3 {
+            font-size: 14px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .select-group { margin-bottom: 15px; }
+        .select-group label {
+            display: block;
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+        .player-autocomplete, .season-select {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            background-color: white;
+            transition: border-color 0.3s;
+        }
+        .player-autocomplete:hover, .season-select:hover { border-color: #007bff; }
+        .player-autocomplete:focus, .season-select:focus { outline: none; border-color: #007bff; }
+        .player-select-wrapper { position: relative; }
+        .autocomplete-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 2px solid #007bff;
+            border-top: none;
+            border-radius: 0 0 6px 6px;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+        }
+        .autocomplete-suggestion {
+            padding: 10px 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+        }
+        .autocomplete-suggestion:hover { background-color: #f0f8ff; }
+        .autocomplete-suggestion:last-child { border-bottom: none; }
+        .vs-text {
+            font-size: 24px;
+            font-weight: bold;
+            color: #666;
+            text-align: center;
+            padding-top: 60px;
+        }
+        .compare-button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: block;
+            margin: 0 auto 30px;
+            transition: background-color 0.3s;
+        }
+        .compare-button:hover { background-color: #0056b3; }
+        .compare-button:disabled { background-color: #ccc; cursor: not-allowed; }
+        .loading { text-align: center; padding: 40px; font-size: 18px; color: #666; }
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #007bff;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .loading-status { font-size: 14px; color: #888; margin-top: 10px; }
+        .progress-bar {
+            width: 200px;
+            height: 6px;
+            background: #e0e0e0;
+            border-radius: 3px;
+            margin: 15px auto;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: #007bff;
+            border-radius: 3px;
+            transition: width 0.3s;
+        }
+        .score-summary {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+            padding: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            color: white;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .player-score { text-align: center; }
+        .player-name-score { font-size: 20px; font-weight: 600; margin-bottom: 5px; opacity: 0.9; cursor: pointer; transition: opacity 0.2s; }
+        .player-name-score:hover { opacity: 1; text-decoration: underline; }
+        .player-season-label { font-size: 14px; opacity: 0.8; margin-bottom: 5px; }
+        .player-team-label { font-size: 12px; opacity: 0.7; margin-bottom: 15px; }
+        .score-value { font-size: 56px; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        .score-divider { display: flex; align-items: center; justify-content: center; font-size: 36px; font-weight: 300; opacity: 0.7; }
+        .category-section { margin-bottom: 50px; }
+        .category-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 4px solid #007bff;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .section-score { font-size: 16px; font-weight: 600; color: #666; margin-top: 8px; text-align: left; }
+        .comparison-row {
+            display: grid;
+            grid-template-columns: 2fr 3fr 1fr 3fr 2fr;
+            gap: 15px;
+            padding: 18px 20px;
+            margin-bottom: 12px;
+            border-radius: 8px;
+            background-color: #fafafa;
+            align-items: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .comparison-row:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .comparison-row.winner-left {
+            background: linear-gradient(90deg, #d4edda 0%, #fafafa 50%, #fafafa 100%);
+            border-left: 4px solid #28a745;
+        }
+        .comparison-row.winner-right {
+            background: linear-gradient(90deg, #fafafa 0%, #fafafa 50%, #d4edda 100%);
+            border-right: 4px solid #28a745;
+        }
+        .comparison-row.tie {
+            background: linear-gradient(90deg, #fff3cd 0%, #fafafa 50%, #fff3cd 100%);
+            border-left: 4px solid #ffc107;
+            border-right: 4px solid #ffc107;
+        }
+        .player-value { font-size: 19px; font-weight: 600; text-align: center; color: #333; }
+        .player-value.winner { color: #28a745; font-size: 20px; }
+        .metric-name { font-size: 15px; color: #555; text-align: center; font-weight: 500; }
+        .no-data { color: #999; font-style: italic; font-weight: 400; }
+        .share-url {
+            margin-top: 40px;
+            padding: 25px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+        .share-url h3 { margin-bottom: 15px; color: #333; font-size: 18px; }
+        .share-url-input {
+            width: 100%;
+            padding: 12px;
+            font-size: 14px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            background-color: white;
+            cursor: pointer;
+        }
+        .share-url-input:focus { outline: none; border-color: #007bff; }
+        .error-message {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            border: 1px solid #f5c6cb;
+        }
+        .data-timestamp {
+            text-align: center;
+            font-size: 12px;
+            color: #999;
+            margin-top: 10px;
+        }
+        @media (max-width: 768px) {
+            h1 { font-size: 2em; }
+            .player-selector { grid-template-columns: 1fr; }
+            .vs-text { padding-top: 0; margin: 15px 0; }
+            .comparison-row { grid-template-columns: 1fr; gap: 8px; padding: 15px; }
+            .player-value, .metric-name { text-align: left; }
+            .score-summary { grid-template-columns: 1fr; gap: 15px; }
+            .score-divider { font-size: 28px; }
+            .score-value { font-size: 42px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏀 NBA Season Comparison Tool</h1>
+        <div class="subtitle">Compare any two player seasons across 80+ categories</div>
 
-import csv
-import json
-import urllib.request
-from io import StringIO
-from datetime import datetime, timezone
+        <div id="loadingMessage" class="loading">
+            <div class="spinner"></div>
+            <div>Loading player database...</div>
+            <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width: 0%"></div></div>
+            <div class="loading-status" id="loadingStatus">Connecting to data sources...</div>
+        </div>
 
-# Google Sheets Configuration
-SHEETS = {
-    'allTime': '1ZrDfzqiC31Hu3YCtxT4aZbZF4QVCVyGe6wBytR2LF30',
-    'current2526': '1JH2FUBIyQ1zEHzZBxgP8vHBZ7d8EtP5-fSVG3zMgCgg',
-    'historical': '1nPSI-VVKHkGYW9IY2KDP-v_xW6qi9_L9WpCnUFKRi8A'
-}
+        <div id="mainContent" style="display: none;">
+            <div class="player-selector">
+                <div class="player-select-card">
+                    <h3>Player 1</h3>
+                    <div class="select-group">
+                        <label>Player Name</label>
+                        <div class="player-select-wrapper">
+                            <input type="text" id="player1Input" class="player-autocomplete" placeholder="Type player name...">
+                            <div id="suggestions1" class="autocomplete-suggestions"></div>
+                        </div>
+                    </div>
+                    <div class="select-group">
+                        <label>Season</label>
+                        <select id="season1Select" class="season-select" disabled>
+                            <option value="">-- Select Player First --</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="vs-text">VS</div>
+                <div class="player-select-card">
+                    <h3>Player 2</h3>
+                    <div class="select-group">
+                        <label>Player Name</label>
+                        <div class="player-select-wrapper">
+                            <input type="text" id="player2Input" class="player-autocomplete" placeholder="Type player name...">
+                            <div id="suggestions2" class="autocomplete-suggestions"></div>
+                        </div>
+                    </div>
+                    <div class="select-group">
+                        <label>Season</label>
+                        <select id="season2Select" class="season-select" disabled>
+                            <option value="">-- Select Player First --</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <button class="compare-button" id="compareBtn" disabled>Compare Seasons</button>
+            <div id="dataTimestamp" class="data-timestamp"></div>
+            <div id="results"></div>
+        </div>
+        <div id="errorMessage" style="display: none;"></div>
+    </div>
 
-# Tab GIDs
-TABS = {
-    # All-Time Database tabs
-    'rsStats': 576369994,
-    'poStats': 1591736011,
-    'teamStats': 1735540905,
-    
-    # 2025-26 Season tabs
-    'current_advanced': 339737563,
-    'current_scoring': 52077302,
-    'current_shotLocation': 1205457990,
-    'current_defense': 1957258468,
-    'current_usage': 1415078232,
-    'current_clutch': 10789411,
-    'current_hustle': 439158060,
-}
+    <script>
+        // ===== CONFIGURATION =====
+        // JSON file for 2025-26 data (updated daily via GitHub Actions)
+        const JSON_URL = 'https://jsierrahoopshype.github.io/nba-player-data/nba-2025-26-data.json';
+        
+        // Google Sheets for historical data
+        const SHEETS = {
+            allTime: '1ZrDfzqiC31Hu3YCtxT4aZbZF4QVCVyGe6wBytR2LF30',
+            historical: '1nPSI-VVKHkGYW9IY2KDP-v_xW6qi9_L9WpCnUFKRi8A'
+        };
 
-def get_sheet_url(sheet_id, gid):
-    """Build Google Sheets CSV export URL"""
-    return f"https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv&gid={gid}"
+        const TABS = {
+            rsStats: 0,
+            poStats: 1591736011,
+            teamStats: 1735540905,
+            advanced: 339737563,
+            scoring: 52077302,
+            shotLocation: 1205457990,
+            defense: 1957258468,
+            usage: 1415078232,
+            clutch: 10789411,
+            hustle: 439158060
+        };
 
-def parse_csv_line(line):
-    """Parse a CSV line handling quoted fields"""
-    result = []
-    current = ''
-    in_quotes = False
-    for char in line:
-        if char == '"':
-            in_quotes = not in_quotes
-        elif char == ',' and not in_quotes:
-            result.append(current.strip().strip('"'))
-            current = ''
-        else:
-            current += char
-    result.append(current.strip().strip('"'))
-    return result
+        // 2025-26 Stars for random matchups
+        const STARS_2526 = [
+            'Shai Gilgeous-Alexander', 'Victor Wembanyama', 'Luka Doncic', 'Giannis Antetokounmpo',
+            'Nikola Jokic', 'Jayson Tatum', 'Anthony Edwards', 'Kevin Durant', 'LeBron James',
+            'Stephen Curry', 'Donovan Mitchell', 'Tyrese Haliburton', 'Ja Morant', 'Trae Young',
+            'Devin Booker', 'Anthony Davis', 'Jaylen Brown', "De'Aaron Fox", 'Paolo Banchero',
+            'Chet Holmgren', 'Tyrese Maxey', 'Domantas Sabonis', 'Jalen Brunson', 'Bam Adebayo',
+            'Karl-Anthony Towns', 'Alperen Sengun', 'Franz Wagner', 'Evan Mobley', 'Scottie Barnes'
+        ];
 
-def find_header_row(lines, known_headers):
-    """Find the row index containing known header names"""
-    for i, line in enumerate(lines):
-        parsed = parse_csv_line(line)
-        # Check if any known headers are in this row
-        for header in known_headers:
-            if header in parsed:
-                return i
-    return 0  # Default to first row
+        function getSheetURL(sheetId, gid) {
+            return `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&gid=${gid}`;
+        }
 
-def fetch_csv(url, known_headers=None):
-    """Fetch CSV data from URL and return as list of dicts"""
-    try:
-        req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
-        with urllib.request.urlopen(req, timeout=60) as response:
-            content = response.read().decode('utf-8-sig')  # Handle BOM
-            lines = content.strip().split('\n')
+        // ===== DATA STORAGE =====
+        let data = {
+            rsStats: [],
+            poStats: [],
+            teamStats: [],
+            current: {}, // 2025-26 from JSON
+            historical: {}
+        };
+        let players = [];
+        let playerSeasons = {};
+        let playerPOSeasons = {};
+        let current2526Players = {}; // Index by player name for fast lookup
+        let current2526PlayersNormalized = {}; // Index by normalized name
+        let dataLastUpdated = null;
+
+        // Normalize player names (remove accents/diacritics)
+        function normalizeName(name) {
+            if (!name) return '';
+            return name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+        }
+
+        // ===== CSV PARSING =====
+        function parseCSVLine(line) {
+            const result = [];
+            let current = '';
+            let inQuotes = false;
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+                if (char === '"') inQuotes = !inQuotes;
+                else if (char === ',' && !inQuotes) { result.push(current.trim().replace(/^"|"$/g, '')); current = ''; }
+                else current += char;
+            }
+            result.push(current.trim().replace(/^"|"$/g, ''));
+            return result;
+        }
+
+        function findHeaderRow(lines, knownHeaders) {
+            // First, try to find exact known headers
+            if (knownHeaders && knownHeaders.length > 0) {
+                for (let i = 0; i < Math.min(lines.length, 10); i++) {
+                    const parsed = parseCSVLine(lines[i]);
+                    for (const header of knownHeaders) {
+                        if (parsed.includes(header)) {
+                            console.log(`Found header "${header}" at row ${i}`);
+                            return i;
+                        }
+                    }
+                }
+            }
             
-            if len(lines) < 2:
-                print(f"  Warning: Not enough lines")
-                return []
+            // If no known headers found, look for a row that looks like headers
+            // (contains text that looks like column names, not all numeric)
+            for (let i = 0; i < Math.min(lines.length, 10); i++) {
+                const parsed = parseCSVLine(lines[i]);
+                // Skip empty or mostly empty rows
+                const nonEmpty = parsed.filter(v => v && v.trim());
+                if (nonEmpty.length < 3) continue;
+                
+                // Check if this looks like a header row (has alphabetic content, not all numeric)
+                const hasTextHeaders = nonEmpty.some(v => /^[A-Za-z_][A-Za-z0-9_\-\s%]*$/.test(v.trim()));
+                const notAllNumeric = !nonEmpty.every(v => !isNaN(parseFloat(v)));
+                
+                if (hasTextHeaders && notAllNumeric) {
+                    console.log(`Detected header row at index ${i} (heuristic)`);
+                    return i;
+                }
+            }
             
-            # Find header row dynamically
-            if known_headers:
-                header_idx = find_header_row(lines, known_headers)
-                print(f"  Found header row at index {header_idx}")
-            else:
-                header_idx = 0
+            console.log('No header row detected, using row 0');
+            return 0;
+        }
+
+        function parseCSV(text, knownHeaders = null) {
+            const lines = text.trim().split('\n');
+            if (lines.length < 2) return [];
             
-            # Get headers
-            headers = parse_csv_line(lines[header_idx])
-            print(f"  Headers ({len(headers)}): {headers[:5]}...")
+            // Find header row dynamically if known headers provided
+            let headerIdx = 0;
+            if (knownHeaders && knownHeaders.length > 0) {
+                headerIdx = findHeaderRow(lines, knownHeaders);
+            }
             
-            # Parse data rows (everything after header row)
-            result = []
-            for line in lines[header_idx + 1:]:
-                if not line.strip():
-                    continue
-                values = parse_csv_line(line)
-                row = {}
-                for j, header in enumerate(headers):
-                    if header:  # Skip empty headers
-                        row[header] = values[j] if j < len(values) else ''
-                result.append(row)
+            const headers = parseCSVLine(lines[headerIdx]);
+            const result = [];
             
-            return result
-    except Exception as e:
-        print(f"Error fetching {url}: {e}")
-        import traceback
-        traceback.print_exc()
-        return []
+            for (let i = headerIdx + 1; i < lines.length; i++) {
+                const values = parseCSVLine(lines[i]);
+                if (values.length < 2) continue;
+                const row = {};
+                headers.forEach((header, index) => {
+                    if (header) {
+                        row[header] = values[index] || '';
+                    }
+                });
+                result.push(row);
+            }
+            return result;
+        }
 
-def clean_numeric(value):
-    """Convert string to float/int where possible"""
-    if value is None or value == '' or value == '-':
-        return None
-    try:
-        cleaned = str(value).replace(',', '').replace('%', '').strip()
-        if cleaned == '':
-            return None
-        if '.' in cleaned:
-            return float(cleaned)
-        return int(cleaned)
-    except ValueError:
-        return value
+        // ===== DATA LOADING =====
+        async function fetchSheet(sheetId, gid, knownHeaders = null) {
+            const url = getSheetURL(sheetId, gid);
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                const text = await response.text();
+                return parseCSV(text, knownHeaders);
+            } catch (error) {
+                console.error(`Error fetching sheet ${gid}:`, error);
+                return [];
+            }
+        }
 
-def process_row(row):
-    """Clean up a row of data"""
-    return {k: clean_numeric(v) for k, v in row.items() if k}
+        async function fetchJSON(url) {
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                return await response.json();
+            } catch (error) {
+                console.error('Error fetching JSON:', error);
+                return null;
+            }
+        }
 
-def filter_2025_26_season(data, season_col='YEAR'):
-    """Filter data to only 2025-26 season"""
-    return [row for row in data if row.get(season_col) in ['2025-26', '2026', 2026]]
+        function updateProgress(percent, message) {
+            document.getElementById('progressFill').style.width = percent + '%';
+            document.getElementById('loadingStatus').textContent = message;
+        }
 
-def main():
-    print(f"Starting NBA data fetch at {datetime.now(timezone.utc).isoformat()}")
-    
-    nba_data = {
-        'lastUpdated': datetime.now(timezone.utc).isoformat(),
-        'season': '2025-26',
-        'rsStats': [],
-        'poStats': [],
-        'teamStats': [],
-        'advanced': [],
-        'scoring': [],
-        'shotLocation': [],
-        'defense': [],
-        'usage': [],
-        'clutch': [],
-        'hustle': []
-    }
-    
-    # Fetch Regular Season Stats (filtered to 2025-26)
-    print("Fetching RS Stats...")
-    url = get_sheet_url(SHEETS['allTime'], TABS['rsStats'])
-    all_rs = fetch_csv(url, known_headers=['PLAYER', 'YEAR', 'TEAM', 'GP'])
-    nba_data['rsStats'] = [process_row(r) for r in filter_2025_26_season(all_rs)]
-    print(f"  Found {len(nba_data['rsStats'])} players for 2025-26")
-    
-    # Fetch Playoff Stats (filtered to 2025-26)
-    print("Fetching PO Stats...")
-    url = get_sheet_url(SHEETS['allTime'], TABS['poStats'])
-    all_po = fetch_csv(url, known_headers=['PLAYER', 'YEAR', 'TEAM', 'GP'])
-    nba_data['poStats'] = [process_row(r) for r in filter_2025_26_season(all_po)]
-    print(f"  Found {len(nba_data['poStats'])} players for 2025-26")
-    
-    # Fetch Team Stats (filtered to 2025-26)
-    print("Fetching Team Stats...")
-    url = get_sheet_url(SHEETS['allTime'], TABS['teamStats'])
-    all_teams = fetch_csv(url, known_headers=['TEAM', 'YEAR', 'W', 'L'])
-    nba_data['teamStats'] = [process_row(r) for r in filter_2025_26_season(all_teams)]
-    print(f"  Found {len(nba_data['teamStats'])} teams for 2025-26")
-    
-    # Fetch 2025-26 Advanced Stats
-    print("Fetching Advanced Stats...")
-    url = get_sheet_url(SHEETS['current2526'], TABS['current_advanced'])
-    nba_data['advanced'] = [process_row(r) for r in fetch_csv(url, known_headers=['PLAYER_NAME', 'PLAYER_ID', 'OFF_RATING'])]
-    print(f"  Found {len(nba_data['advanced'])} players")
-    
-    # Fetch 2025-26 Scoring
-    print("Fetching Scoring Stats...")
-    url = get_sheet_url(SHEETS['current2526'], TABS['current_scoring'])
-    nba_data['scoring'] = [process_row(r) for r in fetch_csv(url, known_headers=['PLAYER_NAME', 'PLAYER_ID', 'PTS_OFF_TOV'])]
-    print(f"  Found {len(nba_data['scoring'])} players")
-    
-    # Fetch 2025-26 Shot Location
-    print("Fetching Shot Location Stats...")
-    url = get_sheet_url(SHEETS['current2526'], TABS['current_shotLocation'])
-    nba_data['shotLocation'] = [process_row(r) for r in fetch_csv(url, known_headers=['PLAYER_NAME', 'PLAYER_ID', 'Mid-Range_FG_PCT'])]
-    print(f"  Found {len(nba_data['shotLocation'])} players")
-    
-    # Fetch 2025-26 Defense
-    print("Fetching Defense Stats...")
-    url = get_sheet_url(SHEETS['current2526'], TABS['current_defense'])
-    nba_data['defense'] = [process_row(r) for r in fetch_csv(url, known_headers=['PLAYER_NAME', 'D_FG_PCT', 'CLOSE_DEF_PERSON_ID'])]
-    print(f"  Found {len(nba_data['defense'])} players")
-    
-    # Fetch 2025-26 Usage
-    print("Fetching Usage Stats...")
-    url = get_sheet_url(SHEETS['current2526'], TABS['current_usage'])
-    nba_data['usage'] = [process_row(r) for r in fetch_csv(url, known_headers=['PLAYER_NAME', 'PLAYER_ID', 'USG_PCT'])]
-    print(f"  Found {len(nba_data['usage'])} players")
-    
-    # Fetch 2025-26 Clutch
-    print("Fetching Clutch Stats...")
-    url = get_sheet_url(SHEETS['current2526'], TABS['current_clutch'])
-    nba_data['clutch'] = [process_row(r) for r in fetch_csv(url, known_headers=['PLAYER_NAME', 'PLAYER_ID', 'FG_PCT'])]
-    print(f"  Found {len(nba_data['clutch'])} players")
-    
-    # Fetch 2025-26 Hustle
-    print("Fetching Hustle Stats...")
-    url = get_sheet_url(SHEETS['current2526'], TABS['current_hustle'])
-    nba_data['hustle'] = [process_row(r) for r in fetch_csv(url, known_headers=['PLAYER_NAME', 'PLAYER_ID', 'DEFLECTIONS'])]
-    print(f"  Found {len(nba_data['hustle'])} players")
-    
-    # Debug: Print sample of first advanced player
-    if nba_data['advanced']:
-        print("\n=== SAMPLE DATA (first advanced player) ===")
-        first = nba_data['advanced'][0]
-        print(f"  Keys: {list(first.keys())[:10]}...")
-        print(f"  PLAYER_NAME: {first.get('PLAYER_NAME', 'NOT FOUND')}")
-        print(f"  OFF_RATING: {first.get('OFF_RATING', 'NOT FOUND')}")
-    
-    # Write to JSON file
-    output_path = 'nba-2025-26-data.json'
-    with open(output_path, 'w') as f:
-        json.dump(nba_data, f, indent=2)
-    
-    print(f"\n✓ Data saved to {output_path}")
-    print(f"  Total size: {len(json.dumps(nba_data)):,} bytes")
-    
-    # Summary
-    print("\n=== SUMMARY ===")
-    for key, value in nba_data.items():
-        if isinstance(value, list):
-            print(f"  {key}: {len(value)} records")
+        async function loadAllData() {
+            try {
+                // Phase 1: Load JSON (2025-26) and essential historical data in parallel
+                updateProgress(5, 'Loading 2025-26 season data...');
+                
+                const [jsonData, rsStats, poStats] = await Promise.all([
+                    fetchJSON(JSON_URL),
+                    fetchSheet(SHEETS.allTime, TABS.rsStats, ['PLAYER', 'YEAR', 'TEAM', 'GP']),
+                    fetchSheet(SHEETS.allTime, TABS.poStats, ['PLAYER', 'YEAR', 'TEAM', 'GP'])
+                ]);
+                
+                updateProgress(50, 'Processing data...');
+                
+                // Store RS and PO stats
+                data.rsStats = rsStats;
+                data.poStats = poStats;
+                
+                console.log('RS Stats loaded:', rsStats.length);
+                console.log('PO Stats loaded:', poStats.length);
+                if (rsStats[0]) {
+                    console.log('RS Stats columns:', Object.keys(rsStats[0]).slice(0, 10));
+                }
+                
+                // Store 2025-26 data from JSON
+                if (jsonData) {
+                    dataLastUpdated = jsonData.lastUpdated;
+                    data.current = {
+                        rsStats: jsonData.rsStats || [],
+                        poStats: jsonData.poStats || [],
+                        teamStats: jsonData.teamStats || [],
+                        advanced: jsonData.advanced || [],
+                        scoring: jsonData.scoring || [],
+                        shotLocation: jsonData.shotLocation || [],
+                        defense: jsonData.defense || [],
+                        usage: jsonData.usage || [],
+                        clutch: jsonData.clutch || [],
+                        hustle: jsonData.hustle || []
+                    };
+                    
+                    // Build index of 2025-26 players
+                    const sources = ['advanced', 'scoring', 'shotLocation', 'defense', 'usage', 'clutch', 'hustle'];
+                    sources.forEach(key => {
+                        if (data.current[key]) {
+                            data.current[key].forEach(row => {
+                                const name = row.PLAYER_NAME || row.PLAYER;
+                                if (name) {
+                                    if (!current2526Players[name]) current2526Players[name] = {};
+                                    current2526Players[name][key] = row;
+                                    
+                                    // Also index by normalized name
+                                    const normalizedName = normalizeName(name);
+                                    if (!current2526PlayersNormalized[normalizedName]) {
+                                        current2526PlayersNormalized[normalizedName] = {};
+                                    }
+                                    current2526PlayersNormalized[normalizedName][key] = row;
+                                    current2526PlayersNormalized[normalizedName]._originalName = name;
+                                }
+                            });
+                        }
+                    });
+                    
+                    // Also index RS stats for 2025-26
+                    if (data.current.rsStats) {
+                        data.current.rsStats.forEach(row => {
+                            const name = row.PLAYER;
+                            if (name) {
+                                if (!current2526Players[name]) current2526Players[name] = {};
+                                current2526Players[name].rsStats = row;
+                                
+                                // Also index by normalized name
+                                const normalizedName = normalizeName(name);
+                                if (!current2526PlayersNormalized[normalizedName]) {
+                                    current2526PlayersNormalized[normalizedName] = {};
+                                }
+                                current2526PlayersNormalized[normalizedName].rsStats = row;
+                            }
+                        });
+                    }
+                    
+                    // Index PO stats for 2025-26
+                    if (data.current.poStats) {
+                        data.current.poStats.forEach(row => {
+                            const name = row.PLAYER;
+                            if (name) {
+                                if (!current2526Players[name]) current2526Players[name] = {};
+                                current2526Players[name].poStats = row;
+                                
+                                // Also index by normalized name
+                                const normalizedName = normalizeName(name);
+                                if (!current2526PlayersNormalized[normalizedName]) {
+                                    current2526PlayersNormalized[normalizedName] = {};
+                                }
+                                current2526PlayersNormalized[normalizedName].poStats = row;
+                            }
+                        });
+                    }
+                    
+                    console.log('2025-26 JSON data loaded:', Object.keys(current2526Players).length, 'players');
+                }
 
-if __name__ == '__main__':
-    main()
+                updateProgress(70, 'Indexing players...');
+                console.log('RS Stats loaded:', data.rsStats.length);
+                console.log('PO Stats loaded:', data.poStats.length);
+
+                updateProgress(85, 'Building player database...');
+
+                // Load historical advanced data in background
+                loadHistoricalInBackground();
+
+                updateProgress(100, 'Ready!');
+
+                if (data.rsStats.length > 0) {
+                    buildPlayerList();
+                    return true;
+                }
+                return false;
+            } catch (error) {
+                console.error('Error loading data:', error);
+                return false;
+            }
+        }
+
+        async function loadHistoricalInBackground() {
+            try {
+                const historicalPromises = [
+                    fetchSheet(SHEETS.historical, TABS.advanced, ['PLAYER_NAME', 'PLAYER_ID', 'OFF_RATING', 'DEF_RATING']),
+                    fetchSheet(SHEETS.historical, TABS.scoring, ['PLAYER_NAME', 'PLAYER_ID', 'PTS_OFF_TOV']),
+                    fetchSheet(SHEETS.historical, TABS.shotLocation, ['PLAYER_NAME', 'PLAYER_ID', 'Mid-Range_FG_PCT']),
+                    fetchSheet(SHEETS.historical, TABS.defense, ['PLAYER_NAME', 'D_FG_PCT', 'CLOSE_DEF_PERSON_ID']),
+                    fetchSheet(SHEETS.historical, TABS.usage, ['PLAYER_NAME', 'PLAYER_ID', 'USG_PCT']),
+                    fetchSheet(SHEETS.historical, TABS.clutch, ['PLAYER_NAME', 'PLAYER_ID', 'FG_PCT']),
+                    fetchSheet(SHEETS.historical, TABS.hustle, ['PLAYER_NAME', 'PLAYER_ID', 'DEFLECTIONS'])
+                ];
+                
+                const historicalResults = await Promise.all(historicalPromises);
+                data.historical.advanced = historicalResults[0];
+                data.historical.scoring = historicalResults[1];
+                data.historical.shotLocation = historicalResults[2];
+                data.historical.defense = historicalResults[3];
+                data.historical.usage = historicalResults[4];
+                data.historical.clutch = historicalResults[5];
+                data.historical.hustle = historicalResults[6];
+                
+                console.log('Historical data loaded:', {
+                    advanced: data.historical.advanced?.length || 0,
+                    scoring: data.historical.scoring?.length || 0,
+                    shotLocation: data.historical.shotLocation?.length || 0,
+                    defense: data.historical.defense?.length || 0,
+                    usage: data.historical.usage?.length || 0,
+                    clutch: data.historical.clutch?.length || 0,
+                    hustle: data.historical.hustle?.length || 0
+                });
+                
+                // Debug: show sample columns from each data source
+                if (data.historical.advanced?.[0]) {
+                    console.log('Historical advanced columns:', Object.keys(data.historical.advanced[0]).slice(0, 10));
+                }
+                if (data.historical.scoring?.[0]) {
+                    console.log('Historical scoring columns:', Object.keys(data.historical.scoring[0]).slice(0, 10));
+                }
+            } catch (error) {
+                console.error('Error loading historical data:', error);
+            }
+        }
+
+        function buildPlayerList() {
+            const playersMap = new Map();
+            const poPlayersMap = new Map();
+
+            data.rsStats.forEach(row => {
+                const name = row.PLAYER;
+                const year = row.YEAR;
+                const team = row.TEAM;
+                if (name && year) {
+                    if (!playersMap.has(name)) playersMap.set(name, []);
+                    playersMap.get(name).push({ year, team, data: row });
+                }
+            });
+
+            data.poStats.forEach(row => {
+                const name = row.PLAYER;
+                const year = row.YEAR;
+                const team = row.TEAM;
+                if (name && year) {
+                    if (!poPlayersMap.has(name)) poPlayersMap.set(name, []);
+                    poPlayersMap.get(name).push({ year, team, data: row });
+                }
+            });
+
+            players = Array.from(playersMap.keys()).sort();
+            playersMap.forEach((seasons, name) => {
+                playerSeasons[name] = seasons.sort((a, b) => parseInt(b.year) - parseInt(a.year));
+            });
+            poPlayersMap.forEach((seasons, name) => {
+                playerPOSeasons[name] = seasons.sort((a, b) => parseInt(b.year) - parseInt(a.year));
+            });
+
+            console.log('Built player list:', players.length, 'players');
+        }
+
+        // ===== COMPARISON CONFIGURATION =====
+        const comparisonConfig = [
+            {
+                category: 'COUNTING STATS: AVERAGES',
+                metrics: [
+                    { name: 'Points', src: 'rs', col: 'PTS / G', higher: true, fmt: 'dec' },
+                    { name: 'Rebounds', src: 'rs', col: 'REB / G', higher: true, fmt: 'dec' },
+                    { name: 'Assists', src: 'rs', col: 'AST / G', higher: true, fmt: 'dec' },
+                    { name: 'Steals', src: 'rs', col: 'STL / G', higher: true, fmt: 'dec' },
+                    { name: 'Blocks', src: 'rs', col: 'BLK / G', higher: true, fmt: 'dec' },
+                    { name: 'Field Goal %', src: 'rs', col: 'FG%', higher: true, fmt: 'pct' },
+                    { name: 'Three Point %', src: 'rs', col: '3P%', higher: true, fmt: 'pct' },
+                    { name: 'Free Throw %', src: 'rs', col: 'FT%', higher: true, fmt: 'pct' },
+                    { name: 'Turnovers', src: 'rs', col: 'TOV / G', higher: false, fmt: 'dec' },
+                    { name: 'Points PO', src: 'po', col: 'PTS / G', higher: true, fmt: 'dec' },
+                    { name: 'Rebounds PO', src: 'po', col: 'REB / G', higher: true, fmt: 'dec' },
+                    { name: 'Assists PO', src: 'po', col: 'AST / G', higher: true, fmt: 'dec' },
+                    { name: 'Steals PO', src: 'po', col: 'STL / G', higher: true, fmt: 'dec' },
+                    { name: 'Blocks PO', src: 'po', col: 'BLK / G', higher: true, fmt: 'dec' },
+                    { name: 'Field Goal % PO', src: 'po', col: 'FG%', higher: true, fmt: 'pct' },
+                    { name: 'Three Point % PO', src: 'po', col: '3P%', higher: true, fmt: 'pct' },
+                    { name: 'Free Throw % PO', src: 'po', col: 'FT%', higher: true, fmt: 'pct' },
+                    { name: 'Turnovers PO', src: 'po', col: 'TOV / G', higher: false, fmt: 'dec' }
+                ]
+            },
+            {
+                category: 'COUNTING STATS: TOTALS',
+                metrics: [
+                    { name: 'Points', src: 'rs', col: 'PTS', higher: true, fmt: 'int' },
+                    { name: 'Rebounds', src: 'rs', col: 'REB', higher: true, fmt: 'int' },
+                    { name: 'Assists', src: 'rs', col: 'AST', higher: true, fmt: 'int' },
+                    { name: 'Steals', src: 'rs', col: 'STL', higher: true, fmt: 'int' },
+                    { name: 'Blocks', src: 'rs', col: 'BLK', higher: true, fmt: 'int' },
+                    { name: 'Turnovers', src: 'rs', col: 'TOV', higher: false, fmt: 'int' },
+                    { name: 'Points PO', src: 'po', col: 'PTS', higher: true, fmt: 'int' },
+                    { name: 'Rebounds PO', src: 'po', col: 'REB', higher: true, fmt: 'int' },
+                    { name: 'Assists PO', src: 'po', col: 'AST', higher: true, fmt: 'int' },
+                    { name: 'Steals PO', src: 'po', col: 'STL', higher: true, fmt: 'int' },
+                    { name: 'Blocks PO', src: 'po', col: 'BLK', higher: true, fmt: 'int' },
+                    { name: 'Turnovers PO', src: 'po', col: 'TOV', higher: false, fmt: 'int' }
+                ]
+            },
+            {
+                category: 'ADVANCED STATS',
+                metrics: [
+                    { name: 'Plus-Minus', src: 'adv', col: 'PLUS_MINUS', higher: true, fmt: 'dec' },
+                    { name: 'Offensive Rating', src: 'adv', col: 'OFF_RATING', higher: true, fmt: 'dec' },
+                    { name: 'Defensive Rating', src: 'adv', col: 'DEF_RATING', higher: false, fmt: 'dec' },
+                    { name: 'Net Rating', src: 'adv', col: 'NET_RATING', higher: true, fmt: 'dec' },
+                    { name: 'Global Rating', src: 'rs', col: 'RAT', higher: true, fmt: 'dec' }
+                ]
+            },
+            {
+                category: 'SCORING',
+                metrics: [
+                    { name: 'Effective FG %', src: 'adv', col: 'EFG_PCT', higher: true, fmt: 'pct' },
+                    { name: 'True Shooting %', src: 'adv', col: 'TS_PCT', higher: true, fmt: 'pct' },
+                    { name: 'Points off turnovers', src: 'scoring', col: 'PTS_OFF_TOV', higher: true, fmt: 'dec', pg: 'GP' },
+                    { name: 'Second-chance points', src: 'scoring', col: 'PTS_2ND_CHANCE', higher: true, fmt: 'dec', pg: 'GP' },
+                    { name: 'Fast-break points', src: 'scoring', col: 'PTS_FB', higher: true, fmt: 'dec', pg: 'GP' },
+                    { name: 'Points in the paint', src: 'scoring', col: 'PTS_PAINT', higher: true, fmt: 'dec', pg: 'GP' }
+                ]
+            },
+            {
+                category: 'SHOT LOCATION',
+                metrics: [
+                    { name: 'Paint FG%', src: 'shotLocation', col: 'Restricted Area_FG_PCT', higher: true, fmt: 'pct' },
+                    { name: 'Mid-Range FG%', src: 'shotLocation', col: 'Mid-Range_FG_PCT', higher: true, fmt: 'pct' },
+                    { name: 'Left Corner 3P%', src: 'shotLocation', col: 'Left Corner 3_FG_PCT', higher: true, fmt: 'pct' },
+                    { name: 'Right Corner 3P%', src: 'shotLocation', col: 'Right Corner 3_FG_PCT', higher: true, fmt: 'pct' },
+                    { name: 'Above the Break 3P%', src: 'shotLocation', col: 'Above the Break 3_FG_PCT', higher: true, fmt: 'pct' },
+                    { name: 'Backcourt FG%', src: 'shotLocation', col: 'Backcourt_FG_PCT', higher: true, fmt: 'pct' }
+                ]
+            },
+            {
+                category: 'DEFENSE',
+                metrics: [
+                    { name: 'Defended FG %', src: 'defense', col: 'D_FG_PCT', higher: false, fmt: 'pct' },
+                    { name: 'Opponent expected FG %', src: 'defense', col: 'NORMAL_FG_PCT', higher: false, fmt: 'pct' },
+                    { name: 'Plus minus FG %', src: 'defense', col: 'PCT_PLUSMINUS', higher: false, fmt: 'pcts' }
+                ]
+            },
+            {
+                category: 'REBOUNDS',
+                metrics: [
+                    { name: 'Offensive rebounding %', src: 'adv', col: 'OREB_PCT', higher: true, fmt: 'pct' },
+                    { name: 'Defensive rebounding %', src: 'adv', col: 'DREB_PCT', higher: true, fmt: 'pct' },
+                    { name: 'Total rebounding %', src: 'adv', col: 'REB_PCT', higher: true, fmt: 'pct' }
+                ]
+            },
+            {
+                category: 'ASSISTS & TURNOVERS',
+                metrics: [
+                    { name: 'Assist percentage', src: 'adv', col: 'AST_PCT', higher: true, fmt: 'pct' },
+                    { name: 'Assists ratio', src: 'adv', col: 'AST_RATIO', higher: true, fmt: 'dec' },
+                    { name: 'Assists / turnover ratio', src: 'adv', col: 'AST_TO', higher: true, fmt: 'dec' },
+                    { name: 'Turnover %', src: 'adv', col: 'TM_TOV_PCT', higher: false, fmt: 'pct' }
+                ]
+            },
+            {
+                category: 'USAGE',
+                metrics: [
+                    { name: 'Usage percentage', src: 'usage', col: 'USG_PCT', higher: true, fmt: 'pct' },
+                    { name: "Percentage of team's points", src: 'usage', col: 'PCT_PTS', higher: true, fmt: 'pct' },
+                    { name: "Percentage of team's rebounds", src: 'usage', col: 'PCT_REB', higher: true, fmt: 'pct' },
+                    { name: "Percentage of team's assists", src: 'usage', col: 'PCT_AST', higher: true, fmt: 'pct' },
+                    { name: "Percentage of team's blocks", src: 'usage', col: 'PCT_BLK', higher: true, fmt: 'pct' },
+                    { name: "Percentage of team's steals", src: 'usage', col: 'PCT_STL', higher: true, fmt: 'pct' }
+                ]
+            },
+            {
+                category: 'CLUTCH',
+                metrics: [
+                    { name: 'Points', src: 'clutch', col: 'PTS', higher: true, fmt: 'dec', pg: 'GP' },
+                    { name: 'Rebounds', src: 'clutch', col: 'REB', higher: true, fmt: 'dec', pg: 'GP' },
+                    { name: 'Assists', src: 'clutch', col: 'AST', higher: true, fmt: 'dec', pg: 'GP' },
+                    { name: 'Steals', src: 'clutch', col: 'STL', higher: true, fmt: 'dec', pg: 'GP' },
+                    { name: 'Blocks', src: 'clutch', col: 'BLK', higher: true, fmt: 'dec', pg: 'GP' },
+                    { name: 'Field Goal %', src: 'clutch', col: 'FG_PCT', higher: true, fmt: 'pct' },
+                    { name: 'Three Point %', src: 'clutch', col: 'FG3_PCT', higher: true, fmt: 'pct' },
+                    { name: 'Free Throw %', src: 'clutch', col: 'FT_PCT', higher: true, fmt: 'pct' },
+                    { name: 'Turnovers', src: 'clutch', col: 'TOV', higher: false, fmt: 'dec', pg: 'GP' }
+                ]
+            },
+            {
+                category: 'HUSTLE',
+                metrics: [
+                    { name: 'Contested shots', src: 'hustle', col: 'CONTESTED_SHOTS', higher: true, fmt: 'dec', pg: 'G' },
+                    { name: 'Deflections', src: 'hustle', col: 'DEFLECTIONS', higher: true, fmt: 'dec', pg: 'G' },
+                    { name: 'Charges drawn', src: 'hustle', col: 'CHARGES_DRAWN', higher: true, fmt: 'dec', pg: 'G' },
+                    { name: 'Screen assists', src: 'hustle', col: 'SCREEN_ASSISTS', higher: true, fmt: 'dec', pg: 'G' },
+                    { name: 'Screen assist points', src: 'hustle', col: 'SCREEN_AST_PTS', higher: true, fmt: 'dec', pg: 'G' },
+                    { name: 'Loose balls recovered', src: 'hustle', col: 'LOOSE_BALLS_RECOVERED', higher: true, fmt: 'dec', pg: 'G' },
+                    { name: 'Offensive boxouts', src: 'hustle', col: 'OFF_BOXOUTS', higher: true, fmt: 'dec', pg: 'G' },
+                    { name: 'Defensive boxouts', src: 'hustle', col: 'DEF_BOXOUTS', higher: true, fmt: 'dec', pg: 'G' }
+                ]
+            },
+            {
+                category: 'TEAM SUCCESS',
+                metrics: [
+                    { name: 'Wins', src: 'adv', col: 'W', higher: true, fmt: 'int' },
+                    { name: 'Winning percentage', src: 'adv', col: 'W_PCT', higher: true, fmt: 'pct' },
+                    { name: 'Wins PO', src: 'po', col: 'W', higher: true, fmt: 'int', altCol: 'GP' },
+                    { name: 'Winning percentage PO', src: 'po', col: 'W_PCT', higher: true, fmt: 'pct', calcFromWL: true }
+                ]
+            },
+            {
+                category: 'FOULS',
+                metrics: [
+                    { name: 'Personal fouls per game', src: 'rs', col: 'PF', higher: false, fmt: 'dec', pg: 'GP' },
+                    { name: 'Personal fouls per game PO', src: 'po', col: 'PF', higher: false, fmt: 'dec', pg: 'GP' }
+                ]
+            }
+        ];
+
+        // ===== UI FUNCTIONS =====
+        function setupAutocomplete() {
+            const configs = [
+                { input: 'player1Input', suggestions: 'suggestions1', season: 'season1Select' },
+                { input: 'player2Input', suggestions: 'suggestions2', season: 'season2Select' }
+            ];
+            
+            configs.forEach(config => {
+                const inputEl = document.getElementById(config.input);
+                const suggestionsEl = document.getElementById(config.suggestions);
+                const seasonEl = document.getElementById(config.season);
+                
+                inputEl.addEventListener('input', function() {
+                    const value = this.value.toLowerCase();
+                    if (value.length < 2) { suggestionsEl.style.display = 'none'; return; }
+                    
+                    const matches = players.filter(p => p.toLowerCase().includes(value)).slice(0, 10);
+                    if (matches.length === 0) { suggestionsEl.style.display = 'none'; return; }
+                    
+                    suggestionsEl.innerHTML = matches.map(player => 
+                        `<div class="autocomplete-suggestion" data-player="${player}">${player}</div>`
+                    ).join('');
+                    suggestionsEl.style.display = 'block';
+                    
+                    suggestionsEl.querySelectorAll('.autocomplete-suggestion').forEach(el => {
+                        el.addEventListener('click', function() {
+                            const selectedPlayer = this.getAttribute('data-player');
+                            inputEl.value = selectedPlayer;
+                            suggestionsEl.style.display = 'none';
+                            populateSeasonSelect(seasonEl, selectedPlayer, true);
+                            updateCompareButton();
+                        });
+                    });
+                });
+                
+                document.addEventListener('click', function(e) {
+                    if (!inputEl.contains(e.target) && !suggestionsEl.contains(e.target)) {
+                        suggestionsEl.style.display = 'none';
+                    }
+                });
+                
+                seasonEl.addEventListener('change', updateCompareButton);
+            });
+        }
+
+        function populateSeasonSelect(selectEl, playerName, autoSelect2526 = false) {
+            selectEl.innerHTML = '<option value="">-- Choose Season --</option>';
+            if (!playerName || !playerSeasons[playerName]) { selectEl.disabled = true; return; }
+            
+            const seasons = playerSeasons[playerName];
+            seasons.forEach(s => {
+                const option = document.createElement('option');
+                option.value = s.year;
+                option.textContent = formatSeasonYear(s.year) + (s.team ? ` (${s.team})` : '');
+                selectEl.appendChild(option);
+            });
+            selectEl.disabled = false;
+            
+            if (autoSelect2526) {
+                const has2526 = seasons.some(s => s.year === '2026');
+                if (has2526) {
+                    selectEl.value = '2026';
+                } else if (seasons.length > 0) {
+                    selectEl.value = seasons[0].year;
+                }
+            }
+        }
+
+        function formatSeasonYear(year) {
+            const endYear = parseInt(year);
+            if (isNaN(endYear)) return year;
+            return `${endYear - 1}-${String(endYear).slice(-2)}`;
+        }
+
+        function updateCompareButton() {
+            const p1 = document.getElementById('player1Input').value;
+            const s1 = document.getElementById('season1Select').value;
+            const p2 = document.getElementById('player2Input').value;
+            const s2 = document.getElementById('season2Select').value;
+            document.getElementById('compareBtn').disabled = !(p1 && s1 && p2 && s2);
+        }
+
+        // ===== URL & RANDOM =====
+        function playerNameToURL(name) {
+            return name.toLowerCase().replace(/\./g, '').replace(/'/g, '').replace(/,/g, '')
+                .replace(/jr$/i, 'jr').replace(/sr$/i, 'sr').replace(/iii$/i, 'iii').replace(/ii$/i, 'ii').replace(/iv$/i, 'iv')
+                .replace(/\s+/g, '-');
+        }
+
+        function urlToPlayerName(url) {
+            const urlLower = url.toLowerCase();
+            return players.find(p => playerNameToURL(p) === urlLower) || null;
+        }
+
+        function loadFromURL() {
+            const params = new URLSearchParams(window.location.search);
+            const p1 = params.get('p1'), s1 = params.get('s1');
+            const p2 = params.get('p2'), s2 = params.get('s2');
+            
+            if (p1 && s1 && p2 && s2) {
+                const player1 = urlToPlayerName(p1);
+                const player2 = urlToPlayerName(p2);
+                if (player1 && player2) {
+                    document.getElementById('player1Input').value = player1;
+                    populateSeasonSelect(document.getElementById('season1Select'), player1);
+                    document.getElementById('season1Select').value = s1;
+                    document.getElementById('player2Input').value = player2;
+                    populateSeasonSelect(document.getElementById('season2Select'), player2);
+                    document.getElementById('season2Select').value = s2;
+                    updateCompareButton();
+                    setTimeout(() => runComparison(), 100);
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function loadRandomStars() {
+            const availableStars = STARS_2526.filter(name => {
+                const seasons = playerSeasons[name];
+                return seasons && seasons.some(s => s.year === '2026');
+            });
+            
+            if (availableStars.length < 2) {
+                console.log('Not enough stars found');
+                return;
+            }
+            
+            const idx1 = Math.floor(Math.random() * availableStars.length);
+            let idx2 = Math.floor(Math.random() * availableStars.length);
+            while (idx2 === idx1) idx2 = Math.floor(Math.random() * availableStars.length);
+            
+            const player1 = availableStars[idx1];
+            const player2 = availableStars[idx2];
+            
+            document.getElementById('player1Input').value = player1;
+            populateSeasonSelect(document.getElementById('season1Select'), player1, true);
+            
+            document.getElementById('player2Input').value = player2;
+            populateSeasonSelect(document.getElementById('season2Select'), player2, true);
+            
+            updateCompareButton();
+            setTimeout(() => runComparison(), 100);
+        }
+
+        function randomizeOpponent(keepPlayer) {
+            const currentPlayer1 = document.getElementById('player1Input').value;
+            const currentPlayer2 = document.getElementById('player2Input').value;
+            
+            const availableStars = STARS_2526.filter(name => {
+                const seasons = playerSeasons[name];
+                return seasons && seasons.some(s => s.year === '2026');
+            });
+            
+            if (availableStars.length < 2) return;
+            
+            // Pick a new random opponent that's different from both current players
+            let newOpponent;
+            do {
+                newOpponent = availableStars[Math.floor(Math.random() * availableStars.length)];
+            } while (newOpponent === currentPlayer1 || newOpponent === currentPlayer2);
+            
+            if (keepPlayer === 1) {
+                // Keep player 1, randomize player 2
+                document.getElementById('player2Input').value = newOpponent;
+                populateSeasonSelect(document.getElementById('season2Select'), newOpponent, true);
+            } else {
+                // Keep player 2, randomize player 1
+                document.getElementById('player1Input').value = newOpponent;
+                populateSeasonSelect(document.getElementById('season1Select'), newOpponent, true);
+            }
+            
+            updateCompareButton();
+            setTimeout(() => runComparison(), 100);
+        }
+
+        // ===== COMPARISON LOGIC =====
+        function getPlayerData(playerName, season, source) {
+            const isCurrent = (season === '2026');
+            
+            if (source === 'rs') {
+                // For 2025-26, check JSON data first
+                if (isCurrent) {
+                    let playerData = current2526Players[playerName]?.rsStats;
+                    if (!playerData) {
+                        const normalizedSearch = normalizeName(playerName);
+                        playerData = current2526PlayersNormalized[normalizedSearch]?.rsStats;
+                    }
+                    if (playerData) return playerData;
+                }
+                // Fall back to all-time database
+                const seasons = playerSeasons[playerName];
+                if (!seasons) return null;
+                const match = seasons.find(s => s.year === season);
+                return match ? match.data : null;
+            }
+            
+            if (source === 'po') {
+                // For 2025-26, check JSON data first
+                if (isCurrent) {
+                    let playerData = current2526Players[playerName]?.poStats;
+                    if (!playerData) {
+                        const normalizedSearch = normalizeName(playerName);
+                        playerData = current2526PlayersNormalized[normalizedSearch]?.poStats;
+                    }
+                    if (playerData) return playerData;
+                }
+                // Fall back to all-time database
+                const seasons = playerPOSeasons[playerName];
+                if (!seasons) return null;
+                const match = seasons.find(s => s.year === season);
+                return match ? match.data : null;
+            }
+            
+            const sourceMap = {
+                'adv': 'advanced',
+                'scoring': 'scoring',
+                'shotLocation': 'shotLocation',
+                'defense': 'defense',
+                'usage': 'usage',
+                'clutch': 'clutch',
+                'hustle': 'hustle'
+            };
+            
+            const dataKey = sourceMap[source] || source;
+            
+            if (isCurrent) {
+                // Try exact match first
+                let playerData = current2526Players[playerName];
+                
+                // If not found, try normalized name match
+                if (!playerData) {
+                    const normalizedSearch = normalizeName(playerName);
+                    playerData = current2526PlayersNormalized[normalizedSearch];
+                }
+                
+                if (playerData && playerData[dataKey]) {
+                    return playerData[dataKey];
+                }
+                return null;
+            } else {
+                const dataSource = data.historical[dataKey];
+                if (!dataSource || dataSource.length === 0) return null;
+                
+                // Convert season to different formats for matching
+                const seasonYear = parseInt(season);
+                const seasonFormats = [
+                    season,
+                    String(seasonYear),
+                    `${seasonYear - 1}-${String(seasonYear).slice(-2)}`,  // "2024-25" format
+                    `${seasonYear - 1}-${seasonYear}`,  // "2024-2025" format
+                    `${seasonYear}`  // Just the ending year
+                ];
+                
+                const normalizedPlayerName = normalizeName(playerName);
+                
+                return dataSource.find(row => {
+                    const rowName = row.PLAYER_NAME || row.PLAYER;
+                    if (!rowName) return false;
+                    
+                    // Match player name (exact or normalized)
+                    const nameMatch = rowName === playerName || normalizeName(rowName) === normalizedPlayerName;
+                    if (!nameMatch) return false;
+                    
+                    // Match season
+                    const rowSeason = row.SEASON_ID || row.SEASON || row.YEAR || row.Season;
+                    if (!rowSeason) return false;
+                    
+                    const rowSeasonStr = String(rowSeason);
+                    return seasonFormats.some(fmt => rowSeasonStr === fmt || rowSeasonStr.includes(fmt));
+                });
+            }
+        }
+
+        function getStatValue(playerData, column, perGameCol = null, metric = null) {
+            if (!playerData || !column) return null;
+            
+            // Special handling for playoff win percentage calculation
+            if (metric && metric.calcFromWL) {
+                const wins = parseFloat(playerData['W'] || playerData['GP']);
+                const losses = parseFloat(playerData['L'] || 0);
+                if (!isNaN(wins) && !isNaN(losses) && (wins + losses) > 0) {
+                    return wins / (wins + losses);
+                }
+                return null;
+            }
+            
+            let val = playerData[column];
+            
+            // Try alternate column if main one is empty
+            if ((val === undefined || val === '' || val === null) && metric && metric.altCol) {
+                val = playerData[metric.altCol];
+            }
+            
+            if (val === undefined || val === '' || val === null) return null;
+            
+            if (perGameCol) {
+                const gp = parseFloat(playerData[perGameCol]);
+                const total = parseFloat(val);
+                if (!isNaN(gp) && !isNaN(total) && gp > 0) {
+                    return total / gp;
+                }
+                return null;
+            }
+            return val;
+        }
+
+        function formatValue(value, format) {
+            if (value === null || value === undefined || value === '' || value === '-') return '-';
+            const num = parseFloat(value);
+            if (isNaN(num)) return value;
+            
+            switch (format) {
+                case 'int': return Math.round(num).toLocaleString();
+                case 'dec': return num.toFixed(1);
+                case 'pct':
+                    if (Math.abs(num) > 1) return num.toFixed(1) + '%';
+                    return (num * 100).toFixed(1) + '%';
+                case 'pcts':
+                    const pct = Math.abs(num) > 1 ? num : num * 100;
+                    return (pct >= 0 ? '+' : '') + pct.toFixed(1) + '%';
+                default: return value;
+            }
+        }
+
+        function compareValues(val1, val2, higherWins) {
+            const num1 = parseFloat(val1);
+            const num2 = parseFloat(val2);
+            if (isNaN(num1) && isNaN(num2)) return 'tie';
+            if (isNaN(num1)) return 'p2';
+            if (isNaN(num2)) return 'p1';
+            if (Math.abs(num1 - num2) < 0.001) return 'tie';
+            return higherWins ? (num1 > num2 ? 'p1' : 'p2') : (num1 < num2 ? 'p1' : 'p2');
+        }
+
+        function runComparison() {
+            const player1 = document.getElementById('player1Input').value;
+            const season1 = document.getElementById('season1Select').value;
+            const player2 = document.getElementById('player2Input').value;
+            const season2 = document.getElementById('season2Select').value;
+            
+            if (!player1 || !season1 || !player2 || !season2) return;
+            
+            const rsData1 = getPlayerData(player1, season1, 'rs');
+            const rsData2 = getPlayerData(player2, season2, 'rs');
+            const advData1 = getPlayerData(player1, season1, 'adv');
+            const advData2 = getPlayerData(player2, season2, 'adv');
+
+            const team1 = rsData1?.TEAM || advData1?.TEAM_ABBREVIATION || '';
+            const team2 = rsData2?.TEAM || advData2?.TEAM_ABBREVIATION || '';
+            
+            let p1Score = 0, p2Score = 0;
+            let html = '';
+            const sectionScores = {};
+            
+            const shareURL = `${window.location.origin}${window.location.pathname}?p1=${playerNameToURL(player1)}&s1=${season1}&p2=${playerNameToURL(player2)}&s2=${season2}`;
+            window.history.replaceState({}, '', shareURL);
+            
+            comparisonConfig.forEach(category => {
+                let categoryHtml = '';
+                let hasData = false;
+                sectionScores[category.category] = { p1: 0, p2: 0 };
+                
+                category.metrics.forEach(metric => {
+                    const data1 = getPlayerData(player1, season1, metric.src);
+                    const data2 = getPlayerData(player2, season2, metric.src);
+                    
+                    let val1 = getStatValue(data1, metric.col, metric.pg, metric);
+                    let val2 = getStatValue(data2, metric.col, metric.pg, metric);
+                    
+                    if ((val1 === null || val1 === '') && (val2 === null || val2 === '')) return;
+                    
+                    hasData = true;
+                    const winner = compareValues(val1, val2, metric.higher);
+                    
+                    if (winner === 'p1') { p1Score++; sectionScores[category.category].p1++; }
+                    if (winner === 'p2') { p2Score++; sectionScores[category.category].p2++; }
+                    
+                    const formatted1 = formatValue(val1, metric.fmt);
+                    const formatted2 = formatValue(val2, metric.fmt);
+                    
+                    const rowClass = winner === 'p1' ? 'winner-left' : winner === 'p2' ? 'winner-right' : 'tie';
+                    const p1Class = winner === 'p1' ? 'player-value winner' : 'player-value';
+                    const p2Class = winner === 'p2' ? 'player-value winner' : 'player-value';
+                    
+                    categoryHtml += `
+                        <div class="comparison-row ${rowClass}">
+                            <div class="${p1Class}">${formatted1 === '-' ? '<span class="no-data">–</span>' : formatted1}</div>
+                            <div class="player-value" style="font-weight: normal; font-size: 16px;">${player1}</div>
+                            <div class="metric-name">${metric.name}</div>
+                            <div class="player-value" style="font-weight: normal; font-size: 16px;">${player2}</div>
+                            <div class="${p2Class}">${formatted2 === '-' ? '<span class="no-data">–</span>' : formatted2}</div>
+                        </div>
+                    `;
+                });
+                
+                if (hasData) {
+                    const sScore = sectionScores[category.category];
+                    const sectionScoreHTML = (sScore.p1 > 0 || sScore.p2 > 0) ? 
+                        `<div class="section-score">${player1} ${sScore.p1} – ${player2} ${sScore.p2}</div>` : '';
+                    html += `<div class="category-section"><div class="category-title">${category.category}${sectionScoreHTML}</div>${categoryHtml}</div>`;
+                }
+            });
+            
+            document.getElementById('results').innerHTML = `
+                <div class="score-summary">
+                    <div class="player-score">
+                        <div class="player-name-score" onclick="randomizeOpponent(1)" title="Click to get a new random opponent">${player1}</div>
+                        <div class="player-season-label">${formatSeasonYear(season1)}</div>
+                        ${team1 ? `<div class="player-team-label">${team1}</div>` : ''}
+                        <div class="score-value">${p1Score}</div>
+                    </div>
+                    <div class="score-divider">–</div>
+                    <div class="player-score">
+                        <div class="player-name-score" onclick="randomizeOpponent(2)" title="Click to get a new random opponent">${player2}</div>
+                        <div class="player-season-label">${formatSeasonYear(season2)}</div>
+                        ${team2 ? `<div class="player-team-label">${team2}</div>` : ''}
+                        <div class="score-value">${p2Score}</div>
+                    </div>
+                </div>
+                <div class="share-url">
+                    <h3>📤 Share This Comparison</h3>
+                    <input type="text" class="share-url-input" value="${shareURL}" readonly onclick="this.select(); document.execCommand('copy'); alert('URL copied!');">
+                </div>
+                ${html}
+            `;
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // ===== INIT =====
+        async function init() {
+            const success = await loadAllData();
+            if (success && players.length > 0) {
+                document.getElementById('loadingMessage').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'block';
+                
+                // Show last updated timestamp
+                if (dataLastUpdated) {
+                    const date = new Date(dataLastUpdated);
+                    document.getElementById('dataTimestamp').textContent = 
+                        `2025-26 data last updated: ${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+                }
+                
+                setupAutocomplete();
+                document.getElementById('compareBtn').addEventListener('click', runComparison);
+                if (!loadFromURL()) loadRandomStars();
+            } else {
+                document.getElementById('loadingMessage').innerHTML = `
+                    <div class="error-message">
+                        <h3>Unable to load data</h3>
+                        <p>Please check that the data sources are available and try refreshing.</p>
+                    </div>
+                `;
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>
