@@ -574,8 +574,9 @@
 
                 updateProgress(85, 'Building player database...');
 
-                // Load historical advanced data in background
-                loadHistoricalInBackground();
+                // Load historical advanced data - wait for it before showing ready
+                updateProgress(90, 'Loading historical data...');
+                await loadHistoricalData();
 
                 updateProgress(100, 'Ready!');
 
@@ -590,7 +591,7 @@
             }
         }
 
-        async function loadHistoricalInBackground() {
+        async function loadHistoricalData() {
             try {
                 const historicalPromises = [
                     fetchSheet(SHEETS.historical, TABS.advanced, ['PLAYER_NAME', 'PLAYER_ID', 'OFF_RATING', 'DEF_RATING']),
@@ -713,7 +714,7 @@
             {
                 category: 'ADVANCED STATS',
                 metrics: [
-                    { name: 'Plus-Minus', src: 'adv', col: 'PLUS_MINUS', higher: true, fmt: 'dec' },
+                    { name: 'Plus-Minus', src: 'clutch', col: 'PLUS_MINUS', higher: true, fmt: 'dec' },
                     { name: 'Offensive Rating', src: 'adv', col: 'OFF_RATING', higher: true, fmt: 'dec' },
                     { name: 'Defensive Rating', src: 'adv', col: 'DEF_RATING', higher: false, fmt: 'dec' },
                     { name: 'Net Rating', src: 'adv', col: 'NET_RATING', higher: true, fmt: 'dec' },
