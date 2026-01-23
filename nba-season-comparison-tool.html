@@ -303,7 +303,8 @@
             defense: 1957258468,
             usage: 1415078232,
             clutch: 10789411,
-            hustle: 439158060
+            hustle: 439158060,
+            plusMinus: 1169156479
         };
 
         // 2025-26 Stars for random matchups
@@ -617,8 +618,9 @@
                     fetchSheet(SHEETS.historical, TABS.shotLocation, ['PLAYER_NAME', 'PLAYER_ID', 'Mid-Range_FG_PCT']),
                     fetchSheet(SHEETS.historical, TABS.defense, ['PLAYER_NAME', 'D_FG_PCT', 'CLOSE_DEF_PERSON_ID']),
                     fetchSheet(SHEETS.historical, TABS.usage, ['PLAYER_NAME', 'PLAYER_ID', 'USG_PCT']),
-                    fetchSheet(SHEETS.historical, TABS.clutch, ['PLAYER_NAME', 'PLAYER_ID', 'FG_PCT']),
-                    fetchSheet(SHEETS.historical, TABS.hustle, ['PLAYER_NAME', 'PLAYER_ID', 'DEFLECTIONS'])
+                    fetchSheet(SHEETS.historical, TABS.clutch, ['PLAYER_NAME', 'PLAYER_ID', 'FG_PCT', 'SEASON']),
+                    fetchSheet(SHEETS.historical, TABS.hustle, ['PLAYER_NAME', 'PLAYER_ID', 'DEFLECTIONS']),
+                    fetchSheet(SHEETS.historical, TABS.plusMinus, ['PLAYER_NAME', 'PLAYER_ID', 'PLUS_MINUS'])
                 ];
                 
                 const historicalResults = await Promise.all(historicalPromises);
@@ -629,6 +631,7 @@
                 data.historical.usage = historicalResults[4];
                 data.historical.clutch = historicalResults[5];
                 data.historical.hustle = historicalResults[6];
+                data.historical.plusMinus = historicalResults[7];
                 
                 console.log('Historical data loaded:', {
                     advanced: data.historical.advanced?.length || 0,
@@ -637,7 +640,8 @@
                     defense: data.historical.defense?.length || 0,
                     usage: data.historical.usage?.length || 0,
                     clutch: data.historical.clutch?.length || 0,
-                    hustle: data.historical.hustle?.length || 0
+                    hustle: data.historical.hustle?.length || 0,
+                    plusMinus: data.historical.plusMinus?.length || 0
                 });
                 
                 historicalDataLoaded = true;
@@ -646,8 +650,11 @@
                 if (data.historical.advanced?.[0]) {
                     console.log('Historical advanced columns:', Object.keys(data.historical.advanced[0]).slice(0, 10));
                 }
-                if (data.historical.scoring?.[0]) {
-                    console.log('Historical scoring columns:', Object.keys(data.historical.scoring[0]).slice(0, 10));
+                if (data.historical.clutch?.[0]) {
+                    console.log('Historical clutch columns:', Object.keys(data.historical.clutch[0]).slice(0, 15));
+                }
+                if (data.historical.plusMinus?.[0]) {
+                    console.log('Historical plusMinus columns:', Object.keys(data.historical.plusMinus[0]).slice(0, 15));
                 }
             } catch (error) {
                 console.error('Error loading historical data:', error);
@@ -734,7 +741,7 @@
             {
                 category: 'ADVANCED STATS',
                 metrics: [
-                    { name: 'Plus-Minus', src: 'clutch', col: 'PLUS_MINUS', higher: true, fmt: 'dec' },
+                    { name: 'Plus-Minus', src: 'plusMinus', col: 'PLUS_MINUS', higher: true, fmt: 'dec' },
                     { name: 'Offensive Rating', src: 'adv', col: 'OFF_RATING', higher: true, fmt: 'dec' },
                     { name: 'Defensive Rating', src: 'adv', col: 'DEF_RATING', higher: false, fmt: 'dec' },
                     { name: 'Net Rating', src: 'adv', col: 'NET_RATING', higher: true, fmt: 'dec' },
@@ -1120,13 +1127,21 @@
                 'defense': 'defense',
                 'usage': 'usage',
                 'clutch': 'clutch',
-                'hustle': 'hustle'
+                'hustle': 'hustle',
+                'plusMinus': 'plusMinus'
             };
             
             const dataKey = sourceMap[source] || source;
             
             if (isCurrent) {
                 const playerObj = findCurrent2526Player(playerName);
+                // For plusMinus in current season, use clutch data (where PLUS_MINUS is stored)
+                if (source === 'plusMinus') {
+                    if (playerObj && playerObj['clutch']) {
+                        return playerObj['clutch'];
+                    }
+                    return null;
+                }
                 if (playerObj && playerObj[dataKey]) {
                     return playerObj[dataKey];
                 }
