@@ -200,25 +200,6 @@
         .player-value.winner { color: #28a745; font-size: 20px; }
         .metric-name { font-size: 15px; color: #555; text-align: center; font-weight: 500; }
         .no-data { color: #999; font-style: italic; font-weight: 400; }
-        .share-url {
-            margin-top: 40px;
-            padding: 25px;
-            background-color: #f8f9fa;
-            border-radius: 8px;
-            border: 1px solid #dee2e6;
-        }
-        .share-url h3 { margin-bottom: 15px; color: #333; font-size: 18px; }
-        .share-url-input {
-            width: 100%;
-            padding: 12px;
-            font-size: 14px;
-            border: 2px solid #ddd;
-            border-radius: 6px;
-            font-family: 'Courier New', monospace;
-            background-color: white;
-            cursor: pointer;
-        }
-        .share-url-input:focus { outline: none; border-color: #007bff; }
         .error-message {
             background-color: #f8d7da;
             color: #721c24;
@@ -353,6 +334,7 @@
         let current2526Players = {}; // Index by player name for fast lookup
         let current2526PlayersNormalized = {}; // Index by normalized name
         let dataLastUpdated = null;
+        let historicalDataLoaded = false;
 
         // Normalize player names (remove accents/diacritics)
         function normalizeName(name) {
@@ -611,11 +593,21 @@
 
                 updateProgress(85, 'Building player database...');
 
-                // Load historical advanced data - wait for it before showing ready
-                updateProgress(90, 'Loading historical data...');
-                await loadHistoricalData();
-
                 updateProgress(100, 'Ready!');
+
+                // Load historical data in background, then refresh if needed
+                loadHistoricalData().then(() => {
+                    // If user is viewing a historical comparison, refresh it
+                    const season1 = document.getElementById('season1Select')?.value;
+                    const season2 = document.getElementById('season2Select')?.value;
+                    const resultsEl = document.getElementById('results');
+                    
+                    // If either season is not 2026 (current) and results are showing, refresh
+                    if (resultsEl && resultsEl.innerHTML && (season1 !== '2026' || season2 !== '2026')) {
+                        console.log('Historical data loaded - refreshing comparison...');
+                        runComparison();
+                    }
+                });
 
                 if (data.rsStats.length > 0) {
                     buildPlayerList();
@@ -658,6 +650,14 @@
                     clutch: data.historical.clutch?.length || 0,
                     hustle: data.historical.hustle?.length || 0
                 });
+                
+                historicalDataLoaded = true;
+                
+                // Update timestamp to show historical data is ready
+                const timestampEl = document.getElementById('dataTimestamp');
+                if (timestampEl) {
+                    timestampEl.textContent = timestampEl.textContent.replace('loading...', 'ready ✓');
+                }
                 
                 // Debug: show sample columns from each data source
                 if (data.historical.advanced?.[0]) {
@@ -847,8 +847,7 @@
                 category: 'TEAM SUCCESS',
                 metrics: [
                     { name: 'Wins', src: 'adv', col: 'W', higher: true, fmt: 'int' },
-                    { name: 'Winning percentage', src: 'adv', col: 'W_PCT', higher: true, fmt: 'pct' },
-                    { name: 'Playoff games played', src: 'po', col: 'GP', higher: true, fmt: 'int' }
+                    { name: 'Winning percentage', src: 'adv', col: 'W_PCT', higher: true, fmt: 'pct' }
                 ]
             },
             {
@@ -1323,10 +1322,6 @@
                         <div class="score-value">${p2Score}</div>
                     </div>
                 </div>
-                <div class="share-url">
-                    <h3>📤 Share This Comparison</h3>
-                    <input type="text" class="share-url-input" value="${shareURL}" readonly onclick="this.select(); document.execCommand('copy'); alert('URL copied!');">
-                </div>
                 ${html}
                 ${generateSuggestedMatchups(player1, player2)}
             `;
@@ -1420,7 +1415,7 @@
                 if (dataLastUpdated) {
                     const date = new Date(dataLastUpdated);
                     document.getElementById('dataTimestamp').textContent = 
-                        `2025-26 data last updated: ${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+                        `2025-26 data: ${date.toLocaleDateString()} ${date.toLocaleTimeString()} | Historical: loading...`;
                 }
                 
                 setupAutocomplete();
