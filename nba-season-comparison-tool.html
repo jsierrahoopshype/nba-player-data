@@ -486,12 +486,26 @@
 
         async function loadAllData() {
             try {
-                // Phase 1: Load JSON (2025-26) ONLY - this is fast
-                updateProgress(10, 'Loading 2025-26 season data...');
+                // Load JSON (2025-26) and RS/PO stats together - all essential
+                updateProgress(5, 'Loading data...');
                 
-                const jsonData = await fetchJSON(JSON_URL);
+                const [jsonData, rsStats, poStats] = await Promise.all([
+                    fetchJSON(JSON_URL),
+                    fetchSheet(SHEETS.allTime, TABS.rsStats, ['PLAYER', 'YEAR', 'TEAM', 'GP']),
+                    fetchSheet(SHEETS.allTime, TABS.poStats, null, PO_STATS_COLUMNS)
+                ]);
                 
-                updateProgress(40, 'Processing current season...');
+                updateProgress(50, 'Processing data...');
+                
+                // Store RS and PO stats
+                data.rsStats = rsStats;
+                data.poStats = poStats;
+                
+                console.log('RS Stats loaded:', rsStats.length);
+                console.log('PO Stats loaded:', poStats.length);
+                if (poStats[0]) {
+                    console.log('PO Stats columns:', Object.keys(poStats[0]).slice(0, 15));
+                }
                 
                 // Store 2025-26 data from JSON
                 if (jsonData) {
@@ -519,7 +533,6 @@
                                     if (!current2526Players[name]) current2526Players[name] = {};
                                     current2526Players[name][key] = row;
                                     
-                                    // Also index by normalized name
                                     const normalizedName = normalizeName(name);
                                     if (!current2526PlayersNormalized[normalizedName]) {
                                         current2526PlayersNormalized[normalizedName] = {};
@@ -531,82 +544,71 @@
                         }
                     });
                     
-                    // Build preliminary player list from 2025-26 JSON
-                    const jsonPlayers = new Set();
-                    sources.forEach(key => {
-                        if (data.current[key]) {
-                            data.current[key].forEach(row => {
-                                const name = row.PLAYER_NAME || row.PLAYER;
-                                if (name) jsonPlayers.add(name);
-                            });
+                    // Index RS stats for 2025-26
+                    if (data.current.rsStats) {
+                        data.current.rsStats.forEach(row => {
+                            const name = row.PLAYER;
+                            if (name) {
+                                if (!current2526Players[name]) current2526Players[name] = {};
+                                current2526Players[name].rsStats = row;
+                                
+                                const normalizedName = normalizeName(name);
+                                if (!current2526PlayersNormalized[normalizedName]) {
+                                    current2526PlayersNormalized[normalizedName] = {};
+                                }
+                                current2526PlayersNormalized[normalizedName].rsStats = row;
+                            }
+                        });
+                    }
+                    
+                    // Index PO stats for 2025-26
+                    if (data.current.poStats) {
+                        data.current.poStats.forEach(row => {
+                            const name = row.PLAYER;
+                            if (name) {
+                                if (!current2526Players[name]) current2526Players[name] = {};
+                                current2526Players[name].poStats = row;
+                                
+                                const normalizedName = normalizeName(name);
+                                if (!current2526PlayersNormalized[normalizedName]) {
+                                    current2526PlayersNormalized[normalizedName] = {};
+                                }
+                                current2526PlayersNormalized[normalizedName].poStats = row;
+                            }
+                        });
+                    }
+                    
+                    console.log('2025-26 JSON data loaded:', Object.keys(current2526Players).length, 'players');
+                }
+
+                updateProgress(80, 'Building player database...');
+
+                if (data.rsStats.length > 0) {
+                    buildPlayerList();
+                    
+                    updateProgress(100, 'Ready!');
+                    
+                    // Load historical data in background
+                    loadHistoricalData().then(() => {
+                        const season1 = document.getElementById('season1Select')?.value;
+                        const season2 = document.getElementById('season2Select')?.value;
+                        const resultsEl = document.getElementById('results');
+                        
+                        if (resultsEl && resultsEl.innerHTML && (season1 !== '2026' || season2 !== '2026')) {
+                            console.log('Historical data loaded - refreshing comparison...');
+                            runComparison();
                         }
                     });
                     
-                    // Create temporary playerSeasons for 2025-26 players
-                    jsonPlayers.forEach(name => {
-                        if (!playerSeasons[name]) playerSeasons[name] = [];
-                        playerSeasons[name].push({ year: '2026', team: current2526Players[name]?.advanced?.TEAM_ABBREVIATION || '', data: {} });
-                    });
-                    
-                    players = Array.from(jsonPlayers).sort();
-                    
-                    console.log('2025-26 JSON data loaded:', players.length, 'players');
+                    return true;
                 }
-
-                updateProgress(100, 'Ready!');
-                
-                // Return true to show UI immediately with 2025-26 data
-                // Then load historical data in background
-                loadAllHistoricalInBackground();
-                
-                return players.length > 0;
-                
+                return false;
             } catch (error) {
                 console.error('Error loading data:', error);
                 return false;
             }
         }
         
-        async function loadAllHistoricalInBackground() {
-            try {
-                console.log('Loading RS/PO stats in background...');
-                
-                // Load RS and PO stats
-                const [rsStats, poStats] = await Promise.all([
-                    fetchSheet(SHEETS.allTime, TABS.rsStats, ['PLAYER', 'YEAR', 'TEAM', 'GP']),
-                    fetchSheet(SHEETS.allTime, TABS.poStats, null, PO_STATS_COLUMNS)
-                ]);
-                
-                data.rsStats = rsStats;
-                data.poStats = poStats;
-                
-                console.log('RS Stats loaded:', rsStats.length);
-                console.log('PO Stats loaded:', poStats.length);
-                
-                // Rebuild player list with all historical data
-                buildPlayerList();
-                
-                // Update autocomplete with full player list
-                console.log('Full player list built:', players.length, 'players');
-                
-                // Now load historical advanced stats
-                await loadHistoricalData();
-                
-                // Refresh comparison if showing historical
-                const season1 = document.getElementById('season1Select')?.value;
-                const season2 = document.getElementById('season2Select')?.value;
-                const resultsEl = document.getElementById('results');
-                
-                if (resultsEl && resultsEl.innerHTML && (season1 !== '2026' || season2 !== '2026')) {
-                    console.log('Historical data loaded - refreshing comparison...');
-                    runComparison();
-                }
-                
-            } catch (error) {
-                console.error('Error loading historical data:', error);
-            }
-        }
-
         async function loadHistoricalData() {
             try {
                 const historicalPromises = [
@@ -639,12 +641,6 @@
                 });
                 
                 historicalDataLoaded = true;
-                
-                // Update timestamp to show historical data is ready
-                const timestampEl = document.getElementById('dataTimestamp');
-                if (timestampEl) {
-                    timestampEl.textContent = timestampEl.textContent.replace('loading...', 'ready ✓');
-                }
                 
                 // Debug: show sample columns from each data source
                 if (data.historical.advanced?.[0]) {
@@ -1435,7 +1431,7 @@
                 if (dataLastUpdated) {
                     const date = new Date(dataLastUpdated);
                     document.getElementById('dataTimestamp').textContent = 
-                        `2025-26 data: ${date.toLocaleDateString()} | Historical: loading...`;
+                        `2025-26 data: ${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
                 }
                 
                 setupAutocomplete();
