@@ -848,8 +848,7 @@
                 metrics: [
                     { name: 'Wins', src: 'adv', col: 'W', higher: true, fmt: 'int' },
                     { name: 'Winning percentage', src: 'adv', col: 'W_PCT', higher: true, fmt: 'pct' },
-                    { name: 'Wins PO', src: 'po', col: 'W', higher: true, fmt: 'int', altCol: 'GP' },
-                    { name: 'Winning percentage PO', src: 'po', col: 'W_PCT', higher: true, fmt: 'pct', calcFromWL: true }
+                    { name: 'Playoff games played', src: 'po', col: 'GP', higher: true, fmt: 'int' }
                 ]
             },
             {
@@ -1230,9 +1229,11 @@
         function compareValues(val1, val2, higherWins) {
             const num1 = parseFloat(val1);
             const num2 = parseFloat(val2);
-            if (isNaN(num1) && isNaN(num2)) return 'tie';
-            if (isNaN(num1)) return 'p2';
-            if (isNaN(num2)) return 'p1';
+            
+            // If EITHER player has no data, it's a tie (no points awarded)
+            if (isNaN(num1) || isNaN(num2)) return 'tie';
+            
+            // Both have valid data - compare them
             if (Math.abs(num1 - num2) < 0.001) return 'tie';
             return higherWins ? (num1 > num2 ? 'p1' : 'p2') : (num1 < num2 ? 'p1' : 'p2');
         }
