@@ -1052,18 +1052,46 @@
         }
 
         // ===== COMPARISON LOGIC =====
+        // Helper to find player in current2526Players with flexible name matching
+        function findCurrent2526Player(playerName) {
+            // Try exact match first
+            if (current2526Players[playerName]) {
+                return current2526Players[playerName];
+            }
+            
+            // Try normalized name
+            const normalizedSearch = normalizeName(playerName);
+            if (current2526PlayersNormalized[normalizedSearch]) {
+                return current2526PlayersNormalized[normalizedSearch];
+            }
+            
+            // Try adding/removing suffixes (Jr., Sr., III, II, IV)
+            const suffixes = [' Jr.', ' Sr.', ' III', ' II', ' IV', ' Jr', ' Sr'];
+            for (const suffix of suffixes) {
+                // Try adding suffix
+                if (current2526Players[playerName + suffix]) {
+                    return current2526Players[playerName + suffix];
+                }
+                // Try removing suffix
+                if (playerName.endsWith(suffix)) {
+                    const baseName = playerName.slice(0, -suffix.length);
+                    if (current2526Players[baseName]) {
+                        return current2526Players[baseName];
+                    }
+                }
+            }
+            
+            return null;
+        }
+
         function getPlayerData(playerName, season, source) {
             const isCurrent = (season === '2026');
             
             if (source === 'rs') {
                 // For 2025-26, check JSON data first
                 if (isCurrent) {
-                    let playerData = current2526Players[playerName]?.rsStats;
-                    if (!playerData) {
-                        const normalizedSearch = normalizeName(playerName);
-                        playerData = current2526PlayersNormalized[normalizedSearch]?.rsStats;
-                    }
-                    if (playerData) return playerData;
+                    const playerObj = findCurrent2526Player(playerName);
+                    if (playerObj?.rsStats) return playerObj.rsStats;
                 }
                 // Fall back to all-time database
                 const seasons = playerSeasons[playerName];
@@ -1075,12 +1103,8 @@
             if (source === 'po') {
                 // For 2025-26, check JSON data first
                 if (isCurrent) {
-                    let playerData = current2526Players[playerName]?.poStats;
-                    if (!playerData) {
-                        const normalizedSearch = normalizeName(playerName);
-                        playerData = current2526PlayersNormalized[normalizedSearch]?.poStats;
-                    }
-                    if (playerData) return playerData;
+                    const playerObj = findCurrent2526Player(playerName);
+                    if (playerObj?.poStats) return playerObj.poStats;
                 }
                 // Fall back to all-time database
                 const seasons = playerPOSeasons[playerName];
@@ -1102,17 +1126,9 @@
             const dataKey = sourceMap[source] || source;
             
             if (isCurrent) {
-                // Try exact match first
-                let playerData = current2526Players[playerName];
-                
-                // If not found, try normalized name match
-                if (!playerData) {
-                    const normalizedSearch = normalizeName(playerName);
-                    playerData = current2526PlayersNormalized[normalizedSearch];
-                }
-                
-                if (playerData && playerData[dataKey]) {
-                    return playerData[dataKey];
+                const playerObj = findCurrent2526Player(playerName);
+                if (playerObj && playerObj[dataKey]) {
+                    return playerObj[dataKey];
                 }
                 return null;
             } else {
