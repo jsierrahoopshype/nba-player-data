@@ -1943,6 +1943,14 @@
     // Start fetching immediately (don't await - runs in parallel with script parsing)
     const csvFetchPromise = fetch(CSV_URL).then(r => r.text()).catch(() => null);
     
+    // Start fetching rumors in parallel (for initial trade display)
+    const INITIAL_RUMORS_URL = 'https://hoopshype-rumors-api.thejorgesierra.workers.dev/api/rumors/latest';
+    let initialRumorsData = null;
+    const rumorsFetchPromise = fetch(INITIAL_RUMORS_URL)
+      .then(r => r.ok ? r.json() : [])
+      .then(data => { initialRumorsData = data; return data; })
+      .catch(() => []);
+    
     const MAX_TEAMS = 5;
 
     let players = [];
@@ -6898,6 +6906,93 @@
       } catch (e) { /* localStorage full or disabled */ }
     }
 
+    // Build initial trade from rumors data
+    function buildTradeFromRumors() {
+      if (!initialRumorsData || !initialRumorsData.length || !players.length) {
+        return null;
+      }
+      
+      // Get trade rumors from last 7 days
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+      
+      const tradeRumors = initialRumorsData.filter(rumor => {
+        const tags = rumor.tags || [];
+        const hasTradeTag = tags.some(t => t.toLowerCase() === 'trade' || t.toLowerCase() === 'trades');
+        if (!hasTradeTag) return false;
+        
+        // Check date
+        const rumorDate = new Date(rumor.archive_date || rumor.date);
+        return rumorDate >= sevenDaysAgo;
+      });
+      
+      if (!tradeRumors.length) return null;
+      
+      // Count player mentions in trade rumors
+      const rumoredPlayers = new Map();
+      
+      tradeRumors.forEach(rumor => {
+        const tags = rumor.tags || [];
+        tags.forEach(tag => {
+          // Check if tag matches a player name
+          const matchedPlayer = players.find(p => 
+            p.player.toLowerCase() === tag.toLowerCase() ||
+            p.player.toLowerCase().includes(tag.toLowerCase()) ||
+            tag.toLowerCase().includes(p.player.split(' ').pop().toLowerCase())
+          );
+          // Only meaningful salary players who can be traded
+          if (matchedPlayer && matchedPlayer.salary > 5000000 && !matchedPlayer.is10Day) {
+            const count = rumoredPlayers.get(matchedPlayer.player) || 0;
+            rumoredPlayers.set(matchedPlayer.player, count + 1);
+          }
+        });
+      });
+      
+      if (rumoredPlayers.size === 0) return null;
+      
+      // Get the most mentioned player (with some randomization among top 15)
+      const sortedPlayers = [...rumoredPlayers.entries()]
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 15)
+        .map(([name]) => players.find(p => p.player === name))
+        .filter(Boolean);
+      
+      if (sortedPlayers.length === 0) return null;
+      
+      // Pick randomly from top rumored players
+      const rumoredPlayer = sortedPlayers[Math.floor(Math.random() * sortedPlayers.length)];
+      
+      // Pick a random different team
+      const otherTeams = teams.filter(t => t !== rumoredPlayer.team);
+      const randomTeam = otherTeams[Math.floor(Math.random() * otherTeams.length)];
+      
+      if (!randomTeam) return null;
+      
+      // Create trade: rumored player on their team, random opposing team empty
+      const playerOut = { ...rumoredPlayer, destination: 1 };
+      
+      return [
+        { 
+          teamName: rumoredPlayer.team, 
+          playersOut: [playerOut], 
+          playersIn: [], 
+          tpeUsed: null, 
+          picksOut: [], 
+          rightsOut: [], 
+          cashOut: [] 
+        },
+        { 
+          teamName: randomTeam, 
+          playersOut: [], 
+          playersIn: [], 
+          tpeUsed: null, 
+          picksOut: [], 
+          rightsOut: [], 
+          cashOut: [] 
+        }
+      ];
+    }
+
     function processCSVData(results) {
       players = results.data
         .filter(row => row.PLAYER && row.PLAYER.trim())
@@ -6986,11 +7081,17 @@
           team: row['TEAM RIGHTS']?.trim() || ''
         }));
       
-      const shuffledTeams = [...teams].sort(() => Math.random() - 0.5);
-      tradeTeams = [
-        { teamName: shuffledTeams[0] || '', playersOut: [], playersIn: [], tpeUsed: null, picksOut: [], rightsOut: [], cashOut: [] },
-        { teamName: shuffledTeams[1] || '', playersOut: [], playersIn: [], tpeUsed: null, picksOut: [], rightsOut: [], cashOut: [] }
-      ];
+      // Try to build initial trade from rumors, fall back to random teams
+      const rumorsBasedTrade = buildTradeFromRumors();
+      if (rumorsBasedTrade) {
+        tradeTeams = rumorsBasedTrade;
+      } else {
+        const shuffledTeams = [...teams].sort(() => Math.random() - 0.5);
+        tradeTeams = [
+          { teamName: shuffledTeams[0] || '', playersOut: [], playersIn: [], tpeUsed: null, picksOut: [], rightsOut: [], cashOut: [] },
+          { teamName: shuffledTeams[1] || '', playersOut: [], playersIn: [], tpeUsed: null, picksOut: [], rightsOut: [], cashOut: [] }
+        ];
+      }
       
       redistributePlayers();
       loadingState.style.display = 'none';
