@@ -428,7 +428,7 @@
             'CODE', 'RG CODE', 'NB CODE', 'PLAYER', 'YEAR', 'TEAM', 'GP', 'MIN', 'PTS', 
             'FGM', 'FGA', 'FG%', '3PM', '3PA', '3P%', 'FTM', 'FTA', 'FT%', 
             'ORB', 'DRB', 'REB', 'AST', 'STL', 'BLK', 'TOV', 'PF', '_EMPTY1',
-            'PTS / G', 'REB / G', 'AST / G', 'STL / G', 'BLK / G', 'TOV / G', 'FG%_PG', '3P%_PG', 'FT%_PG', '_EMPTY2', 'RESULT'
+            'PTS / G', 'REB / G', 'AST / G', 'STL / G', 'TOV / G', 'BLK / G', 'FG%_PG', '3P%_PG', 'FT%_PG', '_EMPTY2', 'RESULT'
         ];
         
         // Columns for wins/losses sheet - we want columns G-J (positions 6-9)
@@ -1290,12 +1290,19 @@
             }
         }
 
-        function compareValues(val1, val2, higherWins) {
-            const num1 = parseFloat(val1);
-            const num2 = parseFloat(val2);
+        function compareValues(val1, val2, higherWins, isPercentage = false) {
+            let num1 = parseFloat(val1);
+            let num2 = parseFloat(val2);
             
             // If EITHER player has no data, it's a tie (no points awarded)
             if (isNaN(num1) || isNaN(num2)) return 'tie';
+            
+            // Normalize percentages - if one is decimal (< 1) and one is not, convert
+            if (isPercentage) {
+                // If value is less than 1.5, assume it's decimal format (e.g., 0.462 = 46.2%)
+                if (num1 < 1.5 && num1 > 0) num1 = num1 * 100;
+                if (num2 < 1.5 && num2 > 0) num2 = num2 * 100;
+            }
             
             // Both have valid data - compare them
             if (Math.abs(num1 - num2) < 0.001) return 'tie';
@@ -1340,7 +1347,8 @@
                     if ((val1 === null || val1 === '') && (val2 === null || val2 === '')) return;
                     
                     hasData = true;
-                    const winner = compareValues(val1, val2, metric.higher);
+                    const isPercentage = metric.fmt === 'pct';
+                    const winner = compareValues(val1, val2, metric.higher, isPercentage);
                     
                     if (winner === 'p1') { p1Score++; sectionScores[category.category].p1++; }
                     if (winner === 'p2') { p2Score++; sectionScores[category.category].p2++; }
