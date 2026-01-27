@@ -304,7 +304,8 @@
             usage: 1415078232,
             clutch: 10789411,
             hustle: 439158060,
-            plusMinus: 1169156479
+            plusMinus: 1169156479,
+            winsLosses: 1299099447
         };
 
         // 2025-26 Stars for random matchups
@@ -428,6 +429,12 @@
             'FGM', 'FGA', 'FG%', '3PM', '3PA', '3P%', 'FTM', 'FTA', 'FT%', 
             'ORB', 'DRB', 'REB', 'AST', 'STL', 'BLK', 'TOV', 'PF', '_EMPTY1',
             'PTS / G', 'REB / G', 'AST / G', 'STL / G', 'BLK / G', 'TOV / G', 'FG%_PG', '3P%_PG', 'FT%_PG', '_EMPTY2', 'RESULT'
+        ];
+        
+        // Columns for wins/losses sheet - we want columns G-J (positions 6-9)
+        const WINS_LOSSES_COLUMNS = [
+            '_PLAYER_CAREER', '_W_RS', '_L_RS', '_W_PO_CAREER', '_L_PO_CAREER', '_EMPTY',
+            'NAME', 'YEAR', 'W PO', 'L PO'
         ];
 
         async function fetchSheet(sheetId, gid, knownHeaders = null, usePositionalColumns = null) {
@@ -620,7 +627,8 @@
                     fetchSheet(SHEETS.historical, TABS.usage, ['PLAYER_NAME', 'PLAYER_ID', 'USG_PCT']),
                     fetchSheet(SHEETS.historical, TABS.clutch, ['PLAYER_NAME', 'PLAYER_ID', 'FG_PCT', 'SEASON']),
                     fetchSheet(SHEETS.historical, TABS.hustle, ['PLAYER_NAME', 'PLAYER_ID', 'DEFLECTIONS']),
-                    fetchSheet(SHEETS.historical, TABS.plusMinus, ['PLAYER_NAME', 'PLAYER_ID', 'PLUS_MINUS'])
+                    fetchSheet(SHEETS.historical, TABS.plusMinus, ['PLAYER_NAME', 'PLAYER_ID', 'PLUS_MINUS']),
+                    fetchSheet(SHEETS.historical, TABS.winsLosses, null, WINS_LOSSES_COLUMNS)
                 ];
                 
                 const historicalResults = await Promise.all(historicalPromises);
@@ -632,6 +640,7 @@
                 data.historical.clutch = historicalResults[5];
                 data.historical.hustle = historicalResults[6];
                 data.historical.plusMinus = historicalResults[7];
+                data.historical.winsLosses = historicalResults[8];
                 
                 console.log('Historical data loaded:', {
                     advanced: data.historical.advanced?.length || 0,
@@ -641,7 +650,8 @@
                     usage: data.historical.usage?.length || 0,
                     clutch: data.historical.clutch?.length || 0,
                     hustle: data.historical.hustle?.length || 0,
-                    plusMinus: data.historical.plusMinus?.length || 0
+                    plusMinus: data.historical.plusMinus?.length || 0,
+                    winsLosses: data.historical.winsLosses?.length || 0
                 });
                 
                 historicalDataLoaded = true;
@@ -655,6 +665,9 @@
                 }
                 if (data.historical.plusMinus?.[0]) {
                     console.log('Historical plusMinus columns:', Object.keys(data.historical.plusMinus[0]).slice(0, 15));
+                }
+                if (data.historical.winsLosses?.[0]) {
+                    console.log('Historical winsLosses columns:', Object.keys(data.historical.winsLosses[0]));
                 }
             } catch (error) {
                 console.error('Error loading historical data:', error);
@@ -837,7 +850,9 @@
                 category: 'TEAM SUCCESS',
                 metrics: [
                     { name: 'Wins', src: 'adv', col: 'W', higher: true, fmt: 'int' },
-                    { name: 'Winning percentage', src: 'adv', col: 'W_PCT', higher: true, fmt: 'pct' }
+                    { name: 'Winning percentage', src: 'adv', col: 'W_PCT', higher: true, fmt: 'pct' },
+                    { name: 'Wins PO', src: 'winsLosses', col: 'W PO', higher: true, fmt: 'int' },
+                    { name: 'Winning percentage PO', src: 'winsLosses', col: 'W_PCT_PO', higher: true, fmt: 'pct', calcFromWL: true }
                 ]
             },
             {
@@ -1128,7 +1143,8 @@
                 'usage': 'usage',
                 'clutch': 'clutch',
                 'hustle': 'hustle',
-                'plusMinus': 'plusMinus'
+                'plusMinus': 'plusMinus',
+                'winsLosses': 'winsLosses'
             };
             
             const dataKey = sourceMap[source] || source;
@@ -1157,16 +1173,18 @@
                 const normalizedPlayerName = normalizeName(playerName);
                 
                 const found = dataSource.find(row => {
-                    const rowName = row.PLAYER_NAME || row.PLAYER;
+                    // Try different name columns (PLAYER_NAME, PLAYER, NAME)
+                    const rowName = row.PLAYER_NAME || row.PLAYER || row.NAME;
                     if (!rowName) return false;
                     
                     // Match player name (exact or normalized)
                     const nameMatch = rowName === playerName || normalizeName(rowName) === normalizedPlayerName;
                     if (!nameMatch) return false;
                     
-                    // Match season - historical data uses SEASON_ID in "2024-25" format
-                    const rowSeason = row.SEASON_ID || row.SEASON || row.GROUP_VALUE;
-                    return rowSeason === historicalFormat || rowSeason === season;
+                    // Match season - try different column names and formats
+                    const rowSeason = row.SEASON_ID || row.SEASON || row.GROUP_VALUE || row.YEAR;
+                    // YEAR column uses just the ending year (e.g., "2025" for 2024-25 season)
+                    return rowSeason === historicalFormat || rowSeason === season || rowSeason === String(seasonYear);
                 });
                 
                 return found;
@@ -1178,8 +1196,8 @@
             
             // Special handling for playoff win percentage calculation
             if (metric && metric.calcFromWL) {
-                const wins = parseFloat(playerData['W'] || playerData['GP']);
-                const losses = parseFloat(playerData['L'] || 0);
+                const wins = parseFloat(playerData['W PO'] || playerData['W'] || 0);
+                const losses = parseFloat(playerData['L PO'] || playerData['L'] || 0);
                 if (!isNaN(wins) && !isNaN(losses) && (wins + losses) > 0) {
                     return wins / (wins + losses);
                 }
