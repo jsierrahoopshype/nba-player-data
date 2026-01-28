@@ -4,22 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NBA Season Comparison Tool - HoopsHype</title>
-    <meta name="description" id="metaDescription" content="Compare any two NBA player seasons head-to-head. Stats, advanced metrics, and more.">
-    <meta name="keywords" content="NBA, player comparison, basketball stats, season comparison, NBA statistics, player stats">
-    <meta name="robots" content="index, follow">
-    <link rel="canonical" id="canonicalLink" href="https://jsierrahoopshype.github.io/nba-player-data/nba-season-comparison-tool.html">
-    
-    <!-- Open Graph / Social Sharing -->
-    <meta property="og:type" content="website">
-    <meta property="og:title" id="ogTitle" content="NBA Season Comparison Tool - HoopsHype">
-    <meta property="og:description" id="ogDescription" content="Compare any two NBA player seasons head-to-head. Stats, advanced metrics, and more.">
-    <meta property="og:url" id="ogUrl" content="https://jsierrahoopshype.github.io/nba-player-data/nba-season-comparison-tool.html">
-    
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" id="twitterTitle" content="NBA Season Comparison Tool - HoopsHype">
-    <meta name="twitter:description" id="twitterDescription" content="Compare any two NBA player seasons head-to-head.">
-    
+    <meta name="description" content="Compare any two NBA player seasons across 80+ categories including stats, advanced metrics, and more.">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -336,6 +321,11 @@
             <button class="compare-button" id="compareBtn" disabled>Compare Seasons</button>
             <div class="loop-controls">
                 <button class="loop-button" id="loopBtn">Start Comparison Loop</button>
+                <select id="loopInterval" class="loop-interval" title="Time between comparisons">
+                    <option value="20">20 sec</option>
+                    <option value="35">35 sec</option>
+                    <option value="50" selected>50 sec</option>
+                </select>
                 <select id="scrollDuration" class="loop-interval" title="Scroll speed">
                     <option value="15">15s scroll</option>
                     <option value="30" selected>30s scroll</option>
@@ -565,148 +555,126 @@
 
         async function loadAllData() {
             try {
-                // Phase 1: Load JSON only (fast, ~500KB) - show UI immediately after
-                updateProgress(10, 'Loading current season...');
+                // Load JSON (2025-26) and RS/PO stats together - all essential
+                updateProgress(5, 'Loading data...');
                 
-                const jsonData = await fetchJSON(JSON_URL);
-                
-                if (!jsonData) {
-                    console.error('Failed to load JSON data');
-                    return false;
-                }
-                
-                updateProgress(50, 'Processing...');
-                
-                // Store 2025-26 data from JSON
-                dataLastUpdated = jsonData.lastUpdated;
-                data.current = {
-                    rsStats: jsonData.rsStats || [],
-                    poStats: jsonData.poStats || [],
-                    teamStats: jsonData.teamStats || [],
-                    advanced: jsonData.advanced || [],
-                    scoring: jsonData.scoring || [],
-                    shotLocation: jsonData.shotLocation || [],
-                    defense: jsonData.defense || [],
-                    usage: jsonData.usage || [],
-                    clutch: jsonData.clutch || [],
-                    hustle: jsonData.hustle || []
-                };
-                
-                // Build index of 2025-26 players
-                const sources = ['advanced', 'scoring', 'shotLocation', 'defense', 'usage', 'clutch', 'hustle'];
-                sources.forEach(key => {
-                    if (data.current[key]) {
-                        data.current[key].forEach(row => {
-                            const name = row.PLAYER_NAME || row.PLAYER;
-                            if (name) {
-                                if (!current2526Players[name]) current2526Players[name] = {};
-                                current2526Players[name][key] = row;
-                                
-                                const normalizedName = normalizeName(name);
-                                if (!current2526PlayersNormalized[normalizedName]) {
-                                    current2526PlayersNormalized[normalizedName] = {};
-                                }
-                                current2526PlayersNormalized[normalizedName][key] = row;
-                                current2526PlayersNormalized[normalizedName]._originalName = name;
-                            }
-                        });
-                    }
-                });
-                
-                // Index RS stats for 2025-26
-                if (data.current.rsStats) {
-                    data.current.rsStats.forEach(row => {
-                        const name = row.PLAYER;
-                        if (name) {
-                            if (!current2526Players[name]) current2526Players[name] = {};
-                            current2526Players[name].rsStats = row;
-                            
-                            const normalizedName = normalizeName(name);
-                            if (!current2526PlayersNormalized[normalizedName]) {
-                                current2526PlayersNormalized[normalizedName] = {};
-                            }
-                            current2526PlayersNormalized[normalizedName].rsStats = row;
-                        }
-                    });
-                }
-                
-                // Index PO stats for 2025-26
-                if (data.current.poStats) {
-                    data.current.poStats.forEach(row => {
-                        const name = row.PLAYER;
-                        if (name) {
-                            if (!current2526Players[name]) current2526Players[name] = {};
-                            current2526Players[name].poStats = row;
-                            
-                            const normalizedName = normalizeName(name);
-                            if (!current2526PlayersNormalized[normalizedName]) {
-                                current2526PlayersNormalized[normalizedName] = {};
-                            }
-                            current2526PlayersNormalized[normalizedName].poStats = row;
-                        }
-                    });
-                }
-                
-                // Build player list from 2025-26 data for immediate use
-                players = Object.keys(current2526Players).sort();
-                players.forEach(name => {
-                    playerSeasons[name] = [{ year: '2026', team: current2526Players[name]?.advanced?.TEAM_ABBREVIATION || '', data: current2526Players[name]?.rsStats || {} }];
-                });
-                
-                console.log('2025-26 data loaded:', players.length, 'players');
-                
-                updateProgress(100, 'Ready!');
-                
-                // Load historical data in background (don't block UI)
-                loadHistoricalDataInBackground();
-                
-                return players.length > 0;
-                
-            } catch (error) {
-                console.error('Error loading data:', error);
-                return false;
-            }
-        }
-        
-        async function loadHistoricalDataInBackground() {
-            try {
-                console.log('Loading historical data in background...');
-                
-                // Load RS and PO stats from Google Sheets
-                const [rsStats, poStats] = await Promise.all([
+                const [jsonData, rsStats, poStats] = await Promise.all([
+                    fetchJSON(JSON_URL),
                     fetchSheet(SHEETS.allTime, TABS.rsStats, ['PLAYER', 'YEAR', 'TEAM', 'GP']),
                     fetchSheet(SHEETS.allTime, TABS.poStats, null, PO_STATS_COLUMNS)
                 ]);
                 
+                updateProgress(50, 'Processing data...');
+                
+                // Store RS and PO stats
                 data.rsStats = rsStats;
                 data.poStats = poStats;
                 
                 console.log('RS Stats loaded:', rsStats.length);
                 console.log('PO Stats loaded:', poStats.length);
-                
-                // Rebuild player list with historical data
-                buildPlayerList();
-                
-                // Refresh season dropdowns if players are selected
-                const p1 = document.getElementById('player1Input').value;
-                const p2 = document.getElementById('player2Input').value;
-                const s1 = document.getElementById('season1Select').value;
-                const s2 = document.getElementById('season2Select').value;
-                
-                if (p1) {
-                    populateSeasonSelect(document.getElementById('season1Select'), p1);
-                    if (s1) document.getElementById('season1Select').value = s1;
-                }
-                if (p2) {
-                    populateSeasonSelect(document.getElementById('season2Select'), p2);
-                    if (s2) document.getElementById('season2Select').value = s2;
+                if (poStats[0]) {
+                    console.log('PO Stats columns:', Object.keys(poStats[0]).slice(0, 15));
                 }
                 
-                // Load additional historical data
-                await loadHistoricalData();
-                
+                // Store 2025-26 data from JSON
+                if (jsonData) {
+                    dataLastUpdated = jsonData.lastUpdated;
+                    data.current = {
+                        rsStats: jsonData.rsStats || [],
+                        poStats: jsonData.poStats || [],
+                        teamStats: jsonData.teamStats || [],
+                        advanced: jsonData.advanced || [],
+                        scoring: jsonData.scoring || [],
+                        shotLocation: jsonData.shotLocation || [],
+                        defense: jsonData.defense || [],
+                        usage: jsonData.usage || [],
+                        clutch: jsonData.clutch || [],
+                        hustle: jsonData.hustle || []
+                    };
+                    
+                    // Build index of 2025-26 players
+                    const sources = ['advanced', 'scoring', 'shotLocation', 'defense', 'usage', 'clutch', 'hustle'];
+                    sources.forEach(key => {
+                        if (data.current[key]) {
+                            data.current[key].forEach(row => {
+                                const name = row.PLAYER_NAME || row.PLAYER;
+                                if (name) {
+                                    if (!current2526Players[name]) current2526Players[name] = {};
+                                    current2526Players[name][key] = row;
+                                    
+                                    const normalizedName = normalizeName(name);
+                                    if (!current2526PlayersNormalized[normalizedName]) {
+                                        current2526PlayersNormalized[normalizedName] = {};
+                                    }
+                                    current2526PlayersNormalized[normalizedName][key] = row;
+                                    current2526PlayersNormalized[normalizedName]._originalName = name;
+                                }
+                            });
+                        }
+                    });
+                    
+                    // Index RS stats for 2025-26
+                    if (data.current.rsStats) {
+                        data.current.rsStats.forEach(row => {
+                            const name = row.PLAYER;
+                            if (name) {
+                                if (!current2526Players[name]) current2526Players[name] = {};
+                                current2526Players[name].rsStats = row;
+                                
+                                const normalizedName = normalizeName(name);
+                                if (!current2526PlayersNormalized[normalizedName]) {
+                                    current2526PlayersNormalized[normalizedName] = {};
+                                }
+                                current2526PlayersNormalized[normalizedName].rsStats = row;
+                            }
+                        });
+                    }
+                    
+                    // Index PO stats for 2025-26
+                    if (data.current.poStats) {
+                        data.current.poStats.forEach(row => {
+                            const name = row.PLAYER;
+                            if (name) {
+                                if (!current2526Players[name]) current2526Players[name] = {};
+                                current2526Players[name].poStats = row;
+                                
+                                const normalizedName = normalizeName(name);
+                                if (!current2526PlayersNormalized[normalizedName]) {
+                                    current2526PlayersNormalized[normalizedName] = {};
+                                }
+                                current2526PlayersNormalized[normalizedName].poStats = row;
+                            }
+                        });
+                    }
+                    
+                    console.log('2025-26 JSON data loaded:', Object.keys(current2526Players).length, 'players');
+                }
+
+                updateProgress(80, 'Building player database...');
+
+                if (data.rsStats.length > 0) {
+                    buildPlayerList();
+                    
+                    updateProgress(100, 'Ready!');
+                    
+                    // Load historical data in background
+                    loadHistoricalData().then(() => {
+                        const season1 = document.getElementById('season1Select')?.value;
+                        const season2 = document.getElementById('season2Select')?.value;
+                        const resultsEl = document.getElementById('results');
+                        
+                        if (resultsEl && resultsEl.innerHTML && (season1 !== '2026' || season2 !== '2026')) {
+                            console.log('Historical data loaded - refreshing comparison...');
+                            runComparison();
+                        }
+                    });
+                    
+                    return true;
+                }
+                return false;
             } catch (error) {
-                console.error('Error loading historical data:', error);
+                console.error('Error loading data:', error);
+                return false;
             }
         }
         
@@ -771,25 +739,13 @@
             const playersMap = new Map();
             const poPlayersMap = new Map();
 
-            // First, preserve existing 2025-26 data
-            Object.keys(playerSeasons).forEach(name => {
-                const seasons2526 = playerSeasons[name].filter(s => s.year === '2026');
-                if (seasons2526.length > 0) {
-                    playersMap.set(name, [...seasons2526]);
-                }
-            });
-
             data.rsStats.forEach(row => {
                 const name = row.PLAYER;
                 const year = row.YEAR;
                 const team = row.TEAM;
                 if (name && year) {
                     if (!playersMap.has(name)) playersMap.set(name, []);
-                    // Don't add duplicate years
-                    const existingYears = playersMap.get(name).map(s => s.year);
-                    if (!existingYears.includes(year)) {
-                        playersMap.get(name).push({ year, team, data: row });
-                    }
+                    playersMap.get(name).push({ year, team, data: row });
                 }
             });
 
@@ -1504,47 +1460,7 @@
                 ${html}
                 ${generateSuggestedMatchups(player1, player2)}
             `;
-            
-            // Update page title and meta tags for SEO
-            updateSEO(player1, season1, player2, season2, p1Score, p2Score);
-        }
-        
-        function updateSEO(player1, season1, player2, season2, p1Score, p2Score) {
-            const s1Display = formatSeasonYear(season1);
-            const s2Display = formatSeasonYear(season2);
-            
-            // Create SEO-friendly title
-            const title = `${player1} vs ${player2} - NBA Season Comparison | HoopsHype`;
-            
-            // Create description with scores
-            const winner = p1Score > p2Score ? player1 : (p2Score > p1Score ? player2 : 'Tie');
-            const description = `${player1} (${s1Display}) vs ${player2} (${s2Display}) head-to-head stats comparison. Result: ${p1Score}-${p2Score}. ${winner !== 'Tie' ? winner + ' wins!' : "It's a tie!"}`;
-            
-            // Update document title
-            document.title = title;
-            
-            // Update meta description
-            const metaDesc = document.getElementById('metaDescription');
-            if (metaDesc) metaDesc.setAttribute('content', description);
-            
-            // Update canonical URL
-            const shareURL = `${window.location.origin}${window.location.pathname}?p1=${playerNameToURL(player1)}&s1=${season1}&p2=${playerNameToURL(player2)}&s2=${season2}`;
-            const canonicalLink = document.getElementById('canonicalLink');
-            if (canonicalLink) canonicalLink.setAttribute('href', shareURL);
-            
-            // Update Open Graph tags
-            const ogTitle = document.getElementById('ogTitle');
-            const ogDesc = document.getElementById('ogDescription');
-            const ogUrl = document.getElementById('ogUrl');
-            if (ogTitle) ogTitle.setAttribute('content', title);
-            if (ogDesc) ogDesc.setAttribute('content', description);
-            if (ogUrl) ogUrl.setAttribute('content', shareURL);
-            
-            // Update Twitter tags
-            const twitterTitle = document.getElementById('twitterTitle');
-            const twitterDesc = document.getElementById('twitterDescription');
-            if (twitterTitle) twitterTitle.setAttribute('content', title);
-            if (twitterDesc) twitterDesc.setAttribute('content', description);
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
         function generateSuggestedMatchups(currentP1, currentP2) {
@@ -1624,6 +1540,7 @@
         }
 
         // ===== COMPARISON LOOP =====
+        let loopInterval = null;
         let loopActive = false;
         let usedOpponents = new Set();
         let scrollAnimationId = null;
@@ -1697,19 +1614,6 @@
             const distance = targetY - startY;
             const startTime = performance.now();
             
-            // If no scrolling needed, trigger next comparison immediately
-            if (distance <= 0) {
-                console.log('No scroll needed, triggering next in 1.5s');
-                setTimeout(() => {
-                    if (loopActive) {
-                        runLoopComparison();
-                    }
-                }, 1500);
-                return;
-            }
-            
-            console.log('Starting scroll:', { startY, targetY, distance, durationMs });
-            
             function animateScroll(currentTime) {
                 if (!loopActive) return; // Stop if loop was stopped
                 
@@ -1721,16 +1625,6 @@
                 
                 if (progress < 1) {
                     scrollAnimationId = requestAnimationFrame(animateScroll);
-                } else {
-                    // Scroll finished - trigger next comparison after 1.5 seconds
-                    console.log('Scroll finished, next comparison in 1.5s');
-                    if (loopActive) {
-                        setTimeout(() => {
-                            if (loopActive) {
-                                runLoopComparison();
-                            }
-                        }, 1500);
-                    }
                 }
             }
             
@@ -1739,31 +1633,43 @@
 
         function startLoop() {
             const loopBtn = document.getElementById('loopBtn');
+            const intervalSelect = document.getElementById('loopInterval');
             const scrollSelect = document.getElementById('scrollDuration');
             const stickySelect = document.getElementById('stickyPlayer');
+            const intervalSeconds = parseInt(intervalSelect.value);
             
             loopActive = true;
             loopBtn.textContent = 'Stop Comparison Loop';
             loopBtn.classList.add('active');
+            intervalSelect.disabled = true;
             scrollSelect.disabled = true;
             stickySelect.disabled = true;
             usedOpponents.clear();
             
             // Run first comparison immediately
             runLoopComparison();
+            
+            // Set up interval for subsequent comparisons
+            loopInterval = setInterval(runLoopComparison, intervalSeconds * 1000);
         }
 
         function stopLoop() {
             const loopBtn = document.getElementById('loopBtn');
+            const intervalSelect = document.getElementById('loopInterval');
             const scrollSelect = document.getElementById('scrollDuration');
             const stickySelect = document.getElementById('stickyPlayer');
             
             loopActive = false;
             loopBtn.textContent = 'Start Comparison Loop';
             loopBtn.classList.remove('active');
+            intervalSelect.disabled = false;
             scrollSelect.disabled = false;
             stickySelect.disabled = false;
             
+            if (loopInterval) {
+                clearInterval(loopInterval);
+                loopInterval = null;
+            }
             if (scrollAnimationId) {
                 cancelAnimationFrame(scrollAnimationId);
                 scrollAnimationId = null;
@@ -1833,7 +1739,7 @@
                 if (loopActive) {
                     smoothScrollToBottom(scrollDuration);
                 }
-            }, 500);
+            }, 1500);
         }
 
         // ===== INIT =====
