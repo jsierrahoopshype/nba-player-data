@@ -1783,7 +1783,6 @@
             runComparison();
             
             // Start smooth scroll after brief delay for content to render
-            const scrollDuration = parseInt(document.getElementById('scrollDuration').value) * 1000;
             setTimeout(() => {
                 if (loopActive) {
                     smoothScrollToBottom(scrollDuration);
