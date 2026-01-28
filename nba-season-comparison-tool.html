@@ -320,17 +320,21 @@
             </div>
             <button class="compare-button" id="compareBtn" disabled>Compare Seasons</button>
             <div class="loop-controls">
-                <button class="loop-button" id="loopBtn">▶ Start Loop</button>
-                <select id="loopInterval" class="loop-interval">
-                    <option value="8">8 sec</option>
-                    <option value="12" selected>12 sec</option>
+                <button class="loop-button" id="loopBtn">Start Comparison Loop</button>
+                <select id="loopInterval" class="loop-interval" title="Time between comparisons">
                     <option value="20">20 sec</option>
-                    <option value="30">30 sec</option>
+                    <option value="35">35 sec</option>
+                    <option value="50" selected>50 sec</option>
+                </select>
+                <select id="scrollDuration" class="loop-interval" title="Scroll speed">
+                    <option value="15">15s scroll</option>
+                    <option value="30" selected>30s scroll</option>
+                    <option value="45">45s scroll</option>
                 </select>
                 <select id="stickyPlayer" class="loop-interval">
                     <option value="none">Randomize Both</option>
-                    <option value="p1">Keep Player 1</option>
-                    <option value="p2">Keep Player 2</option>
+                    <option value="p1" id="stickyP1Option">Keep Player 1</option>
+                    <option value="p2" id="stickyP2Option">Keep Player 2</option>
                 </select>
             </div>
             <div id="dataTimestamp" class="data-timestamp"></div>
@@ -1001,6 +1005,7 @@
             const p2 = document.getElementById('player2Input').value;
             const s2 = document.getElementById('season2Select').value;
             document.getElementById('compareBtn').disabled = !(p1 && s1 && p2 && s2);
+            updateStickyPlayerOptions();
         }
 
         // ===== URL & RANDOM =====
@@ -1538,6 +1543,15 @@
         let loopInterval = null;
         let loopActive = false;
         let usedOpponents = new Set();
+        let scrollAnimationId = null;
+
+        function updateStickyPlayerOptions() {
+            const p1Name = document.getElementById('player1Input').value || 'Player 1';
+            const p2Name = document.getElementById('player2Input').value || 'Player 2';
+            
+            document.getElementById('stickyP1Option').textContent = `Keep ${p1Name}`;
+            document.getElementById('stickyP2Option').textContent = `Keep ${p2Name}`;
+        }
 
         function getTopPlayersForSeason(season) {
             if (season === '2026') {
@@ -1583,16 +1597,50 @@
             return pick;
         }
 
+        function smoothScrollToBottom(durationMs) {
+            // Cancel any existing scroll animation
+            if (scrollAnimationId) {
+                cancelAnimationFrame(scrollAnimationId);
+            }
+            
+            const startY = window.scrollY;
+            const targetY = document.documentElement.scrollHeight - window.innerHeight;
+            const distance = targetY - startY;
+            const startTime = performance.now();
+            
+            function animateScroll(currentTime) {
+                if (!loopActive) return; // Stop if loop was stopped
+                
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / durationMs, 1);
+                
+                // Ease-in-out for smooth feel
+                const easeProgress = progress < 0.5
+                    ? 2 * progress * progress
+                    : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+                
+                window.scrollTo(0, startY + (distance * easeProgress));
+                
+                if (progress < 1) {
+                    scrollAnimationId = requestAnimationFrame(animateScroll);
+                }
+            }
+            
+            scrollAnimationId = requestAnimationFrame(animateScroll);
+        }
+
         function startLoop() {
             const loopBtn = document.getElementById('loopBtn');
             const intervalSelect = document.getElementById('loopInterval');
+            const scrollSelect = document.getElementById('scrollDuration');
             const stickySelect = document.getElementById('stickyPlayer');
             const intervalSeconds = parseInt(intervalSelect.value);
             
             loopActive = true;
-            loopBtn.textContent = '⏹ Stop Loop';
+            loopBtn.textContent = 'Stop Comparison Loop';
             loopBtn.classList.add('active');
             intervalSelect.disabled = true;
+            scrollSelect.disabled = true;
             stickySelect.disabled = true;
             usedOpponents.clear();
             
@@ -1606,17 +1654,23 @@
         function stopLoop() {
             const loopBtn = document.getElementById('loopBtn');
             const intervalSelect = document.getElementById('loopInterval');
+            const scrollSelect = document.getElementById('scrollDuration');
             const stickySelect = document.getElementById('stickyPlayer');
             
             loopActive = false;
-            loopBtn.textContent = '▶ Start Loop';
+            loopBtn.textContent = 'Start Comparison Loop';
             loopBtn.classList.remove('active');
             intervalSelect.disabled = false;
+            scrollSelect.disabled = false;
             stickySelect.disabled = false;
             
             if (loopInterval) {
                 clearInterval(loopInterval);
                 loopInterval = null;
+            }
+            if (scrollAnimationId) {
+                cancelAnimationFrame(scrollAnimationId);
+                scrollAnimationId = null;
             }
         }
 
@@ -1630,6 +1684,7 @@
 
         function runLoopComparison() {
             const stickyMode = document.getElementById('stickyPlayer').value;
+            const scrollDuration = parseInt(document.getElementById('scrollDuration').value) * 1000;
             const currentP1 = document.getElementById('player1Input').value;
             const currentP2 = document.getElementById('player2Input').value;
             const currentS1 = document.getElementById('season1Select').value;
@@ -1676,6 +1731,14 @@
             
             updateCompareButton();
             runComparison();
+            
+            // Scroll to top instantly, then start smooth scroll down
+            window.scrollTo(0, 0);
+            setTimeout(() => {
+                if (loopActive) {
+                    smoothScrollToBottom(scrollDuration);
+                }
+            }, 500); // Small delay to let content render
         }
 
         // ===== INIT =====
