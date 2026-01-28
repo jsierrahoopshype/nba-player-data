@@ -106,6 +106,49 @@
         }
         .compare-button:hover { background-color: #0056b3; }
         .compare-button:disabled { background-color: #ccc; cursor: not-allowed; }
+        .loop-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .loop-button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .loop-button:hover { background-color: #218838; }
+        .loop-button.active {
+            background-color: #dc3545;
+        }
+        .loop-button.active:hover { background-color: #c82333; }
+        .loop-interval {
+            padding: 8px 12px;
+            font-size: 14px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            background: white;
+        }
+        .loop-progress {
+            width: 100%;
+            height: 4px;
+            background: #e0e0e0;
+            border-radius: 2px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+        .loop-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #28a745, #20c997);
+            width: 0%;
+            transition: width 0.1s linear;
+        }
         .loading { text-align: center; padding: 40px; font-size: 18px; color: #666; }
         .spinner {
             border: 4px solid #f3f3f3;
@@ -276,6 +319,20 @@
                 </div>
             </div>
             <button class="compare-button" id="compareBtn" disabled>Compare Seasons</button>
+            <div class="loop-controls">
+                <button class="loop-button" id="loopBtn">▶ Start Loop</button>
+                <select id="loopInterval" class="loop-interval">
+                    <option value="8">8 sec</option>
+                    <option value="12" selected>12 sec</option>
+                    <option value="20">20 sec</option>
+                    <option value="30">30 sec</option>
+                </select>
+                <select id="stickyPlayer" class="loop-interval">
+                    <option value="none">Randomize Both</option>
+                    <option value="p1">Keep Player 1</option>
+                    <option value="p2">Keep Player 2</option>
+                </select>
+            </div>
             <div id="dataTimestamp" class="data-timestamp"></div>
             <div id="results"></div>
         </div>
@@ -1477,6 +1534,150 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
+        // ===== COMPARISON LOOP =====
+        let loopInterval = null;
+        let loopActive = false;
+        let usedOpponents = new Set();
+
+        function getTopPlayersForSeason(season) {
+            if (season === '2026') {
+                // Use current season stars
+                return STARS_2526.filter(name => {
+                    const seasons = playerSeasons[name];
+                    return seasons && seasons.some(s => s.year === '2026');
+                });
+            } else {
+                // Get top 70 scorers from that historical season
+                const seasonPlayers = data.rsStats
+                    .filter(r => r.YEAR === season && r.PLAYER)
+                    .map(r => ({
+                        name: r.PLAYER,
+                        pts: parseFloat(r['PTS / G']) || parseFloat(r['PTS']) / parseFloat(r['GP']) || 0
+                    }))
+                    .sort((a, b) => b.pts - a.pts)
+                    .slice(0, 70)
+                    .map(p => p.name);
+                
+                return seasonPlayers;
+            }
+        }
+
+        function getRandomOpponent(season, excludePlayers) {
+            const topPlayers = getTopPlayersForSeason(season);
+            const available = topPlayers.filter(p => 
+                !excludePlayers.includes(p) && !usedOpponents.has(p)
+            );
+            
+            // If we've used all opponents, reset the used list
+            if (available.length === 0) {
+                usedOpponents.clear();
+                const freshAvailable = topPlayers.filter(p => !excludePlayers.includes(p));
+                if (freshAvailable.length === 0) return null;
+                const pick = freshAvailable[Math.floor(Math.random() * freshAvailable.length)];
+                usedOpponents.add(pick);
+                return pick;
+            }
+            
+            const pick = available[Math.floor(Math.random() * available.length)];
+            usedOpponents.add(pick);
+            return pick;
+        }
+
+        function startLoop() {
+            const loopBtn = document.getElementById('loopBtn');
+            const intervalSelect = document.getElementById('loopInterval');
+            const stickySelect = document.getElementById('stickyPlayer');
+            const intervalSeconds = parseInt(intervalSelect.value);
+            
+            loopActive = true;
+            loopBtn.textContent = '⏹ Stop Loop';
+            loopBtn.classList.add('active');
+            intervalSelect.disabled = true;
+            stickySelect.disabled = true;
+            usedOpponents.clear();
+            
+            // Run first comparison immediately
+            runLoopComparison();
+            
+            // Set up interval for subsequent comparisons
+            loopInterval = setInterval(runLoopComparison, intervalSeconds * 1000);
+        }
+
+        function stopLoop() {
+            const loopBtn = document.getElementById('loopBtn');
+            const intervalSelect = document.getElementById('loopInterval');
+            const stickySelect = document.getElementById('stickyPlayer');
+            
+            loopActive = false;
+            loopBtn.textContent = '▶ Start Loop';
+            loopBtn.classList.remove('active');
+            intervalSelect.disabled = false;
+            stickySelect.disabled = false;
+            
+            if (loopInterval) {
+                clearInterval(loopInterval);
+                loopInterval = null;
+            }
+        }
+
+        function toggleLoop() {
+            if (loopActive) {
+                stopLoop();
+            } else {
+                startLoop();
+            }
+        }
+
+        function runLoopComparison() {
+            const stickyMode = document.getElementById('stickyPlayer').value;
+            const currentP1 = document.getElementById('player1Input').value;
+            const currentP2 = document.getElementById('player2Input').value;
+            const currentS1 = document.getElementById('season1Select').value;
+            const currentS2 = document.getElementById('season2Select').value;
+            
+            // Use the season from the sticky player, or player 1's season if both random
+            const activeSeason = stickyMode === 'p2' ? currentS2 : currentS1;
+            
+            if (stickyMode === 'p1') {
+                // Keep Player 1, randomize Player 2
+                const newOpponent = getRandomOpponent(activeSeason, [currentP1]);
+                if (!newOpponent) return;
+                
+                document.getElementById('player2Input').value = newOpponent;
+                populateSeasonSelect(document.getElementById('season2Select'), newOpponent);
+                document.getElementById('season2Select').value = activeSeason;
+                
+            } else if (stickyMode === 'p2') {
+                // Keep Player 2, randomize Player 1
+                const newOpponent = getRandomOpponent(activeSeason, [currentP2]);
+                if (!newOpponent) return;
+                
+                document.getElementById('player1Input').value = newOpponent;
+                populateSeasonSelect(document.getElementById('season1Select'), newOpponent);
+                document.getElementById('season1Select').value = activeSeason;
+                
+            } else {
+                // Randomize both players from the same season
+                const topPlayers = getTopPlayersForSeason(activeSeason);
+                if (topPlayers.length < 2) return;
+                
+                const idx1 = Math.floor(Math.random() * Math.min(topPlayers.length, 40));
+                let idx2 = Math.floor(Math.random() * Math.min(topPlayers.length, 40));
+                while (idx2 === idx1) idx2 = Math.floor(Math.random() * Math.min(topPlayers.length, 40));
+                
+                document.getElementById('player1Input').value = topPlayers[idx1];
+                populateSeasonSelect(document.getElementById('season1Select'), topPlayers[idx1]);
+                document.getElementById('season1Select').value = activeSeason;
+                
+                document.getElementById('player2Input').value = topPlayers[idx2];
+                populateSeasonSelect(document.getElementById('season2Select'), topPlayers[idx2]);
+                document.getElementById('season2Select').value = activeSeason;
+            }
+            
+            updateCompareButton();
+            runComparison();
+        }
+
         // ===== INIT =====
         async function init() {
             const success = await loadAllData();
@@ -1493,6 +1694,7 @@
                 
                 setupAutocomplete();
                 document.getElementById('compareBtn').addEventListener('click', runComparison);
+                document.getElementById('loopBtn').addEventListener('click', toggleLoop);
                 if (!loadFromURL()) loadRandomStars();
             } else {
                 document.getElementById('loadingMessage').innerHTML = `
