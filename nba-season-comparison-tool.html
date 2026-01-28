@@ -1603,7 +1603,13 @@
                 cancelAnimationFrame(scrollAnimationId);
             }
             
-            const startY = window.scrollY;
+            // Start from the results/score area, not the very top
+            const resultsHeader = document.querySelector('.results-header');
+            const startY = resultsHeader ? resultsHeader.offsetTop - 20 : 200;
+            
+            // Scroll to starting position instantly
+            window.scrollTo(0, startY);
+            
             const targetY = document.documentElement.scrollHeight - window.innerHeight;
             const distance = targetY - startY;
             const startTime = performance.now();
@@ -1614,12 +1620,8 @@
                 const elapsed = currentTime - startTime;
                 const progress = Math.min(elapsed / durationMs, 1);
                 
-                // Ease-in-out for smooth feel
-                const easeProgress = progress < 0.5
-                    ? 2 * progress * progress
-                    : 1 - Math.pow(-2 * progress + 2, 2) / 2;
-                
-                window.scrollTo(0, startY + (distance * easeProgress));
+                // Linear scrolling - constant speed
+                window.scrollTo(0, startY + (distance * progress));
                 
                 if (progress < 1) {
                     scrollAnimationId = requestAnimationFrame(animateScroll);
@@ -1732,13 +1734,12 @@
             updateCompareButton();
             runComparison();
             
-            // Scroll to top instantly, then start smooth scroll down
-            window.scrollTo(0, 0);
+            // Start smooth scroll after brief delay for content to render
             setTimeout(() => {
                 if (loopActive) {
                     smoothScrollToBottom(scrollDuration);
                 }
-            }, 500); // Small delay to let content render
+            }, 1500);
         }
 
         // ===== INIT =====
