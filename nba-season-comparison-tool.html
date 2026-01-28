@@ -4,7 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NBA Season Comparison Tool - HoopsHype</title>
-    <meta name="description" content="Compare any two NBA player seasons across 80+ categories including stats, advanced metrics, and more.">
+    <meta name="description" id="metaDescription" content="Compare any two NBA player seasons head-to-head. Stats, advanced metrics, and more.">
+    <meta name="keywords" content="NBA, player comparison, basketball stats, season comparison, NBA statistics, player stats">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" id="canonicalLink" href="https://jsierrahoopshype.github.io/nba-player-data/nba-season-comparison-tool.html">
+    
+    <!-- Open Graph / Social Sharing -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" id="ogTitle" content="NBA Season Comparison Tool - HoopsHype">
+    <meta property="og:description" id="ogDescription" content="Compare any two NBA player seasons head-to-head. Stats, advanced metrics, and more.">
+    <meta property="og:url" id="ogUrl" content="https://jsierrahoopshype.github.io/nba-player-data/nba-season-comparison-tool.html">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" id="twitterTitle" content="NBA Season Comparison Tool - HoopsHype">
+    <meta name="twitter:description" id="twitterDescription" content="Compare any two NBA player seasons head-to-head.">
+    
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -1462,6 +1477,47 @@
                 ${html}
                 ${generateSuggestedMatchups(player1, player2)}
             `;
+            
+            // Update page title and meta tags for SEO
+            updateSEO(player1, season1, player2, season2, p1Score, p2Score);
+        }
+        
+        function updateSEO(player1, season1, player2, season2, p1Score, p2Score) {
+            const s1Display = formatSeasonYear(season1);
+            const s2Display = formatSeasonYear(season2);
+            
+            // Create SEO-friendly title
+            const title = `${player1} vs ${player2} - NBA Season Comparison | HoopsHype`;
+            
+            // Create description with scores
+            const winner = p1Score > p2Score ? player1 : (p2Score > p1Score ? player2 : 'Tie');
+            const description = `${player1} (${s1Display}) vs ${player2} (${s2Display}) head-to-head stats comparison. Result: ${p1Score}-${p2Score}. ${winner !== 'Tie' ? winner + ' wins!' : "It's a tie!"}`;
+            
+            // Update document title
+            document.title = title;
+            
+            // Update meta description
+            const metaDesc = document.getElementById('metaDescription');
+            if (metaDesc) metaDesc.setAttribute('content', description);
+            
+            // Update canonical URL
+            const shareURL = `${window.location.origin}${window.location.pathname}?p1=${playerNameToURL(player1)}&s1=${season1}&p2=${playerNameToURL(player2)}&s2=${season2}`;
+            const canonicalLink = document.getElementById('canonicalLink');
+            if (canonicalLink) canonicalLink.setAttribute('href', shareURL);
+            
+            // Update Open Graph tags
+            const ogTitle = document.getElementById('ogTitle');
+            const ogDesc = document.getElementById('ogDescription');
+            const ogUrl = document.getElementById('ogUrl');
+            if (ogTitle) ogTitle.setAttribute('content', title);
+            if (ogDesc) ogDesc.setAttribute('content', description);
+            if (ogUrl) ogUrl.setAttribute('content', shareURL);
+            
+            // Update Twitter tags
+            const twitterTitle = document.getElementById('twitterTitle');
+            const twitterDesc = document.getElementById('twitterDescription');
+            if (twitterTitle) twitterTitle.setAttribute('content', title);
+            if (twitterDesc) twitterDesc.setAttribute('content', description);
         }
 
         function generateSuggestedMatchups(currentP1, currentP2) {
