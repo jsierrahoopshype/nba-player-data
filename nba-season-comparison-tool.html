@@ -321,11 +321,6 @@
             <button class="compare-button" id="compareBtn" disabled>Compare Seasons</button>
             <div class="loop-controls">
                 <button class="loop-button" id="loopBtn">Start Comparison Loop</button>
-                <select id="loopInterval" class="loop-interval" title="Time between comparisons">
-                    <option value="20">20 sec</option>
-                    <option value="35">35 sec</option>
-                    <option value="50" selected>50 sec</option>
-                </select>
                 <select id="scrollDuration" class="loop-interval" title="Scroll speed">
                     <option value="15">15s scroll</option>
                     <option value="30" selected>30s scroll</option>
@@ -1460,7 +1455,6 @@
                 ${html}
                 ${generateSuggestedMatchups(player1, player2)}
             `;
-            document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
         function generateSuggestedMatchups(currentP1, currentP2) {
@@ -1540,7 +1534,6 @@
         }
 
         // ===== COMPARISON LOOP =====
-        let loopInterval = null;
         let loopActive = false;
         let usedOpponents = new Set();
         let scrollAnimationId = null;
@@ -1625,6 +1618,15 @@
                 
                 if (progress < 1) {
                     scrollAnimationId = requestAnimationFrame(animateScroll);
+                } else {
+                    // Scroll finished - trigger next comparison after 1.5 seconds
+                    if (loopActive) {
+                        setTimeout(() => {
+                            if (loopActive) {
+                                runLoopComparison();
+                            }
+                        }, 1500);
+                    }
                 }
             }
             
@@ -1633,43 +1635,31 @@
 
         function startLoop() {
             const loopBtn = document.getElementById('loopBtn');
-            const intervalSelect = document.getElementById('loopInterval');
             const scrollSelect = document.getElementById('scrollDuration');
             const stickySelect = document.getElementById('stickyPlayer');
-            const intervalSeconds = parseInt(intervalSelect.value);
             
             loopActive = true;
             loopBtn.textContent = 'Stop Comparison Loop';
             loopBtn.classList.add('active');
-            intervalSelect.disabled = true;
             scrollSelect.disabled = true;
             stickySelect.disabled = true;
             usedOpponents.clear();
             
             // Run first comparison immediately
             runLoopComparison();
-            
-            // Set up interval for subsequent comparisons
-            loopInterval = setInterval(runLoopComparison, intervalSeconds * 1000);
         }
 
         function stopLoop() {
             const loopBtn = document.getElementById('loopBtn');
-            const intervalSelect = document.getElementById('loopInterval');
             const scrollSelect = document.getElementById('scrollDuration');
             const stickySelect = document.getElementById('stickyPlayer');
             
             loopActive = false;
             loopBtn.textContent = 'Start Comparison Loop';
             loopBtn.classList.remove('active');
-            intervalSelect.disabled = false;
             scrollSelect.disabled = false;
             stickySelect.disabled = false;
             
-            if (loopInterval) {
-                clearInterval(loopInterval);
-                loopInterval = null;
-            }
             if (scrollAnimationId) {
                 cancelAnimationFrame(scrollAnimationId);
                 scrollAnimationId = null;
@@ -1735,11 +1725,12 @@
             runComparison();
             
             // Start smooth scroll after brief delay for content to render
+            const scrollDuration = parseInt(document.getElementById('scrollDuration').value) * 1000;
             setTimeout(() => {
                 if (loopActive) {
                     smoothScrollToBottom(scrollDuration);
                 }
-            }, 1500);
+            }, 500);
         }
 
         // ===== INIT =====
