@@ -687,6 +687,21 @@
                 // Rebuild player list with historical data
                 buildPlayerList();
                 
+                // Refresh season dropdowns if players are selected
+                const p1 = document.getElementById('player1Input').value;
+                const p2 = document.getElementById('player2Input').value;
+                const s1 = document.getElementById('season1Select').value;
+                const s2 = document.getElementById('season2Select').value;
+                
+                if (p1) {
+                    populateSeasonSelect(document.getElementById('season1Select'), p1);
+                    if (s1) document.getElementById('season1Select').value = s1;
+                }
+                if (p2) {
+                    populateSeasonSelect(document.getElementById('season2Select'), p2);
+                    if (s2) document.getElementById('season2Select').value = s2;
+                }
+                
                 // Load additional historical data
                 await loadHistoricalData();
                 
@@ -756,13 +771,25 @@
             const playersMap = new Map();
             const poPlayersMap = new Map();
 
+            // First, preserve existing 2025-26 data
+            Object.keys(playerSeasons).forEach(name => {
+                const seasons2526 = playerSeasons[name].filter(s => s.year === '2026');
+                if (seasons2526.length > 0) {
+                    playersMap.set(name, [...seasons2526]);
+                }
+            });
+
             data.rsStats.forEach(row => {
                 const name = row.PLAYER;
                 const year = row.YEAR;
                 const team = row.TEAM;
                 if (name && year) {
                     if (!playersMap.has(name)) playersMap.set(name, []);
-                    playersMap.get(name).push({ year, team, data: row });
+                    // Don't add duplicate years
+                    const existingYears = playersMap.get(name).map(s => s.year);
+                    if (!existingYears.includes(year)) {
+                        playersMap.get(name).push({ year, team, data: row });
+                    }
                 }
             });
 
