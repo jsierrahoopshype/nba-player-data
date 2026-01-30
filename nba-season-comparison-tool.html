@@ -343,10 +343,11 @@
         // JSON file for 2025-26 data (updated daily via GitHub Actions)
         const JSON_URL = 'https://jsierrahoopshype.github.io/nba-player-data/nba-2025-26-data.json';
         
-        // Static JSON files for historical data (1996-2025) - split for faster loading
+        // Static JSON files for historical data (1996-2025) - split for GitHub 25MB limit
         const HISTORICAL_RS_URL = 'https://jsierrahoopshype.github.io/nba-player-data/nba-historical-rs.json';
         const HISTORICAL_PO_URL = 'https://jsierrahoopshype.github.io/nba-player-data/nba-historical-po.json';
-        const HISTORICAL_ADV_URL = 'https://jsierrahoopshype.github.io/nba-player-data/nba-historical-advanced.json';
+        const HISTORICAL_ADV1_URL = 'https://jsierrahoopshype.github.io/nba-player-data/nba-historical-adv1.json';
+        const HISTORICAL_ADV2_URL = 'https://jsierrahoopshype.github.io/nba-player-data/nba-historical-adv2.json';
 
         // 2025-26 Stars for random matchups
         const STARS_2526 = [
@@ -403,11 +404,12 @@
                 updateProgress(5, 'Loading data...');
                 
                 // Load all JSON files in parallel - this is fast!
-                const [currentData, rsData, poData, advData] = await Promise.all([
+                const [currentData, rsData, poData, adv1Data, adv2Data] = await Promise.all([
                     fetchJSON(JSON_URL),
                     fetchJSON(HISTORICAL_RS_URL),
                     fetchJSON(HISTORICAL_PO_URL),
-                    fetchJSON(HISTORICAL_ADV_URL)
+                    fetchJSON(HISTORICAL_ADV1_URL),
+                    fetchJSON(HISTORICAL_ADV2_URL)
                 ]);
                 
                 updateProgress(50, 'Processing data...');
@@ -424,24 +426,30 @@
                     console.log('PO Stats loaded:', data.poStats.length);
                 }
                 
-                // Process historical advanced data
-                if (advData) {
-                    data.historical.advanced = advData.advanced || [];
-                    data.historical.scoring = advData.scoring || [];
-                    data.historical.shotLocation = advData.shotLocation || [];
-                    data.historical.defense = advData.defense || [];
-                    data.historical.usage = advData.usage || [];
-                    data.historical.clutch = advData.clutch || [];
-                    data.historical.hustle = advData.hustle || [];
-                    data.historical.plusMinus = advData.plusMinus || [];
-                    data.historical.winsLosses = advData.winsLosses || [];
-                    
-                    console.log('Historical advanced loaded:', {
+                // Process historical advanced data (part 1)
+                if (adv1Data) {
+                    data.historical.advanced = adv1Data.advanced || [];
+                    data.historical.scoring = adv1Data.scoring || [];
+                    data.historical.shotLocation = adv1Data.shotLocation || [];
+                    data.historical.defense = adv1Data.defense || [];
+                    console.log('Historical adv1 loaded:', {
                         advanced: data.historical.advanced.length,
+                        scoring: data.historical.scoring.length
+                    });
+                }
+                
+                // Process historical advanced data (part 2)
+                if (adv2Data) {
+                    data.historical.usage = adv2Data.usage || [];
+                    data.historical.clutch = adv2Data.clutch || [];
+                    data.historical.hustle = adv2Data.hustle || [];
+                    data.historical.plusMinus = adv2Data.plusMinus || [];
+                    data.historical.winsLosses = adv2Data.winsLosses || [];
+                    console.log('Historical adv2 loaded:', {
                         clutch: data.historical.clutch.length,
+                        hustle: data.historical.hustle.length,
                         plusMinus: data.historical.plusMinus.length
                     });
-                    
                     historicalDataLoaded = true;
                 }
                 
