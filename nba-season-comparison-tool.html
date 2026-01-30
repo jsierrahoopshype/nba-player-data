@@ -321,11 +321,6 @@
             <button class="compare-button" id="compareBtn" disabled>Compare Seasons</button>
             <div class="loop-controls">
                 <button class="loop-button" id="loopBtn">Start Comparison Loop</button>
-                <select id="loopInterval" class="loop-interval" title="Time between comparisons">
-                    <option value="20">20 sec</option>
-                    <option value="35">35 sec</option>
-                    <option value="50" selected>50 sec</option>
-                </select>
                 <select id="scrollDuration" class="loop-interval" title="Scroll speed">
                     <option value="15">15s scroll</option>
                     <option value="30" selected>30s scroll</option>
@@ -348,26 +343,10 @@
         // JSON file for 2025-26 data (updated daily via GitHub Actions)
         const JSON_URL = 'https://jsierrahoopshype.github.io/nba-player-data/nba-2025-26-data.json';
         
-        // Google Sheets for historical data
-        const SHEETS = {
-            allTime: '1ZrDfzqiC31Hu3YCtxT4aZbZF4QVCVyGe6wBytR2LF30',
-            historical: '1nPSI-VVKHkGYW9IY2KDP-v_xW6qi9_L9WpCnUFKRi8A'
-        };
-
-        const TABS = {
-            rsStats: 0,
-            poStats: 1591736011,
-            teamStats: 1735540905,
-            advanced: 339737563,
-            scoring: 52077302,
-            shotLocation: 1205457990,
-            defense: 1957258468,
-            usage: 1415078232,
-            clutch: 10789411,
-            hustle: 439158060,
-            plusMinus: 1169156479,
-            winsLosses: 1299099447
-        };
+        // Static JSON files for historical data (1996-2025) - split for faster loading
+        const HISTORICAL_RS_URL = 'https://jsierrahoopshype.github.io/nba-player-data/nba-historical-rs.json';
+        const HISTORICAL_PO_URL = 'https://jsierrahoopshype.github.io/nba-player-data/nba-historical-po.json';
+        const HISTORICAL_ADV_URL = 'https://jsierrahoopshype.github.io/nba-player-data/nba-historical-advanced.json';
 
         // 2025-26 Stars for random matchups
         const STARS_2526 = [
@@ -378,10 +357,6 @@
             'Chet Holmgren', 'Tyrese Maxey', 'Domantas Sabonis', 'Jalen Brunson', 'Bam Adebayo',
             'Karl-Anthony Towns', 'Alperen Sengun', 'Franz Wagner', 'Evan Mobley', 'Scottie Barnes'
         ];
-
-        function getSheetURL(sheetId, gid) {
-            return `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&gid=${gid}`;
-        }
 
         // ===== DATA STORAGE =====
         let data = {
@@ -405,138 +380,7 @@
             return name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
         }
 
-        // ===== CSV PARSING =====
-        function parseCSVLine(line) {
-            const result = [];
-            let current = '';
-            let inQuotes = false;
-            for (let i = 0; i < line.length; i++) {
-                const char = line[i];
-                if (char === '"') inQuotes = !inQuotes;
-                else if (char === ',' && !inQuotes) { result.push(current.trim().replace(/^"|"$/g, '')); current = ''; }
-                else current += char;
-            }
-            result.push(current.trim().replace(/^"|"$/g, ''));
-            return result;
-        }
-
-        function findHeaderRow(lines, knownHeaders) {
-            // First, try to find exact known headers
-            if (knownHeaders && knownHeaders.length > 0) {
-                for (let i = 0; i < Math.min(lines.length, 10); i++) {
-                    const parsed = parseCSVLine(lines[i]);
-                    for (const header of knownHeaders) {
-                        if (parsed.includes(header)) {
-                            console.log(`Found header "${header}" at row ${i}`);
-                            return i;
-                        }
-                    }
-                }
-            }
-            
-            // If no known headers found, look for a row that looks like headers
-            // (contains text that looks like column names, not all numeric)
-            for (let i = 0; i < Math.min(lines.length, 10); i++) {
-                const parsed = parseCSVLine(lines[i]);
-                // Skip empty or mostly empty rows
-                const nonEmpty = parsed.filter(v => v && v.trim());
-                if (nonEmpty.length < 3) continue;
-                
-                // Check if this looks like a header row (has alphabetic content, not all numeric)
-                const hasTextHeaders = nonEmpty.some(v => /^[A-Za-z_][A-Za-z0-9_\-\s%]*$/.test(v.trim()));
-                const notAllNumeric = !nonEmpty.every(v => !isNaN(parseFloat(v)));
-                
-                if (hasTextHeaders && notAllNumeric) {
-                    console.log(`Detected header row at index ${i} (heuristic)`);
-                    return i;
-                }
-            }
-            
-            console.log('No header row detected, using row 0');
-            return 0;
-        }
-
-        function parseCSV(text, knownHeaders = null) {
-            const lines = text.trim().split('\n');
-            if (lines.length < 2) return [];
-            
-            // Find header row dynamically if known headers provided
-            let headerIdx = 0;
-            if (knownHeaders && knownHeaders.length > 0) {
-                headerIdx = findHeaderRow(lines, knownHeaders);
-            }
-            
-            const headers = parseCSVLine(lines[headerIdx]);
-            const result = [];
-            
-            for (let i = headerIdx + 1; i < lines.length; i++) {
-                const values = parseCSVLine(lines[i]);
-                if (values.length < 2) continue;
-                const row = {};
-                headers.forEach((header, index) => {
-                    if (header) {
-                        row[header] = values[index] || '';
-                    }
-                });
-                result.push(row);
-            }
-            return result;
-        }
-
         // ===== DATA LOADING =====
-        // Known column names for PO Stats (Google Sheets API sometimes returns empty headers)
-        const PO_STATS_COLUMNS = [
-            'CODE', 'RG CODE', 'NB CODE', 'PLAYER', 'YEAR', 'TEAM', 'GP', 'MIN', 'PTS', 
-            'FGM', 'FGA', 'FG%', '3PM', '3PA', '3P%', 'FTM', 'FTA', 'FT%', 
-            'ORB', 'DRB', 'REB', 'AST', 'STL', 'BLK', 'TOV', 'PF', '_EMPTY1',
-            'PTS / G', 'REB / G', 'AST / G', 'STL / G', 'TOV / G', 'BLK / G', 'FG%_PG', '3P%_PG', 'FT%_PG', '_EMPTY2', 'RESULT'
-        ];
-        
-        // Columns for wins/losses sheet - we want columns G-J (positions 6-9)
-        const WINS_LOSSES_COLUMNS = [
-            '_PLAYER_CAREER', '_W_RS', '_L_RS', '_W_PO_CAREER', '_L_PO_CAREER', '_EMPTY',
-            'NAME', 'YEAR', 'W PO', 'L PO'
-        ];
-
-        async function fetchSheet(sheetId, gid, knownHeaders = null, usePositionalColumns = null) {
-            const url = getSheetURL(sheetId, gid);
-            try {
-                const response = await fetch(url);
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
-                const text = await response.text();
-                
-                // If positional columns provided, use position-based parsing
-                if (usePositionalColumns) {
-                    return parseCSVWithPositions(text, usePositionalColumns);
-                }
-                
-                return parseCSV(text, knownHeaders);
-            } catch (error) {
-                console.error(`Error fetching sheet ${gid}:`, error);
-                return [];
-            }
-        }
-
-        function parseCSVWithPositions(text, columnNames) {
-            const lines = text.trim().split('\n');
-            if (lines.length < 2) return [];
-            
-            const result = [];
-            // Skip header row (index 0), start from data rows
-            for (let i = 1; i < lines.length; i++) {
-                const values = parseCSVLine(lines[i]);
-                if (values.length < 2) continue;
-                const row = {};
-                columnNames.forEach((colName, index) => {
-                    if (colName && !colName.startsWith('_')) {
-                        row[colName] = values[index] || '';
-                    }
-                });
-                result.push(row);
-            }
-            return result;
-        }
-
         async function fetchJSON(url) {
             try {
                 const response = await fetch(url);
@@ -555,41 +399,66 @@
 
         async function loadAllData() {
             try {
-                // Load JSON (2025-26) and RS/PO stats together - all essential
+                console.time('Total Load');
                 updateProgress(5, 'Loading data...');
                 
-                const [jsonData, rsStats, poStats] = await Promise.all([
+                // Load all JSON files in parallel - this is fast!
+                const [currentData, rsData, poData, advData] = await Promise.all([
                     fetchJSON(JSON_URL),
-                    fetchSheet(SHEETS.allTime, TABS.rsStats, ['PLAYER', 'YEAR', 'TEAM', 'GP']),
-                    fetchSheet(SHEETS.allTime, TABS.poStats, null, PO_STATS_COLUMNS)
+                    fetchJSON(HISTORICAL_RS_URL),
+                    fetchJSON(HISTORICAL_PO_URL),
+                    fetchJSON(HISTORICAL_ADV_URL)
                 ]);
                 
                 updateProgress(50, 'Processing data...');
                 
-                // Store RS and PO stats
-                data.rsStats = rsStats;
-                data.poStats = poStats;
-                
-                console.log('RS Stats loaded:', rsStats.length);
-                console.log('PO Stats loaded:', poStats.length);
-                if (poStats[0]) {
-                    console.log('PO Stats columns:', Object.keys(poStats[0]).slice(0, 15));
+                // Process historical RS stats
+                if (rsData) {
+                    data.rsStats = rsData.rsStats || [];
+                    console.log('RS Stats loaded:', data.rsStats.length);
                 }
                 
-                // Store 2025-26 data from JSON
-                if (jsonData) {
-                    dataLastUpdated = jsonData.lastUpdated;
+                // Process historical PO stats
+                if (poData) {
+                    data.poStats = poData.poStats || [];
+                    console.log('PO Stats loaded:', data.poStats.length);
+                }
+                
+                // Process historical advanced data
+                if (advData) {
+                    data.historical.advanced = advData.advanced || [];
+                    data.historical.scoring = advData.scoring || [];
+                    data.historical.shotLocation = advData.shotLocation || [];
+                    data.historical.defense = advData.defense || [];
+                    data.historical.usage = advData.usage || [];
+                    data.historical.clutch = advData.clutch || [];
+                    data.historical.hustle = advData.hustle || [];
+                    data.historical.plusMinus = advData.plusMinus || [];
+                    data.historical.winsLosses = advData.winsLosses || [];
+                    
+                    console.log('Historical advanced loaded:', {
+                        advanced: data.historical.advanced.length,
+                        clutch: data.historical.clutch.length,
+                        plusMinus: data.historical.plusMinus.length
+                    });
+                    
+                    historicalDataLoaded = true;
+                }
+                
+                // Process 2025-26 current season data (updated daily)
+                if (currentData) {
+                    dataLastUpdated = currentData.lastUpdated;
                     data.current = {
-                        rsStats: jsonData.rsStats || [],
-                        poStats: jsonData.poStats || [],
-                        teamStats: jsonData.teamStats || [],
-                        advanced: jsonData.advanced || [],
-                        scoring: jsonData.scoring || [],
-                        shotLocation: jsonData.shotLocation || [],
-                        defense: jsonData.defense || [],
-                        usage: jsonData.usage || [],
-                        clutch: jsonData.clutch || [],
-                        hustle: jsonData.hustle || []
+                        rsStats: currentData.rsStats || [],
+                        poStats: currentData.poStats || [],
+                        teamStats: currentData.teamStats || [],
+                        advanced: currentData.advanced || [],
+                        scoring: currentData.scoring || [],
+                        shotLocation: currentData.shotLocation || [],
+                        defense: currentData.defense || [],
+                        usage: currentData.usage || [],
+                        clutch: currentData.clutch || [],
+                        hustle: currentData.hustle || []
                     };
                     
                     // Build index of 2025-26 players
@@ -656,18 +525,7 @@
                     buildPlayerList();
                     
                     updateProgress(100, 'Ready!');
-                    
-                    // Load historical data in background
-                    loadHistoricalData().then(() => {
-                        const season1 = document.getElementById('season1Select')?.value;
-                        const season2 = document.getElementById('season2Select')?.value;
-                        const resultsEl = document.getElementById('results');
-                        
-                        if (resultsEl && resultsEl.innerHTML && (season1 !== '2026' || season2 !== '2026')) {
-                            console.log('Historical data loaded - refreshing comparison...');
-                            runComparison();
-                        }
-                    });
+                    console.timeEnd('Total Load');
                     
                     return true;
                 }
@@ -678,63 +536,6 @@
             }
         }
         
-        async function loadHistoricalData() {
-            try {
-                const historicalPromises = [
-                    fetchSheet(SHEETS.historical, TABS.advanced, ['PLAYER_NAME', 'PLAYER_ID', 'OFF_RATING', 'DEF_RATING']),
-                    fetchSheet(SHEETS.historical, TABS.scoring, ['PLAYER_NAME', 'PLAYER_ID', 'PTS_OFF_TOV']),
-                    fetchSheet(SHEETS.historical, TABS.shotLocation, ['PLAYER_NAME', 'PLAYER_ID', 'Mid-Range_FG_PCT']),
-                    fetchSheet(SHEETS.historical, TABS.defense, ['PLAYER_NAME', 'D_FG_PCT', 'CLOSE_DEF_PERSON_ID']),
-                    fetchSheet(SHEETS.historical, TABS.usage, ['PLAYER_NAME', 'PLAYER_ID', 'USG_PCT']),
-                    fetchSheet(SHEETS.historical, TABS.clutch, ['PLAYER_NAME', 'PLAYER_ID', 'FG_PCT', 'SEASON']),
-                    fetchSheet(SHEETS.historical, TABS.hustle, ['PLAYER_NAME', 'PLAYER_ID', 'DEFLECTIONS']),
-                    fetchSheet(SHEETS.historical, TABS.plusMinus, ['PLAYER_NAME', 'PLAYER_ID', 'PLUS_MINUS']),
-                    fetchSheet(SHEETS.historical, TABS.winsLosses, null, WINS_LOSSES_COLUMNS)
-                ];
-                
-                const historicalResults = await Promise.all(historicalPromises);
-                data.historical.advanced = historicalResults[0];
-                data.historical.scoring = historicalResults[1];
-                data.historical.shotLocation = historicalResults[2];
-                data.historical.defense = historicalResults[3];
-                data.historical.usage = historicalResults[4];
-                data.historical.clutch = historicalResults[5];
-                data.historical.hustle = historicalResults[6];
-                data.historical.plusMinus = historicalResults[7];
-                data.historical.winsLosses = historicalResults[8];
-                
-                console.log('Historical data loaded:', {
-                    advanced: data.historical.advanced?.length || 0,
-                    scoring: data.historical.scoring?.length || 0,
-                    shotLocation: data.historical.shotLocation?.length || 0,
-                    defense: data.historical.defense?.length || 0,
-                    usage: data.historical.usage?.length || 0,
-                    clutch: data.historical.clutch?.length || 0,
-                    hustle: data.historical.hustle?.length || 0,
-                    plusMinus: data.historical.plusMinus?.length || 0,
-                    winsLosses: data.historical.winsLosses?.length || 0
-                });
-                
-                historicalDataLoaded = true;
-                
-                // Debug: show sample columns from each data source
-                if (data.historical.advanced?.[0]) {
-                    console.log('Historical advanced columns:', Object.keys(data.historical.advanced[0]).slice(0, 10));
-                }
-                if (data.historical.clutch?.[0]) {
-                    console.log('Historical clutch columns:', Object.keys(data.historical.clutch[0]).slice(0, 15));
-                }
-                if (data.historical.plusMinus?.[0]) {
-                    console.log('Historical plusMinus columns:', Object.keys(data.historical.plusMinus[0]).slice(0, 15));
-                }
-                if (data.historical.winsLosses?.[0]) {
-                    console.log('Historical winsLosses columns:', Object.keys(data.historical.winsLosses[0]));
-                }
-            } catch (error) {
-                console.error('Error loading historical data:', error);
-            }
-        }
-
         function buildPlayerList() {
             const playersMap = new Map();
             const poPlayersMap = new Map();
@@ -1540,7 +1341,6 @@
         }
 
         // ===== COMPARISON LOOP =====
-        let loopInterval = null;
         let loopActive = false;
         let usedOpponents = new Set();
         let scrollAnimationId = null;
@@ -1614,6 +1414,14 @@
             const distance = targetY - startY;
             const startTime = performance.now();
             
+            // If no scrolling needed, trigger next comparison after pause
+            if (distance <= 0) {
+                setTimeout(() => {
+                    if (loopActive) runLoopComparison();
+                }, 1500);
+                return;
+            }
+            
             function animateScroll(currentTime) {
                 if (!loopActive) return; // Stop if loop was stopped
                 
@@ -1625,6 +1433,11 @@
                 
                 if (progress < 1) {
                     scrollAnimationId = requestAnimationFrame(animateScroll);
+                } else {
+                    // Scroll finished - trigger next comparison after 1.5 seconds
+                    setTimeout(() => {
+                        if (loopActive) runLoopComparison();
+                    }, 1500);
                 }
             }
             
@@ -1633,43 +1446,31 @@
 
         function startLoop() {
             const loopBtn = document.getElementById('loopBtn');
-            const intervalSelect = document.getElementById('loopInterval');
             const scrollSelect = document.getElementById('scrollDuration');
             const stickySelect = document.getElementById('stickyPlayer');
-            const intervalSeconds = parseInt(intervalSelect.value);
             
             loopActive = true;
             loopBtn.textContent = 'Stop Comparison Loop';
             loopBtn.classList.add('active');
-            intervalSelect.disabled = true;
             scrollSelect.disabled = true;
             stickySelect.disabled = true;
             usedOpponents.clear();
             
-            // Run first comparison immediately
+            // Run first comparison immediately (scroll callback will trigger next)
             runLoopComparison();
-            
-            // Set up interval for subsequent comparisons
-            loopInterval = setInterval(runLoopComparison, intervalSeconds * 1000);
         }
 
         function stopLoop() {
             const loopBtn = document.getElementById('loopBtn');
-            const intervalSelect = document.getElementById('loopInterval');
             const scrollSelect = document.getElementById('scrollDuration');
             const stickySelect = document.getElementById('stickyPlayer');
             
             loopActive = false;
             loopBtn.textContent = 'Start Comparison Loop';
             loopBtn.classList.remove('active');
-            intervalSelect.disabled = false;
             scrollSelect.disabled = false;
             stickySelect.disabled = false;
             
-            if (loopInterval) {
-                clearInterval(loopInterval);
-                loopInterval = null;
-            }
             if (scrollAnimationId) {
                 cancelAnimationFrame(scrollAnimationId);
                 scrollAnimationId = null;
