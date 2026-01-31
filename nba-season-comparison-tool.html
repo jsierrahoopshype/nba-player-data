@@ -1133,7 +1133,13 @@
             if (val === undefined || val === '' || val === null) return null;
             
             if (perGameCol) {
-                const gp = parseFloat(playerData[perGameCol]);
+                let gp = parseFloat(playerData[perGameCol]);
+                
+                // If GP not in this data source, it will be passed separately via the metric
+                if (isNaN(gp) && metric && metric._gp) {
+                    gp = metric._gp;
+                }
+                
                 const total = parseFloat(val);
                 if (!isNaN(gp) && !isNaN(total) && gp > 0) {
                     return total / gp;
@@ -1212,7 +1218,27 @@
                     const data1 = getPlayerData(player1, season1, metric.src);
                     const data2 = getPlayerData(player2, season2, metric.src);
                     
+                    // For hustle stats with per-game calculation, get GP from RS stats
+                    if (metric.src === 'hustle' && metric.pg === 'G') {
+                        const rs1 = getPlayerData(player1, season1, 'rs');
+                        const rs2 = getPlayerData(player2, season2, 'rs');
+                        metric._gp = null; // Reset
+                        if (data1 && rs1) {
+                            const gp1 = parseFloat(rs1.GP || rs1.G);
+                            if (!isNaN(gp1)) metric._gp = gp1;
+                        }
+                    }
                     let val1 = getStatValue(data1, metric.col, metric.pg, metric);
+                    
+                    // Get GP for player 2
+                    if (metric.src === 'hustle' && metric.pg === 'G') {
+                        const rs2 = getPlayerData(player2, season2, 'rs');
+                        metric._gp = null; // Reset
+                        if (data2 && rs2) {
+                            const gp2 = parseFloat(rs2.GP || rs2.G);
+                            if (!isNaN(gp2)) metric._gp = gp2;
+                        }
+                    }
                     let val2 = getStatValue(data2, metric.col, metric.pg, metric);
                     
                     if ((val1 === null || val1 === '') && (val2 === null || val2 === '')) return;
