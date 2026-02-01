@@ -258,15 +258,80 @@
             color: #999;
             margin-top: 10px;
         }
+        /* Bottom selector area */
+        .bottom-selector {
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px solid #e0e0e0;
+        }
+        .bottom-selector .player-selector { margin-bottom: 20px; }
+        .bottom-selector .compare-button { margin-bottom: 15px; }
+        .bottom-selector .loop-controls { margin-bottom: 10px; }
+
         @media (max-width: 768px) {
-            h1 { font-size: 2em; }
-            .player-selector { grid-template-columns: 1fr; }
-            .vs-text { padding-top: 0; margin: 15px 0; }
-            .comparison-row { grid-template-columns: 1fr; gap: 8px; padding: 15px; }
-            .player-value, .metric-name { text-align: left; }
-            .score-summary { grid-template-columns: 1fr; gap: 15px; }
-            .score-divider { font-size: 28px; }
-            .score-value { font-size: 42px; }
+            body { padding: 8px; }
+            .container { padding: 12px; border-radius: 6px; }
+            h1 { font-size: 1.5em; margin-bottom: 6px; }
+            .subtitle { font-size: 0.9em; margin-bottom: 15px; }
+
+            /* Player selector stacked */
+            .player-selector { grid-template-columns: 1fr; gap: 10px; margin-bottom: 15px; }
+            .player-select-card { padding: 12px; }
+            .player-select-card h3 { font-size: 12px; margin-bottom: 8px; }
+            .player-autocomplete, .season-select { padding: 10px; font-size: 15px; }
+            .vs-text { padding-top: 0; margin: 5px 0; font-size: 18px; }
+            .select-group { margin-bottom: 10px; }
+
+            /* Buttons */
+            .compare-button { padding: 12px 30px; font-size: 16px; margin-bottom: 15px; }
+            .loop-controls { flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+            .loop-button { padding: 8px 14px; font-size: 13px; }
+            .loop-interval { padding: 6px 8px; font-size: 13px; }
+
+            /* Score summary - side by side */
+            .score-summary {
+                grid-template-columns: 1fr auto 1fr;
+                gap: 8px;
+                padding: 16px 12px;
+                border-radius: 8px;
+                margin-bottom: 20px;
+            }
+            .player-name-score { font-size: 14px; }
+            .player-season-label { font-size: 11px; }
+            .player-team-label { font-size: 10px; margin-bottom: 8px; }
+            .score-value { font-size: 36px; }
+            .score-divider { font-size: 24px; }
+
+            /* Category sections */
+            .category-section { margin-bottom: 30px; }
+            .category-title { font-size: 16px; padding-bottom: 8px; border-bottom-width: 3px; margin-bottom: 12px; }
+            .section-score { font-size: 13px; }
+
+            /* Comparison rows: 3 columns = Value | Metric | Value */
+            .comparison-row {
+                grid-template-columns: 1fr auto 1fr;
+                gap: 6px;
+                padding: 10px 8px;
+                margin-bottom: 6px;
+                border-radius: 6px;
+            }
+            .comparison-row:hover { transform: none; box-shadow: none; }
+            /* Hide player names on mobile (they're in the header) */
+            .comparison-row .player-name-cell { display: none; }
+            .player-value { font-size: 15px; }
+            .player-value.winner { font-size: 16px; }
+            .metric-name { font-size: 11px; min-width: 70px; }
+
+            /* Suggested matchups */
+            .suggested-matchups { padding: 12px; margin-top: 25px; }
+            .suggested-matchups h3 { font-size: 15px; margin-bottom: 10px; }
+            .matchup-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+            .matchup-card { padding: 10px; }
+            .matchup-players { font-size: 13px; }
+            .matchup-seasons { font-size: 11px; }
+
+            /* Bottom selector */
+            .bottom-selector { margin-top: 25px; padding-top: 20px; }
         }
     </style>
 </head>
@@ -378,7 +443,49 @@
         // Normalize player names (remove accents/diacritics)
         function normalizeName(name) {
             if (!name) return '';
-            return name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+            return fixMojibake(name).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+        }
+
+        // Fix mojibake encoding in historical JSON (e.g. "JokiÄ‡" → "Jokić")
+        function fixMojibake(str) {
+            if (!str) return str;
+            let hi = false;
+            for (let i = 0; i < str.length; i++) if (str.charCodeAt(i) > 127) { hi = true; break; }
+            if (!hi) return str;
+            const w = {0x2021:0x87,0x20AC:0x80,0x201A:0x82,0x0192:0x83,0x201E:0x84,0x2026:0x85,0x2020:0x86,0x02C6:0x88,0x2030:0x89,0x0160:0x8A,0x2039:0x8B,0x0152:0x8C,0x017D:0x8E,0x2018:0x91,0x2019:0x92,0x201C:0x93,0x201D:0x94,0x2022:0x95,0x2013:0x96,0x2014:0x97,0x02DC:0x98,0x2122:0x99,0x0161:0x9A,0x203A:0x9B,0x0153:0x9C,0x017E:0x9E,0x0178:0x9F};
+            try {
+                const b = [];
+                for (let i = 0; i < str.length; i++) {
+                    const c = str.charCodeAt(i);
+                    if (c < 128) b.push(c);
+                    else if (w[c] !== undefined) b.push(w[c]);
+                    else if (c < 256) b.push(c);
+                    else return str;
+                }
+                const d = new TextDecoder('utf-8').decode(new Uint8Array(b));
+                if (d && !d.includes('\uFFFD')) return d;
+            } catch(e) {}
+            return str;
+        }
+
+        // Clean mojibake names in all historical arrays after loading
+        function fixHistoricalNames(arrays) {
+            let n = 0;
+            arrays.forEach(arr => {
+                if (!arr) return;
+                arr.forEach(row => {
+                    ['PLAYER_NAME', 'PLAYER', 'NAME'].forEach(k => {
+                        if (row[k]) {
+                            const fixed = fixMojibake(row[k]);
+                            if (fixed !== row[k]) {
+                                row[k] = fixed.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+                                n++;
+                            }
+                        }
+                    });
+                });
+            });
+            if (n > 0) console.log('Fixed ' + n + ' mojibake player names');
         }
 
         // ===== DATA LOADING =====
@@ -452,6 +559,15 @@
                     });
                     historicalDataLoaded = true;
                 }
+                
+                // Fix mojibake player names in historical data (JokiÄ‡ → Jokic, DonÄiÄ‡ → Doncic, etc.)
+                fixHistoricalNames([
+                    data.historical.advanced, data.historical.scoring,
+                    data.historical.shotLocation, data.historical.defense,
+                    data.historical.usage, data.historical.clutch,
+                    data.historical.hustle, data.historical.plusMinus,
+                    data.historical.winsLosses
+                ]);
                 
                 // Process 2025-26 current season data (updated daily)
                 if (currentData) {
@@ -1264,9 +1380,9 @@
                     categoryHtml += `
                         <div class="comparison-row ${rowClass}">
                             <div class="${p1Class}">${formatted1 === '-' ? '<span class="no-data">–</span>' : formatted1}</div>
-                            <div class="player-value clickable-name" style="font-weight: normal; font-size: 16px;" onclick="randomizeOpponent(1)" title="Click to get a new random opponent">${player1}</div>
+                            <div class="player-value clickable-name player-name-cell" style="font-weight: normal; font-size: 16px;" onclick="randomizeOpponent(1)" title="Click to get a new random opponent">${player1}</div>
                             <div class="metric-name">${metric.name}</div>
-                            <div class="player-value clickable-name" style="font-weight: normal; font-size: 16px;" onclick="randomizeOpponent(2)" title="Click to get a new random opponent">${player2}</div>
+                            <div class="player-value clickable-name player-name-cell" style="font-weight: normal; font-size: 16px;" onclick="randomizeOpponent(2)" title="Click to get a new random opponent">${player2}</div>
                             <div class="${p2Class}">${formatted2 === '-' ? '<span class="no-data">–</span>' : formatted2}</div>
                         </div>
                     `;
@@ -1298,8 +1414,140 @@
                 </div>
                 ${html}
                 ${generateSuggestedMatchups(player1, player2)}
+                ${generateBottomSelector()}
             `;
-            document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            // Only scroll to results during loop mode; otherwise stay at top
+            if (loopActive) {
+                document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+            // Sync bottom selector with current values
+            syncBottomSelector();
+        }
+
+        function generateBottomSelector() {
+            return `
+                <div class="bottom-selector">
+                    <div class="player-selector">
+                        <div class="player-select-card">
+                            <h3>Player 1</h3>
+                            <div class="select-group">
+                                <label>Player Name</label>
+                                <div class="player-select-wrapper">
+                                    <input type="text" id="player1InputBottom" class="player-autocomplete" placeholder="Type player name...">
+                                    <div id="suggestionsBottom1" class="autocomplete-suggestions"></div>
+                                </div>
+                            </div>
+                            <div class="select-group">
+                                <label>Season</label>
+                                <select id="season1SelectBottom" class="season-select">
+                                    <option value="">-- Choose Season --</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="vs-text">VS</div>
+                        <div class="player-select-card">
+                            <h3>Player 2</h3>
+                            <div class="select-group">
+                                <label>Player Name</label>
+                                <div class="player-select-wrapper">
+                                    <input type="text" id="player2InputBottom" class="player-autocomplete" placeholder="Type player name...">
+                                    <div id="suggestionsBottom2" class="autocomplete-suggestions"></div>
+                                </div>
+                            </div>
+                            <div class="select-group">
+                                <label>Season</label>
+                                <select id="season2SelectBottom" class="season-select">
+                                    <option value="">-- Choose Season --</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="compare-button" id="compareBtnBottom" onclick="compareFromBottom()">Compare Seasons</button>
+                    <div class="loop-controls">
+                        <button class="loop-button" id="loopBtnBottom" onclick="toggleLoop()">${loopActive ? 'Stop Comparison Loop' : 'Start Comparison Loop'}</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function syncBottomSelector() {
+            const p1Bottom = document.getElementById('player1InputBottom');
+            const p2Bottom = document.getElementById('player2InputBottom');
+            const s1Bottom = document.getElementById('season1SelectBottom');
+            const s2Bottom = document.getElementById('season2SelectBottom');
+            if (!p1Bottom) return;
+
+            const p1 = document.getElementById('player1Input').value;
+            const p2 = document.getElementById('player2Input').value;
+            const s1 = document.getElementById('season1Select').value;
+            const s2 = document.getElementById('season2Select').value;
+
+            p1Bottom.value = p1;
+            p2Bottom.value = p2;
+            populateSeasonSelect(s1Bottom, p1);
+            s1Bottom.value = s1;
+            populateSeasonSelect(s2Bottom, p2);
+            s2Bottom.value = s2;
+
+            // Setup autocomplete for bottom inputs
+            setupBottomAutocomplete('player1InputBottom', 'suggestionsBottom1', 'season1SelectBottom');
+            setupBottomAutocomplete('player2InputBottom', 'suggestionsBottom2', 'season2SelectBottom');
+        }
+
+        function setupBottomAutocomplete(inputId, suggestionsId, seasonId) {
+            const inputEl = document.getElementById(inputId);
+            const suggestionsEl = document.getElementById(suggestionsId);
+            const seasonEl = document.getElementById(seasonId);
+            if (!inputEl) return;
+
+            // Remove old listeners by cloning
+            const newInput = inputEl.cloneNode(true);
+            inputEl.parentNode.replaceChild(newInput, inputEl);
+
+            newInput.addEventListener('input', function() {
+                const value = this.value.toLowerCase();
+                if (value.length < 2) { suggestionsEl.style.display = 'none'; return; }
+                const matches = players.filter(p => p.toLowerCase().includes(value)).slice(0, 10);
+                if (matches.length === 0) { suggestionsEl.style.display = 'none'; return; }
+                suggestionsEl.innerHTML = matches.map(player =>
+                    `<div class="autocomplete-suggestion" data-player="${player}">${player}</div>`
+                ).join('');
+                suggestionsEl.style.display = 'block';
+                suggestionsEl.querySelectorAll('.autocomplete-suggestion').forEach(el => {
+                    el.addEventListener('click', function() {
+                        newInput.value = this.getAttribute('data-player');
+                        suggestionsEl.style.display = 'none';
+                        populateSeasonSelect(seasonEl, newInput.value, true);
+                    });
+                });
+            });
+
+            document.addEventListener('click', function(e) {
+                if (!newInput.contains(e.target) && !suggestionsEl.contains(e.target)) {
+                    suggestionsEl.style.display = 'none';
+                }
+            });
+        }
+
+        function compareFromBottom() {
+            const p1 = document.getElementById('player1InputBottom').value;
+            const p2 = document.getElementById('player2InputBottom').value;
+            const s1 = document.getElementById('season1SelectBottom').value;
+            const s2 = document.getElementById('season2SelectBottom').value;
+            if (!p1 || !s1 || !p2 || !s2) return;
+
+            // Sync to top selectors
+            document.getElementById('player1Input').value = p1;
+            populateSeasonSelect(document.getElementById('season1Select'), p1);
+            document.getElementById('season1Select').value = s1;
+            document.getElementById('player2Input').value = p2;
+            populateSeasonSelect(document.getElementById('season2Select'), p2);
+            document.getElementById('season2Select').value = s2;
+            updateCompareButton();
+
+            // Scroll to top, then run comparison
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            setTimeout(() => runComparison(), 300);
         }
 
         function generateSuggestedMatchups(currentP1, currentP2) {
