@@ -1218,26 +1218,30 @@
                     const data1 = getPlayerData(player1, season1, metric.src);
                     const data2 = getPlayerData(player2, season2, metric.src);
                     
-                    // For hustle stats with per-game calculation, get GP from RS stats
-                    if (metric.src === 'hustle' && metric.pg === 'G') {
+                    // For per-game stats where the data source doesn't have GP, get it from RS stats
+                    const needsExternalGP = metric.pg && (metric.pg === 'GP' || metric.pg === 'G');
+                    
+                    if (needsExternalGP && data1 && !data1.GP && !data1.G) {
                         const rs1 = getPlayerData(player1, season1, 'rs');
-                        const rs2 = getPlayerData(player2, season2, 'rs');
-                        metric._gp = null; // Reset
-                        if (data1 && rs1) {
+                        metric._gp = null;
+                        if (rs1) {
                             const gp1 = parseFloat(rs1.GP || rs1.G);
                             if (!isNaN(gp1)) metric._gp = gp1;
                         }
+                    } else {
+                        metric._gp = null;
                     }
                     let val1 = getStatValue(data1, metric.col, metric.pg, metric);
                     
-                    // Get GP for player 2
-                    if (metric.src === 'hustle' && metric.pg === 'G') {
+                    if (needsExternalGP && data2 && !data2.GP && !data2.G) {
                         const rs2 = getPlayerData(player2, season2, 'rs');
-                        metric._gp = null; // Reset
-                        if (data2 && rs2) {
+                        metric._gp = null;
+                        if (rs2) {
                             const gp2 = parseFloat(rs2.GP || rs2.G);
                             if (!isNaN(gp2)) metric._gp = gp2;
                         }
+                    } else {
+                        metric._gp = null;
                     }
                     let val2 = getStatValue(data2, metric.col, metric.pg, metric);
                     
