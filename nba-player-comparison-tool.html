@@ -283,28 +283,109 @@
             text-align: center;
             border: 1px solid #f5c6cb;
         }
+        /* Loop controls */
+        .loop-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+        .loop-btn {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            font-size: 15px;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .loop-btn:hover { background-color: #218838; }
+        .loop-btn.active {
+            background-color: #dc3545;
+        }
+        .loop-btn.active:hover { background-color: #c82333; }
+        .loop-speed {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #555;
+        }
+        .loop-speed input[type="range"] {
+            width: 120px;
+        }
+        .loop-speed-label {
+            min-width: 30px;
+            text-align: center;
+            font-weight: 600;
+        }
+
         @media (max-width: 768px) {
-            h1 { font-size: 2em; }
-            .player-selector { grid-template-columns: 1fr; }
+            body { padding: 8px; }
+            .container { padding: 12px; }
+            h1 { font-size: 1.5em; }
+            .subtitle { font-size: 0.9em; margin-bottom: 18px; }
+            .player-selector {
+                grid-template-columns: 1fr;
+                gap: 10px;
+                margin-bottom: 18px;
+            }
             .vs-text {
-                order: 1;
-                margin: 15px 0;
+                font-size: 18px;
+                margin: 5px 0;
             }
-            .comparison-row {
-                grid-template-columns: 1fr;
-                gap: 8px;
-                padding: 15px;
+            .compare-button {
+                padding: 12px 30px;
+                font-size: 16px;
+                margin-bottom: 18px;
             }
-            .player-value, .metric-name { text-align: left; }
+            /* Score summary: side by side */
             .score-summary {
-                grid-template-columns: 1fr;
-                gap: 15px;
+                grid-template-columns: 1fr auto 1fr;
+                gap: 10px;
+                padding: 16px 12px;
+                margin-bottom: 20px;
             }
-            .score-divider {
-                order: 2;
-                font-size: 28px;
+            .player-name-score { font-size: 14px; margin-bottom: 8px; }
+            .score-value { font-size: 36px; }
+            .score-divider { font-size: 24px; }
+            /* Category sections */
+            .category-section { margin-bottom: 30px; }
+            .category-title {
+                font-size: 16px;
+                margin-bottom: 12px;
+                padding-bottom: 8px;
             }
-            .score-value { font-size: 42px; }
+            .section-score { font-size: 13px; }
+            /* Comparison rows: 3 columns = Value | Metric | Value */
+            .comparison-row {
+                grid-template-columns: 1fr auto 1fr;
+                gap: 6px;
+                padding: 10px 8px;
+                margin-bottom: 6px;
+                border-radius: 6px;
+            }
+            .comparison-row:hover { transform: none; box-shadow: none; }
+            /* Hide player names on mobile (they're in the section score header) */
+            .comparison-row .player-name-cell { display: none; }
+            .player-value { font-size: 15px; text-align: center; }
+            .player-value.winner { font-size: 16px; text-align: center; }
+            .metric-name { font-size: 11px; min-width: 70px; text-align: center; }
+            /* Share URL */
+            .share-url { padding: 15px; }
+            .share-url h3 { font-size: 15px; }
+            .share-url-input { font-size: 12px; padding: 8px; }
+            /* Suggestions */
+            .suggestions-section { padding: 15px; }
+            .suggestion-btn { padding: 10px 14px; font-size: 13px; }
+            /* Loop controls */
+            .loop-controls { gap: 10px; }
+            .loop-btn { padding: 8px 18px; font-size: 14px; }
+            .loop-speed input[type="range"] { width: 90px; }
         }
     </style>
 </head>
@@ -335,6 +416,15 @@
             <button class="compare-button" onclick="compareFromInputs()" id="compareBtn">
                 Compare Players
             </button>
+
+            <div class="loop-controls">
+                <button class="loop-btn" id="loopBtn" onclick="toggleLoop()">▶ Start Loop</button>
+                <div class="loop-speed">
+                    <span>Speed:</span>
+                    <input type="range" id="loopSpeed" min="1" max="10" value="5" oninput="updateSpeedLabel()">
+                    <span class="loop-speed-label" id="speedLabel">5s</span>
+                </div>
+            </div>
             
             <div id="results"></div>
             
@@ -487,35 +577,18 @@
             try {
                 await loadData();
                 
-                const urlParams = new URLSearchParams(window.location.search);
-                const p1 = urlParams.get('p1');
-                const p2 = urlParams.get('p2');
-                
                 setupAutocomplete();
                 
-                if (p1 && p2) {
-                    // Load comparison from URL
-                    const player1Name = formatPlayerName(p1);
-                    const player2Name = formatPlayerName(p2);
-                    
-                    document.getElementById('player1-top').value = player1Name;
-                    document.getElementById('player2-top').value = player2Name;
-                    document.getElementById('player1-bottom').value = player1Name;
-                    document.getElementById('player2-bottom').value = player2Name;
-                    
+                // Load random All-Star comparison on start
+                const randomP1 = getRandomAllStar();
+                const randomP2 = getRandomAllStar();
+                
+                if (randomP1 && randomP2 && randomP1 !== randomP2) {
+                    document.getElementById('player1-top').value = randomP1;
+                    document.getElementById('player2-top').value = randomP2;
+                    document.getElementById('player1-bottom').value = randomP1;
+                    document.getElementById('player2-bottom').value = randomP2;
                     setTimeout(() => compareFromInputs(), 500);
-                } else {
-                    // Load random All-Star comparison
-                    const randomP1 = getRandomAllStar();
-                    const randomP2 = getRandomAllStar();
-                    
-                    if (randomP1 && randomP2 && randomP1 !== randomP2) {
-                        document.getElementById('player1-top').value = randomP1;
-                        document.getElementById('player2-top').value = randomP2;
-                        document.getElementById('player1-bottom').value = randomP1;
-                        document.getElementById('player2-bottom').value = randomP2;
-                        setTimeout(() => compareFromInputs(), 500);
-                    }
                 }
                 
                 showLoading(false);
@@ -535,19 +608,6 @@
             errorDiv.className = 'error-message';
             errorDiv.textContent = message;
             errorDiv.style.display = 'block';
-        }
-
-        function formatPlayerName(urlName) {
-            return urlName.split('-').map(word => 
-                word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
-            ).join(' ');
-        }
-
-        function playerNameToURL(playerName) {
-            return playerName.toLowerCase()
-                .replace(/\s+/g, '-')
-                .replace(/[^a-z0-9-]/g, '')
-                .replace(/--+/g, '-');
         }
 
         function getRandomAllStar() {
@@ -674,8 +734,6 @@
                                 const topId = config.input.replace('bottom', 'top');
                                 document.getElementById(topId).value = inputEl.value;
                             }
-                            
-                            updateShareURL();
                         });
                     });
                 });
@@ -687,17 +745,6 @@
                     }
                 });
             });
-        }
-
-        function updateShareURL() {
-            const p1 = document.getElementById('player1-top').value;
-            const p2 = document.getElementById('player2-top').value;
-            
-            if (p1 && p2) {
-                const shareURL = `${window.location.origin}${window.location.pathname}?p1=${playerNameToURL(p1)}&p2=${playerNameToURL(p2)}`;
-                return shareURL;
-            }
-            return '';
         }
 
         function normalizePlayerName(name) {
@@ -767,8 +814,10 @@
                 const results = performComparison(player1Name, player2Name);
                 displayResults(results, player1Name, player2Name);
                 
-                const newURL = `${window.location.pathname}?p1=${playerNameToURL(player1Name)}&p2=${playerNameToURL(player2Name)}`;
-                window.history.pushState({}, '', newURL);
+                // Only scroll to results during loop mode
+                if (loopActive) {
+                    document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
             }, 100);
         }
 
@@ -1728,14 +1777,6 @@
                 </div>
             `;
             
-            const shareURL = updateShareURL();
-            html += `
-                <div class="share-url">
-                    <h3>📤 Share This Comparison</h3>
-                    <input type="text" class="share-url-input" value="${shareURL}" readonly onclick="this.select(); try { document.execCommand('copy'); alert('URL copied!'); } catch(e) { console.log('Copy failed'); }">
-                </div>
-            `;
-            
             // Display categories
             Object.keys(results.categories).forEach(categoryName => {
                 const items = results.categories[categoryName];
@@ -1770,9 +1811,9 @@
                     html += `
                         <div class="comparison-row ${rowClass}">
                             <div class="${p1Class}">${p1Display}</div>
-                            <div class="player-value" style="font-weight: normal; font-size: 16px;">${player1Name}</div>
+                            <div class="player-value player-name-cell" style="font-weight: normal; font-size: 16px;">${player1Name}</div>
                             <div class="metric-name">${item.metric}</div>
-                            <div class="player-value" style="font-weight: normal; font-size: 16px;">${player2Name}</div>
+                            <div class="player-value player-name-cell" style="font-weight: normal; font-size: 16px;">${player2Name}</div>
                             <div class="${p2Class}">${p2Display}</div>
                         </div>
                     `;
@@ -1844,6 +1885,67 @@
             makePlayerNamesClickable();
         }
         
+        // ==========================================
+        // LOOP MODE
+        // ==========================================
+        let loopActive = false;
+        let loopTimer = null;
+
+        function toggleLoop() {
+            loopActive = !loopActive;
+            const btn = document.getElementById('loopBtn');
+            
+            if (loopActive) {
+                btn.textContent = '⏹ Stop Loop';
+                btn.classList.add('active');
+                runLoopIteration();
+            } else {
+                btn.textContent = '▶ Start Loop';
+                btn.classList.remove('active');
+                if (loopTimer) {
+                    clearTimeout(loopTimer);
+                    loopTimer = null;
+                }
+            }
+        }
+
+        function getLoopDelay() {
+            const speed = parseInt(document.getElementById('loopSpeed').value);
+            // Map 1-10 to 10s-1s (inverted: higher = faster)
+            return (11 - speed) * 1000;
+        }
+
+        function updateSpeedLabel() {
+            const speed = parseInt(document.getElementById('loopSpeed').value);
+            const seconds = 11 - speed;
+            document.getElementById('speedLabel').textContent = seconds + 's';
+        }
+
+        function runLoopIteration() {
+            if (!loopActive) return;
+            
+            const p1 = getRandomAllStar();
+            let p2 = getRandomAllStar();
+            
+            // Ensure different players
+            let attempts = 0;
+            while (p2 === p1 && attempts < 20) {
+                p2 = getRandomAllStar();
+                attempts++;
+            }
+            
+            if (p1 && p2 && p1 !== p2) {
+                document.getElementById('player1-top').value = p1;
+                document.getElementById('player2-top').value = p2;
+                document.getElementById('player1-bottom').value = p1;
+                document.getElementById('player2-bottom').value = p2;
+                compareFromInputs();
+            }
+            
+            // Schedule next iteration
+            loopTimer = setTimeout(runLoopIteration, getLoopDelay());
+        }
+
         function loadComparison(p1, p2) {
             document.getElementById('player1-top').value = p1;
             document.getElementById('player2-top').value = p2;
