@@ -318,9 +318,9 @@
             .comparison-row:hover { transform: none; box-shadow: none; }
             /* Hide player names on mobile (they're in the header) */
             .comparison-row .player-name-cell { display: none; }
-            .player-value { font-size: 15px; }
-            .player-value.winner { font-size: 16px; }
-            .metric-name { font-size: 11px; min-width: 70px; }
+            .player-value { font-size: 15px; text-align: center; }
+            .player-value.winner { font-size: 16px; text-align: center; }
+            .metric-name { font-size: 11px; min-width: 70px; text-align: center; }
 
             /* Suggested matchups */
             .suggested-matchups { padding: 12px; margin-top: 25px; }
@@ -488,6 +488,55 @@
             if (n > 0) console.log('Fixed ' + n + ' mojibake player names');
         }
 
+        // Fix column swaps in data
+        // 2025-26 RS: STL/BLK/TOV columns are rotated (STL has TOV values, BLK has STL, TOV has BLK)
+        // Historical PO: STL and TOV columns are swapped
+        function fixColumnSwaps() {
+            let rsFixed = 0, poFixed = 0;
+            
+            // Fix 2025-26 RS data: 3-way rotation
+            data.rsStats.forEach(row => {
+                if (row.YEAR === '2026') {
+                    // Per-game: actual STL = old BLK, actual BLK = old TOV, actual TOV = old STL
+                    const oldSTLG = row['STL / G'];
+                    const oldBLKG = row['BLK / G'];
+                    const oldTOVG = row['TOV / G'];
+                    row['STL / G'] = oldBLKG;
+                    row['BLK / G'] = oldTOVG;
+                    row['TOV / G'] = oldSTLG;
+                    
+                    // Totals (if they exist)
+                    if (row['STL'] !== undefined || row['BLK'] !== undefined || row['TOV'] !== undefined) {
+                        const oldSTL = row['STL'];
+                        const oldBLK = row['BLK'];
+                        const oldTOV = row['TOV'];
+                        row['STL'] = oldBLK;
+                        row['BLK'] = oldTOV;
+                        row['TOV'] = oldSTL;
+                    }
+                    rsFixed++;
+                }
+            });
+            
+            // Fix all historical PO data: STL ↔ TOV swap
+            data.poStats.forEach(row => {
+                // Per-game swap
+                const tmpG = row['STL / G'];
+                row['STL / G'] = row['TOV / G'];
+                row['TOV / G'] = tmpG;
+                
+                // Totals swap (if they exist)
+                if (row['STL'] !== undefined || row['TOV'] !== undefined) {
+                    const tmpT = row['STL'];
+                    row['STL'] = row['TOV'];
+                    row['TOV'] = tmpT;
+                }
+                poFixed++;
+            });
+            
+            console.log('Fixed column swaps: ' + rsFixed + ' RS rows (2025-26), ' + poFixed + ' PO rows');
+        }
+
         // ===== DATA LOADING =====
         async function fetchJSON(url) {
             try {
@@ -568,6 +617,9 @@
                     data.historical.hustle, data.historical.plusMinus,
                     data.historical.winsLosses
                 ]);
+                
+                // Fix column swaps in data
+                fixColumnSwaps();
                 
                 // Process 2025-26 current season data (updated daily)
                 if (currentData) {
