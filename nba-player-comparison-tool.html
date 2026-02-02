@@ -203,7 +203,7 @@
             font-weight: 600;
             color: #666;
             margin-top: 8px;
-            text-align: center;
+            text-align: left;
         }
         .suggestions-section {
             background: #f8f9fa;
@@ -643,13 +643,8 @@
                     const allStarsResponse = await fetch(DATA_BASE_URL + DATA_FILES.allStarsData + cacheBust);
                     if (allStarsResponse.ok) {
                         playerData.allStarsData = await allStarsResponse.json();
-                        console.log('All-Stars data loaded:', {
-                            allStars1990Plus: playerData.allStarsData.allStars1990Plus?.length || 0,
-                            allStarsAllEras: playerData.allStarsData.allStarsAllEras?.length || 0
-                        });
                     }
                 } catch (e) {
-                    console.log('All-Stars data not available - random comparison features disabled');
                     playerData.allStarsData = null;
                 }
                 
@@ -745,22 +740,15 @@
         }
 
         function getRandomAllStar() {
-            if (!playerData.allStarsData || !playerData.allStarsData.allStars1990Plus) {
-                console.log('[getRandomAllStar] No allStarsData available');
-                return null;
-            }
+            if (!playerData.allStarsData || !playerData.allStarsData.allStars1990Plus) return null;
             
             // Filter to only All-Stars that exist in our players array
             const allStars = playerData.allStarsData.allStars1990Plus.filter(name => 
                 players.includes(name)
             );
             
-            console.log('[getRandomAllStar] Filtered allStars:', allStars.length, 'from', playerData.allStarsData.allStars1990Plus.length);
-            
             if (allStars.length === 0) return null;
-            const pick = allStars[Math.floor(Math.random() * allStars.length)];
-            console.log('[getRandomAllStar] Picked:', pick);
-            return pick;
+            return allStars[Math.floor(Math.random() * allStars.length)];
         }
 
         function getSameEraAllStar(playerName) {
@@ -919,15 +907,10 @@
         }
 
         function compareFromInputs() {
-            console.log('[COMPARE] compareFromInputs called');
-            
             const p1Input = document.getElementById('player1-top').value.trim();
             const p2Input = document.getElementById('player2-top').value.trim();
             
-            console.log('[COMPARE] p1Input:', p1Input, 'p2Input:', p2Input);
-            
             if (!p1Input || !p2Input) {
-                console.log('[COMPARE] ERROR: Empty player name');
                 if (!loopActive) alert('Please enter both player names');
                 return;
             }
@@ -936,22 +919,17 @@
             const p1 = findPlayerName(p1Input);
             const p2 = findPlayerName(p2Input);
             
-            console.log('[COMPARE] Found p1:', p1, 'p2:', p2);
-            
             if (!p1) {
-                console.log('[COMPARE] ERROR: Player 1 not found:', p1Input);
                 if (!loopActive) alert(`Player "${p1Input}" not found. Please select from suggestions.`);
                 return;
             }
             
             if (!p2) {
-                console.log('[COMPARE] ERROR: Player 2 not found:', p2Input);
                 if (!loopActive) alert(`Player "${p2Input}" not found. Please select from suggestions.`);
                 return;
             }
             
             if (p1 === p2) {
-                console.log('[COMPARE] ERROR: Same player');
                 if (!loopActive) alert('Please select different players');
                 return;
             }
@@ -965,7 +943,6 @@
             // Update sticky player labels
             updateStickyPlayerOptions();
             
-            console.log('[COMPARE] Calling comparePlayer...');
             comparePlayer(p1, p2);
         }
 
@@ -2143,8 +2120,6 @@
         }
 
         function smoothScrollToBottom(durationMs) {
-            console.log('[SCROLL] smoothScrollToBottom called with duration:', durationMs);
-            
             // Cancel any existing scroll animation
             if (scrollAnimationId) {
                 cancelAnimationFrame(scrollAnimationId);
@@ -2152,66 +2127,44 @@
             
             // Start from the top of the page
             const startY = 0;
-            
-            // Scroll to starting position instantly
             window.scrollTo(0, startY);
             
             const targetY = document.documentElement.scrollHeight - window.innerHeight;
             const distance = targetY - startY;
             
-            console.log('[SCROLL] Page height:', document.documentElement.scrollHeight, 
-                        'Viewport:', window.innerHeight, 
-                        'targetY:', targetY, 
-                        'distance:', distance);
-            
-            // If no scrolling needed (page fits in viewport), still wait then trigger next comparison
+            // If no scrolling needed (page fits in viewport), wait then trigger next comparison
             if (distance <= 0) {
-                console.log('[SCROLL] Page fits in viewport, no scroll needed');
                 setTimeout(() => {
-                    if (loopActive) {
-                        console.log('[SCROLL] Triggering next comparison (no scroll)');
-                        runLoopComparison();
-                    }
-                }, 3000); // Wait 3 seconds before next comparison if no scroll needed
+                    if (loopActive) runLoopComparison();
+                }, 3000);
                 return;
             }
             
             const startTime = performance.now();
             
             function animateScroll(currentTime) {
-                if (!loopActive) {
-                    console.log('[SCROLL] Loop stopped, aborting scroll');
-                    return;
-                }
+                if (!loopActive) return;
                 
                 const elapsed = currentTime - startTime;
                 const progress = Math.min(elapsed / durationMs, 1);
                 
                 // Linear scrolling - constant speed
-                const currentY = startY + (distance * progress);
-                window.scrollTo(0, currentY);
+                window.scrollTo(0, startY + (distance * progress));
                 
                 if (progress < 1) {
                     scrollAnimationId = requestAnimationFrame(animateScroll);
                 } else {
-                    console.log('[SCROLL] Scroll complete, waiting 1.5s before next comparison');
                     // Scroll finished - trigger next comparison after 1.5 seconds
                     setTimeout(() => {
-                        if (loopActive) {
-                            console.log('[SCROLL] Triggering next comparison');
-                            runLoopComparison();
-                        }
+                        if (loopActive) runLoopComparison();
                     }, 1500);
                 }
             }
             
-            console.log('[SCROLL] Starting animation');
             scrollAnimationId = requestAnimationFrame(animateScroll);
         }
 
         function startLoop() {
-            console.log('[LOOP] startLoop called');
-            
             const loopBtn = document.getElementById('loopBtn');
             const loopBtnBottom = document.getElementById('loopBtnBottom');
             const scrollSelect = document.getElementById('scrollDuration');
@@ -2231,7 +2184,6 @@
             // Update sticky player labels
             updateStickyPlayerOptions();
             
-            console.log('[LOOP] Loop started, calling runLoopComparison');
             // Run first comparison immediately (scroll callback will trigger next)
             runLoopComparison();
         }
@@ -2267,24 +2219,15 @@
         }
 
         function runLoopComparison() {
-            console.log('[LOOP] runLoopComparison called, loopActive:', loopActive);
-            
             const stickyMode = document.getElementById('stickyPlayer').value;
             const scrollDuration = parseInt(document.getElementById('scrollDuration').value) * 1000;
             const currentP1 = document.getElementById('player1-top').value;
             const currentP2 = document.getElementById('player2-top').value;
             
-            console.log('[LOOP] stickyMode:', stickyMode, 'scrollDuration:', scrollDuration);
-            console.log('[LOOP] currentP1:', currentP1, 'currentP2:', currentP2);
-            
             if (stickyMode === 'p1') {
                 // Keep Player 1, randomize Player 2
                 const newOpponent = getRandomOpponent([currentP1]);
-                console.log('[LOOP] Keep P1, new opponent:', newOpponent);
-                if (!newOpponent) {
-                    console.log('[LOOP] ERROR: No opponent found!');
-                    return;
-                }
+                if (!newOpponent) return;
                 
                 document.getElementById('player2-top').value = newOpponent;
                 document.getElementById('player2-bottom').value = newOpponent;
@@ -2292,11 +2235,7 @@
             } else if (stickyMode === 'p2') {
                 // Keep Player 2, randomize Player 1
                 const newOpponent = getRandomOpponent([currentP2]);
-                console.log('[LOOP] Keep P2, new opponent:', newOpponent);
-                if (!newOpponent) {
-                    console.log('[LOOP] ERROR: No opponent found!');
-                    return;
-                }
+                if (!newOpponent) return;
                 
                 document.getElementById('player1-top').value = newOpponent;
                 document.getElementById('player1-bottom').value = newOpponent;
@@ -2310,24 +2249,16 @@
                     );
                 }
                 
-                console.log('[LOOP] Randomize both, allStars count:', allStars.length);
-                
                 // Fallback: if no All-Stars available, pick from top of players list
                 if (allStars.length < 2) {
-                    allStars = players.slice(0, 100); // First 100 players (sorted alphabetically)
-                    console.log('[LOOP] Using fallback players, count:', allStars.length);
+                    allStars = players.slice(0, 100);
                 }
                 
-                if (allStars.length < 2) {
-                    console.log('[LOOP] ERROR: Not enough players!');
-                    return;
-                }
+                if (allStars.length < 2) return;
                 
                 const idx1 = Math.floor(Math.random() * allStars.length);
                 let idx2 = Math.floor(Math.random() * allStars.length);
                 while (idx2 === idx1) idx2 = Math.floor(Math.random() * allStars.length);
-                
-                console.log('[LOOP] Selected:', allStars[idx1], 'vs', allStars[idx2]);
                 
                 document.getElementById('player1-top').value = allStars[idx1];
                 document.getElementById('player2-top').value = allStars[idx2];
@@ -2335,15 +2266,11 @@
                 document.getElementById('player2-bottom').value = allStars[idx2];
             }
             
-            console.log('[LOOP] Calling compareFromInputs...');
             compareFromInputs();
             
             // Start smooth scroll after brief delay for content to render
-            console.log('[LOOP] Scheduling scroll in 1500ms...');
             setTimeout(() => {
-                console.log('[LOOP] Scroll timeout fired, loopActive:', loopActive);
                 if (loopActive) {
-                    console.log('[LOOP] Starting smoothScrollToBottom with duration:', scrollDuration);
                     smoothScrollToBottom(scrollDuration);
                 }
             }, 1500);
