@@ -44,6 +44,32 @@
             margin-bottom: 30px;
             align-items: center;
         }
+        .player-select-card {
+            background: #fafafa;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+        .player-select-card h3 {
+            font-size: 14px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .select-group { margin-bottom: 15px; }
+        .select-group:last-child { margin-bottom: 0; }
+        .select-group label {
+            display: block;
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+        .player-select-wrapper {
+            position: relative;
+        }
         .player-autocomplete {
             width: 100%;
             padding: 12px;
@@ -325,6 +351,18 @@
                 gap: 10px;
                 margin-bottom: 18px;
             }
+            .player-select-card {
+                padding: 12px;
+            }
+            .player-select-card h3 {
+                font-size: 12px;
+                margin-bottom: 8px;
+            }
+            .select-group { margin-bottom: 10px; }
+            .player-autocomplete {
+                padding: 10px;
+                font-size: 15px;
+            }
             .vs-text {
                 font-size: 18px;
                 margin: 5px 0;
@@ -403,14 +441,26 @@
         <div id="mainContent" style="display: none;">
             <!-- Player selector at top -->
             <div class="player-selector">
-                <div class="player-select-wrapper">
-                    <input type="text" id="player1-top" class="player-autocomplete" placeholder="Type player name...">
-                    <div id="suggestions1-top" class="autocomplete-suggestions"></div>
+                <div class="player-select-card">
+                    <h3>Player 1</h3>
+                    <div class="select-group">
+                        <label>Player Name</label>
+                        <div class="player-select-wrapper">
+                            <input type="text" id="player1-top" class="player-autocomplete" placeholder="Type player name...">
+                            <div id="suggestions1-top" class="autocomplete-suggestions"></div>
+                        </div>
+                    </div>
                 </div>
                 <div class="vs-text">VS</div>
-                <div class="player-select-wrapper">
-                    <input type="text" id="player2-top" class="player-autocomplete" placeholder="Type player name...">
-                    <div id="suggestions2-top" class="autocomplete-suggestions"></div>
+                <div class="player-select-card">
+                    <h3>Player 2</h3>
+                    <div class="select-group">
+                        <label>Player Name</label>
+                        <div class="player-select-wrapper">
+                            <input type="text" id="player2-top" class="player-autocomplete" placeholder="Type player name...">
+                            <div id="suggestions2-top" class="autocomplete-suggestions"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -436,14 +486,26 @@
             
             <!-- Player selector at bottom -->
             <div class="player-selector" style="margin-top: 40px;">
-                <div class="player-select-wrapper">
-                    <input type="text" id="player1-bottom" class="player-autocomplete" placeholder="Type player name...">
-                    <div id="suggestions1-bottom" class="autocomplete-suggestions"></div>
+                <div class="player-select-card">
+                    <h3>Player 1</h3>
+                    <div class="select-group">
+                        <label>Player Name</label>
+                        <div class="player-select-wrapper">
+                            <input type="text" id="player1-bottom" class="player-autocomplete" placeholder="Type player name...">
+                            <div id="suggestions1-bottom" class="autocomplete-suggestions"></div>
+                        </div>
+                    </div>
                 </div>
                 <div class="vs-text">VS</div>
-                <div class="player-select-wrapper">
-                    <input type="text" id="player2-bottom" class="player-autocomplete" placeholder="Type player name...">
-                    <div id="suggestions2-bottom" class="autocomplete-suggestions"></div>
+                <div class="player-select-card">
+                    <h3>Player 2</h3>
+                    <div class="select-group">
+                        <label>Player Name</label>
+                        <div class="player-select-wrapper">
+                            <input type="text" id="player2-bottom" class="player-autocomplete" placeholder="Type player name...">
+                            <div id="suggestions2-bottom" class="autocomplete-suggestions"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -476,6 +538,63 @@
         let playerData = {};
         let players = [];
         let dataLoaded = false;
+
+        // Fix column swaps in STL/BLK/TOV
+        // The JSON export has these columns incorrectly mapped
+        // Symptom: Ja Morant's "steals peak" shows ~3.8 (his actual TOV)
+        // This means: data_STL contains actual_TOV values
+        // Pattern appears to be: data_STL=actual_TOV, data_BLK=actual_STL, data_TOV=actual_BLK
+        // Fix: reverse the rotation
+        function fixColumnSwaps(dataArray, label) {
+            if (!dataArray || dataArray.length === 0) return;
+            
+            let fixCount = 0;
+            
+            // Log a sample before fix (for debugging)
+            const jaMorant = dataArray.find(r => r.PLAYER && r.PLAYER.includes('Ja Morant'));
+            if (jaMorant) {
+                console.log(`[${label}] Before fix - Ja Morant:`, {
+                    STL: jaMorant.STL,
+                    BLK: jaMorant.BLK, 
+                    TOV: jaMorant.TOV,
+                    GP: jaMorant.GP
+                });
+            }
+            
+            dataArray.forEach(row => {
+                // Check if row has the columns we need to fix
+                const hasSTL = row.STL !== undefined;
+                const hasBLK = row.BLK !== undefined;
+                const hasTOV = row.TOV !== undefined;
+                
+                if (hasSTL && hasBLK && hasTOV) {
+                    // Current state: STL has TOV values, BLK has STL values, TOV has BLK values
+                    // Fix: rotate back
+                    const oldSTL = row.STL;  // Contains actual TOV
+                    const oldBLK = row.BLK;  // Contains actual STL
+                    const oldTOV = row.TOV;  // Contains actual BLK
+                    
+                    row.STL = oldBLK;  // Steals = what was in BLK (actual steals)
+                    row.BLK = oldTOV;  // Blocks = what was in TOV (actual blocks)
+                    row.TOV = oldSTL;  // Turnovers = what was in STL (actual turnovers)
+                    
+                    fixCount++;
+                }
+            });
+            
+            // Log after fix
+            if (jaMorant) {
+                const jaMorantAfter = dataArray.find(r => r.PLAYER && r.PLAYER.includes('Ja Morant'));
+                console.log(`[${label}] After fix - Ja Morant:`, {
+                    STL: jaMorantAfter.STL,
+                    BLK: jaMorantAfter.BLK,
+                    TOV: jaMorantAfter.TOV,
+                    GP: jaMorantAfter.GP
+                });
+            }
+            
+            console.log(`[${label}] Fixed STL/BLK/TOV rotation in ${fixCount} rows`);
+        }
 
         // Load JSON data from GitHub
         async function loadData() {
@@ -513,6 +632,11 @@
                 playerData.salaries = results[8];
                 playerData.sneakers = results[9];
                 playerData.comparisons = results[10];
+                
+                // Fix column swaps in STL/BLK/TOV data
+                // The JSON data has these columns rotated - fix them here
+                fixColumnSwaps(playerData.rsStats, 'RS');
+                fixColumnSwaps(playerData.poStats, 'PO');
                 
                 // Try to load All-Stars data (optional - for random comparison feature)
                 try {
@@ -618,7 +742,13 @@
 
         function getRandomAllStar() {
             if (!playerData.allStarsData || !playerData.allStarsData.allStars1990Plus) return null;
-            const allStars = playerData.allStarsData.allStars1990Plus;
+            
+            // Filter to only All-Stars that exist in our players array
+            const allStars = playerData.allStarsData.allStars1990Plus.filter(name => 
+                players.includes(name)
+            );
+            
+            if (allStars.length === 0) return null;
             return allStars[Math.floor(Math.random() * allStars.length)];
         }
 
@@ -626,8 +756,10 @@
             if (!playerData.allStarsData || !playerData.allStarsData.playerDebutYears) return getRandomAllStar();
             
             const debutYears = playerData.allStarsData.playerDebutYears;
-            // Use ALL All-Stars (all eras) for same-era suggestions
-            const allStarsList = playerData.allStarsData.allStarsAllEras || playerData.allStarsData.allStars1990Plus || [];
+            // Use ALL All-Stars (all eras) for same-era suggestions, filtered to those in our dataset
+            const rawAllStarsList = playerData.allStarsData.allStarsAllEras || playerData.allStarsData.allStars1990Plus || [];
+            const allStarsList = rawAllStarsList.filter(name => players.includes(name));
+            
             const playerDebutYear = debutYears[playerName];
             
             if (!playerDebutYear) return getRandomAllStar();
@@ -1961,7 +2093,14 @@
 
         function getRandomOpponent(excludePlayers) {
             if (!playerData.allStarsData || !playerData.allStarsData.allStars1990Plus) return null;
-            const allStars = playerData.allStarsData.allStars1990Plus;
+            
+            // Filter to only All-Stars that exist in our players array (from rsStats)
+            const allStars = playerData.allStarsData.allStars1990Plus.filter(name => 
+                players.includes(name)
+            );
+            
+            if (allStars.length === 0) return null;
+            
             const available = allStars.filter(p => 
                 !excludePlayers.includes(p) && !usedOpponents.has(p)
             );
@@ -2105,8 +2244,19 @@
                 document.getElementById('player1-bottom').value = newOpponent;
                 
             } else {
-                // Randomize both players
-                const allStars = playerData.allStarsData ? playerData.allStarsData.allStars1990Plus : [];
+                // Randomize both players - use All-Stars that exist in our dataset
+                let allStars = [];
+                if (playerData.allStarsData && playerData.allStarsData.allStars1990Plus) {
+                    allStars = playerData.allStarsData.allStars1990Plus.filter(name => 
+                        players.includes(name)
+                    );
+                }
+                
+                // Fallback: if no All-Stars available, pick from top of players list
+                if (allStars.length < 2) {
+                    allStars = players.slice(0, 100); // First 100 players (sorted alphabetically)
+                }
+                
                 if (allStars.length < 2) return;
                 
                 const idx1 = Math.floor(Math.random() * allStars.length);
