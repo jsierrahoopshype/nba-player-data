@@ -609,8 +609,9 @@
                     historicalDataLoaded = true;
                 }
                 
-                // Fix mojibake player names in historical data (JokiÄ‡ → Jokic, DonÄiÄ‡ → Doncic, etc.)
+                // Fix mojibake player names in ALL data (JokiÄ‡ → Jokic, DonÄiÄ‡ → Doncic, etc.)
                 fixHistoricalNames([
+                    data.rsStats, data.poStats,
                     data.historical.advanced, data.historical.scoring,
                     data.historical.shotLocation, data.historical.defense,
                     data.historical.usage, data.historical.clutch,
