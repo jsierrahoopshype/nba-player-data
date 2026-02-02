@@ -1149,9 +1149,69 @@
             return playerAwards.length > 0 ? playerAwards.length : null;
         }
 
+        // ==========================================
+        // MULTI-TEAM SEASON DEDUPLICATION
+        // When a player plays for multiple teams in one season, the data contains
+        // separate rows per team PLUS a "TOT" row with aggregated stats.
+        // Without deduplication, career stats double-count and peaks use partial stints.
+        // This function keeps only one row per season: the TOT row if it exists,
+        // otherwise the single team row, otherwise aggregates partial rows.
+        // ==========================================
+        function deduplicateSeasonRows(playerRows) {
+            // Group rows by YEAR
+            const byYear = {};
+            playerRows.forEach(row => {
+                const year = row.YEAR || 'unknown';
+                if (!byYear[year]) byYear[year] = [];
+                byYear[year].push(row);
+            });
+            
+            const deduplicated = [];
+            for (const year in byYear) {
+                const yearRows = byYear[year];
+                
+                if (yearRows.length === 1) {
+                    // Single row for this season — use it directly
+                    deduplicated.push(yearRows[0]);
+                } else {
+                    // Multiple rows — look for TOT row first
+                    const totRow = yearRows.find(r => 
+                        r.TEAM === 'TOT' || r.TM === 'TOT' || r.Team === 'TOT'
+                    );
+                    
+                    if (totRow) {
+                        deduplicated.push(totRow);
+                    } else {
+                        // No TOT row — aggregate the partial rows manually
+                        const aggregated = { ...yearRows[0] }; // Start with first row's structure
+                        const numericColumns = ['GP', 'PTS', 'REB', 'AST', 'STL', 'BLK', 'TOV',
+                                                'FGM', 'FGA', '3P', '3PA', 'FTM', 'FTA', 'MIN',
+                                                'OREB', 'DREB', 'PF'];
+                        
+                        // Zero out numeric columns first, then sum all rows
+                        numericColumns.forEach(col => { aggregated[col] = 0; });
+                        
+                        yearRows.forEach(row => {
+                            numericColumns.forEach(col => {
+                                const val = parseFloat(row[col]);
+                                if (!isNaN(val)) {
+                                    aggregated[col] = (aggregated[col] || 0) + val;
+                                }
+                            });
+                        });
+                        
+                        deduplicated.push(aggregated);
+                    }
+                }
+            }
+            
+            return deduplicated;
+        }
+
         function getRegularSeasonStat(playerName, metric) {
-            const playerRows = playerData.rsStats.filter(row => row.PLAYER === playerName);
-            if (playerRows.length === 0) return null;
+            const rawRows = playerData.rsStats.filter(row => row.PLAYER === playerName);
+            if (rawRows.length === 0) return null;
+            const playerRows = deduplicateSeasonRows(rawRows);
             
             // Map metric to column name
             const columnMap = {
@@ -1175,72 +1235,66 @@
             };
             
             // Season peak metrics - find highest single-season average
-            const peakMetrics = {
-                'Points per game peak': 'PTS / G',
-                'Rebounds per game peak': 'REB / G',
-                'Assists per game peak': 'AST / G',
-                'Steals per game peak': 'STL / G',
-                'Blocks per game peak': 'BLK / G',
-                'Field Goal % peak': 'FG%',
-                'Three Point % peak': '3P%',
-                'Free Throw % peak': 'FT%',
-                'Turnovers per game peak': 'TOV / G'
+            // IMPORTANT: Calculate from raw totals (STAT / GP) per season,
+            // not from a pre-calculated column that may not exist or may have a different name.
+            const peakPerGameMetrics = {
+                'Points per game peak': 'PTS',
+                'Rebounds per game peak': 'REB',
+                'Assists per game peak': 'AST',
+                'Steals per game peak': 'STL',
+                'Blocks per game peak': 'BLK',
+                'Turnovers per game peak': 'TOV'
             };
             
-            // Check if this is a peak metric
-            if (peakMetrics[metric]) {
-                const column = peakMetrics[metric];
-                
-                // For percentage peaks, calculate from makes/attempts for each season
-                if (metric.includes('%')) {
-                    let maxPct = -Infinity;
-                    
-                    const pctMap = {
-                        'Field Goal % peak': { made: 'FGM', att: 'FGA' },
-                        'Three Point % peak': { made: '3P', att: '3PA' },
-                        'Free Throw % peak': { made: 'FTM', att: 'FTA' }
-                    };
-                    
-                    const pctInfo = pctMap[metric];
-                    if (pctInfo) {
-                        playerRows.forEach(row => {
-                            const made = parseFloat(row[pctInfo.made]);
-                            const att = parseFloat(row[pctInfo.att]);
-                            
-                            // Only calculate if player had attempts
-                            if (!isNaN(made) && !isNaN(att) && att > 0) {
-                                const pct = (made / att) * 100;
-                                if (pct > maxPct) {
-                                    maxPct = pct;
-                                }
-                            }
-                        });
-                        
-                        return maxPct > -Infinity ? maxPct.toFixed(1) + '%' : null;
-                    }
-                }
-                
-                // For non-percentage peaks, find max value
+            const peakPctMetrics = {
+                'Field Goal % peak': { made: 'FGM', att: 'FGA', minAtt: 200 },
+                'Three Point % peak': { made: '3P', att: '3PA', minAtt: 50 },
+                'Free Throw % peak': { made: 'FTM', att: 'FTA', minAtt: 50 }
+            };
+            
+            const MIN_GAMES_FOR_PEAK = 20;
+            
+            // Check if this is a per-game peak metric
+            if (peakPerGameMetrics[metric]) {
+                const statColumn = peakPerGameMetrics[metric];
                 let maxValue = -Infinity;
                 
                 playerRows.forEach(row => {
-                    let val = row[column];
+                    const stat = parseFloat(row[statColumn]);
+                    const games = parseFloat(row['GP']);
                     
-                    if (typeof val === 'string') {
-                        val = val.replace('%', '');
-                    }
-                    
-                    val = parseFloat(val);
-                    
-                    if (!isNaN(val) && val > maxValue) {
-                        maxValue = val;
+                    if (!isNaN(stat) && !isNaN(games) && games >= MIN_GAMES_FOR_PEAK) {
+                        const perGame = stat / games;
+                        if (perGame > maxValue) {
+                            maxValue = perGame;
+                        }
                     }
                 });
                 
-                if (maxValue > -Infinity) {
-                    return maxValue.toFixed(1);
-                }
-                return null;
+                return maxValue > -Infinity ? maxValue.toFixed(1) : null;
+            }
+            
+            // Check if this is a percentage peak metric
+            if (peakPctMetrics[metric]) {
+                const pctInfo = peakPctMetrics[metric];
+                let maxPct = -Infinity;
+                
+                playerRows.forEach(row => {
+                    const made = parseFloat(row[pctInfo.made]);
+                    const att = parseFloat(row[pctInfo.att]);
+                    const games = parseFloat(row['GP']);
+                    
+                    // Require minimum attempts AND minimum games to avoid fluky small-sample peaks
+                    if (!isNaN(made) && !isNaN(att) && att >= pctInfo.minAtt && 
+                        !isNaN(games) && games >= MIN_GAMES_FOR_PEAK) {
+                        const pct = (made / att) * 100;
+                        if (pct > maxPct) {
+                            maxPct = pct;
+                        }
+                    }
+                });
+                
+                return maxPct > -Infinity ? maxPct.toFixed(1) + '%' : null;
             }
             
             const column = columnMap[metric];
@@ -1318,8 +1372,9 @@
         }
 
         function getPlayoffStat(playerName, metric) {
-            const playerRows = playerData.poStats.filter(row => row.PLAYER === playerName);
-            if (playerRows.length === 0) return null;
+            const rawRows = playerData.poStats.filter(row => row.PLAYER === playerName);
+            if (rawRows.length === 0) return null;
+            const playerRows = deduplicateSeasonRows(rawRows);
             
             // Similar to regular season stats
             const columnMap = {
@@ -1342,72 +1397,64 @@
             };
             
             // Playoff peak metrics - find highest single-postseason average
-            const peakMetrics = {
-                'Points per game PO peak': 'PTS / G',
-                'Rebounds per game PO peak': 'REB / G',
-                'Assists per game PO peak': 'AST / G',
-                'Steals per game PO peak': 'STL / G',
-                'Blocks per game PO peak': 'BLK / G',
-                'Field Goal % PO peak': 'FG%',
-                'Three Point % PO peak': '3P%',
-                'Free Throw % PO peak': 'FT%',
-                'Turnovers per game PO peak': 'TOV / G'
+            // Calculate from raw totals (STAT / GP) per season, same as regular season peaks.
+            const peakPerGameMetricsPO = {
+                'Points per game PO peak': 'PTS',
+                'Rebounds per game PO peak': 'REB',
+                'Assists per game PO peak': 'AST',
+                'Steals per game PO peak': 'STL',
+                'Blocks per game PO peak': 'BLK',
+                'Turnovers per game PO peak': 'TOV'
             };
             
-            // Check if this is a peak metric
-            if (peakMetrics[metric]) {
-                const column = peakMetrics[metric];
-                
-                // For percentage peaks, calculate from makes/attempts for each season
-                if (metric.includes('%')) {
-                    let maxPct = -Infinity;
-                    
-                    const pctMap = {
-                        'Field Goal % PO peak': { made: 'FGM', att: 'FGA' },
-                        'Three Point % PO peak': { made: '3:00 PM', att: '3PA' },
-                        'Free Throw % PO peak': { made: 'FTM', att: 'FTA' }
-                    };
-                    
-                    const pctInfo = pctMap[metric];
-                    if (pctInfo) {
-                        playerRows.forEach(row => {
-                            const made = parseFloat(row[pctInfo.made]);
-                            const att = parseFloat(row[pctInfo.att]);
-                            
-                            // Only calculate if player had attempts
-                            if (!isNaN(made) && !isNaN(att) && att > 0) {
-                                const pct = (made / att) * 100;
-                                if (pct > maxPct) {
-                                    maxPct = pct;
-                                }
-                            }
-                        });
-                        
-                        return maxPct > -Infinity ? maxPct.toFixed(1) + '%' : null;
-                    }
-                }
-                
-                // For non-percentage peaks, find max value
+            const peakPctMetricsPO = {
+                'Field Goal % PO peak': { made: 'FGM', att: 'FGA', minAtt: 50 },
+                'Three Point % PO peak': { made: '3P', att: '3PA', minAtt: 15 },
+                'Free Throw % PO peak': { made: 'FTM', att: 'FTA', minAtt: 15 }
+            };
+            
+            const MIN_GAMES_FOR_PO_PEAK = 4; // At least one full series
+            
+            // Check if this is a per-game PO peak metric
+            if (peakPerGameMetricsPO[metric]) {
+                const statColumn = peakPerGameMetricsPO[metric];
                 let maxValue = -Infinity;
                 
                 playerRows.forEach(row => {
-                    let val = row[column];
+                    const stat = parseFloat(row[statColumn]);
+                    const games = parseFloat(row['GP']);
                     
-                    if (typeof val === 'string') {
-                        val = val.replace('%', '');
-                    }
-                    
-                    val = parseFloat(val);
-                    
-                    if (!isNaN(val) && val > maxValue) {
-                        maxValue = val;
+                    if (!isNaN(stat) && !isNaN(games) && games >= MIN_GAMES_FOR_PO_PEAK) {
+                        const perGame = stat / games;
+                        if (perGame > maxValue) {
+                            maxValue = perGame;
+                        }
                     }
                 });
                 
-                if (maxValue > -Infinity) {
-                    return maxValue.toFixed(1);
-                }
-                return null;
+                return maxValue > -Infinity ? maxValue.toFixed(1) : null;
+            }
+            
+            // Check if this is a percentage PO peak metric
+            if (peakPctMetricsPO[metric]) {
+                const pctInfo = peakPctMetricsPO[metric];
+                let maxPct = -Infinity;
+                
+                playerRows.forEach(row => {
+                    const made = parseFloat(row[pctInfo.made]);
+                    const att = parseFloat(row[pctInfo.att]);
+                    const games = parseFloat(row['GP']);
+                    
+                    if (!isNaN(made) && !isNaN(att) && att >= pctInfo.minAtt &&
+                        !isNaN(games) && games >= MIN_GAMES_FOR_PO_PEAK) {
+                        const pct = (made / att) * 100;
+                        if (pct > maxPct) {
+                            maxPct = pct;
+                        }
+                    }
+                });
+                
+                return maxPct > -Infinity ? maxPct.toFixed(1) + '%' : null;
             }
             
             const column = columnMap[metric];
@@ -1446,7 +1493,7 @@
             if (metric.includes('%')) {
                 const percentageMap = {
                     'Field Goal % PO': { pct: 'FG%', made: 'FGM', att: 'FGA' },
-                    'Three Point % PO': { pct: '3P%', made: '3:00 PM', att: '3PA' },
+                    'Three Point % PO': { pct: '3P%', made: '3P', att: '3PA' },
                     'Free Throw % PO': { pct: 'FT%', made: 'FTM', att: 'FTA' }
                 };
                 
@@ -1486,8 +1533,9 @@
         function getPlayoffSeriesStat(playerName, metric) {
             // Get all playoff rows for this player from poStats
             // Note: poStats uses "PLAYER" field, not "NAME"
-            const playerRows = playerData.poStats.filter(row => row.PLAYER === playerName);
-            if (playerRows.length === 0) return null;
+            const rawRows = playerData.poStats.filter(row => row.PLAYER === playerName);
+            if (rawRows.length === 0) return null;
+            const playerRows = deduplicateSeasonRows(rawRows);
             
             // Count each result type
             const resultCounts = {
