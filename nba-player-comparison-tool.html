@@ -177,7 +177,7 @@
             font-weight: 600;
             color: #666;
             margin-top: 8px;
-            text-align: left;
+            text-align: center;
         }
         .suggestions-section {
             background: #f8f9fa;
@@ -208,6 +208,7 @@
             border-radius: 8px;
             background-color: #fafafa;
             align-items: center;
+            justify-items: center;
             transition: transform 0.2s, box-shadow 0.2s;
         }
         .comparison-row:hover {
@@ -283,45 +284,35 @@
             text-align: center;
             border: 1px solid #f5c6cb;
         }
-        /* Loop controls */
+        /* Loop controls — matches Season Comparison Tool */
         .loop-controls {
             display: flex;
-            align-items: center;
             justify-content: center;
-            gap: 15px;
-            margin-bottom: 25px;
-            flex-wrap: wrap;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
         }
-        .loop-btn {
+        .loop-button {
             background-color: #28a745;
             color: white;
             border: none;
-            padding: 10px 24px;
-            font-size: 15px;
-            font-weight: 600;
+            padding: 10px 20px;
+            font-size: 14px;
             border-radius: 6px;
             cursor: pointer;
             transition: background-color 0.3s;
         }
-        .loop-btn:hover { background-color: #218838; }
-        .loop-btn.active {
+        .loop-button:hover { background-color: #218838; }
+        .loop-button.active {
             background-color: #dc3545;
         }
-        .loop-btn.active:hover { background-color: #c82333; }
-        .loop-speed {
-            display: flex;
-            align-items: center;
-            gap: 8px;
+        .loop-button.active:hover { background-color: #c82333; }
+        .loop-interval {
+            padding: 8px 12px;
             font-size: 14px;
-            color: #555;
-        }
-        .loop-speed input[type="range"] {
-            width: 120px;
-        }
-        .loop-speed-label {
-            min-width: 30px;
-            text-align: center;
-            font-weight: 600;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            background: white;
         }
 
         @media (max-width: 768px) {
@@ -372,9 +363,19 @@
             .comparison-row:hover { transform: none; box-shadow: none; }
             /* Hide player names on mobile (they're in the section score header) */
             .comparison-row .player-name-cell { display: none; }
-            .player-value { font-size: 15px; text-align: center; }
-            .player-value.winner { font-size: 16px; text-align: center; }
-            .metric-name { font-size: 11px; min-width: 70px; text-align: center; }
+            .player-value {
+                font-size: 15px;
+                text-align: center;
+            }
+            .player-value.winner {
+                font-size: 16px;
+                text-align: center;
+            }
+            .metric-name {
+                font-size: 11px;
+                min-width: 70px;
+                text-align: center;
+            }
             /* Share URL */
             .share-url { padding: 15px; }
             .share-url h3 { font-size: 15px; }
@@ -383,9 +384,9 @@
             .suggestions-section { padding: 15px; }
             .suggestion-btn { padding: 10px 14px; font-size: 13px; }
             /* Loop controls */
-            .loop-controls { gap: 10px; }
-            .loop-btn { padding: 8px 18px; font-size: 14px; }
-            .loop-speed input[type="range"] { width: 90px; }
+            .loop-controls { flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+            .loop-button { padding: 8px 14px; font-size: 13px; }
+            .loop-interval { padding: 6px 8px; font-size: 13px; }
         }
     </style>
 </head>
@@ -418,12 +419,17 @@
             </button>
 
             <div class="loop-controls">
-                <button class="loop-btn" id="loopBtn" onclick="toggleLoop()">▶ Start Loop</button>
-                <div class="loop-speed">
-                    <span>Speed:</span>
-                    <input type="range" id="loopSpeed" min="1" max="10" value="5" oninput="updateSpeedLabel()">
-                    <span class="loop-speed-label" id="speedLabel">5s</span>
-                </div>
+                <button class="loop-button" id="loopBtn" onclick="toggleLoop()">Start Comparison Loop</button>
+                <select id="scrollDuration" class="loop-interval" title="Scroll speed">
+                    <option value="15">15s scroll</option>
+                    <option value="30" selected>30s scroll</option>
+                    <option value="45">45s scroll</option>
+                </select>
+                <select id="stickyPlayer" class="loop-interval">
+                    <option value="none">Randomize Both</option>
+                    <option value="p1" id="stickyP1Option">Keep Player 1</option>
+                    <option value="p2" id="stickyP2Option">Keep Player 2</option>
+                </select>
             </div>
             
             <div id="results"></div>
@@ -803,6 +809,9 @@
             document.getElementById('player1-bottom').value = p1;
             document.getElementById('player2-bottom').value = p2;
             
+            // Update sticky player labels
+            updateStickyPlayerOptions();
+            
             comparePlayer(p1, p2);
         }
 
@@ -813,11 +822,6 @@
             setTimeout(() => {
                 const results = performComparison(player1Name, player2Name);
                 displayResults(results, player1Name, player2Name);
-                
-                // Only scroll to results during loop mode
-                if (loopActive) {
-                    document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
             }, 100);
         }
 
@@ -1842,6 +1846,13 @@
                 `;
             }
             
+            // Add bottom loop button
+            html += `
+                <div class="loop-controls" style="margin-top: 20px;">
+                    <button class="loop-button" id="loopBtnBottom" onclick="toggleLoop()">${loopActive ? 'Stop Comparison Loop' : 'Start Comparison Loop'}</button>
+                </div>
+            `;
+            
             resultsDiv.innerHTML = html;
             
             // Attach click handlers to clickable player names in scoreboards
@@ -1886,64 +1897,188 @@
         }
         
         // ==========================================
-        // LOOP MODE
+        // LOOP MODE — matches Season Comparison Tool
         // ==========================================
         let loopActive = false;
-        let loopTimer = null;
+        let usedOpponents = new Set();
+        let scrollAnimationId = null;
 
-        function toggleLoop() {
-            loopActive = !loopActive;
-            const btn = document.getElementById('loopBtn');
+        function updateStickyPlayerOptions() {
+            const p1Name = document.getElementById('player1-top').value || 'Player 1';
+            const p2Name = document.getElementById('player2-top').value || 'Player 2';
             
-            if (loopActive) {
-                btn.textContent = '⏹ Stop Loop';
-                btn.classList.add('active');
-                runLoopIteration();
-            } else {
-                btn.textContent = '▶ Start Loop';
-                btn.classList.remove('active');
-                if (loopTimer) {
-                    clearTimeout(loopTimer);
-                    loopTimer = null;
+            document.getElementById('stickyP1Option').textContent = `Keep ${p1Name}`;
+            document.getElementById('stickyP2Option').textContent = `Keep ${p2Name}`;
+        }
+
+        function getRandomOpponent(excludePlayers) {
+            if (!playerData.allStarsData || !playerData.allStarsData.allStars1990Plus) return null;
+            const allStars = playerData.allStarsData.allStars1990Plus;
+            const available = allStars.filter(p => 
+                !excludePlayers.includes(p) && !usedOpponents.has(p)
+            );
+            
+            // If we've used all opponents, reset the used list
+            if (available.length === 0) {
+                usedOpponents.clear();
+                const freshAvailable = allStars.filter(p => !excludePlayers.includes(p));
+                if (freshAvailable.length === 0) return null;
+                const pick = freshAvailable[Math.floor(Math.random() * freshAvailable.length)];
+                usedOpponents.add(pick);
+                return pick;
+            }
+            
+            const pick = available[Math.floor(Math.random() * available.length)];
+            usedOpponents.add(pick);
+            return pick;
+        }
+
+        function smoothScrollToBottom(durationMs) {
+            // Cancel any existing scroll animation
+            if (scrollAnimationId) {
+                cancelAnimationFrame(scrollAnimationId);
+            }
+            
+            // Start from the score summary area, not the very top
+            const scoreSummary = document.querySelector('.score-summary');
+            const startY = scoreSummary ? scoreSummary.offsetTop - 20 : 200;
+            
+            // Scroll to starting position instantly
+            window.scrollTo(0, startY);
+            
+            const targetY = document.documentElement.scrollHeight - window.innerHeight;
+            const distance = targetY - startY;
+            const startTime = performance.now();
+            
+            // If no scrolling needed, trigger next comparison after pause
+            if (distance <= 0) {
+                setTimeout(() => {
+                    if (loopActive) runLoopComparison();
+                }, 1500);
+                return;
+            }
+            
+            function animateScroll(currentTime) {
+                if (!loopActive) return; // Stop if loop was stopped
+                
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / durationMs, 1);
+                
+                // Linear scrolling - constant speed
+                window.scrollTo(0, startY + (distance * progress));
+                
+                if (progress < 1) {
+                    scrollAnimationId = requestAnimationFrame(animateScroll);
+                } else {
+                    // Scroll finished - trigger next comparison after 1.5 seconds
+                    setTimeout(() => {
+                        if (loopActive) runLoopComparison();
+                    }, 1500);
                 }
             }
-        }
-
-        function getLoopDelay() {
-            const speed = parseInt(document.getElementById('loopSpeed').value);
-            // Map 1-10 to 10s-1s (inverted: higher = faster)
-            return (11 - speed) * 1000;
-        }
-
-        function updateSpeedLabel() {
-            const speed = parseInt(document.getElementById('loopSpeed').value);
-            const seconds = 11 - speed;
-            document.getElementById('speedLabel').textContent = seconds + 's';
-        }
-
-        function runLoopIteration() {
-            if (!loopActive) return;
             
-            const p1 = getRandomAllStar();
-            let p2 = getRandomAllStar();
+            scrollAnimationId = requestAnimationFrame(animateScroll);
+        }
+
+        function startLoop() {
+            const loopBtn = document.getElementById('loopBtn');
+            const loopBtnBottom = document.getElementById('loopBtnBottom');
+            const scrollSelect = document.getElementById('scrollDuration');
+            const stickySelect = document.getElementById('stickyPlayer');
             
-            // Ensure different players
-            let attempts = 0;
-            while (p2 === p1 && attempts < 20) {
-                p2 = getRandomAllStar();
-                attempts++;
+            loopActive = true;
+            loopBtn.textContent = 'Stop Comparison Loop';
+            loopBtn.classList.add('active');
+            if (loopBtnBottom) {
+                loopBtnBottom.textContent = 'Stop Comparison Loop';
+                loopBtnBottom.classList.add('active');
+            }
+            scrollSelect.disabled = true;
+            stickySelect.disabled = true;
+            usedOpponents.clear();
+            
+            // Update sticky player labels
+            updateStickyPlayerOptions();
+            
+            // Run first comparison immediately (scroll callback will trigger next)
+            runLoopComparison();
+        }
+
+        function stopLoop() {
+            const loopBtn = document.getElementById('loopBtn');
+            const loopBtnBottom = document.getElementById('loopBtnBottom');
+            const scrollSelect = document.getElementById('scrollDuration');
+            const stickySelect = document.getElementById('stickyPlayer');
+            
+            loopActive = false;
+            loopBtn.textContent = 'Start Comparison Loop';
+            loopBtn.classList.remove('active');
+            if (loopBtnBottom) {
+                loopBtnBottom.textContent = 'Start Comparison Loop';
+                loopBtnBottom.classList.remove('active');
+            }
+            scrollSelect.disabled = false;
+            stickySelect.disabled = false;
+            
+            if (scrollAnimationId) {
+                cancelAnimationFrame(scrollAnimationId);
+                scrollAnimationId = null;
+            }
+        }
+
+        function toggleLoop() {
+            if (loopActive) {
+                stopLoop();
+            } else {
+                startLoop();
+            }
+        }
+
+        function runLoopComparison() {
+            const stickyMode = document.getElementById('stickyPlayer').value;
+            const scrollDuration = parseInt(document.getElementById('scrollDuration').value) * 1000;
+            const currentP1 = document.getElementById('player1-top').value;
+            const currentP2 = document.getElementById('player2-top').value;
+            
+            if (stickyMode === 'p1') {
+                // Keep Player 1, randomize Player 2
+                const newOpponent = getRandomOpponent([currentP1]);
+                if (!newOpponent) return;
+                
+                document.getElementById('player2-top').value = newOpponent;
+                document.getElementById('player2-bottom').value = newOpponent;
+                
+            } else if (stickyMode === 'p2') {
+                // Keep Player 2, randomize Player 1
+                const newOpponent = getRandomOpponent([currentP2]);
+                if (!newOpponent) return;
+                
+                document.getElementById('player1-top').value = newOpponent;
+                document.getElementById('player1-bottom').value = newOpponent;
+                
+            } else {
+                // Randomize both players
+                const allStars = playerData.allStarsData ? playerData.allStarsData.allStars1990Plus : [];
+                if (allStars.length < 2) return;
+                
+                const idx1 = Math.floor(Math.random() * allStars.length);
+                let idx2 = Math.floor(Math.random() * allStars.length);
+                while (idx2 === idx1) idx2 = Math.floor(Math.random() * allStars.length);
+                
+                document.getElementById('player1-top').value = allStars[idx1];
+                document.getElementById('player2-top').value = allStars[idx2];
+                document.getElementById('player1-bottom').value = allStars[idx1];
+                document.getElementById('player2-bottom').value = allStars[idx2];
             }
             
-            if (p1 && p2 && p1 !== p2) {
-                document.getElementById('player1-top').value = p1;
-                document.getElementById('player2-top').value = p2;
-                document.getElementById('player1-bottom').value = p1;
-                document.getElementById('player2-bottom').value = p2;
-                compareFromInputs();
-            }
+            compareFromInputs();
             
-            // Schedule next iteration
-            loopTimer = setTimeout(runLoopIteration, getLoopDelay());
+            // Start smooth scroll after brief delay for content to render
+            setTimeout(() => {
+                if (loopActive) {
+                    smoothScrollToBottom(scrollDuration);
+                }
+            }, 1500);
         }
 
         function loadComparison(p1, p2) {
@@ -1952,6 +2087,7 @@
             document.getElementById('player1-bottom').value = p1;
             document.getElementById('player2-bottom').value = p2;
             compareFromInputs();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     </script>
 </body>
