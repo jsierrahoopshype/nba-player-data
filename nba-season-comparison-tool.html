@@ -409,14 +409,17 @@
         // Google Sheet for 2025-26 data
         const GSHEET_ID = '1JH2FUBIyQ1zEHzZBxgP8vHBZ7d8EtP5-fSVG3zMgCgg';
         
-        // Google Sheet tab GIDs - update these based on your sheet structure
-        // Format: https://docs.google.com/spreadsheets/d/{SHEET_ID}/export?format=csv&gid={GID}
+        // Google Sheet tab GIDs
         const GSHEET_TABS = {
-            rsStats: 1169156479,      // Regular Season Stats tab
-            // Add more tabs as needed:
-            // advanced: 123456789,
-            // usage: 987654321,
-            // etc.
+            rsStats: 1169156479,           // Player Traditional Stats (totals)
+            rsStatsPerGame: 1181534071,    // Player Traditional Stats Per Game
+            advanced: 339737563,           // Player Advanced
+            misc: 52077302,                // Player Misc
+            scoring: 867936474,            // Player Scoring
+            usage: 1415078232,             // Player Usage
+            clutch: 10789411,              // Player Clutch
+            bio: 442838927,                // Player Bio
+            hustle: 439158060              // Player Hustle
         };
         
         // Helper to build Google Sheets CSV export URL
@@ -462,23 +465,30 @@
         async function loadGoogleSheetsData() {
             const data = {
                 rsStats: null,
-                poStats: null,
+                rsStatsPerGame: null,
                 advanced: null,
+                misc: null,
                 scoring: null,
-                shotLocation: null,
-                defense: null,
                 usage: null,
                 clutch: null,
+                bio: null,
                 hustle: null,
                 lastUpdated: new Date().toISOString()
             };
             
-            // Fetch each configured tab
-            for (const [key, gid] of Object.entries(GSHEET_TABS)) {
+            // Fetch each configured tab in parallel for speed
+            const fetchPromises = Object.entries(GSHEET_TABS).map(async ([key, gid]) => {
                 if (gid) {
-                    data[key] = await fetchGoogleSheet(gid, key);
+                    const result = await fetchGoogleSheet(gid, key);
+                    return { key, result };
                 }
-            }
+                return { key, result: null };
+            });
+            
+            const results = await Promise.all(fetchPromises);
+            results.forEach(({ key, result }) => {
+                data[key] = result;
+            });
             
             return data;
         }
@@ -717,28 +727,31 @@
                 // Fix column swaps in data
                 fixColumnSwaps();
                 
-                // Process 2025-26 current season data (updated daily)
+                // Process 2025-26 current season data (from Google Sheets or JSON)
                 if (currentData) {
                     dataLastUpdated = currentData.lastUpdated;
                     data.current = {
                         rsStats: currentData.rsStats || [],
+                        rsStatsPerGame: currentData.rsStatsPerGame || [],
                         poStats: currentData.poStats || [],
                         teamStats: currentData.teamStats || [],
                         advanced: currentData.advanced || [],
+                        misc: currentData.misc || [],
                         scoring: currentData.scoring || [],
                         shotLocation: currentData.shotLocation || [],
                         defense: currentData.defense || [],
                         usage: currentData.usage || [],
                         clutch: currentData.clutch || [],
+                        bio: currentData.bio || [],
                         hustle: currentData.hustle || []
                     };
                     
-                    // Build index of 2025-26 players
-                    const sources = ['advanced', 'scoring', 'shotLocation', 'defense', 'usage', 'clutch', 'hustle'];
+                    // Build index of 2025-26 players from all data sources
+                    const sources = ['advanced', 'misc', 'scoring', 'shotLocation', 'defense', 'usage', 'clutch', 'hustle', 'bio', 'rsStatsPerGame'];
                     sources.forEach(key => {
                         if (data.current[key]) {
                             data.current[key].forEach(row => {
-                                const name = row.PLAYER_NAME || row.PLAYER;
+                                const name = row.PLAYER_NAME || row.PLAYER || row.Player;
                                 if (name) {
                                     if (!current2526Players[name]) current2526Players[name] = {};
                                     current2526Players[name][key] = row;
@@ -757,7 +770,7 @@
                     // Index RS stats for 2025-26
                     if (data.current.rsStats) {
                         data.current.rsStats.forEach(row => {
-                            const name = row.PLAYER;
+                            const name = row.PLAYER || row.PLAYER_NAME || row.Player;
                             if (name) {
                                 if (!current2526Players[name]) current2526Players[name] = {};
                                 current2526Players[name].rsStats = row;
@@ -767,6 +780,7 @@
                                     current2526PlayersNormalized[normalizedName] = {};
                                 }
                                 current2526PlayersNormalized[normalizedName].rsStats = row;
+                                current2526PlayersNormalized[normalizedName]._originalName = name;
                             }
                         });
                     }
@@ -774,7 +788,7 @@
                     // Index PO stats for 2025-26
                     if (data.current.poStats) {
                         data.current.poStats.forEach(row => {
-                            const name = row.PLAYER;
+                            const name = row.PLAYER || row.PLAYER_NAME || row.Player;
                             if (name) {
                                 if (!current2526Players[name]) current2526Players[name] = {};
                                 current2526Players[name].poStats = row;
@@ -784,11 +798,27 @@
                                     current2526PlayersNormalized[normalizedName] = {};
                                 }
                                 current2526PlayersNormalized[normalizedName].poStats = row;
+                                current2526PlayersNormalized[normalizedName]._originalName = name;
                             }
                         });
                     }
                     
-                    console.log('2025-26 JSON data loaded:', Object.keys(current2526Players).length, 'players');
+                    console.log('2025-26 data loaded:', Object.keys(current2526Players).length, 'players');
+                    
+                    // Debug: Log sample data and column names from each source
+                    console.log('=== Google Sheets Data Debug ===');
+                    Object.entries(data.current).forEach(([key, arr]) => {
+                        if (arr && arr.length > 0) {
+                            console.log(`${key}: ${arr.length} rows, columns:`, Object.keys(arr[0]));
+                            console.log(`${key} sample row:`, arr[0]);
+                        }
+                    });
+                    
+                    // Debug: Log a sample player's indexed data
+                    const samplePlayer = Object.keys(current2526Players)[0];
+                    if (samplePlayer) {
+                        console.log('Sample player indexed data:', samplePlayer, current2526Players[samplePlayer]);
+                    }
                 }
 
                 updateProgress(80, 'Building player database...');
@@ -1279,7 +1309,10 @@
                 'clutch': 'clutch',
                 'hustle': 'hustle',
                 'plusMinus': 'plusMinus',
-                'winsLosses': 'winsLosses'
+                'winsLosses': 'winsLosses',
+                'misc': 'misc',
+                'bio': 'bio',
+                'rsPerGame': 'rsStatsPerGame'
             };
             
             const dataKey = sourceMap[source] || source;
