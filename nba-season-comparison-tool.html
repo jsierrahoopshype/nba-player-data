@@ -441,19 +441,36 @@
                 }
                 const csvText = await response.text();
                 
+                // The Google Sheets have a metadata row first (e.g., "Season: 2025-26 | Last Updated: ...")
+                // We need to skip this row and use the second row as headers
+                const lines = csvText.split('\n');
+                
+                // Check if first line looks like a metadata row (contains "Season:" or "Last Updated")
+                if (lines.length > 1 && (lines[0].includes('Season:') || lines[0].includes('Last Updated'))) {
+                    // Remove the first line (metadata row)
+                    lines.shift();
+                    console.log(`${sheetName}: Skipped metadata row, using row 2 as headers`);
+                }
+                
+                const cleanedCsv = lines.join('\n');
+                
                 // Parse CSV using Papa Parse
-                const parsed = Papa.parse(csvText, {
+                const parsed = Papa.parse(cleanedCsv, {
                     header: true,
                     skipEmptyLines: true,
-                    dynamicTyping: false, // Keep as strings for consistency
-                    transformHeader: (header) => header.trim()
+                    dynamicTyping: false,
+                    transformHeader: (header) => header.trim(),
+                    transform: (value) => typeof value === 'string' ? value.trim() : value
                 });
                 
                 if (parsed.errors.length > 0) {
-                    console.warn(`CSV parse errors for ${sheetName}:`, parsed.errors);
+                    console.warn(`CSV parse errors for ${sheetName}:`, parsed.errors.slice(0, 3));
                 }
                 
                 console.log(`Loaded ${sheetName} from Google Sheets: ${parsed.data.length} rows`);
+                if (parsed.data.length > 0) {
+                    console.log(`${sheetName} columns:`, Object.keys(parsed.data[0]).slice(0, 10).join(', '));
+                }
                 return parsed.data;
             } catch (error) {
                 console.warn(`Error fetching Google Sheet ${sheetName}:`, error);
@@ -747,11 +764,35 @@
                     };
                     
                     // Build index of 2025-26 players from all data sources
+                    // Helper to find player name from various possible column names
+                    function getPlayerNameFromRow(row) {
+                        // Try exact matches first
+                        if (row.PLAYER_NAME) return row.PLAYER_NAME;
+                        if (row.PLAYER) return row.PLAYER;
+                        if (row.Player) return row.Player;
+                        if (row.player) return row.player;
+                        if (row['Player Name']) return row['Player Name'];
+                        if (row['PLAYER NAME']) return row['PLAYER NAME'];
+                        if (row.NAME) return row.NAME;
+                        if (row.Name) return row.Name;
+                        
+                        // Try to find any column containing 'player' or 'name'
+                        const keys = Object.keys(row);
+                        const playerCol = keys.find(k => 
+                            k.toLowerCase().includes('player') && 
+                            !k.toLowerCase().includes('id') &&
+                            typeof row[k] === 'string'
+                        );
+                        if (playerCol && row[playerCol]) return row[playerCol];
+                        
+                        return null;
+                    }
+                    
                     const sources = ['advanced', 'misc', 'scoring', 'shotLocation', 'defense', 'usage', 'clutch', 'hustle', 'bio', 'rsStatsPerGame'];
                     sources.forEach(key => {
                         if (data.current[key]) {
                             data.current[key].forEach(row => {
-                                const name = row.PLAYER_NAME || row.PLAYER || row.Player;
+                                const name = getPlayerNameFromRow(row);
                                 if (name) {
                                     if (!current2526Players[name]) current2526Players[name] = {};
                                     current2526Players[name][key] = row;
@@ -770,7 +811,7 @@
                     // Index RS stats for 2025-26
                     if (data.current.rsStats) {
                         data.current.rsStats.forEach(row => {
-                            const name = row.PLAYER || row.PLAYER_NAME || row.Player;
+                            const name = getPlayerNameFromRow(row);
                             if (name) {
                                 if (!current2526Players[name]) current2526Players[name] = {};
                                 current2526Players[name].rsStats = row;
@@ -788,7 +829,7 @@
                     // Index PO stats for 2025-26
                     if (data.current.poStats) {
                         data.current.poStats.forEach(row => {
-                            const name = row.PLAYER || row.PLAYER_NAME || row.Player;
+                            const name = getPlayerNameFromRow(row);
                             if (name) {
                                 if (!current2526Players[name]) current2526Players[name] = {};
                                 current2526Players[name].poStats = row;
@@ -805,20 +846,17 @@
                     
                     console.log('2025-26 data loaded:', Object.keys(current2526Players).length, 'players');
                     
-                    // Debug: Log sample data and column names from each source
-                    console.log('=== Google Sheets Data Debug ===');
+                    // Debug: Log actual column names from each source
+                    console.log('=== Google Sheets Column Names ===');
                     Object.entries(data.current).forEach(([key, arr]) => {
                         if (arr && arr.length > 0) {
-                            console.log(`${key}: ${arr.length} rows, columns:`, Object.keys(arr[0]));
-                            console.log(`${key} sample row:`, arr[0]);
+                            const cols = Object.keys(arr[0]);
+                            console.log(`${key} columns:`, cols.slice(0, 15).join(', ') + (cols.length > 15 ? '...' : ''));
+                            // Look for player name column
+                            const playerCol = cols.find(c => c.toLowerCase().includes('player') || c.toLowerCase().includes('name'));
+                            console.log(`${key} player column found:`, playerCol, '= value:', arr[0][playerCol]);
                         }
                     });
-                    
-                    // Debug: Log a sample player's indexed data
-                    const samplePlayer = Object.keys(current2526Players)[0];
-                    if (samplePlayer) {
-                        console.log('Sample player indexed data:', samplePlayer, current2526Players[samplePlayer]);
-                    }
                 }
 
                 updateProgress(80, 'Building player database...');
