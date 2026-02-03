@@ -441,18 +441,26 @@
                 }
                 const csvText = await response.text();
                 
-                // The Google Sheets have a metadata row first (e.g., "Season: 2025-26 | Last Updated: ...")
-                // We need to skip this row and use the second row as headers
+                // Debug: Show first 5 lines of raw CSV
                 const lines = csvText.split('\n');
+                console.log(`${sheetName} raw lines 1-5:`, lines.slice(0, 5).map((l, i) => `[${i+1}] ${l.substring(0, 100)}...`));
                 
-                // Check if first line looks like a metadata row (contains "Season:" or "Last Updated")
-                if (lines.length > 1 && (lines[0].includes('Season:') || lines[0].includes('Last Updated'))) {
-                    // Remove the first line (metadata row)
-                    lines.shift();
-                    console.log(`${sheetName}: Skipped metadata row, using row 2 as headers`);
+                // Skip rows until we find one that looks like column headers
+                // (contains "PLAYER" or "Player" or similar identifying columns)
+                let headerRowIndex = 0;
+                for (let i = 0; i < Math.min(lines.length, 10); i++) {
+                    const line = lines[i].toLowerCase();
+                    // Check if this line contains typical header names
+                    if (line.includes('player') || line.includes('team') || line.includes('gp,') || line.includes(',gp,')) {
+                        headerRowIndex = i;
+                        console.log(`${sheetName}: Found headers at row ${i + 1}`);
+                        break;
+                    }
                 }
                 
-                const cleanedCsv = lines.join('\n');
+                // Remove all rows before the header row
+                const cleanedLines = lines.slice(headerRowIndex);
+                const cleanedCsv = cleanedLines.join('\n');
                 
                 // Parse CSV using Papa Parse
                 const parsed = Papa.parse(cleanedCsv, {
