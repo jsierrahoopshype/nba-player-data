@@ -334,6 +334,7 @@
             .bottom-selector { margin-top: 25px; padding-top: 20px; }
         }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -405,8 +406,82 @@
 
     <script>
         // ===== CONFIGURATION =====
-        // JSON file for 2025-26 data (updated daily via GitHub Actions)
+        // Google Sheet for 2025-26 data
+        const GSHEET_ID = '1JH2FUBIyQ1zEHzZBxgP8vHBZ7d8EtP5-fSVG3zMgCgg';
+        
+        // Google Sheet tab GIDs - update these based on your sheet structure
+        // Format: https://docs.google.com/spreadsheets/d/{SHEET_ID}/export?format=csv&gid={GID}
+        const GSHEET_TABS = {
+            rsStats: 1169156479,      // Regular Season Stats tab
+            // Add more tabs as needed:
+            // advanced: 123456789,
+            // usage: 987654321,
+            // etc.
+        };
+        
+        // Helper to build Google Sheets CSV export URL
+        function getGSheetURL(gid) {
+            return `https://docs.google.com/spreadsheets/d/${GSHEET_ID}/export?format=csv&gid=${gid}`;
+        }
+        
+        // Fallback JSON URL (in case Google Sheets is unavailable)
         const JSON_URL = 'https://jsierrahoopshype.github.io/nba-player-data/nba-2025-26-data.json';
+        
+        // Fetch and parse Google Sheet CSV
+        async function fetchGoogleSheet(gid, sheetName) {
+            const url = getGSheetURL(gid);
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    console.warn(`Failed to fetch Google Sheet ${sheetName}: ${response.status}`);
+                    return null;
+                }
+                const csvText = await response.text();
+                
+                // Parse CSV using Papa Parse
+                const parsed = Papa.parse(csvText, {
+                    header: true,
+                    skipEmptyLines: true,
+                    dynamicTyping: false, // Keep as strings for consistency
+                    transformHeader: (header) => header.trim()
+                });
+                
+                if (parsed.errors.length > 0) {
+                    console.warn(`CSV parse errors for ${sheetName}:`, parsed.errors);
+                }
+                
+                console.log(`Loaded ${sheetName} from Google Sheets: ${parsed.data.length} rows`);
+                return parsed.data;
+            } catch (error) {
+                console.warn(`Error fetching Google Sheet ${sheetName}:`, error);
+                return null;
+            }
+        }
+        
+        // Load all 2025-26 data from Google Sheets
+        async function loadGoogleSheetsData() {
+            const data = {
+                rsStats: null,
+                poStats: null,
+                advanced: null,
+                scoring: null,
+                shotLocation: null,
+                defense: null,
+                usage: null,
+                clutch: null,
+                hustle: null,
+                lastUpdated: new Date().toISOString()
+            };
+            
+            // Fetch each configured tab
+            for (const [key, gid] of Object.entries(GSHEET_TABS)) {
+                if (gid) {
+                    data[key] = await fetchGoogleSheet(gid, key);
+                }
+            }
+            
+            return data;
+        }
         
         // Static JSON files for historical data (1996-2025) - split for GitHub 25MB limit
         const HISTORICAL_RS_URL = 'https://jsierrahoopshype.github.io/nba-player-data/nba-historical-rs.json';
@@ -438,6 +513,7 @@
         let current2526Players = {}; // Index by player name for fast lookup
         let current2526PlayersNormalized = {}; // Index by normalized name
         let dataLastUpdated = null;
+        let dataSource = 'JSON'; // 'Google Sheets' or 'JSON'
         let historicalDataLoaded = false;
 
         // Normalize player names (remove accents/diacritics)
@@ -559,9 +635,28 @@
                 console.time('Total Load');
                 updateProgress(5, 'Loading data...');
                 
-                // Load all JSON files in parallel - this is fast!
-                const [currentData, rsData, poData, adv1Data, adv2Data] = await Promise.all([
-                    fetchJSON(JSON_URL),
+                // Try to load 2025-26 data from Google Sheets first
+                updateProgress(10, 'Loading 2025-26 data from Google Sheets...');
+                let currentData = await loadGoogleSheetsData();
+                
+                // Check if we got any data from Google Sheets
+                const hasGSheetData = currentData && (currentData.rsStats || currentData.advanced);
+                
+                if (hasGSheetData) {
+                    dataSource = 'Google Sheets';
+                    console.log('2025-26 data loaded from Google Sheets');
+                } else {
+                    // Fallback to JSON if Google Sheets failed
+                    dataSource = 'JSON';
+                    console.log('Google Sheets unavailable, falling back to JSON...');
+                    updateProgress(15, 'Loading 2025-26 data from JSON fallback...');
+                    currentData = await fetchJSON(JSON_URL);
+                }
+                
+                updateProgress(20, 'Loading historical data...');
+                
+                // Load historical JSON files in parallel
+                const [rsData, poData, adv1Data, adv2Data] = await Promise.all([
                     fetchJSON(HISTORICAL_RS_URL),
                     fetchJSON(HISTORICAL_PO_URL),
                     fetchJSON(HISTORICAL_ADV1_URL),
@@ -1889,11 +1984,14 @@
                 document.getElementById('loadingMessage').style.display = 'none';
                 document.getElementById('mainContent').style.display = 'block';
                 
-                // Show last updated timestamp
+                // Show last updated timestamp and data source
                 if (dataLastUpdated) {
                     const date = new Date(dataLastUpdated);
                     document.getElementById('dataTimestamp').textContent = 
-                        `2025-26 data: ${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+                        `2025-26 data (${dataSource}): ${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+                } else if (dataSource === 'Google Sheets') {
+                    document.getElementById('dataTimestamp').textContent = 
+                        `2025-26 data: Live from Google Sheets`;
                 }
                 
                 setupAutocomplete();
