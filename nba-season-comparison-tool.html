@@ -440,20 +440,14 @@
                     return null;
                 }
                 const csvText = await response.text();
-                
-                // Debug: Show first 5 lines of raw CSV
                 const lines = csvText.split('\n');
-                console.log(`${sheetName} raw lines 1-5:`, lines.slice(0, 5).map((l, i) => `[${i+1}] ${l.substring(0, 100)}...`));
                 
                 // Skip rows until we find one that looks like column headers
-                // (contains "PLAYER" or "Player" or similar identifying columns)
                 let headerRowIndex = 0;
                 for (let i = 0; i < Math.min(lines.length, 10); i++) {
                     const line = lines[i].toLowerCase();
-                    // Check if this line contains typical header names
                     if (line.includes('player') || line.includes('team') || line.includes('gp,') || line.includes(',gp,')) {
                         headerRowIndex = i;
-                        console.log(`${sheetName}: Found headers at row ${i + 1}`);
                         break;
                     }
                 }
@@ -471,14 +465,7 @@
                     transform: (value) => typeof value === 'string' ? value.trim() : value
                 });
                 
-                if (parsed.errors.length > 0) {
-                    console.warn(`CSV parse errors for ${sheetName}:`, parsed.errors.slice(0, 3));
-                }
-                
-                console.log(`Loaded ${sheetName} from Google Sheets: ${parsed.data.length} rows`);
-                if (parsed.data.length > 0) {
-                    console.log(`${sheetName} columns:`, Object.keys(parsed.data[0]).slice(0, 10).join(', '));
-                }
+                console.log(`${sheetName}: ${parsed.data.length} rows, cols: ${Object.keys(parsed.data[0] || {}).slice(0, 5).join(', ')}...`);
                 return parsed.data;
             } catch (error) {
                 console.warn(`Error fetching Google Sheet ${sheetName}:`, error);
@@ -799,6 +786,7 @@
                     const sources = ['advanced', 'misc', 'scoring', 'shotLocation', 'defense', 'usage', 'clutch', 'hustle', 'bio', 'rsStatsPerGame'];
                     sources.forEach(key => {
                         if (data.current[key]) {
+                            let count = 0;
                             data.current[key].forEach(row => {
                                 const name = getPlayerNameFromRow(row);
                                 if (name) {
@@ -811,8 +799,10 @@
                                     }
                                     current2526PlayersNormalized[normalizedName][key] = row;
                                     current2526PlayersNormalized[normalizedName]._originalName = name;
+                                    count++;
                                 }
                             });
+                            console.log(`Indexed ${count} players from ${key}`);
                         }
                     });
                     
@@ -853,18 +843,6 @@
                     }
                     
                     console.log('2025-26 data loaded:', Object.keys(current2526Players).length, 'players');
-                    
-                    // Debug: Log actual column names from each source
-                    console.log('=== Google Sheets Column Names ===');
-                    Object.entries(data.current).forEach(([key, arr]) => {
-                        if (arr && arr.length > 0) {
-                            const cols = Object.keys(arr[0]);
-                            console.log(`${key} columns:`, cols.slice(0, 15).join(', ') + (cols.length > 15 ? '...' : ''));
-                            // Look for player name column
-                            const playerCol = cols.find(c => c.toLowerCase().includes('player') || c.toLowerCase().includes('name'));
-                            console.log(`${key} player column found:`, playerCol, '= value:', arr[0][playerCol]);
-                        }
-                    });
                 }
 
                 updateProgress(80, 'Building player database...');
