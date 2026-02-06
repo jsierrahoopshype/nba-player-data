@@ -920,24 +920,24 @@
             {
                 category: 'COUNTING STATS: AVERAGES',
                 metrics: [
-                    { name: 'Points', src: 'rs', col: 'PTS / G', higher: true, fmt: 'dec' },
-                    { name: 'Rebounds', src: 'rs', col: 'REB / G', higher: true, fmt: 'dec' },
-                    { name: 'Assists', src: 'rs', col: 'AST / G', higher: true, fmt: 'dec' },
-                    { name: 'Steals', src: 'rs', col: 'STL / G', higher: true, fmt: 'dec' },
-                    { name: 'Blocks', src: 'rs', col: 'BLK / G', higher: true, fmt: 'dec' },
+                    { name: 'Points', src: 'rs', col: 'PTS', higher: true, fmt: 'dec', pg: 'GP' },
+                    { name: 'Rebounds', src: 'rs', col: 'REB', higher: true, fmt: 'dec', pg: 'GP' },
+                    { name: 'Assists', src: 'rs', col: 'AST', higher: true, fmt: 'dec', pg: 'GP' },
+                    { name: 'Steals', src: 'rs', col: 'STL', higher: true, fmt: 'dec', pg: 'GP' },
+                    { name: 'Blocks', src: 'rs', col: 'BLK', higher: true, fmt: 'dec', pg: 'GP' },
                     { name: 'Field Goal %', src: 'rs', col: 'FG%', higher: true, fmt: 'pct' },
                     { name: 'Three Point %', src: 'rs', col: '3P%', higher: true, fmt: 'pct' },
                     { name: 'Free Throw %', src: 'rs', col: 'FT%', higher: true, fmt: 'pct' },
-                    { name: 'Turnovers', src: 'rs', col: 'TOV / G', higher: false, fmt: 'dec' },
-                    { name: 'Points PO', src: 'po', col: 'PTS / G', higher: true, fmt: 'dec' },
-                    { name: 'Rebounds PO', src: 'po', col: 'REB / G', higher: true, fmt: 'dec' },
-                    { name: 'Assists PO', src: 'po', col: 'AST / G', higher: true, fmt: 'dec' },
-                    { name: 'Steals PO', src: 'po', col: 'STL / G', higher: true, fmt: 'dec' },
-                    { name: 'Blocks PO', src: 'po', col: 'BLK / G', higher: true, fmt: 'dec' },
+                    { name: 'Turnovers', src: 'rs', col: 'TOV', higher: false, fmt: 'dec', pg: 'GP' },
+                    { name: 'Points PO', src: 'po', col: 'PTS', higher: true, fmt: 'dec', pg: 'GP' },
+                    { name: 'Rebounds PO', src: 'po', col: 'REB', higher: true, fmt: 'dec', pg: 'GP' },
+                    { name: 'Assists PO', src: 'po', col: 'AST', higher: true, fmt: 'dec', pg: 'GP' },
+                    { name: 'Steals PO', src: 'po', col: 'STL', higher: true, fmt: 'dec', pg: 'GP' },
+                    { name: 'Blocks PO', src: 'po', col: 'BLK', higher: true, fmt: 'dec', pg: 'GP' },
                     { name: 'Field Goal % PO', src: 'po', col: 'FG%', higher: true, fmt: 'pct' },
                     { name: 'Three Point % PO', src: 'po', col: '3P%', higher: true, fmt: 'pct' },
                     { name: 'Free Throw % PO', src: 'po', col: 'FT%', higher: true, fmt: 'pct' },
-                    { name: 'Turnovers PO', src: 'po', col: 'TOV / G', higher: false, fmt: 'dec' }
+                    { name: 'Turnovers PO', src: 'po', col: 'TOV', higher: false, fmt: 'dec', pg: 'GP' }
                 ]
             },
             {
@@ -1320,10 +1320,10 @@
                 // For 2025-26, check JSON data first
                 if (isCurrent) {
                     const playerObj = findCurrent2526Player(playerName);
-                    // For 2025-26, merge rsStats and rsStatsPerGame so both totals and averages work
                     if (playerObj) {
-                        const merged = { ...(playerObj.rsStats || {}), ...(playerObj.rsStatsPerGame || {}) };
-                        if (Object.keys(merged).length > 0) return merged;
+                        // Return rsStats for totals - DO NOT merge with rsStatsPerGame
+                        // The getStatValue function will handle column alternatives
+                        if (playerObj.rsStats) return playerObj.rsStats;
                     }
                 }
                 // Fall back to all-time database
@@ -1331,6 +1331,15 @@
                 if (!seasons) return null;
                 const match = seasons.find(s => s.year === season);
                 return match ? match.data : null;
+            }
+            
+            // Special handling for per-game stats in 2025-26
+            if (source === 'rsPerGame') {
+                if (isCurrent) {
+                    const playerObj = findCurrent2526Player(playerName);
+                    if (playerObj?.rsStatsPerGame) return playerObj.rsStatsPerGame;
+                }
+                return null;
             }
             
             if (source === 'po') {
@@ -1450,15 +1459,17 @@
                 'PCT_AST': ['PCT_AST', 'PCT_TEAM_AST'],
                 'PCT_BLK': ['PCT_BLK', 'PCT_TEAM_BLK'],
                 'PCT_STL': ['PCT_STL', 'PCT_TEAM_STL'],
-                // Per-game stat mappings (historical uses "PTS / G", Google Sheets uses "PTS")
-                'PTS / G': ['PTS / G', 'PTS'],
-                'REB / G': ['REB / G', 'REB'],
-                'AST / G': ['AST / G', 'AST'],
-                'STL / G': ['STL / G', 'STL'],
-                'BLK / G': ['BLK / G', 'BLK'],
-                'TOV / G': ['TOV / G', 'TOV'],
+                // Totals columns (historical uses different names)
+                'PTS': ['PTS', 'POINTS'],
+                'REB': ['REB', 'TRB', 'REBOUNDS'],
+                'AST': ['AST', 'ASSISTS'],
+                'STL': ['STL', 'STEALS'],
+                'BLK': ['BLK', 'BLOCKS'],
+                'TOV': ['TOV', 'TURNOVERS', 'TO'],
+                'GP': ['GP', 'G', 'GAMES'],
+                // Percentage columns
                 'FG%': ['FG%', 'FG_PCT'],
-                '3P%': ['3P%', 'FG3_PCT'],
+                '3P%': ['3P%', 'FG3_PCT', '3PT_PCT'],
                 'FT%': ['FT%', 'FT_PCT'],
                 // Global Rating
                 'RAT': ['RAT', 'PIE', 'RATING'],
