@@ -637,12 +637,23 @@
 
         // ===== DATA LOADING =====
         async function fetchJSON(url) {
+            console.log('Fetching:', url.split('/').pop()); // Log filename only
             try {
-                const response = await fetch(url);
+                // Add 30-second timeout
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 30000);
+                
+                const response = await fetch(url, { signal: controller.signal });
+                clearTimeout(timeoutId);
+                
                 if (!response.ok) throw new Error(`HTTP ${response.status}`);
                 return await response.json();
             } catch (error) {
-                console.error('Error fetching JSON:', error);
+                if (error.name === 'AbortError') {
+                    console.error('Fetch timeout:', url);
+                } else {
+                    console.error('Error fetching JSON:', url, error);
+                }
                 return null;
             }
         }
@@ -675,15 +686,18 @@
                     currentData = await fetchJSON(JSON_URL);
                 }
                 
+                console.log('Starting historical data load...');
                 updateProgress(20, 'Loading historical data...');
                 
                 // Load historical JSON files in parallel
                 const [rsData, poData, adv1Data, adv2Data] = await Promise.all([
-                    fetchJSON(HISTORICAL_RS_URL),
-                    fetchJSON(HISTORICAL_PO_URL),
-                    fetchJSON(HISTORICAL_ADV1_URL),
-                    fetchJSON(HISTORICAL_ADV2_URL)
+                    fetchJSON(HISTORICAL_RS_URL).then(d => { console.log('RS data fetched'); return d; }),
+                    fetchJSON(HISTORICAL_PO_URL).then(d => { console.log('PO data fetched'); return d; }),
+                    fetchJSON(HISTORICAL_ADV1_URL).then(d => { console.log('ADV1 data fetched'); return d; }),
+                    fetchJSON(HISTORICAL_ADV2_URL).then(d => { console.log('ADV2 data fetched'); return d; })
                 ]);
+                
+                console.log('All historical data fetched');
                 
                 updateProgress(50, 'Processing data...');
                 
