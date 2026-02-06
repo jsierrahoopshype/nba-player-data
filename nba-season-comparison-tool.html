@@ -414,12 +414,14 @@
             rsStats: 1169156479,           // Player Traditional Stats (totals)
             rsStatsPerGame: 1181534071,    // Player Traditional Stats Per Game
             advanced: 339737563,           // Player Advanced
-            misc: 52077302,                // Player Misc
+            misc: 52077302,                // Player Misc (includes scoring breakdown)
             scoring: 867936474,            // Player Scoring
             usage: 1415078232,             // Player Usage
             clutch: 10789411,              // Player Clutch
             bio: 442838927,                // Player Bio
-            hustle: 439158060              // Player Hustle
+            hustle: 439158060,             // Player Hustle
+            shotLocation: 1205457990,      // Shot Location
+            defense: 1957258468            // Defense
         };
         
         // Helper to build Google Sheets CSV export URL
@@ -485,6 +487,8 @@
                 clutch: null,
                 bio: null,
                 hustle: null,
+                shotLocation: null,
+                defense: null,
                 lastUpdated: new Date().toISOString()
             };
             
@@ -968,10 +972,10 @@
                 metrics: [
                     { name: 'Effective FG %', src: 'adv', col: 'EFG_PCT', higher: true, fmt: 'pct' },
                     { name: 'True Shooting %', src: 'adv', col: 'TS_PCT', higher: true, fmt: 'pct' },
-                    { name: 'Points off turnovers', src: 'scoring', col: 'PTS_OFF_TOV', higher: true, fmt: 'dec', pg: 'GP' },
-                    { name: 'Second-chance points', src: 'scoring', col: 'PTS_2ND_CHANCE', higher: true, fmt: 'dec', pg: 'GP' },
-                    { name: 'Fast-break points', src: 'scoring', col: 'PTS_FB', higher: true, fmt: 'dec', pg: 'GP' },
-                    { name: 'Points in the paint', src: 'scoring', col: 'PTS_PAINT', higher: true, fmt: 'dec', pg: 'GP' }
+                    { name: 'Points off turnovers', src: 'misc', col: 'PTS_OFF_TOV', higher: true, fmt: 'dec', pg: 'GP' },
+                    { name: 'Second-chance points', src: 'misc', col: 'PTS_2ND_CHANCE', higher: true, fmt: 'dec', pg: 'GP' },
+                    { name: 'Fast-break points', src: 'misc', col: 'PTS_FB', higher: true, fmt: 'dec', pg: 'GP' },
+                    { name: 'Points in the paint', src: 'misc', col: 'PTS_PAINT', higher: true, fmt: 'dec', pg: 'GP' }
                 ]
             },
             {
@@ -1316,7 +1320,11 @@
                 // For 2025-26, check JSON data first
                 if (isCurrent) {
                     const playerObj = findCurrent2526Player(playerName);
-                    if (playerObj?.rsStats) return playerObj.rsStats;
+                    // For 2025-26, merge rsStats and rsStatsPerGame so both totals and averages work
+                    if (playerObj) {
+                        const merged = { ...(playerObj.rsStats || {}), ...(playerObj.rsStatsPerGame || {}) };
+                        if (Object.keys(merged).length > 0) return merged;
+                    }
                 }
                 // Fall back to all-time database
                 const seasons = playerSeasons[playerName];
@@ -1441,7 +1449,26 @@
                 'PCT_REB': ['PCT_REB', 'PCT_TEAM_REB'],
                 'PCT_AST': ['PCT_AST', 'PCT_TEAM_AST'],
                 'PCT_BLK': ['PCT_BLK', 'PCT_TEAM_BLK'],
-                'PCT_STL': ['PCT_STL', 'PCT_TEAM_STL']
+                'PCT_STL': ['PCT_STL', 'PCT_TEAM_STL'],
+                // Per-game stat mappings (historical uses "PTS / G", Google Sheets uses "PTS")
+                'PTS / G': ['PTS / G', 'PTS'],
+                'REB / G': ['REB / G', 'REB'],
+                'AST / G': ['AST / G', 'AST'],
+                'STL / G': ['STL / G', 'STL'],
+                'BLK / G': ['BLK / G', 'BLK'],
+                'TOV / G': ['TOV / G', 'TOV'],
+                'FG%': ['FG%', 'FG_PCT'],
+                '3P%': ['3P%', 'FG3_PCT'],
+                'FT%': ['FT%', 'FT_PCT'],
+                // Global Rating
+                'RAT': ['RAT', 'PIE', 'RATING'],
+                // Shot Location columns
+                'Restricted Area_FG_PCT': ['Restricted Area_FG_PCT', 'RA_FG_PCT', 'RESTRICTED_AREA_FG_PCT'],
+                'Mid-Range_FG_PCT': ['Mid-Range_FG_PCT', 'MR_FG_PCT', 'MID_RANGE_FG_PCT'],
+                'Left Corner 3_FG_PCT': ['Left Corner 3_FG_PCT', 'LC3_FG_PCT', 'LEFT_CORNER_3_FG_PCT'],
+                'Right Corner 3_FG_PCT': ['Right Corner 3_FG_PCT', 'RC3_FG_PCT', 'RIGHT_CORNER_3_FG_PCT'],
+                'Above the Break 3_FG_PCT': ['Above the Break 3_FG_PCT', 'ATB3_FG_PCT', 'ABOVE_THE_BREAK_3_FG_PCT'],
+                'Backcourt_FG_PCT': ['Backcourt_FG_PCT', 'BC_FG_PCT', 'BACKCOURT_FG_PCT']
             };
             
             // Try to find the value with primary column first
