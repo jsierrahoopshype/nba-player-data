@@ -3,938 +3,2287 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NBA Season Comparison Tool - HoopsHype</title>
-    <meta name="description" content="Compare any two NBA player seasons across 80+ categories including stats, advanced metrics, and more.">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>NBA Player Comparison Tool - HoopsHype</title>
+    <meta name="description" content="Compare any two NBA players across 140+ categories including awards, stats, salaries, and more.">
     <style>
-        :root {
-            --bg: #f5f5f7;
-            --surface: #ffffff;
-            --surface-hover: #f0f0f2;
-            --border: #d1d1d6;
-            --text: #1d1d1f;
-            --text-secondary: #6e6e73;
-            --accent: #3b82f6;
-            --accent-dim: rgba(59, 130, 246, 0.15);
-            --green: #34c759;
-            --green-dim: rgba(52, 199, 89, 0.15);
-            --red: #ff453a;
-            --red-dim: rgba(255, 69, 58, 0.15);
-            --purple: #9333ea;
-            --purple-dim: rgba(147, 51, 234, 0.15);
-            --orange: #f59e0b;
-            --orange-dim: rgba(245, 158, 11, 0.15);
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
         body {
-            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-            line-height: 1.5;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+            line-height: 1.6;
         }
-
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 2rem 1.5rem;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
-
-        header {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-
         h1 {
-            font-size: 2rem;
-            font-weight: 700;
-            letter-spacing: -0.03em;
-            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+            text-align: center;
         }
-
         .subtitle {
-            color: var(--text-secondary);
-            font-size: 1rem;
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
         }
-
         .player-selector {
             display: grid;
             grid-template-columns: 1fr auto 1fr;
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-            align-items: start;
+            gap: 20px;
+            margin-bottom: 30px;
+            align-items: center;
         }
-
-        .player-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 1.5rem;
+        .player-select-card {
+            background: #fafafa;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
         }
-
-        .player-card h3 {
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: var(--text-secondary);
+        .player-select-card h3 {
+            font-size: 14px;
+            color: #666;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 1rem;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
             text-align: center;
         }
-
-        .input-group { margin-bottom: 1rem; }
-
-        .input-group label {
+        .select-group { margin-bottom: 15px; }
+        .select-group:last-child { margin-bottom: 0; }
+        .select-group label {
             display: block;
-            font-size: 0.6875rem;
-            font-weight: 600;
-            color: var(--text-secondary);
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 5px;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 0.375rem;
         }
-
-        .player-input, .season-select {
+        .player-select-wrapper {
+            position: relative;
+        }
+        .player-autocomplete {
             width: 100%;
-            padding: 0.75rem 1rem;
-            font-size: 0.9375rem;
-            font-family: inherit;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-            background: var(--surface);
-            color: var(--text);
-            transition: all 0.15s;
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            background-color: white;
+            transition: border-color 0.3s;
         }
-
-        .player-input:hover, .season-select:hover { border-color: var(--accent); }
-        .player-input:focus, .season-select:focus {
+        .player-autocomplete:hover { border-color: #007bff; }
+        .player-autocomplete:focus {
             outline: none;
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px var(--accent-dim);
+            border-color: #007bff;
         }
-
-        .player-input::placeholder { color: var(--text-secondary); }
-
-        .autocomplete-wrapper { position: relative; }
-
-        .autocomplete-list {
+        .player-select-wrapper {
+            position: relative;
+        }
+        .autocomplete-suggestions {
             position: absolute;
             top: 100%;
             left: 0;
             right: 0;
-            background: var(--surface);
-            border: 1px solid var(--accent);
-            border-radius: 0 0 8px 8px;
-            max-height: 280px;
+            background: white;
+            border: 2px solid #007bff;
+            border-top: none;
+            border-radius: 0 0 6px 6px;
+            max-height: 300px;
             overflow-y: auto;
             z-index: 1000;
             display: none;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
-
-        .autocomplete-item {
-            padding: 0.75rem 1rem;
+        .autocomplete-suggestion {
+            padding: 10px 12px;
             cursor: pointer;
-            border-bottom: 1px solid var(--border);
-            font-size: 0.875rem;
+            border-bottom: 1px solid #eee;
         }
-
-        .autocomplete-item:hover { background: var(--surface-hover); }
-        .autocomplete-item:last-child { border-bottom: none; }
-
-        .vs-divider {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--text-secondary);
+        .autocomplete-suggestion:hover {
+            background-color: #f0f8ff;
+        }
+        .autocomplete-suggestion:last-child {
+            border-bottom: none;
+        }
+        .vs-text {
+            font-size: 24px;
+            font-weight: bold;
+            color: #666;
             text-align: center;
-            padding-top: 3.5rem;
         }
-
-        .btn {
-            padding: 0.75rem 1.5rem;
-            font-size: 0.9375rem;
-            font-family: inherit;
-            font-weight: 600;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.15s;
-            border: none;
-        }
-
-        .btn-primary {
-            background: var(--accent);
+        .compare-button {
+            background-color: #007bff;
             color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 18px;
+            border-radius: 6px;
+            cursor: pointer;
             display: block;
-            margin: 0 auto 2rem;
+            margin: 0 auto 30px;
+            transition: background-color 0.3s;
         }
-
-        .btn-primary:hover { background: #2563eb; }
-        .btn-primary:disabled { background: var(--border); cursor: not-allowed; }
-
+        .compare-button:hover { background-color: #0056b3; }
+        .compare-button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
         .loading {
             text-align: center;
-            padding: 3rem;
+            padding: 40px;
+            font-size: 18px;
+            color: #666;
         }
-
         .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #007bff;
+            border-radius: 50%;
             width: 40px;
             height: 40px;
-            border: 3px solid var(--border);
-            border-top-color: var(--accent);
-            border-radius: 50%;
             animation: spin 1s linear infinite;
-            margin: 0 auto 1rem;
+            margin: 20px auto;
         }
-
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        .loading-text { color: var(--text-secondary); font-size: 0.9375rem; }
-
-        .progress-bar {
-            width: 200px;
-            height: 4px;
-            background: var(--border);
-            border-radius: 2px;
-            margin: 1rem auto;
-            overflow: hidden;
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
-
-        .progress-fill {
-            height: 100%;
-            background: var(--accent);
-            border-radius: 2px;
-            transition: width 0.3s;
-        }
-
-        /* Score Summary */
         .score-summary {
             display: grid;
             grid-template-columns: 1fr auto 1fr;
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-            padding: 2rem;
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-            border-radius: 16px;
-            color: white;
-            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
-        }
-
-        .player-score { text-align: center; }
-        .player-score .name { font-size: 1.25rem; font-weight: 600; opacity: 0.95; }
-        .player-score .season { font-size: 0.875rem; opacity: 0.8; margin-top: 0.25rem; }
-        .player-score .team { font-size: 0.75rem; opacity: 0.7; margin-top: 0.25rem; }
-        .player-score .score { font-size: 3.5rem; font-weight: 700; margin-top: 0.75rem; }
-        .score-divider { display: flex; align-items: center; font-size: 2rem; opacity: 0.6; }
-
-        /* Share URL */
-        .share-section {
-            background: var(--surface);
-            border: 1px solid var(--border);
+            gap: 20px;
+            margin-bottom: 30px;
+            padding: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border-radius: 12px;
-            padding: 1.25rem;
-            margin-bottom: 2rem;
+            color: white;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
-
-        .share-section h3 {
-            font-size: 0.875rem;
+        .player-score { text-align: center; }
+        .player-name-score {
+            font-size: 20px;
             font-weight: 600;
-            margin-bottom: 0.75rem;
+            margin-bottom: 15px;
+            opacity: 0.9;
         }
-
-        .share-input {
-            width: 100%;
-            padding: 0.625rem 0.875rem;
-            font-size: 0.8125rem;
-            font-family: 'JetBrains Mono', monospace;
+        .score-value {
+            font-size: 56px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .score-divider {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            font-weight: 300;
+            opacity: 0.7;
+        }
+        .category-section {
+            margin-bottom: 50px;
+        }
+        .category-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 4px solid #007bff;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .section-score {
+            font-size: 16px;
+            font-weight: 600;
+            color: #666;
+            margin-top: 8px;
+            text-align: left;
+        }
+        .suggestions-section {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+        .suggestion-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 20px;
             border-radius: 6px;
-            border: 1px solid var(--border);
-            background: var(--bg);
-            color: var(--text);
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .suggestion-btn:hover {
+            background: #0056b3;
+        }
+        .comparison-row {
+            display: grid;
+            grid-template-columns: 2fr 3fr 1fr 3fr 2fr;
+            gap: 15px;
+            padding: 18px 20px;
+            margin-bottom: 12px;
+            border-radius: 8px;
+            background-color: #fafafa;
+            align-items: center;
+            justify-items: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .comparison-row:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .comparison-row.winner-left {
+            background: linear-gradient(90deg, #d4edda 0%, #fafafa 50%, #fafafa 100%);
+            border-left: 4px solid #28a745;
+        }
+        .comparison-row.winner-right {
+            background: linear-gradient(90deg, #fafafa 0%, #fafafa 50%, #d4edda 100%);
+            border-right: 4px solid #28a745;
+        }
+        .comparison-row.tie {
+            background: linear-gradient(90deg, #fff3cd 0%, #fafafa 50%, #fff3cd 100%);
+            border-left: 4px solid #ffc107;
+            border-right: 4px solid #ffc107;
+        }
+        .player-value {
+            font-size: 19px;
+            font-weight: 600;
+            text-align: center;
+            color: #333;
+        }
+        .player-value.winner {
+            color: #28a745;
+            font-size: 20px;
+        }
+        .metric-name {
+            font-size: 15px;
+            color: #555;
+            text-align: center;
+            font-weight: 500;
+        }
+        .no-data {
+            color: #999;
+            font-style: italic;
+            font-weight: 400;
+        }
+        .share-url {
+            margin-top: 40px;
+            padding: 25px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+        .share-url h3 {
+            margin-bottom: 15px;
+            color: #333;
+            font-size: 18px;
+        }
+        .share-url-input {
+            width: 100%;
+            padding: 12px;
+            font-size: 14px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            background-color: white;
             cursor: pointer;
         }
-
-        .share-input:focus { outline: none; border-color: var(--accent); }
-
-        /* Category Sections */
-        .category {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            margin-bottom: 1.5rem;
-            overflow: hidden;
+        .share-url-input:focus {
+            outline: none;
+            border-color: #007bff;
         }
-
-        .category-header {
-            padding: 1rem 1.25rem;
-            background: var(--surface-hover);
-            border-bottom: 1px solid var(--border);
+        .error-message {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            border: 1px solid #f5c6cb;
+        }
+        /* Loop controls — matches Season Comparison Tool */
+        .loop-controls {
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
         }
-
-        .category-title {
-            font-size: 0.875rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.03em;
+        .loop-button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s;
         }
-
-        .category-score {
-            font-size: 0.8125rem;
-            font-weight: 600;
-            color: var(--text-secondary);
+        .loop-button:hover { background-color: #218838; }
+        .loop-button.active {
+            background-color: #dc3545;
         }
-
-        .category-body { padding: 0.5rem; }
-
-        /* Comparison Rows */
-        .stat-row {
-            display: grid;
-            grid-template-columns: 1fr 2fr auto 2fr 1fr;
-            gap: 0.75rem;
-            padding: 0.875rem 1rem;
-            margin: 0.375rem 0;
-            border-radius: 8px;
-            align-items: center;
-            transition: all 0.15s;
-        }
-
-        .stat-row:hover { background: var(--surface-hover); }
-
-        .stat-row.win-left {
-            background: var(--green-dim);
-            border-left: 3px solid var(--green);
-        }
-
-        .stat-row.win-right {
-            background: var(--green-dim);
-            border-right: 3px solid var(--green);
-        }
-
-        .stat-row.tie {
-            background: var(--orange-dim);
-            border-left: 3px solid var(--orange);
-            border-right: 3px solid var(--orange);
-        }
-
-        .stat-value {
-            font-size: 1.0625rem;
-            font-weight: 600;
-            text-align: center;
-        }
-
-        .stat-value.winner { color: var(--green); }
-        .stat-value.no-data { color: var(--text-secondary); font-style: italic; font-weight: 400; }
-
-        .stat-name {
-            font-size: 0.8125rem;
-            color: var(--text-secondary);
-            text-align: center;
-        }
-
-        .stat-player {
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-            text-align: center;
-        }
-
-        .error-box {
-            background: var(--red-dim);
-            border: 1px solid var(--red);
-            color: var(--red);
-            padding: 1.25rem;
-            border-radius: 8px;
-            text-align: center;
+        .loop-button.active:hover { background-color: #c82333; }
+        .loop-interval {
+            padding: 8px 12px;
+            font-size: 14px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            background: white;
         }
 
         @media (max-width: 768px) {
-            .player-selector { grid-template-columns: 1fr; gap: 1rem; }
-            .vs-divider { padding-top: 0; padding-bottom: 0; }
-            .stat-row { grid-template-columns: 1fr; gap: 0.5rem; text-align: center; }
-            .score-summary { grid-template-columns: 1fr; gap: 1rem; }
-            .player-score .score { font-size: 2.5rem; }
+            body { padding: 8px; }
+            .container { padding: 12px; }
+            h1 { font-size: 1.5em; }
+            .subtitle { font-size: 0.9em; margin-bottom: 18px; }
+            .player-selector {
+                grid-template-columns: 1fr;
+                gap: 10px;
+                margin-bottom: 18px;
+            }
+            .player-select-card {
+                padding: 12px;
+            }
+            .player-select-card h3 {
+                font-size: 12px;
+                margin-bottom: 8px;
+            }
+            .select-group { margin-bottom: 10px; }
+            .player-autocomplete {
+                padding: 10px;
+                font-size: 15px;
+            }
+            .vs-text {
+                font-size: 18px;
+                margin: 5px 0;
+            }
+            .compare-button {
+                padding: 12px 30px;
+                font-size: 16px;
+                margin-bottom: 18px;
+            }
+            /* Score summary: side by side */
+            .score-summary {
+                grid-template-columns: 1fr auto 1fr;
+                gap: 10px;
+                padding: 16px 12px;
+                margin-bottom: 20px;
+            }
+            .player-name-score { font-size: 14px; margin-bottom: 8px; }
+            .score-value { font-size: 36px; }
+            .score-divider { font-size: 24px; }
+            /* Category sections */
+            .category-section { margin-bottom: 30px; }
+            .category-title {
+                font-size: 16px;
+                margin-bottom: 12px;
+                padding-bottom: 8px;
+            }
+            .section-score { font-size: 13px; }
+            /* Comparison rows: 3 columns = Value | Metric | Value */
+            .comparison-row {
+                grid-template-columns: 1fr auto 1fr;
+                gap: 6px;
+                padding: 10px 8px;
+                margin-bottom: 6px;
+                border-radius: 6px;
+            }
+            .comparison-row:hover { transform: none; box-shadow: none; }
+            /* Hide player names on mobile (they're in the section score header) */
+            .comparison-row .player-name-cell { display: none; }
+            .player-value {
+                font-size: 15px;
+                text-align: center;
+            }
+            .player-value.winner {
+                font-size: 16px;
+                text-align: center;
+            }
+            .metric-name {
+                font-size: 11px;
+                min-width: 70px;
+                text-align: center;
+            }
+            /* Share URL */
+            .share-url { padding: 15px; }
+            .share-url h3 { font-size: 15px; }
+            .share-url-input { font-size: 12px; padding: 8px; }
+            /* Suggestions */
+            .suggestions-section { padding: 15px; }
+            .suggestion-btn { padding: 10px 14px; font-size: 13px; }
+            /* Loop controls */
+            .loop-controls { flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+            .loop-button { padding: 8px 14px; font-size: 13px; }
+            .loop-interval { padding: 6px 8px; font-size: 13px; }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <header>
-            <h1>🏀 NBA Season Comparison Tool</h1>
-            <p class="subtitle">Compare any two player seasons across 80+ categories</p>
-        </header>
+        <h1>🏀 NBA Player Comparison Tool</h1>
+        <div class="subtitle">Compare any two NBA players across 140+ categories</div>
 
-        <div id="loading" class="loading">
+        <div id="loadingMessage" class="loading">
             <div class="spinner"></div>
-            <div class="loading-text">Loading player database...</div>
-            <div class="progress-bar"><div class="progress-fill" id="progress" style="width: 0%"></div></div>
-            <div class="loading-text" id="status">Connecting...</div>
+            <div>Loading player database...</div>
         </div>
 
-        <div id="app" style="display: none;">
+        <div id="mainContent" style="display: none;">
+            <!-- Player selector at top -->
             <div class="player-selector">
-                <div class="player-card">
+                <div class="player-select-card">
                     <h3>Player 1</h3>
-                    <div class="input-group">
+                    <div class="select-group">
                         <label>Player Name</label>
-                        <div class="autocomplete-wrapper">
-                            <input type="text" id="p1Input" class="player-input" placeholder="Type player name...">
-                            <div id="p1List" class="autocomplete-list"></div>
+                        <div class="player-select-wrapper">
+                            <input type="text" id="player1-top" class="player-autocomplete" placeholder="Type player name...">
+                            <div id="suggestions1-top" class="autocomplete-suggestions"></div>
                         </div>
-                    </div>
-                    <div class="input-group">
-                        <label>Season</label>
-                        <select id="p1Season" class="season-select" disabled>
-                            <option value="">Select player first</option>
-                        </select>
                     </div>
                 </div>
-                <div class="vs-divider">VS</div>
-                <div class="player-card">
+                <div class="vs-text">VS</div>
+                <div class="player-select-card">
                     <h3>Player 2</h3>
-                    <div class="input-group">
+                    <div class="select-group">
                         <label>Player Name</label>
-                        <div class="autocomplete-wrapper">
-                            <input type="text" id="p2Input" class="player-input" placeholder="Type player name...">
-                            <div id="p2List" class="autocomplete-list"></div>
+                        <div class="player-select-wrapper">
+                            <input type="text" id="player2-top" class="player-autocomplete" placeholder="Type player name...">
+                            <div id="suggestions2-top" class="autocomplete-suggestions"></div>
                         </div>
-                    </div>
-                    <div class="input-group">
-                        <label>Season</label>
-                        <select id="p2Season" class="season-select" disabled>
-                            <option value="">Select player first</option>
-                        </select>
                     </div>
                 </div>
             </div>
-            <button class="btn btn-primary" id="compareBtn" disabled>Compare Seasons</button>
+
+            <button class="compare-button" onclick="compareFromInputs()" id="compareBtn">
+                Compare Players
+            </button>
+
+            <div class="loop-controls">
+                <button class="loop-button" id="loopBtn" onclick="toggleLoop()">Start Comparison Loop</button>
+                <select id="scrollDuration" class="loop-interval" title="Scroll speed">
+                    <option value="15">15s scroll</option>
+                    <option value="30" selected>30s scroll</option>
+                    <option value="45">45s scroll</option>
+                </select>
+                <select id="stickyPlayer" class="loop-interval">
+                    <option value="none">Randomize Both</option>
+                    <option value="p1" id="stickyP1Option">Keep Player 1</option>
+                    <option value="p2" id="stickyP2Option">Keep Player 2</option>
+                </select>
+            </div>
+            
             <div id="results"></div>
+            
+            <!-- Player selector at bottom -->
+            <div class="player-selector" style="margin-top: 40px;">
+                <div class="player-select-card">
+                    <h3>Player 1</h3>
+                    <div class="select-group">
+                        <label>Player Name</label>
+                        <div class="player-select-wrapper">
+                            <input type="text" id="player1-bottom" class="player-autocomplete" placeholder="Type player name...">
+                            <div id="suggestions1-bottom" class="autocomplete-suggestions"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="vs-text">VS</div>
+                <div class="player-select-card">
+                    <h3>Player 2</h3>
+                    <div class="select-group">
+                        <label>Player Name</label>
+                        <div class="player-select-wrapper">
+                            <input type="text" id="player2-bottom" class="player-autocomplete" placeholder="Type player name...">
+                            <div id="suggestions2-bottom" class="autocomplete-suggestions"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="compare-button" onclick="compareFromInputs()" style="margin-top: 20px;">
+                Compare Players
+            </button>
         </div>
+
+        <div id="errorMessage" style="display: none;"></div>
     </div>
 
     <script>
-        // ===== CONFIG =====
-        const SHEETS = {
-            allTime: '1ZrDfzqiC31Hu3YCtxT4aZbZF4QVCVyGe6wBytR2LF30',
-            current: '1JH2FUBIyQ1zEHzZBxgP8vHBZ7d8EtP5-fSVG3zMgCgg',
-            historical: '1nPSI-VVKHkGYW9IY2KDP-v_xW6qi9_L9WpCnUFKRi8A'
+        // CONFIGURATION: Using separate JSON files (under 25MB each)
+        const DATA_BASE_URL = 'https://jsierrahoopshype.github.io/nba-player-data/';
+        const DATA_FILES = {
+            awards: 'awards.json',
+            allStar: 'allStar.json',
+            awardVotes: 'awardVotes.json',
+            combine: 'combine-v3.json',
+            nba2k: 'nba2k.json',
+            poSeries: 'poSeries.json',
+            poStats: 'poStats.json',
+            rsStats: 'rsStats.json',
+            salaries: 'salaries.json',
+            sneakers: 'sneakers.json',
+            comparisons: 'comparisons.json',
+            allStarsData: 'allstars-data.json'
         };
 
-        const TABS = {
-            rs: 0, po: 1591736011, adv: 339737563, trad: 1169156479,
-            scoring: 52077302, shotLoc: 1205457990, defense: 1957258468,
-            usage: 1415078232, clutch: 10789411, hustle: 439158060
-        };
+        let playerData = {};
+        let players = [];
+        let dataLoaded = false;
 
-        const STARS = [
-            'Shai Gilgeous-Alexander', 'Victor Wembanyama', 'Luka Doncic', 'Giannis Antetokounmpo',
-            'Nikola Jokic', 'Jayson Tatum', 'Anthony Edwards', 'Kevin Durant', 'LeBron James',
-            'Stephen Curry', 'Donovan Mitchell', 'Tyrese Haliburton', 'Trae Young', 'Devin Booker',
-            'Anthony Davis', 'Jaylen Brown', "De'Aaron Fox", 'Paolo Banchero', 'Chet Holmgren',
-            'Tyrese Maxey', 'Domantas Sabonis', 'Jalen Brunson', 'Bam Adebayo', 'Franz Wagner'
-        ];
-
-        // ===== DATA =====
-        let data = { rs: [], po: [], current: {}, historical: {} };
-        let players = [], playerSeasons = {}, playerPO = {};
-        let currentIndex = {}; // Indexed by normalized name
-
-        // ===== HELPERS =====
-        function normalize(name) {
-            if (!name) return '';
-            return name.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-                .replace(/[ćčĆČ]/gi, 'c').replace(/[žŽ]/gi, 'z').replace(/[šŠ]/gi, 's').replace(/[đĐ]/gi, 'd')
-                .replace(/Ä‡/g, 'c').replace(/Ä/g, 'c').replace(/Å¡/g, 's').replace(/Å¾/g, 'z')
-                .toLowerCase().trim();
-        }
-
-        function sheetURL(id, gid) {
-            return `https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:csv&gid=${gid}`;
-        }
-
-        function parseCSV(text, skip = 0) {
-            const lines = text.trim().split('\n');
-            if (lines.length < skip + 2) return [];
-            const headers = parseLine(lines[skip]);
-            return lines.slice(skip + 1).map(line => {
-                const vals = parseLine(line);
-                const row = {};
-                headers.forEach((h, i) => row[h.replace(/"/g, '').trim()] = (vals[i] || '').replace(/"/g, '').trim());
-                return row;
-            }).filter(r => Object.keys(r).length > 1);
-        }
-
-        function parseLine(line) {
-            const result = []; let cur = '', inQ = false;
-            for (const c of line) {
-                if (c === '"') inQ = !inQ;
-                else if (c === ',' && !inQ) { result.push(cur); cur = ''; }
-                else cur += c;
+        // Fix column swaps in STL/BLK/TOV
+        // The JSON export has these columns incorrectly mapped
+        // Symptom: Ja Morant's "steals peak" shows ~3.8 (his actual TOV)
+        // This means: data_STL contains actual_TOV values
+        // Pattern appears to be: data_STL=actual_TOV, data_BLK=actual_STL, data_TOV=actual_BLK
+        // Fix: reverse the rotation
+        function fixColumnSwaps(dataArray, label) {
+            if (!dataArray || dataArray.length === 0) return;
+            
+            let fixCount = 0;
+            
+            // Log a sample before fix (for debugging)
+            const jaMorant = dataArray.find(r => r.PLAYER && r.PLAYER.includes('Ja Morant'));
+            if (jaMorant) {
+                console.log(`[${label}] Before fix - Ja Morant:`, {
+                    STL: jaMorant.STL,
+                    BLK: jaMorant.BLK, 
+                    TOV: jaMorant.TOV,
+                    GP: jaMorant.GP
+                });
             }
-            result.push(cur);
-            return result;
+            
+            dataArray.forEach(row => {
+                // Check if row has the columns we need to fix
+                const hasSTL = row.STL !== undefined;
+                const hasBLK = row.BLK !== undefined;
+                const hasTOV = row.TOV !== undefined;
+                
+                if (hasSTL && hasBLK && hasTOV) {
+                    // Current state: STL has TOV values, BLK has STL values, TOV has BLK values
+                    // Fix: rotate back
+                    const oldSTL = row.STL;  // Contains actual TOV
+                    const oldBLK = row.BLK;  // Contains actual STL
+                    const oldTOV = row.TOV;  // Contains actual BLK
+                    
+                    row.STL = oldBLK;  // Steals = what was in BLK (actual steals)
+                    row.BLK = oldTOV;  // Blocks = what was in TOV (actual blocks)
+                    row.TOV = oldSTL;  // Turnovers = what was in STL (actual turnovers)
+                    
+                    fixCount++;
+                }
+            });
+            
+            // Log after fix
+            if (jaMorant) {
+                const jaMorantAfter = dataArray.find(r => r.PLAYER && r.PLAYER.includes('Ja Morant'));
+                console.log(`[${label}] After fix - Ja Morant:`, {
+                    STL: jaMorantAfter.STL,
+                    BLK: jaMorantAfter.BLK,
+                    TOV: jaMorantAfter.TOV,
+                    GP: jaMorantAfter.GP
+                });
+            }
+            
+            console.log(`[${label}] Fixed STL/BLK/TOV rotation in ${fixCount} rows`);
         }
 
-        async function fetchSheet(id, gid, skip = 0) {
-            try {
-                const res = await fetch(sheetURL(id, gid));
-                return parseCSV(await res.text(), skip);
-            } catch (e) { console.error(e); return []; }
-        }
-
-        function setProgress(pct, msg) {
-            document.getElementById('progress').style.width = pct + '%';
-            document.getElementById('status').textContent = msg;
-        }
-
-        // ===== LOAD DATA =====
+        // Load JSON data from GitHub
         async function loadData() {
-            setProgress(5, 'Loading data...');
+            console.log('Loading player data from GitHub (JSON format)...');
             
-            const results = await Promise.all([
-                fetchSheet(SHEETS.allTime, TABS.rs),
-                fetchSheet(SHEETS.allTime, TABS.po),
-                fetchSheet(SHEETS.current, TABS.adv, 2),
-                fetchSheet(SHEETS.current, TABS.trad, 2),
-                fetchSheet(SHEETS.current, TABS.scoring, 2),
-                fetchSheet(SHEETS.current, TABS.shotLoc, 2),
-                fetchSheet(SHEETS.current, TABS.defense, 2),
-                fetchSheet(SHEETS.current, TABS.usage, 2),
-                fetchSheet(SHEETS.current, TABS.clutch, 2),
-                fetchSheet(SHEETS.current, TABS.hustle, 2)
-            ]);
-
-            data.rs = results[0];
-            data.po = results[1];
-            data.current = {
-                adv: results[2], trad: results[3], scoring: results[4],
-                shotLoc: results[5], defense: results[6], usage: results[7],
-                clutch: results[8], hustle: results[9]
-            };
-
-            setProgress(70, 'Indexing players...');
-
-            // Index 2025-26 players by NORMALIZED name
-            Object.keys(data.current).forEach(key => {
-                data.current[key].forEach(row => {
-                    const name = row.PLAYER_NAME || row.PLAYER;
-                    if (!name) return;
-                    const norm = normalize(name);
-                    if (!currentIndex[norm]) currentIndex[norm] = {};
-                    currentIndex[norm][key] = row;
+            try {
+                // Add cache-busting timestamp to force fresh loads
+                const timestamp = Date.now();
+                const cacheBust = `?t=${timestamp}`;
+                
+                // Load all JSON files in parallel
+                const results = await Promise.all([
+                    fetch(DATA_BASE_URL + DATA_FILES.awards + cacheBust).then(r => r.json()),
+                    fetch(DATA_BASE_URL + DATA_FILES.allStar + cacheBust).then(r => r.json()),
+                    fetch(DATA_BASE_URL + DATA_FILES.awardVotes + cacheBust).then(r => r.json()),
+                    fetch(DATA_BASE_URL + DATA_FILES.combine + cacheBust).then(r => r.json()),
+                    fetch(DATA_BASE_URL + DATA_FILES.nba2k + cacheBust).then(r => r.json()),
+                    fetch(DATA_BASE_URL + DATA_FILES.poSeries + cacheBust).then(r => r.json()),
+                    fetch(DATA_BASE_URL + DATA_FILES.poStats + cacheBust).then(r => r.json()),
+                    fetch(DATA_BASE_URL + DATA_FILES.rsStats + cacheBust).then(r => r.json()),
+                    fetch(DATA_BASE_URL + DATA_FILES.salaries + cacheBust).then(r => r.json()),
+                    fetch(DATA_BASE_URL + DATA_FILES.sneakers + cacheBust).then(r => r.json()),
+                    fetch(DATA_BASE_URL + DATA_FILES.comparisons + cacheBust).then(r => r.json())
+                ]);
+                
+                // Assign results to playerData
+                playerData.awards = results[0];
+                playerData.allStar = results[1];
+                playerData.awardVotes = results[2];
+                playerData.combine = results[3];
+                playerData.nba2k = results[4];
+                playerData.poSeries = results[5];
+                playerData.poStats = results[6];
+                playerData.rsStats = results[7];
+                playerData.salaries = results[8];
+                playerData.sneakers = results[9];
+                playerData.comparisons = results[10];
+                
+                // Fix column swaps in STL/BLK/TOV data
+                // The JSON data has these columns rotated - fix them here
+                fixColumnSwaps(playerData.rsStats, 'RS');
+                fixColumnSwaps(playerData.poStats, 'PO');
+                
+                // Try to load All-Stars data (optional - for random comparison feature)
+                try {
+                    const allStarsResponse = await fetch(DATA_BASE_URL + DATA_FILES.allStarsData + cacheBust);
+                    if (allStarsResponse.ok) {
+                        playerData.allStarsData = await allStarsResponse.json();
+                    }
+                } catch (e) {
+                    playerData.allStarsData = null;
+                }
+                
+                console.log('Data loaded successfully:', {
+                    comparisons: playerData.comparisons.length,
+                    awards: playerData.awards.length,
+                    rsStats: playerData.rsStats.length
                 });
+                
+                // Debug: Check sample data structure
+                if (playerData.rsStats.length > 0) {
+                    console.log('Sample RS-Stats row:', playerData.rsStats[0]);
+                }
+                if (playerData.awards.length > 0) {
+                    console.log('Sample Awards row:', playerData.awards[0]);
+                }
+                
+                // Debug: Test LeBron James data
+                const lebronRS = playerData.rsStats.filter(r => r.PLAYER && r.PLAYER.includes('LeBron'));
+                const lebronAwards = playerData.awards.filter(r => r['PLAYER / COACH'] && r['PLAYER / COACH'].includes('LeBron'));
+                console.log('LeBron RS-Stats rows:', lebronRS.length);
+                console.log('LeBron Awards rows:', lebronAwards.length);
+                if (lebronRS.length > 0) {
+                    console.log('LeBron RS sample:', lebronRS[0]);
+                }
+                if (lebronAwards.length > 0) {
+                    console.log('LeBron Award sample:', lebronAwards[0]);
+                }
+                
+                // Extract unique players
+                const playersSet = new Set();
+                
+                playerData.rsStats.forEach(row => {
+                    if (row.PLAYER) playersSet.add(row.PLAYER.trim());
+                });
+                
+                playerData.awards.forEach(row => {
+                    if (row['PLAYER / COACH']) playersSet.add(row['PLAYER / COACH'].trim());
+                });
+                
+                players = Array.from(playersSet).sort();
+                dataLoaded = true;
+                
+                console.log(`Found ${players.length} unique players`);
+                
+                return Promise.resolve();
+                
+            } catch (error) {
+                console.error('Error loading data:', error);
+                throw error;
+            }
+        }
+
+        // Initialize
+        window.addEventListener('DOMContentLoaded', async function() {
+            showLoading(true);
+            
+            try {
+                await loadData();
+                
+                setupAutocomplete();
+                
+                // Load random All-Star comparison on start
+                const randomP1 = getRandomAllStar();
+                const randomP2 = getRandomAllStar();
+                
+                if (randomP1 && randomP2 && randomP1 !== randomP2) {
+                    document.getElementById('player1-top').value = randomP1;
+                    document.getElementById('player2-top').value = randomP2;
+                    document.getElementById('player1-bottom').value = randomP1;
+                    document.getElementById('player2-bottom').value = randomP2;
+                    updateStickyPlayerOptions();
+                    setTimeout(() => compareFromInputs(), 500);
+                }
+                
+                showLoading(false);
+                document.getElementById('mainContent').style.display = 'block';
+            } catch (error) {
+                showError('Failed to load player data. Error: ' + error.message);
+                showLoading(false);
+            }
+        });
+
+        function showLoading(show) {
+            document.getElementById('loadingMessage').style.display = show ? 'block' : 'none';
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.className = 'error-message';
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+
+        function getRandomAllStar() {
+            if (!playerData.allStarsData || !playerData.allStarsData.allStars1990Plus) return null;
+            
+            // Filter to only All-Stars that exist in our players array
+            const allStars = playerData.allStarsData.allStars1990Plus.filter(name => 
+                players.includes(name)
+            );
+            
+            if (allStars.length === 0) return null;
+            return allStars[Math.floor(Math.random() * allStars.length)];
+        }
+
+        function getSameEraAllStar(playerName) {
+            if (!playerData.allStarsData || !playerData.allStarsData.playerDebutYears) return getRandomAllStar();
+            
+            const debutYears = playerData.allStarsData.playerDebutYears;
+            // Use ALL All-Stars (all eras) for same-era suggestions, filtered to those in our dataset
+            const rawAllStarsList = playerData.allStarsData.allStarsAllEras || playerData.allStarsData.allStars1990Plus || [];
+            const allStarsList = rawAllStarsList.filter(name => players.includes(name));
+            
+            const playerDebutYear = debutYears[playerName];
+            
+            if (!playerDebutYear) return getRandomAllStar();
+            
+            // Get ALL-STARS from any era within ±8 years of debut
+            const candidates = allStarsList.filter(p => {
+                const pDebut = debutYears[p];
+                if (!pDebut) return false;
+                const yearDiff = Math.abs(pDebut - playerDebutYear);
+                return yearDiff <= 8 && p !== playerName;
             });
+            
+            if (candidates.length === 0) return getRandomAllStar();
+            
+            return candidates[Math.floor(Math.random() * candidates.length)];
+        }
 
-            console.log('Indexed 2025-26 players:', Object.keys(currentIndex).length);
-            console.log('Sample keys:', Object.keys(currentIndex).slice(0, 10));
-
-            // Build player list from RS stats
-            const map = new Map(), poMap = new Map();
-            data.rs.forEach(r => {
-                if (r.PLAYER && r.YEAR) {
-                    if (!map.has(r.PLAYER)) map.set(r.PLAYER, []);
-                    map.get(r.PLAYER).push({ year: r.YEAR, team: r.TEAM, data: r });
+        function makePlayerNamesClickable() {
+            // Make all player names in the page clickable
+            const resultsDiv = document.getElementById('results');
+            if (!resultsDiv) return;
+            
+            const playerValueDivs = resultsDiv.querySelectorAll('.player-value');
+            playerValueDivs.forEach(div => {
+                const text = div.textContent.trim();
+                // Check if it's a player name (not a stat value)
+                if (text && players.includes(text)) {
+                    div.style.cursor = 'pointer';
+                    div.style.textDecoration = 'underline';
+                    div.setAttribute('data-player-name', text);
+                    
+                    div.addEventListener('click', () => {
+                        const clickedPlayer = div.getAttribute('data-player-name');
+                        const currentP1 = document.getElementById('player1-top').value;
+                        const currentP2 = document.getElementById('player2-top').value;
+                        
+                        // Keep clicked player in position, randomize opponent
+                        if (clickedPlayer === currentP1) {
+                            // Player 1 was clicked, randomize Player 2
+                            const newP2 = getRandomAllStar();
+                            if (newP2 && newP2 !== clickedPlayer) {
+                                document.getElementById('player2-top').value = newP2;
+                                document.getElementById('player2-bottom').value = newP2;
+                                compareFromInputs();
+                            }
+                        } else if (clickedPlayer === currentP2) {
+                            // Player 2 was clicked, randomize Player 1
+                            const newP1 = getRandomAllStar();
+                            if (newP1 && newP1 !== clickedPlayer) {
+                                document.getElementById('player1-top').value = newP1;
+                                document.getElementById('player1-bottom').value = newP1;
+                                compareFromInputs();
+                            }
+                        }
+                    });
                 }
             });
-            data.po.forEach(r => {
-                if (r.PLAYER && r.YEAR) {
-                    if (!poMap.has(r.PLAYER)) poMap.set(r.PLAYER, []);
-                    poMap.get(r.PLAYER).push({ year: r.YEAR, team: r.TEAM, data: r });
-                }
-            });
-
-            players = Array.from(map.keys()).sort();
-            map.forEach((s, n) => playerSeasons[n] = s.sort((a, b) => b.year - a.year));
-            poMap.forEach((s, n) => playerPO[n] = s.sort((a, b) => b.year - a.year));
-
-            setProgress(90, 'Loading historical data...');
-            loadHistorical();
-            setProgress(100, 'Ready!');
-            return data.rs.length > 0;
         }
 
-        async function loadHistorical() {
-            const results = await Promise.all([
-                fetchSheet(SHEETS.historical, TABS.adv, 2),
-                fetchSheet(SHEETS.historical, TABS.trad, 2),
-                fetchSheet(SHEETS.historical, TABS.scoring, 2),
-                fetchSheet(SHEETS.historical, TABS.shotLoc, 2),
-                fetchSheet(SHEETS.historical, TABS.defense, 2),
-                fetchSheet(SHEETS.historical, TABS.usage, 2),
-                fetchSheet(SHEETS.historical, TABS.clutch, 2),
-                fetchSheet(SHEETS.historical, TABS.hustle, 2)
-            ]);
-            data.historical = {
-                adv: results[0], trad: results[1], scoring: results[2],
-                shotLoc: results[3], defense: results[4], usage: results[5],
-                clutch: results[6], hustle: results[7]
-            };
-            console.log('Historical loaded');
-        }
-
-        // ===== COMPARISON CONFIG =====
-        const CONFIG = [
-            { cat: 'COUNTING STATS: AVERAGES', metrics: [
-                { n: 'Points', s: 'rs', c: 'PTS / G', h: 1, f: 'd' },
-                { n: 'Rebounds', s: 'rs', c: 'REB / G', h: 1, f: 'd' },
-                { n: 'Assists', s: 'rs', c: 'AST / G', h: 1, f: 'd' },
-                { n: 'Steals', s: 'rs', c: 'STL / G', h: 1, f: 'd' },
-                { n: 'Blocks', s: 'rs', c: 'BLK / G', h: 1, f: 'd' },
-                { n: 'Field Goal %', s: 'rs', c: 'FG%', h: 1, f: 'p' },
-                { n: 'Three Point %', s: 'rs', c: '3P%', h: 1, f: 'p' },
-                { n: 'Free Throw %', s: 'rs', c: 'FT%', h: 1, f: 'p' },
-                { n: 'Turnovers', s: 'rs', c: 'TOV / G', h: 0, f: 'd' },
-                { n: 'Points PO', s: 'po', c: 'PTS / G', h: 1, f: 'd' },
-                { n: 'Rebounds PO', s: 'po', c: 'REB / G', h: 1, f: 'd' },
-                { n: 'Assists PO', s: 'po', c: 'AST / G', h: 1, f: 'd' },
-                { n: 'Steals PO', s: 'po', c: 'STL / G', h: 1, f: 'd' },
-                { n: 'Blocks PO', s: 'po', c: 'BLK / G', h: 1, f: 'd' },
-                { n: 'FG% PO', s: 'po', c: 'FG%', h: 1, f: 'p' },
-                { n: '3P% PO', s: 'po', c: '3P%', h: 1, f: 'p' },
-                { n: 'FT% PO', s: 'po', c: 'FT%', h: 1, f: 'p' },
-                { n: 'Turnovers PO', s: 'po', c: 'TOV / G', h: 0, f: 'd' }
-            ]},
-            { cat: 'COUNTING STATS: TOTALS', metrics: [
-                { n: 'Points', s: 'rs', c: 'PTS', h: 1, f: 'i' },
-                { n: 'Rebounds', s: 'rs', c: 'REB', h: 1, f: 'i' },
-                { n: 'Assists', s: 'rs', c: 'AST', h: 1, f: 'i' },
-                { n: 'Steals', s: 'rs', c: 'STL', h: 1, f: 'i' },
-                { n: 'Blocks', s: 'rs', c: 'BLK', h: 1, f: 'i' },
-                { n: 'Turnovers', s: 'rs', c: 'TOV', h: 0, f: 'i' },
-                { n: 'Points PO', s: 'po', c: 'PTS', h: 1, f: 'i' },
-                { n: 'Rebounds PO', s: 'po', c: 'REB', h: 1, f: 'i' },
-                { n: 'Assists PO', s: 'po', c: 'AST', h: 1, f: 'i' },
-                { n: 'Steals PO', s: 'po', c: 'STL', h: 1, f: 'i' },
-                { n: 'Blocks PO', s: 'po', c: 'BLK', h: 1, f: 'i' },
-                { n: 'Turnovers PO', s: 'po', c: 'TOV', h: 0, f: 'i' }
-            ]},
-            { cat: 'ADVANCED STATS', metrics: [
-                { n: 'Plus-Minus', s: 'trad', c: 'PLUS_MINUS', h: 1, f: 'd' },
-                { n: 'Offensive Rating', s: 'adv', c: 'OFF_RATING', h: 1, f: 'd' },
-                { n: 'Defensive Rating', s: 'adv', c: 'DEF_RATING', h: 0, f: 'd' },
-                { n: 'Net Rating', s: 'adv', c: 'NET_RATING', h: 1, f: 'd' }
-            ]},
-            { cat: 'SCORING', metrics: [
-                { n: 'Effective FG%', s: 'adv', c: 'EFG_PCT', h: 1, f: 'p' },
-                { n: 'True Shooting%', s: 'adv', c: 'TS_PCT', h: 1, f: 'p' },
-                { n: 'Pts off Turnovers', s: 'scoring', c: 'PTS_OFF_TOV', h: 1, f: 'd', pg: 'GP' },
-                { n: '2nd Chance Pts', s: 'scoring', c: 'PTS_2ND_CHANCE', h: 1, f: 'd', pg: 'GP' },
-                { n: 'Fast Break Pts', s: 'scoring', c: 'PTS_FB', h: 1, f: 'd', pg: 'GP' },
-                { n: 'Paint Pts', s: 'scoring', c: 'PTS_PAINT', h: 1, f: 'd', pg: 'GP' }
-            ]},
-            { cat: 'SHOT LOCATION', metrics: [
-                { n: 'Paint FG%', s: 'shotLoc', c: 'Restricted Area_FG_PCT', h: 1, f: 'p' },
-                { n: 'Mid-Range FG%', s: 'shotLoc', c: 'Mid-Range_FG_PCT', h: 1, f: 'p' },
-                { n: 'Left Corner 3%', s: 'shotLoc', c: 'Left Corner 3_FG_PCT', h: 1, f: 'p' },
-                { n: 'Right Corner 3%', s: 'shotLoc', c: 'Right Corner 3_FG_PCT', h: 1, f: 'p' },
-                { n: 'Above Break 3%', s: 'shotLoc', c: 'Above the Break 3_FG_PCT', h: 1, f: 'p' }
-            ]},
-            { cat: 'DEFENSE', metrics: [
-                { n: 'Defended FG%', s: 'defense', c: 'D_FG_PCT', h: 0, f: 'p' },
-                { n: 'FG% +/-', s: 'defense', c: 'PCT_PLUSMINUS', h: 0, f: 'ps' }
-            ]},
-            { cat: 'REBOUNDS', metrics: [
-                { n: 'OREB%', s: 'adv', c: 'OREB_PCT', h: 1, f: 'p' },
-                { n: 'DREB%', s: 'adv', c: 'DREB_PCT', h: 1, f: 'p' },
-                { n: 'REB%', s: 'adv', c: 'REB_PCT', h: 1, f: 'p' }
-            ]},
-            { cat: 'ASSISTS & TURNOVERS', metrics: [
-                { n: 'AST%', s: 'adv', c: 'AST_PCT', h: 1, f: 'p' },
-                { n: 'AST Ratio', s: 'adv', c: 'AST_RATIO', h: 1, f: 'd' },
-                { n: 'AST/TO', s: 'adv', c: 'AST_TO', h: 1, f: 'd' },
-                { n: 'TOV%', s: 'adv', c: 'TM_TOV_PCT', h: 0, f: 'p' }
-            ]},
-            { cat: 'USAGE', metrics: [
-                { n: 'USG%', s: 'usage', c: 'USG_PCT', h: 1, f: 'p' },
-                { n: '% Team PTS', s: 'usage', c: 'PCT_PTS', h: 1, f: 'p' },
-                { n: '% Team REB', s: 'usage', c: 'PCT_REB', h: 1, f: 'p' },
-                { n: '% Team AST', s: 'usage', c: 'PCT_AST', h: 1, f: 'p' },
-                { n: '% Team BLK', s: 'usage', c: 'PCT_BLK', h: 1, f: 'p' },
-                { n: '% Team STL', s: 'usage', c: 'PCT_STL', h: 1, f: 'p' }
-            ]},
-            { cat: 'CLUTCH', metrics: [
-                { n: 'Points', s: 'clutch', c: 'PTS', h: 1, f: 'd', pg: 'GP' },
-                { n: 'Rebounds', s: 'clutch', c: 'REB', h: 1, f: 'd', pg: 'GP' },
-                { n: 'Assists', s: 'clutch', c: 'AST', h: 1, f: 'd', pg: 'GP' },
-                { n: 'Steals', s: 'clutch', c: 'STL', h: 1, f: 'd', pg: 'GP' },
-                { n: 'Blocks', s: 'clutch', c: 'BLK', h: 1, f: 'd', pg: 'GP' },
-                { n: 'FG%', s: 'clutch', c: 'FG_PCT', h: 1, f: 'p' },
-                { n: '3P%', s: 'clutch', c: 'FG3_PCT', h: 1, f: 'p' },
-                { n: 'FT%', s: 'clutch', c: 'FT_PCT', h: 1, f: 'p' },
-                { n: 'Turnovers', s: 'clutch', c: 'TOV', h: 0, f: 'd', pg: 'GP' }
-            ]},
-            { cat: 'HUSTLE', metrics: [
-                { n: 'Contested Shots', s: 'hustle', c: 'CONTESTED_SHOTS', h: 1, f: 'd', pg: 'G' },
-                { n: 'Deflections', s: 'hustle', c: 'DEFLECTIONS', h: 1, f: 'd', pg: 'G' },
-                { n: 'Charges Drawn', s: 'hustle', c: 'CHARGES_DRAWN', h: 1, f: 'd', pg: 'G' },
-                { n: 'Screen Assists', s: 'hustle', c: 'SCREEN_ASSISTS', h: 1, f: 'd', pg: 'G' },
-                { n: 'Screen Ast Pts', s: 'hustle', c: 'SCREEN_AST_PTS', h: 1, f: 'd', pg: 'G' },
-                { n: 'Loose Balls', s: 'hustle', c: 'LOOSE_BALLS_RECOVERED', h: 1, f: 'd', pg: 'G' },
-                { n: 'Off Boxouts', s: 'hustle', c: 'OFF_BOXOUTS', h: 1, f: 'd', pg: 'G' },
-                { n: 'Def Boxouts', s: 'hustle', c: 'DEF_BOXOUTS', h: 1, f: 'd', pg: 'G' }
-            ]},
-            { cat: 'TEAM SUCCESS', metrics: [
-                { n: 'Wins', s: 'adv', c: 'W', h: 1, f: 'i' },
-                { n: 'Win%', s: 'adv', c: 'W_PCT', h: 1, f: 'p' }
-            ]},
-            { cat: 'FOULS', metrics: [
-                { n: 'Fouls/G', s: 'rs', c: 'PF', h: 0, f: 'd', pg: 'GP' },
-                { n: 'Fouls/G PO', s: 'po', c: 'PF', h: 0, f: 'd', pg: 'GP' }
-            ]}
-        ];
-
-        // ===== GET DATA =====
-        function getData(name, year, src) {
-            const isCurrent = year === '2026';
+        function setupAutocomplete() {
+            // Setup autocomplete for all 4 inputs (top and bottom)
+            const inputs = [
+                { input: 'player1-top', suggestions: 'suggestions1-top' },
+                { input: 'player2-top', suggestions: 'suggestions2-top' },
+                { input: 'player1-bottom', suggestions: 'suggestions1-bottom' },
+                { input: 'player2-bottom', suggestions: 'suggestions2-bottom' }
+            ];
             
-            if (src === 'rs') {
-                const s = playerSeasons[name];
-                const m = s?.find(x => x.year === year);
-                return m?.data || null;
-            }
-            if (src === 'po') {
-                const s = playerPO[name];
-                const m = s?.find(x => x.year === year);
-                return m?.data || null;
-            }
-
-            // For advanced stats - use normalized name lookup
-            if (isCurrent) {
-                const norm = normalize(name);
-                const pd = currentIndex[norm];
-                return pd?.[src] || null;
-            } else {
-                const ds = data.historical[src];
-                if (!ds?.length) return null;
-                const norm = normalize(name);
-                return ds.find(r => {
-                    const rn = normalize(r.PLAYER_NAME || r.PLAYER);
-                    if (rn !== norm) return false;
-                    const rs = r.SEASON_ID || r.SEASON || r.YEAR;
-                    return rs === year || rs?.includes?.(year);
-                });
-            }
-        }
-
-        function getVal(d, col, pg) {
-            if (!d) return null;
-            let v = d[col];
-            if (v === undefined || v === '') return null;
-            if (pg) {
-                const g = parseFloat(d[pg]);
-                const t = parseFloat(v);
-                return (!isNaN(g) && !isNaN(t) && g > 0) ? t / g : null;
-            }
-            return v;
-        }
-
-        function fmt(v, f) {
-            if (v === null || v === '') return '-';
-            const n = parseFloat(v);
-            if (isNaN(n)) return v;
-            if (f === 'i') return Math.round(n).toLocaleString();
-            if (f === 'd') return n.toFixed(1);
-            if (f === 'p') return (Math.abs(n) <= 1 ? n * 100 : n).toFixed(1) + '%';
-            if (f === 'ps') { const p = Math.abs(n) <= 1 ? n * 100 : n; return (p >= 0 ? '+' : '') + p.toFixed(1) + '%'; }
-            return v;
-        }
-
-        function cmp(a, b, hi) {
-            const na = parseFloat(a), nb = parseFloat(b);
-            if (isNaN(na) && isNaN(nb)) return 'tie';
-            if (isNaN(na)) return 'p2';
-            if (isNaN(nb)) return 'p1';
-            if (Math.abs(na - nb) < 0.001) return 'tie';
-            return hi ? (na > nb ? 'p1' : 'p2') : (na < nb ? 'p1' : 'p2');
-        }
-
-        // ===== UI =====
-        function setupUI() {
-            [['p1Input', 'p1List', 'p1Season'], ['p2Input', 'p2List', 'p2Season']].forEach(([inp, list, sel]) => {
-                const i = document.getElementById(inp);
-                const l = document.getElementById(list);
-                const s = document.getElementById(sel);
-
-                i.addEventListener('input', () => {
-                    const v = i.value.toLowerCase();
-                    if (v.length < 2) { l.style.display = 'none'; return; }
-                    const m = players.filter(p => p.toLowerCase().includes(v)).slice(0, 10);
-                    if (!m.length) { l.style.display = 'none'; return; }
-                    l.innerHTML = m.map(p => `<div class="autocomplete-item" data-p="${p}">${p}</div>`).join('');
-                    l.style.display = 'block';
-                    l.querySelectorAll('.autocomplete-item').forEach(el => {
-                        el.onclick = () => {
-                            i.value = el.dataset.p;
-                            l.style.display = 'none';
-                            fillSeasons(s, el.dataset.p);
-                            checkBtn();
-                        };
+            inputs.forEach(config => {
+                const inputEl = document.getElementById(config.input);
+                const suggestionsEl = document.getElementById(config.suggestions);
+                
+                inputEl.addEventListener('input', function() {
+                    const value = this.value.toLowerCase();
+                    
+                    if (value.length < 2) {
+                        suggestionsEl.style.display = 'none';
+                        return;
+                    }
+                    
+                    // Match on both exact and normalized names (handles apostrophes)
+                    const normalizedValue = normalizePlayerName(value);
+                    const matches = players.filter(p => 
+                        p.toLowerCase().includes(value) || 
+                        normalizePlayerName(p).includes(normalizedValue)
+                    ).slice(0, 10); // Limit to 10 suggestions
+                    
+                    if (matches.length === 0) {
+                        suggestionsEl.style.display = 'none';
+                        return;
+                    }
+                    
+                    suggestionsEl.innerHTML = matches.map(player => 
+                        `<div class="autocomplete-suggestion" data-player="${player}">${player}</div>`
+                    ).join('');
+                    
+                    suggestionsEl.style.display = 'block';
+                    
+                    // Add click handlers to suggestions
+                    suggestionsEl.querySelectorAll('.autocomplete-suggestion').forEach(el => {
+                        el.addEventListener('click', function() {
+                            inputEl.value = this.getAttribute('data-player');
+                            suggestionsEl.style.display = 'none';
+                            
+                            // Sync with other input
+                            if (config.input.includes('top')) {
+                                const bottomId = config.input.replace('top', 'bottom');
+                                document.getElementById(bottomId).value = inputEl.value;
+                            } else {
+                                const topId = config.input.replace('bottom', 'top');
+                                document.getElementById(topId).value = inputEl.value;
+                            }
+                        });
                     });
                 });
-
-                document.addEventListener('click', e => {
-                    if (!i.contains(e.target) && !l.contains(e.target)) l.style.display = 'none';
+                
+                // Close suggestions when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!inputEl.contains(e.target) && !suggestionsEl.contains(e.target)) {
+                        suggestionsEl.style.display = 'none';
+                    }
                 });
-
-                s.onchange = checkBtn;
             });
-
-            document.getElementById('compareBtn').onclick = compare;
         }
 
-        function fillSeasons(sel, name) {
-            sel.innerHTML = '<option value="">Choose season</option>';
-            const s = playerSeasons[name];
-            if (!s) { sel.disabled = true; return; }
-            s.forEach(x => {
-                const o = document.createElement('option');
-                o.value = x.year;
-                o.textContent = `${x.year - 1}-${String(x.year).slice(-2)}${x.team ? ` (${x.team})` : ''}`;
-                sel.appendChild(o);
-            });
-            sel.disabled = false;
-            // Auto-select 2025-26 or most recent
-            if (s.some(x => x.year === '2026')) sel.value = '2026';
-            else if (s.length) sel.value = s[0].year;
+        function normalizePlayerName(name) {
+            // Normalize by removing apostrophes, spaces, and converting to lowercase
+            return name.toLowerCase().replace(/['\s.-]/g, '');
         }
 
-        function checkBtn() {
-            const ok = document.getElementById('p1Input').value && document.getElementById('p1Season').value &&
-                       document.getElementById('p2Input').value && document.getElementById('p2Season').value;
-            document.getElementById('compareBtn').disabled = !ok;
-        }
-
-        function nameToURL(n) {
-            return n.toLowerCase().replace(/[.']/g, '').replace(/\s+/g, '-');
-        }
-
-        function urlToName(u) {
-            return players.find(p => nameToURL(p) === u.toLowerCase()) || null;
-        }
-
-        function loadURL() {
-            const p = new URLSearchParams(location.search);
-            const p1 = p.get('p1'), s1 = p.get('s1'), p2 = p.get('p2'), s2 = p.get('s2');
-            if (p1 && s1 && p2 && s2) {
-                const n1 = urlToName(p1), n2 = urlToName(p2);
-                if (n1 && n2) {
-                    document.getElementById('p1Input').value = n1;
-                    fillSeasons(document.getElementById('p1Season'), n1);
-                    document.getElementById('p1Season').value = s1;
-                    document.getElementById('p2Input').value = n2;
-                    fillSeasons(document.getElementById('p2Season'), n2);
-                    document.getElementById('p2Season').value = s2;
-                    checkBtn();
-                    setTimeout(compare, 100);
-                    return true;
+        function findPlayerName(inputName) {
+            // First try exact match
+            if (players.includes(inputName)) {
+                return inputName;
+            }
+            
+            // Then try normalized match
+            const normalized = normalizePlayerName(inputName);
+            for (let player of players) {
+                if (normalizePlayerName(player) === normalized) {
+                    return player;
                 }
             }
-            return false;
+            
+            return null;
         }
 
-        function loadRandom() {
-            const avail = STARS.filter(n => playerSeasons[n]?.some(s => s.year === '2026'));
-            if (avail.length < 2) return;
-            const i1 = Math.floor(Math.random() * avail.length);
-            let i2 = Math.floor(Math.random() * avail.length);
-            while (i2 === i1) i2 = Math.floor(Math.random() * avail.length);
-            document.getElementById('p1Input').value = avail[i1];
-            fillSeasons(document.getElementById('p1Season'), avail[i1]);
-            document.getElementById('p2Input').value = avail[i2];
-            fillSeasons(document.getElementById('p2Season'), avail[i2]);
-            checkBtn();
-            setTimeout(compare, 100);
+        function compareFromInputs() {
+            const p1Input = document.getElementById('player1-top').value.trim();
+            const p2Input = document.getElementById('player2-top').value.trim();
+            
+            if (!p1Input || !p2Input) {
+                if (!loopActive) alert('Please enter both player names');
+                return;
+            }
+            
+            // Find actual player names (handles apostrophes and special characters)
+            const p1 = findPlayerName(p1Input);
+            const p2 = findPlayerName(p2Input);
+            
+            if (!p1) {
+                if (!loopActive) alert(`Player "${p1Input}" not found. Please select from suggestions.`);
+                return;
+            }
+            
+            if (!p2) {
+                if (!loopActive) alert(`Player "${p2Input}" not found. Please select from suggestions.`);
+                return;
+            }
+            
+            if (p1 === p2) {
+                if (!loopActive) alert('Please select different players');
+                return;
+            }
+            
+            // Update inputs with actual player names
+            document.getElementById('player1-top').value = p1;
+            document.getElementById('player2-top').value = p2;
+            document.getElementById('player1-bottom').value = p1;
+            document.getElementById('player2-bottom').value = p2;
+            
+            // Update sticky player labels
+            updateStickyPlayerOptions();
+            
+            comparePlayer(p1, p2);
         }
 
-        // ===== COMPARE =====
-        function compare() {
-            const n1 = document.getElementById('p1Input').value;
-            const y1 = document.getElementById('p1Season').value;
-            const n2 = document.getElementById('p2Input').value;
-            const y2 = document.getElementById('p2Season').value;
-            if (!n1 || !y1 || !n2 || !y2) return;
+        function comparePlayer(player1Name, player2Name) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<div class="loading"><div class="spinner"></div><div>Comparing players...</div></div>';
+            
+            setTimeout(() => {
+                const results = performComparison(player1Name, player2Name);
+                displayResults(results, player1Name, player2Name);
+            }, 100);
+        }
 
-            const rs1 = getData(n1, y1, 'rs'), rs2 = getData(n2, y2, 'rs');
-            const adv1 = getData(n1, y1, 'adv'), adv2 = getData(n2, y2, 'adv');
-            const t1 = rs1?.TEAM || adv1?.TEAM_ABBREVIATION || '';
-            const t2 = rs2?.TEAM || adv2?.TEAM_ABBREVIATION || '';
+        function parseNumericValue(value) {
+            // Helper function to convert values to numbers for comparison
+            if (!value) return NaN;
+            
+            const strValue = String(value);
+            
+            // Check if it's in feet-inches format (e.g., "6' 7.25''")
+            const feetInchesMatch = strValue.match(/(\d+)'\s*([\d.]+)['"]+/);
+            if (feetInchesMatch) {
+                const feet = parseFloat(feetInchesMatch[1]);
+                const inches = parseFloat(feetInchesMatch[2]);
+                return (feet * 12) + inches; // Convert to total inches
+            }
+            
+            // Otherwise strip currency symbols and commas
+            return parseFloat(strValue.replace(/[\$,]/g, ''));
+        }
 
-            let s1 = 0, s2 = 0, html = '';
-            const url = `${location.origin}${location.pathname}?p1=${nameToURL(n1)}&s1=${y1}&p2=${nameToURL(n2)}&s2=${y2}`;
-            history.replaceState({}, '', url);
-
-            CONFIG.forEach(cat => {
-                let rows = '', hasData = false, cs1 = 0, cs2 = 0;
-                cat.metrics.forEach(m => {
-                    const d1 = getData(n1, y1, m.s), d2 = getData(n2, y2, m.s);
-                    const v1 = getVal(d1, m.c, m.pg), v2 = getVal(d2, m.c, m.pg);
-                    if ((v1 === null) && (v2 === null)) return;
-                    hasData = true;
-                    const w = cmp(v1, v2, m.h);
-                    if (w === 'p1') { s1++; cs1++; }
-                    if (w === 'p2') { s2++; cs2++; }
-                    const f1 = fmt(v1, m.f), f2 = fmt(v2, m.f);
-                    const cls = w === 'p1' ? 'win-left' : w === 'p2' ? 'win-right' : 'tie';
-                    rows += `<div class="stat-row ${cls}">
-                        <div class="stat-value${w === 'p1' ? ' winner' : ''}${f1 === '-' ? ' no-data' : ''}">${f1}</div>
-                        <div class="stat-player">${n1}</div>
-                        <div class="stat-name">${m.n}</div>
-                        <div class="stat-player">${n2}</div>
-                        <div class="stat-value${w === 'p2' ? ' winner' : ''}${f2 === '-' ? ' no-data' : ''}">${f2}</div>
-                    </div>`;
+        function performComparison(player1Name, player2Name) {
+            let player1Score = 0;
+            let player2Score = 0;
+            const categories = {};
+            const sectionScores = {}; // Track scores per section
+            let currentSection = null;
+            
+            // Sections that award points even when opponent has no data
+            const alwaysAwardSections = [
+                'ACCOLADES', 
+                'BEST AWARDS RANKING', 
+                'YEARS RECEIVING VOTES', 
+                'SIGNATURE SHOES',
+                'PLAYOFF SUCCESS'
+            ];
+            
+            // Sections that require BOTH players to have data (like DRAFT COMBINE but counts toward overall)
+            const requireBothDataSections = [
+                'SALARIES',
+                'NBA 2K'
+            ];
+            
+            // Sections excluded from overall score
+            const excludeFromOverall = ['DRAFT COMBINE'];
+            
+            playerData.comparisons.forEach(comp => {
+                const category = comp['Comparison points'];
+                const winCondition = comp['Who wins?'];
+                const dataSource = comp['Wheres the data?'];
+                
+                // Check if this is a section header
+                if (!winCondition && !dataSource) {
+                    currentSection = category;
+                    categories[currentSection] = [];
+                    sectionScores[currentSection] = { player1: 0, player2: 0 };
+                    return;
+                }
+                
+                if (!currentSection || !category) return;
+                
+                // Get player stats
+                const p1Value = getPlayerStat(player1Name, category, dataSource);
+                const p2Value = getPlayerStat(player2Name, category, dataSource);
+                
+                // Determine winner
+                let winner = 'tie';
+                let awardPoint = false;
+                
+                // Check if this section always awards points
+                const alwaysAward = alwaysAwardSections.includes(currentSection);
+                
+                // Check if this section requires both players to have data
+                const requireBothData = requireBothDataSections.includes(currentSection) || 
+                                       excludeFromOverall.includes(currentSection);
+                
+                if (p1Value !== null && p2Value !== null) {
+                    // Both have data - normal comparison
+                    const p1Num = parseNumericValue(p1Value);
+                    const p2Num = parseNumericValue(p2Value);
+                    
+                    if (!isNaN(p1Num) && !isNaN(p2Num)) {
+                        if (winCondition === 'Most') {
+                            if (p1Num > p2Num) {
+                                winner = 'player1';
+                                awardPoint = true;
+                            } else if (p2Num > p1Num) {
+                                winner = 'player2';
+                                awardPoint = true;
+                            }
+                        } else if (winCondition === 'Least') {
+                            if (p1Num < p2Num) {
+                                winner = 'player1';
+                                awardPoint = true;
+                            } else if (p2Num < p1Num) {
+                                winner = 'player2';
+                                awardPoint = true;
+                            }
+                        }
+                        
+                        // Check if this is an untracked stat (steals/blocks/turnovers/3P with a 0)
+                        if (awardPoint) {
+                            const untrackedSections = ['NBA CAREER AVERAGES', 'NBA CAREER TOTALS', 'NBA SEASON PEAK'];
+                            const untrackedCategories = ['steals', 'steal', 'blocks', 'block', 'turnovers', 'turnover', 'three', '3p', 'stl', 'blk', 'tov'];
+                            
+                            const inUntrackedSection = untrackedSections.some(s => 
+                                currentSection && currentSection.trim().toUpperCase() === s.toUpperCase()
+                            );
+                            
+                            const isUntrackedCategory = untrackedCategories.some(c => 
+                                category && category.toLowerCase().includes(c)
+                            );
+                            
+                            // Check if value is zero - check both raw and parsed
+                            const isZeroValue = (rawVal, numVal) => {
+                                if (numVal === 0) return true;
+                                const strVal = String(rawVal).trim();
+                                if (strVal === '0' || strVal === '0.0' || strVal === '0.00') return true;
+                                return parseFloat(strVal) === 0;
+                            };
+                            
+                            const p1IsZero = isZeroValue(p1Value, p1Num);
+                            const p2IsZero = isZeroValue(p2Value, p2Num);
+                            
+                            // If either player has 0, don't award the point (stat wasn't tracked for them)
+                            if (inUntrackedSection && isUntrackedCategory) {
+                                if (p1IsZero || p2IsZero) {
+                                    awardPoint = false;
+                                    winner = 'tie';  // Also set to tie so row isn't highlighted
+                                }
+                            }
+                        }
+                    }
+                } else if (alwaysAward && !requireBothData) {
+                    // Only one has data - award point if in special sections (and not requiring both)
+                    if (p1Value !== null && p2Value === null) {
+                        const p1Num = parseNumericValue(p1Value);
+                        if (!isNaN(p1Num) && p1Num > 0) {
+                            winner = 'player1';
+                            awardPoint = true;
+                        }
+                    } else if (p2Value !== null && p1Value === null) {
+                        const p2Num = parseNumericValue(p2Value);
+                        if (!isNaN(p2Num) && p2Num > 0) {
+                            winner = 'player2';
+                            awardPoint = true;
+                        }
+                    }
+                }
+                
+                // Award points
+                if (awardPoint) {
+                    if (winner === 'player1') {
+                        sectionScores[currentSection].player1++;
+                        // Add to overall score unless it's an excluded section
+                        if (!excludeFromOverall.includes(currentSection)) {
+                            player1Score++;
+                        }
+                    } else if (winner === 'player2') {
+                        sectionScores[currentSection].player2++;
+                        // Add to overall score unless it's an excluded section
+                        if (!excludeFromOverall.includes(currentSection)) {
+                            player2Score++;
+                        }
+                    }
+                }
+                
+                categories[currentSection].push({
+                    metric: category,
+                    player1Value: p1Value,
+                    player2Value: p2Value,
+                    winner: winner
                 });
-                if (hasData) {
-                    html += `<div class="category">
-                        <div class="category-header">
-                            <div class="category-title">${cat.cat}</div>
-                            <div class="category-score">${n1} ${cs1} – ${n2} ${cs2}</div>
-                        </div>
-                        <div class="category-body">${rows}</div>
-                    </div>`;
+            });
+            
+            // Remove empty comparisons and untracked stats where both have 0
+            Object.keys(categories).forEach(sectionName => {
+                categories[sectionName] = categories[sectionName].filter(item => {
+                    // First check: at least one player has data
+                    if (item.player1Value === null && item.player2Value === null) {
+                        return false;
+                    }
+                    
+                    // Second check: for untracked stats, hide if BOTH have 0
+                    const untrackedSections = ['NBA CAREER AVERAGES', 'NBA CAREER TOTALS', 'NBA SEASON PEAK'];
+                    const untrackedCategories = ['steals', 'steal', 'blocks', 'block', 'turnovers', 'turnover', 'three', '3p', 'stl', 'blk', 'tov'];
+                    
+                    const inUntrackedSection = untrackedSections.some(s => 
+                        sectionName && sectionName.trim().toUpperCase() === s.toUpperCase()
+                    );
+                    
+                    const isUntrackedCategory = untrackedCategories.some(c => 
+                        item.metric && item.metric.toLowerCase().includes(c)
+                    );
+                    
+                    if (inUntrackedSection && isUntrackedCategory) {
+                        // Check if both values are 0
+                        const isZero = (val) => {
+                            if (val === null || val === undefined) return false;
+                            if (val === '-' || val === '–') return true;
+                            const strVal = String(val).trim();
+                            if (strVal === '0' || strVal === '0.0' || strVal === '0.00') return true;
+                            return parseFloat(strVal) === 0;
+                        };
+                        
+                        if (isZero(item.player1Value) && isZero(item.player2Value)) {
+                            return false; // Hide this row
+                        }
+                    }
+                    
+                    return true; // Show this row
+                });
+            });
+            
+            return {
+                player1: player1Name,
+                player2: player2Name,
+                player1Score: player1Score,
+                player2Score: player2Score,
+                categories: categories,
+                sectionScores: sectionScores
+            };
+        }
+
+        function getPlayerStat(playerName, metric, dataSource) {
+            if (!dataSource) return null;
+            
+            // Map metric to actual data field based on data source
+            if (dataSource === 'Awards.csv') {
+                return getAwardCount(playerName, metric);
+            } else if (dataSource === 'RS-Stats.csv') {
+                return getRegularSeasonStat(playerName, metric);
+            } else if (dataSource === 'PO-Stats.csv') {
+                return getPlayoffStat(playerName, metric);
+            } else if (dataSource === 'PO-series.csv') {
+                return getPlayoffSeriesStat(playerName, metric);
+            } else if (dataSource === 'Salaries.csv') {
+                return getSalaryStat(playerName, metric);
+            } else if (dataSource === 'Combine.csv') {
+                return getCombineStat(playerName, metric);
+            } else if (dataSource === 'Award-Votes.csv') {
+                return getVotingStat(playerName, metric);
+            } else if (dataSource === 'Sneakers.csv') {
+                return getSneakerStat(playerName, metric);
+            } else if (dataSource === 'NBA2K.csv') {
+                return get2KRating(playerName, metric);
+            } else if (dataSource === 'All-Star.csv') {
+                return getAllStarContestWins(playerName, metric);
+            }
+            
+            return null;
+        }
+
+        function getAwardCount(playerName, awardType) {
+            // Handle combined awards
+            if (awardType === 'All-NBA Selections') {
+                const first = playerData.awards.filter(row => 
+                    row['PLAYER / COACH'] === playerName && row.AWARD === 'All-NBA First Team'
+                ).length;
+                const second = playerData.awards.filter(row => 
+                    row['PLAYER / COACH'] === playerName && row.AWARD === 'All-NBA Second Team'
+                ).length;
+                const third = playerData.awards.filter(row => 
+                    row['PLAYER / COACH'] === playerName && row.AWARD === 'All-NBA Third Team'
+                ).length;
+                const total = first + second + third;
+                return total > 0 ? total : null;
+            }
+            
+            if (awardType === 'All-Defensive Team Selections') {
+                const first = playerData.awards.filter(row => 
+                    row['PLAYER / COACH'] === playerName && row.AWARD === 'All-Defensive First Team'
+                ).length;
+                const second = playerData.awards.filter(row => 
+                    row['PLAYER / COACH'] === playerName && row.AWARD === 'All-Defensive Second Team'
+                ).length;
+                const total = first + second;
+                return total > 0 ? total : null;
+            }
+            
+            if (awardType === 'Olympic Medals') {
+                const gold = playerData.awards.filter(row => 
+                    row['PLAYER / COACH'] === playerName && row.AWARD === 'Olympic Gold'
+                ).length;
+                const silver = playerData.awards.filter(row => 
+                    row['PLAYER / COACH'] === playerName && row.AWARD === 'Olympic Silver'
+                ).length;
+                const bronze = playerData.awards.filter(row => 
+                    row['PLAYER / COACH'] === playerName && row.AWARD === 'Olympic Bronze'
+                ).length;
+                const total = gold + silver + bronze;
+                return total > 0 ? total : null;
+            }
+            
+            if (awardType === 'World Cup Medals') {
+                const gold = playerData.awards.filter(row => 
+                    row['PLAYER / COACH'] === playerName && row.AWARD === 'World Cup Gold'
+                ).length;
+                const silver = playerData.awards.filter(row => 
+                    row['PLAYER / COACH'] === playerName && row.AWARD === 'World Cup Silver'
+                ).length;
+                const bronze = playerData.awards.filter(row => 
+                    row['PLAYER / COACH'] === playerName && row.AWARD === 'World Cup Bronze'
+                ).length;
+                const total = gold + silver + bronze;
+                return total > 0 ? total : null;
+            }
+            
+            // Conference Finals MVP combines EC Finals MVP and WC Finals MVP
+            if (awardType === 'Conference Finals MVP') {
+                const ec = playerData.awards.filter(row => 
+                    row['PLAYER / COACH'] === playerName && row.AWARD === 'EC Finals MVP'
+                ).length;
+                const wc = playerData.awards.filter(row => 
+                    row['PLAYER / COACH'] === playerName && row.AWARD === 'WC Finals MVP'
+                ).length;
+                const total = ec + wc;
+                return total > 0 ? total : null;
+            }
+            
+            // Regular award count
+            const playerAwards = playerData.awards.filter(row => 
+                row['PLAYER / COACH'] === playerName && row.AWARD === awardType
+            );
+            return playerAwards.length > 0 ? playerAwards.length : null;
+        }
+
+        // ==========================================
+        // MULTI-TEAM SEASON DEDUPLICATION
+        // When a player plays for multiple teams in one season, the data contains
+        // separate rows per team PLUS a "TOT" row with aggregated stats.
+        // Without deduplication, career stats double-count and peaks use partial stints.
+        // This function keeps only one row per season: the TOT row if it exists,
+        // otherwise the single team row, otherwise aggregates partial rows.
+        // ==========================================
+        function deduplicateSeasonRows(playerRows) {
+            // Group rows by YEAR
+            const byYear = {};
+            playerRows.forEach(row => {
+                const year = row.YEAR || 'unknown';
+                if (!byYear[year]) byYear[year] = [];
+                byYear[year].push(row);
+            });
+            
+            const deduplicated = [];
+            for (const year in byYear) {
+                const yearRows = byYear[year];
+                
+                if (yearRows.length === 1) {
+                    // Single row for this season — use it directly
+                    deduplicated.push(yearRows[0]);
+                } else {
+                    // Multiple rows — look for TOT row first
+                    const totRow = yearRows.find(r => 
+                        r.TEAM === 'TOT' || r.TM === 'TOT' || r.Team === 'TOT'
+                    );
+                    
+                    if (totRow) {
+                        deduplicated.push(totRow);
+                    } else {
+                        // No TOT row — aggregate the partial rows manually
+                        const aggregated = { ...yearRows[0] }; // Start with first row's structure
+                        const numericColumns = ['GP', 'PTS', 'REB', 'AST', 'STL', 'BLK', 'TOV',
+                                                'FGM', 'FGA', '3P', '3PA', 'FTM', 'FTA', 'MIN',
+                                                'OREB', 'DREB', 'PF'];
+                        
+                        // Zero out numeric columns first, then sum all rows
+                        numericColumns.forEach(col => { aggregated[col] = 0; });
+                        
+                        yearRows.forEach(row => {
+                            numericColumns.forEach(col => {
+                                const val = parseFloat(row[col]);
+                                if (!isNaN(val)) {
+                                    aggregated[col] = (aggregated[col] || 0) + val;
+                                }
+                            });
+                        });
+                        
+                        deduplicated.push(aggregated);
+                    }
+                }
+            }
+            
+            return deduplicated;
+        }
+
+        function getRegularSeasonStat(playerName, metric) {
+            const rawRows = playerData.rsStats.filter(row => row.PLAYER === playerName);
+            if (rawRows.length === 0) return null;
+            const playerRows = deduplicateSeasonRows(rawRows);
+            
+            // Map metric to column name
+            const columnMap = {
+                'Points per game': 'PTS / G',
+                'Rebounds per game': 'REB / G',
+                'Assists per game': 'AST / G',
+                'Steals per game': 'STL / G',
+                'Blocks per game': 'BLK / G',
+                'Field Goal %': 'FG%',
+                'Three Point %': '3P%',
+                'Free Throw %': 'FT%',
+                'Turnovers per game': 'TOV / G',
+                'Games': 'GP',
+                'Points': 'PTS',
+                'Rebounds': 'REB',
+                'Assists': 'AST',
+                'Steals': 'STL',
+                'Blocks': 'BLK',
+                'Turnovers': 'TOV',
+                '3P%': '3P%'
+            };
+            
+            // Season peak metrics - find highest single-season average
+            // IMPORTANT: Calculate from raw totals (STAT / GP) per season,
+            // not from a pre-calculated column that may not exist or may have a different name.
+            const peakPerGameMetrics = {
+                'Points per game peak': 'PTS',
+                'Rebounds per game peak': 'REB',
+                'Assists per game peak': 'AST',
+                'Steals per game peak': 'STL',
+                'Blocks per game peak': 'BLK',
+                'Turnovers per game peak': 'TOV'
+            };
+            
+            const peakPctMetrics = {
+                'Field Goal % peak': { made: 'FGM', att: 'FGA', minAtt: 200 },
+                'Three Point % peak': { made: '3P', att: '3PA', minAtt: 50 },
+                'Free Throw % peak': { made: 'FTM', att: 'FTA', minAtt: 50 }
+            };
+            
+            const MIN_GAMES_FOR_PEAK = 20;
+            
+            // Check if this is a per-game peak metric
+            if (peakPerGameMetrics[metric]) {
+                const statColumn = peakPerGameMetrics[metric];
+                let maxValue = -Infinity;
+                
+                playerRows.forEach(row => {
+                    const stat = parseFloat(row[statColumn]);
+                    const games = parseFloat(row['GP']);
+                    
+                    if (!isNaN(stat) && !isNaN(games) && games >= MIN_GAMES_FOR_PEAK) {
+                        const perGame = stat / games;
+                        if (perGame > maxValue) {
+                            maxValue = perGame;
+                        }
+                    }
+                });
+                
+                return maxValue > -Infinity ? maxValue.toFixed(1) : null;
+            }
+            
+            // Check if this is a percentage peak metric
+            if (peakPctMetrics[metric]) {
+                const pctInfo = peakPctMetrics[metric];
+                let maxPct = -Infinity;
+                
+                playerRows.forEach(row => {
+                    const made = parseFloat(row[pctInfo.made]);
+                    const att = parseFloat(row[pctInfo.att]);
+                    const games = parseFloat(row['GP']);
+                    
+                    // Require minimum attempts AND minimum games to avoid fluky small-sample peaks
+                    if (!isNaN(made) && !isNaN(att) && att >= pctInfo.minAtt && 
+                        !isNaN(games) && games >= MIN_GAMES_FOR_PEAK) {
+                        const pct = (made / att) * 100;
+                        if (pct > maxPct) {
+                            maxPct = pct;
+                        }
+                    }
+                });
+                
+                return maxPct > -Infinity ? maxPct.toFixed(1) + '%' : null;
+            }
+            
+            const column = columnMap[metric];
+            if (!column) return null;
+            
+            // For per-game stats, calculate total/games
+            if (metric.includes('per game')) {
+                const baseStatMap = {
+                    'Points per game': 'PTS',
+                    'Rebounds per game': 'REB',
+                    'Assists per game': 'AST',
+                    'Steals per game': 'STL',
+                    'Blocks per game': 'BLK',
+                    'Turnovers per game': 'TOV'
+                };
+                
+                const totalColumn = baseStatMap[metric];
+                if (!totalColumn) return null;
+                
+                let totalStat = 0;
+                let totalGames = 0;
+                
+                playerRows.forEach(row => {
+                    const stat = parseFloat(row[totalColumn]);
+                    const games = parseFloat(row['GP']);
+                    if (!isNaN(stat) && !isNaN(games)) {
+                        totalStat += stat;
+                        totalGames += games;
+                    }
+                });
+                
+                return totalGames > 0 ? (totalStat / totalGames).toFixed(1) : null;
+            }
+            
+            // For percentages, calculate weighted average
+            if (metric.includes('%')) {
+                const percentageMap = {
+                    'Field Goal %': { pct: 'FG%', made: 'FGM', att: 'FGA' },
+                    'Three Point %': { pct: '3P%', made: '3P', att: '3PA' },
+                    'Free Throw %': { pct: 'FT%', made: 'FTM', att: 'FTA' },
+                    '3P%': { pct: '3P%', made: '3P', att: '3PA' }
+                };
+                
+                const pctInfo = percentageMap[metric];
+                if (!pctInfo) return null;
+                
+                let totalMade = 0;
+                let totalAtt = 0;
+                
+                playerRows.forEach(row => {
+                    const made = parseFloat(row[pctInfo.made]);
+                    const att = parseFloat(row[pctInfo.att]);
+                    if (!isNaN(made) && !isNaN(att)) {
+                        totalMade += made;
+                        totalAtt += att;
+                    }
+                });
+                
+                if (totalAtt > 0) {
+                    const pct = (totalMade / totalAtt) * 100;
+                    return pct.toFixed(1) + '%';
+                }
+                return null;
+            }
+            
+            // For totals, sum up
+            let total = 0;
+            playerRows.forEach(row => {
+                const val = parseFloat(row[column]);
+                if (!isNaN(val)) {
+                    total += val;
                 }
             });
+            return total > 0 ? Math.round(total) : null;
+        }
 
-            document.getElementById('results').innerHTML = `
+        function getPlayoffStat(playerName, metric) {
+            const rawRows = playerData.poStats.filter(row => row.PLAYER === playerName);
+            if (rawRows.length === 0) return null;
+            const playerRows = deduplicateSeasonRows(rawRows);
+            
+            // Similar to regular season stats
+            const columnMap = {
+                'Points per game PO': 'PTS / G',
+                'Rebounds per game PO': 'REB / G',
+                'Assists per game PO': 'AST / G',
+                'Steals per game PO': 'STL / G',
+                'Blocks per game PO': 'BLK / G',
+                'Field Goal % PO': 'FG%',
+                'Three Point % PO': '3P%',
+                'Free Throw % PO': 'FT%',
+                'Turnovers per game PO': 'TOV / G',
+                'Games PO': 'GP',
+                'Points PO': 'PTS',
+                'Rebounds PO': 'REB',
+                'Assists PO': 'AST',
+                'Steals PO': 'STL',
+                'Blocks PO': 'BLK',
+                'Turnovers PO': 'TOV'
+            };
+            
+            // Playoff peak metrics - find highest single-postseason average
+            // Calculate from raw totals (STAT / GP) per season, same as regular season peaks.
+            const peakPerGameMetricsPO = {
+                'Points per game PO peak': 'PTS',
+                'Rebounds per game PO peak': 'REB',
+                'Assists per game PO peak': 'AST',
+                'Steals per game PO peak': 'STL',
+                'Blocks per game PO peak': 'BLK',
+                'Turnovers per game PO peak': 'TOV'
+            };
+            
+            const peakPctMetricsPO = {
+                'Field Goal % PO peak': { made: 'FGM', att: 'FGA', minAtt: 50 },
+                'Three Point % PO peak': { made: '3P', att: '3PA', minAtt: 15 },
+                'Free Throw % PO peak': { made: 'FTM', att: 'FTA', minAtt: 15 }
+            };
+            
+            const MIN_GAMES_FOR_PO_PEAK = 4; // At least one full series
+            
+            // Check if this is a per-game PO peak metric
+            if (peakPerGameMetricsPO[metric]) {
+                const statColumn = peakPerGameMetricsPO[metric];
+                let maxValue = -Infinity;
+                
+                playerRows.forEach(row => {
+                    const stat = parseFloat(row[statColumn]);
+                    const games = parseFloat(row['GP']);
+                    
+                    if (!isNaN(stat) && !isNaN(games) && games >= MIN_GAMES_FOR_PO_PEAK) {
+                        const perGame = stat / games;
+                        if (perGame > maxValue) {
+                            maxValue = perGame;
+                        }
+                    }
+                });
+                
+                return maxValue > -Infinity ? maxValue.toFixed(1) : null;
+            }
+            
+            // Check if this is a percentage PO peak metric
+            if (peakPctMetricsPO[metric]) {
+                const pctInfo = peakPctMetricsPO[metric];
+                let maxPct = -Infinity;
+                
+                playerRows.forEach(row => {
+                    const made = parseFloat(row[pctInfo.made]);
+                    const att = parseFloat(row[pctInfo.att]);
+                    const games = parseFloat(row['GP']);
+                    
+                    if (!isNaN(made) && !isNaN(att) && att >= pctInfo.minAtt &&
+                        !isNaN(games) && games >= MIN_GAMES_FOR_PO_PEAK) {
+                        const pct = (made / att) * 100;
+                        if (pct > maxPct) {
+                            maxPct = pct;
+                        }
+                    }
+                });
+                
+                return maxPct > -Infinity ? maxPct.toFixed(1) + '%' : null;
+            }
+            
+            const column = columnMap[metric];
+            if (!column) return null;
+            
+            // For per-game stats, calculate total/games
+            if (metric.includes('per game')) {
+                const baseStatMap = {
+                    'Points per game PO': 'PTS',
+                    'Rebounds per game PO': 'REB',
+                    'Assists per game PO': 'AST',
+                    'Steals per game PO': 'STL',
+                    'Blocks per game PO': 'BLK',
+                    'Turnovers per game PO': 'TOV'
+                };
+                
+                const totalColumn = baseStatMap[metric];
+                if (!totalColumn) return null;
+                
+                let totalStat = 0;
+                let totalGames = 0;
+                
+                playerRows.forEach(row => {
+                    const stat = parseFloat(row[totalColumn]);
+                    const games = parseFloat(row['GP']);
+                    if (!isNaN(stat) && !isNaN(games)) {
+                        totalStat += stat;
+                        totalGames += games;
+                    }
+                });
+                
+                return totalGames > 0 ? (totalStat / totalGames).toFixed(1) : null;
+            }
+            
+            // For percentages, calculate weighted average
+            if (metric.includes('%')) {
+                const percentageMap = {
+                    'Field Goal % PO': { pct: 'FG%', made: 'FGM', att: 'FGA' },
+                    'Three Point % PO': { pct: '3P%', made: '3P', att: '3PA' },
+                    'Free Throw % PO': { pct: 'FT%', made: 'FTM', att: 'FTA' }
+                };
+                
+                const pctInfo = percentageMap[metric];
+                if (!pctInfo) return null;
+                
+                let totalMade = 0;
+                let totalAtt = 0;
+                
+                playerRows.forEach(row => {
+                    const made = parseFloat(row[pctInfo.made]);
+                    const att = parseFloat(row[pctInfo.att]);
+                    if (!isNaN(made) && !isNaN(att)) {
+                        totalMade += made;
+                        totalAtt += att;
+                    }
+                });
+                
+                if (totalAtt > 0) {
+                    const pct = (totalMade / totalAtt) * 100;
+                    return pct.toFixed(1) + '%';
+                }
+                return null;
+            }
+            
+            // For totals, sum up
+            let total = 0;
+            playerRows.forEach(row => {
+                const val = parseFloat(row[column]);
+                if (!isNaN(val)) {
+                    total += val;
+                }
+            });
+            return total > 0 ? Math.round(total) : null;
+        }
+
+        function getPlayoffSeriesStat(playerName, metric) {
+            // Get all playoff rows for this player from poStats
+            // Note: poStats uses "PLAYER" field, not "NAME"
+            const rawRows = playerData.poStats.filter(row => row.PLAYER === playerName);
+            if (rawRows.length === 0) return null;
+            const playerRows = deduplicateSeasonRows(rawRows);
+            
+            // Count each result type
+            const resultCounts = {
+                'First Round': 0,
+                'Conf Semis': 0,
+                'Conf Finalist': 0,
+                'Finalist': 0,
+                'Champion': 0
+            };
+            
+            playerRows.forEach(row => {
+                const result = row.RESULT;
+                if (resultCounts.hasOwnProperty(result)) {
+                    resultCounts[result]++;
+                }
+            });
+            
+            // For playoff success metrics, calculate cumulative counts
+            // If you reached Champion, you also reached all earlier rounds that year
+            if (metric === 'Champion') {
+                return resultCounts['Champion'] > 0 ? resultCounts['Champion'] : null;
+            }
+            
+            if (metric === 'Finalist') {
+                const count = resultCounts['Finalist'] + resultCounts['Champion'];
+                return count > 0 ? count : null;
+            }
+            
+            if (metric === 'Conference Finals') {
+                const count = resultCounts['Conf Finalist'] + resultCounts['Finalist'] + resultCounts['Champion'];
+                return count > 0 ? count : null;
+            }
+            
+            if (metric === 'Conference Semis') {
+                const count = resultCounts['Conf Semis'] + resultCounts['Conf Finalist'] + resultCounts['Finalist'] + resultCounts['Champion'];
+                return count > 0 ? count : null;
+            }
+            
+            if (metric === 'First Round') {
+                const count = resultCounts['First Round'] + resultCounts['Conf Semis'] + resultCounts['Conf Finalist'] + resultCounts['Finalist'] + resultCounts['Champion'];
+                return count > 0 ? count : null;
+            }
+            
+            // For other playoff series stats, use poSeries data
+            const playerSeriesRow = playerData.poSeries.find(row => row.NAME === playerName);
+            if (!playerSeriesRow) return null;
+            
+            if (metric === 'Playoff series played') {
+                return playerSeriesRow.TOT || null;
+            }
+            
+            if (metric === 'Playoff series won') {
+                return playerSeriesRow.W || null;
+            }
+            
+            if (metric === 'Playoff series win %') {
+                return playerSeriesRow['% W'] || null;
+            }
+            
+            return null;
+        }
+
+        function getSalaryStat(playerName, metric) {
+            const playerRows = playerData.salaries.filter(row => row.PLAYER === playerName);
+            if (playerRows.length === 0) return null;
+            
+            // Group by year to avoid counting same salary multiple times in one season
+            const salariesByYear = {};
+            playerRows.forEach(row => {
+                const year = row.YEAR;
+                const salary = parseFloat(String(row.SALARY || '').replace(/[$,]/g, ''));
+                
+                if (!isNaN(salary) && salary > 0 && year) {
+                    // Keep track of salaries per year, store in array in case of mid-season trades
+                    if (!salariesByYear[year]) {
+                        salariesByYear[year] = [];
+                    }
+                    salariesByYear[year].push(salary);
+                }
+            });
+            
+            // For each year, sum all salaries (in case of mid-season trades)
+            const yearlyTotals = [];
+            for (const year in salariesByYear) {
+                const yearTotal = salariesByYear[year].reduce((sum, val) => sum + val, 0);
+                yearlyTotals.push(yearTotal);
+            }
+            
+            if (yearlyTotals.length === 0) return null;
+            
+            if (metric === 'Career earnings') {
+                const total = yearlyTotals.reduce((sum, val) => sum + val, 0);
+                return '$' + Math.round(total).toLocaleString();
+            }
+            
+            if (metric === 'Average salary') {
+                const avg = yearlyTotals.reduce((sum, val) => sum + val, 0) / yearlyTotals.length;
+                return '$' + Math.round(avg).toLocaleString();
+            }
+            
+            if (metric === 'Highest salary') {
+                const max = Math.max(...yearlyTotals);
+                return '$' + Math.round(max).toLocaleString();
+            }
+            
+            if (metric === 'Lowest salary') {
+                const min = Math.min(...yearlyTotals);
+                return '$' + Math.round(min).toLocaleString();
+            }
+            
+            return null;
+        }
+
+        function getCombineStat(playerName, metric) {
+            const playerRow = playerData.combine.find(row => row.PLAYER === playerName);
+            if (!playerRow) return null;
+            
+            const columnMap = {
+                'Body fat': 'BODY FAT %',
+                'Hand size': 'HAND SIZE',
+                'Height without shoes': 'HEIGHT W/O SHOES',
+                'Standing reach': 'STANDING REACH',
+                'Standing reach (inches)': 'STANDING',
+                'Weight': 'WEIGHT (LBS)',
+                'Wingspan': 'WINGSPAN',
+                'Lane agility time': 'LANE AGILITY',
+                'Shuttle run': 'SHUTTLE RUN',
+                'Three quarter sprint': '3/4 SPRINT',
+                'Threequartersprint': '3/4 SPRINT',  // Alternative name
+                'Standing vertical leap': 'STANDING VERT',
+                'Standingverticalleap': 'STANDING VERT',  // Alternative name
+                'Max vertical leap': 'MAX VERT',
+                'Maxverticalleap': 'MAX VERT',  // Alternative name
+                'Max bench press': 'MAX BENCH',
+                'Maxbenchpress': 'MAX BENCH',  // Alternative name
+                'Height': 'HEIGHT'
+            };
+            
+            const column = columnMap[metric];
+            if (!column) return null;
+            
+            let value = playerRow[column];
+            if (!value || value.trim() === '') return null;
+            
+            // Convert HEIGHT and STANDING from inches to feet-inches format
+            if (metric === 'Height' || metric === 'Standing reach (inches)') {
+                const inches = parseFloat(value);
+                if (!isNaN(inches)) {
+                    const feet = Math.floor(inches / 12);
+                    const remainingInches = inches % 12;
+                    value = `${feet}' ${remainingInches.toFixed(2)}''`;
+                }
+            }
+            
+            return value;
+        }
+
+        function getVotingStat(playerName, metric) {
+            const playerVotes = playerData.awardVotes.filter(row => row.PLAYER === playerName);
+            
+            // Best awards ranking - find lowest (best) rank for each award
+            const awardRankingMap = {
+                'Most Valuable Player': 'MVP',
+                'Defensive Player of the Year': 'DPOY',
+                'Rookie of the Year': 'ROY',
+                'Most Improved Player': 'MIP',
+                'Clutch Player of the Year': 'Clutch',
+                'Sixth Man of the Year': 'Sixth Man',
+                'Hustle Award': 'Hustle'
+            };
+            
+            if (awardRankingMap[metric]) {
+                const awardType = awardRankingMap[metric];
+                const relevantVotes = playerVotes.filter(row => row.AWARD === awardType);
+                
+                if (relevantVotes.length === 0) return null;
+                
+                let bestRank = Infinity;
+                relevantVotes.forEach(row => {
+                    const rank = parseInt(row.RNK);
+                    if (!isNaN(rank) && rank < bestRank) {
+                        bestRank = rank;
+                    }
+                });
+                
+                return bestRank < Infinity ? bestRank : null;
+            }
+            
+            // Years receiving votes
+            const yearsVotesMap = {
+                'Years with MVP votes': 'MVP',
+                'Years with DPOY votes': 'DPOY',
+                'Years with ROY votes': 'ROY',
+                'Years with Sixth Man votes': 'Sixth Man',
+                'Years with MIP votes': 'MIP',
+                'Years with Clutch Player votes': 'Clutch',
+                'Years with Hustle Award votes': 'Hustle'
+            };
+            
+            if (yearsVotesMap[metric]) {
+                const awardType = yearsVotesMap[metric];
+                const relevantVotes = playerVotes.filter(row => row.AWARD === awardType);
+                return relevantVotes.length > 0 ? relevantVotes.length : null;
+            }
+            
+            return null;
+        }
+
+        function getSneakerStat(playerName, metric) {
+            const playerRow = playerData.sneakers.find(row => row.PLAYER === playerName);
+            if (!playerRow) return null;
+            
+            if (metric === 'Number of Shoes') {
+                return playerRow.NUMBER_OF_SHOES;
+            } else if (metric === 'Years from first to last') {
+                // Calculate span: Last year - First year
+                const span = playerRow.LAST_YEAR - playerRow.FIRST_YEAR;
+                return span;
+            }
+            
+            return null;
+        }
+
+        function get2KRating(playerName, metric) {
+            const playerRow = playerData.nba2k.find(row => 
+                row['Full Name'] === playerName || 
+                row['First Name'] + ' ' + row['Last Name'] === playerName
+            );
+            
+            if (!playerRow) return null;
+            
+            // Collect all ratings
+            const ratings = [];
+            for (let key in playerRow) {
+                if (key.startsWith('2K') || key.startsWith('2k')) {
+                    const val = parseInt(playerRow[key]);
+                    if (!isNaN(val)) {
+                        ratings.push(val);
+                    }
+                }
+            }
+            
+            if (ratings.length === 0) return null;
+            
+            if (metric === 'Average career rating') {
+                const avg = ratings.reduce((sum, val) => sum + val, 0) / ratings.length;
+                return avg.toFixed(1);
+            }
+            
+            if (metric === 'Highest rating') {
+                return Math.max(...ratings);
+            }
+            
+            if (metric === 'Lowest rating') {
+                return Math.min(...ratings);
+            }
+            
+            return null;
+        }
+
+        function getAllStarContestWins(playerName, metric) {
+            const playerWins = playerData.allStar.filter(row => 
+                row.NAME === playerName && row['WINNER?'] === 'WINNER'
+            );
+            
+            if (metric === 'Dunk Contest') {
+                return playerWins.filter(r => r.CONTEST === 'Dunk Contest').length || null;
+            } else if (metric === 'Three-Point Contest') {
+                return playerWins.filter(r => r.CONTEST === 'Three-Point Contest').length || null;
+            } else if (metric === 'Skills Challenge') {
+                return playerWins.filter(r => r.CONTEST === 'Skills Challenge').length || null;
+            }
+            
+            return null;
+        }
+
+        function displayResults(results, player1Name, player2Name) {
+            const resultsDiv = document.getElementById('results');
+            
+            let html = `
                 <div class="score-summary">
                     <div class="player-score">
-                        <div class="name">${n1}</div>
-                        <div class="season">${y1 - 1}-${String(y1).slice(-2)}</div>
-                        ${t1 ? `<div class="team">${t1}</div>` : ''}
-                        <div class="score">${s1}</div>
+                        <div class="player-name-score clickable-player-name" data-player-name="${player1Name}" style="cursor: pointer; text-decoration: underline;">${player1Name}</div>
+                        <div class="score-value">${results.player1Score}</div>
                     </div>
                     <div class="score-divider">–</div>
                     <div class="player-score">
-                        <div class="name">${n2}</div>
-                        <div class="season">${y2 - 1}-${String(y2).slice(-2)}</div>
-                        ${t2 ? `<div class="team">${t2}</div>` : ''}
-                        <div class="score">${s2}</div>
+                        <div class="player-name-score clickable-player-name" data-player-name="${player2Name}" style="cursor: pointer; text-decoration: underline;">${player2Name}</div>
+                        <div class="score-value">${results.player2Score}</div>
                     </div>
                 </div>
-                <div class="share-section">
-                    <h3>📤 Share This Comparison</h3>
-                    <input type="text" class="share-input" value="${url}" readonly onclick="this.select();document.execCommand('copy');alert('Copied!');">
+            `;
+            
+            // Display categories
+            Object.keys(results.categories).forEach(categoryName => {
+                const items = results.categories[categoryName];
+                if (items.length === 0) return;
+                
+                // Get section scores
+                const sectionScore = results.sectionScores[categoryName];
+                // Only show section score if at least one player has points
+                const showScore = sectionScore && (sectionScore.player1 > 0 || sectionScore.player2 > 0);
+                const sectionScoreHTML = showScore ? 
+                    `<div class="section-score">
+                        <span class="clickable-player-name" data-player-name="${player1Name}" style="cursor: pointer; text-decoration: underline;">${player1Name}</span> ${sectionScore.player1} – 
+                        <span class="clickable-player-name" data-player-name="${player2Name}" style="cursor: pointer; text-decoration: underline;">${player2Name}</span> ${sectionScore.player2}
+                    </div>` : '';
+                
+                html += `<div class="category-section">
+                    <div class="category-title">
+                        ${categoryName}
+                        ${sectionScoreHTML}
+                    </div>`;
+                
+                items.forEach(item => {
+                    const rowClass = item.winner === 'player1' ? 'winner-left' : 
+                                    item.winner === 'player2' ? 'winner-right' : 'tie';
+                    
+                    const p1Class = item.winner === 'player1' ? 'player-value winner' : 'player-value';
+                    const p2Class = item.winner === 'player2' ? 'player-value winner' : 'player-value';
+                    
+                    const p1Display = item.player1Value !== null ? item.player1Value : '<span class="no-data">–</span>';
+                    const p2Display = item.player2Value !== null ? item.player2Value : '<span class="no-data">–</span>';
+                    
+                    html += `
+                        <div class="comparison-row ${rowClass}">
+                            <div class="${p1Class}">${p1Display}</div>
+                            <div class="player-value player-name-cell" style="font-weight: normal; font-size: 16px;">${player1Name}</div>
+                            <div class="metric-name">${item.metric}</div>
+                            <div class="player-value player-name-cell" style="font-weight: normal; font-size: 16px;">${player2Name}</div>
+                            <div class="${p2Class}">${p2Display}</div>
+                        </div>
+                    `;
+                });
+                
+                html += `</div>`;
+            });
+            
+            // Add same-era suggestion button (only if All-Stars data is available)
+            const sameEraP1 = getSameEraAllStar(player1Name);
+            const sameEraP2 = getSameEraAllStar(player2Name);
+            
+            if (sameEraP1 && sameEraP2) {
+                html += `
+                    <div class="suggestions-section">
+                        <h3 style="margin-bottom: 15px; color: #1a1a1a;">✨ Try These Comparisons</h3>
+                        <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                            <button class="suggestion-btn" data-p1="${player1Name}" data-p2="${sameEraP1}">
+                                ${player1Name} vs ${sameEraP1}
+                            </button>
+                            <button class="suggestion-btn" data-p1="${player2Name}" data-p2="${sameEraP2}">
+                                ${player2Name} vs ${sameEraP2}
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Add bottom loop button
+            html += `
+                <div class="loop-controls" style="margin-top: 20px;">
+                    <button class="loop-button" id="loopBtnBottom" onclick="toggleLoop()">${loopActive ? 'Stop Comparison Loop' : 'Start Comparison Loop'}</button>
                 </div>
-                ${html}`;
-            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+            `;
+            
+            resultsDiv.innerHTML = html;
+            
+            // Attach click handlers to clickable player names in scoreboards
+            resultsDiv.querySelectorAll('.clickable-player-name').forEach(nameEl => {
+                nameEl.addEventListener('click', function() {
+                    const clickedPlayer = this.getAttribute('data-player-name');
+                    const currentP1 = document.getElementById('player1-top').value;
+                    const currentP2 = document.getElementById('player2-top').value;
+                    
+                    // Keep clicked player in position, randomize opponent
+                    if (clickedPlayer === currentP1) {
+                        // Player 1 was clicked, randomize Player 2
+                        const newP2 = getRandomAllStar();
+                        if (newP2 && newP2 !== clickedPlayer) {
+                            document.getElementById('player2-top').value = newP2;
+                            document.getElementById('player2-bottom').value = newP2;
+                            compareFromInputs();
+                        }
+                    } else if (clickedPlayer === currentP2) {
+                        // Player 2 was clicked, randomize Player 1
+                        const newP1 = getRandomAllStar();
+                        if (newP1 && newP1 !== clickedPlayer) {
+                            document.getElementById('player1-top').value = newP1;
+                            document.getElementById('player1-bottom').value = newP1;
+                            compareFromInputs();
+                        }
+                    }
+                });
+            });
+            
+            // Attach click handlers to suggestion buttons
+            resultsDiv.querySelectorAll('.suggestion-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const p1 = this.getAttribute('data-p1');
+                    const p2 = this.getAttribute('data-p2');
+                    loadComparison(p1, p2);
+                });
+            });
+            
+            // Make player names clickable
+            makePlayerNamesClickable();
+        }
+        
+        // ==========================================
+        // LOOP MODE — matches Season Comparison Tool
+        // ==========================================
+        let loopActive = false;
+        let usedOpponents = new Set();
+        let scrollAnimationId = null;
+
+        function updateStickyPlayerOptions() {
+            const p1Name = document.getElementById('player1-top').value || 'Player 1';
+            const p2Name = document.getElementById('player2-top').value || 'Player 2';
+            
+            document.getElementById('stickyP1Option').textContent = `Keep ${p1Name}`;
+            document.getElementById('stickyP2Option').textContent = `Keep ${p2Name}`;
         }
 
-        // ===== INIT =====
-        async function init() {
-            if (await loadData()) {
-                document.getElementById('loading').style.display = 'none';
-                document.getElementById('app').style.display = 'block';
-                setupUI();
-                if (!loadURL()) loadRandom();
-            } else {
-                document.getElementById('loading').innerHTML = '<div class="error-box">Failed to load data. Please refresh.</div>';
+        function getRandomOpponent(excludePlayers) {
+            if (!playerData.allStarsData || !playerData.allStarsData.allStars1990Plus) return null;
+            
+            // Filter to only All-Stars that exist in our players array (from rsStats)
+            const allStars = playerData.allStarsData.allStars1990Plus.filter(name => 
+                players.includes(name)
+            );
+            
+            if (allStars.length === 0) return null;
+            
+            const available = allStars.filter(p => 
+                !excludePlayers.includes(p) && !usedOpponents.has(p)
+            );
+            
+            // If we've used all opponents, reset the used list
+            if (available.length === 0) {
+                usedOpponents.clear();
+                const freshAvailable = allStars.filter(p => !excludePlayers.includes(p));
+                if (freshAvailable.length === 0) return null;
+                const pick = freshAvailable[Math.floor(Math.random() * freshAvailable.length)];
+                usedOpponents.add(pick);
+                return pick;
+            }
+            
+            const pick = available[Math.floor(Math.random() * available.length)];
+            usedOpponents.add(pick);
+            return pick;
+        }
+
+        function smoothScrollToBottom(durationMs) {
+            // Cancel any existing scroll animation
+            if (scrollAnimationId) {
+                cancelAnimationFrame(scrollAnimationId);
+            }
+            
+            // Start from the top of the page
+            const startY = 0;
+            window.scrollTo(0, startY);
+            
+            const targetY = document.documentElement.scrollHeight - window.innerHeight;
+            const distance = targetY - startY;
+            
+            // If no scrolling needed (page fits in viewport), wait then trigger next comparison
+            if (distance <= 0) {
+                setTimeout(() => {
+                    if (loopActive) runLoopComparison();
+                }, 3000);
+                return;
+            }
+            
+            const startTime = performance.now();
+            
+            function animateScroll(currentTime) {
+                if (!loopActive) return;
+                
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / durationMs, 1);
+                
+                // Linear scrolling - constant speed
+                window.scrollTo(0, startY + (distance * progress));
+                
+                if (progress < 1) {
+                    scrollAnimationId = requestAnimationFrame(animateScroll);
+                } else {
+                    // Scroll finished - trigger next comparison after 1.5 seconds
+                    setTimeout(() => {
+                        if (loopActive) runLoopComparison();
+                    }, 1500);
+                }
+            }
+            
+            scrollAnimationId = requestAnimationFrame(animateScroll);
+        }
+
+        function startLoop() {
+            const loopBtn = document.getElementById('loopBtn');
+            const loopBtnBottom = document.getElementById('loopBtnBottom');
+            const scrollSelect = document.getElementById('scrollDuration');
+            const stickySelect = document.getElementById('stickyPlayer');
+            
+            loopActive = true;
+            loopBtn.textContent = 'Stop Comparison Loop';
+            loopBtn.classList.add('active');
+            if (loopBtnBottom) {
+                loopBtnBottom.textContent = 'Stop Comparison Loop';
+                loopBtnBottom.classList.add('active');
+            }
+            scrollSelect.disabled = true;
+            stickySelect.disabled = true;
+            usedOpponents.clear();
+            
+            // Update sticky player labels
+            updateStickyPlayerOptions();
+            
+            // Run first comparison immediately (scroll callback will trigger next)
+            runLoopComparison();
+        }
+
+        function stopLoop() {
+            const loopBtn = document.getElementById('loopBtn');
+            const loopBtnBottom = document.getElementById('loopBtnBottom');
+            const scrollSelect = document.getElementById('scrollDuration');
+            const stickySelect = document.getElementById('stickyPlayer');
+            
+            loopActive = false;
+            loopBtn.textContent = 'Start Comparison Loop';
+            loopBtn.classList.remove('active');
+            if (loopBtnBottom) {
+                loopBtnBottom.textContent = 'Start Comparison Loop';
+                loopBtnBottom.classList.remove('active');
+            }
+            scrollSelect.disabled = false;
+            stickySelect.disabled = false;
+            
+            if (scrollAnimationId) {
+                cancelAnimationFrame(scrollAnimationId);
+                scrollAnimationId = null;
             }
         }
 
-        init();
+        function toggleLoop() {
+            if (loopActive) {
+                stopLoop();
+            } else {
+                startLoop();
+            }
+        }
+
+        function runLoopComparison() {
+            const stickyMode = document.getElementById('stickyPlayer').value;
+            const scrollDuration = parseInt(document.getElementById('scrollDuration').value) * 1000;
+            const currentP1 = document.getElementById('player1-top').value;
+            const currentP2 = document.getElementById('player2-top').value;
+            
+            if (stickyMode === 'p1') {
+                // Keep Player 1, randomize Player 2
+                const newOpponent = getRandomOpponent([currentP1]);
+                if (!newOpponent) return;
+                
+                document.getElementById('player2-top').value = newOpponent;
+                document.getElementById('player2-bottom').value = newOpponent;
+                
+            } else if (stickyMode === 'p2') {
+                // Keep Player 2, randomize Player 1
+                const newOpponent = getRandomOpponent([currentP2]);
+                if (!newOpponent) return;
+                
+                document.getElementById('player1-top').value = newOpponent;
+                document.getElementById('player1-bottom').value = newOpponent;
+                
+            } else {
+                // Randomize both players - use All-Stars that exist in our dataset
+                let allStars = [];
+                if (playerData.allStarsData && playerData.allStarsData.allStars1990Plus) {
+                    allStars = playerData.allStarsData.allStars1990Plus.filter(name => 
+                        players.includes(name)
+                    );
+                }
+                
+                // Fallback: if no All-Stars available, pick from top of players list
+                if (allStars.length < 2) {
+                    allStars = players.slice(0, 100);
+                }
+                
+                if (allStars.length < 2) return;
+                
+                const idx1 = Math.floor(Math.random() * allStars.length);
+                let idx2 = Math.floor(Math.random() * allStars.length);
+                while (idx2 === idx1) idx2 = Math.floor(Math.random() * allStars.length);
+                
+                document.getElementById('player1-top').value = allStars[idx1];
+                document.getElementById('player2-top').value = allStars[idx2];
+                document.getElementById('player1-bottom').value = allStars[idx1];
+                document.getElementById('player2-bottom').value = allStars[idx2];
+            }
+            
+            compareFromInputs();
+            
+            // Start smooth scroll after brief delay for content to render
+            setTimeout(() => {
+                if (loopActive) {
+                    smoothScrollToBottom(scrollDuration);
+                }
+            }, 1500);
+        }
+
+        function loadComparison(p1, p2) {
+            document.getElementById('player1-top').value = p1;
+            document.getElementById('player2-top').value = p2;
+            document.getElementById('player1-bottom').value = p1;
+            document.getElementById('player2-bottom').value = p2;
+            compareFromInputs();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
     </script>
 </body>
 </html>
