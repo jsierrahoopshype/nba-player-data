@@ -17694,7 +17694,7 @@
     "AWARD": "All-Rookie First Team",
     "YEAR": "2003",
     "RG CODE": "Maybyner Nene",
-    "PLAYER / COACH": "NenÃª",
+    "PLAYER / COACH": "Nen\u00c3\u00aa",
     "TEAM": "Denver Nuggets",
     "CAREER AWARDS": "All-Rookie First Team",
     "SEASON AWARDS": "All-Rookie First Team"
@@ -101184,7 +101184,7 @@
     "AWARD": "World Cup Bronze",
     "YEAR": "1950",
     "RG CODE": "",
-    "PLAYER / COACH": "Hernan MuÃ±oz",
+    "PLAYER / COACH": "Hernan Mu\u00c3\u00b1oz",
     "TEAM": "",
     "CAREER AWARDS": "World Cup Bronze",
     "SEASON AWARDS": "World Cup Bronze"
@@ -103278,6 +103278,936 @@
     "RG CODE": "Shai Gilgeous-Alexander",
     "PLAYER / COACH": "Shai Gilgeous-Alexander",
     "TEAM": "Oklahoma City Thunder",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "Player of the Month",
+    "YEAR": "2026",
+    "RG CODE": "Jaylen Brown",
+    "PLAYER / COACH": "Jaylen Brown",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "Player of the Month",
+    "YEAR": "2026",
+    "RG CODE": "Luka Doncic",
+    "PLAYER / COACH": "Luka Doncic",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "Player of the Month",
+    "YEAR": "2026",
+    "RG CODE": "Jalen Brunson",
+    "PLAYER / COACH": "Jalen Brunson",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "Player of the Month",
+    "YEAR": "2026",
+    "RG CODE": "Shai Gilgeous-Alexander",
+    "PLAYER / COACH": "Shai Gilgeous-Alexander",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "Player of the Month",
+    "YEAR": "2026",
+    "RG CODE": "Cade Cunningham",
+    "PLAYER / COACH": "Cade Cunningham",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "Player of the Month",
+    "YEAR": "2026",
+    "RG CODE": "Nikola Jokic",
+    "PLAYER / COACH": "Nikola Jokic",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "Player of the Week",
+    "YEAR": "2026",
+    "RG CODE": "Jalen Johnson",
+    "PLAYER / COACH": "Jalen Johnson",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "Player of the Week",
+    "YEAR": "2026",
+    "RG CODE": "Stephon Castle",
+    "PLAYER / COACH": "Stephon Castle",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "Player of the Week",
+    "YEAR": "2026",
+    "RG CODE": "Brandon Miller",
+    "PLAYER / COACH": "Brandon Miller",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "Player of the Week",
+    "YEAR": "2026",
+    "RG CODE": "Dillon Brooks",
+    "PLAYER / COACH": "Dillon Brooks",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "Player of the Week",
+    "YEAR": "2026",
+    "RG CODE": "Immanuel Quickley",
+    "PLAYER / COACH": "Immanuel Quickley",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "Player of the Week",
+    "YEAR": "2026",
+    "RG CODE": "Luka Doncic",
+    "PLAYER / COACH": "Luka Doncic",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "Player of the Week",
+    "YEAR": "2026",
+    "RG CODE": "Bam Adebayo",
+    "PLAYER / COACH": "Bam Adebayo",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "Player of the Week",
+    "YEAR": "2026",
+    "RG CODE": "Shai Gilgeous-Alexander",
+    "PLAYER / COACH": "Shai Gilgeous-Alexander",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "Player of the Week",
+    "YEAR": "2026",
+    "RG CODE": "Scottie Barnes",
+    "PLAYER / COACH": "Scottie Barnes",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "Player of the Week",
+    "YEAR": "2026",
+    "RG CODE": "Peyton Watson",
+    "PLAYER / COACH": "Peyton Watson",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "Player of the Week",
+    "YEAR": "2026",
+    "RG CODE": "Tyrese Maxey",
+    "PLAYER / COACH": "Tyrese Maxey",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "Player of the Week",
+    "YEAR": "2026",
+    "RG CODE": "Deni Avdija",
+    "PLAYER / COACH": "Deni Avdija",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "Player of the Week",
+    "YEAR": "2026",
+    "RG CODE": "Jaylen Brown",
+    "PLAYER / COACH": "Jaylen Brown",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "Player of the Week",
+    "YEAR": "2026",
+    "RG CODE": "Kawhi Leonard",
+    "PLAYER / COACH": "Kawhi Leonard",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "Player of the Week",
+    "YEAR": "2026",
+    "RG CODE": "Jalen Brunson",
+    "PLAYER / COACH": "Jalen Brunson",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "Player of the Week",
+    "YEAR": "2026",
+    "RG CODE": "Jaren Jackson Jr",
+    "PLAYER / COACH": "Jaren Jackson Jr",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "Player of the Week",
+    "YEAR": "2026",
+    "RG CODE": "Jaylen Brown",
+    "PLAYER / COACH": "Jaylen Brown",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "Player of the Week",
+    "YEAR": "2026",
+    "RG CODE": "Jamal Murray",
+    "PLAYER / COACH": "Jamal Murray",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "Player of the Week",
+    "YEAR": "2026",
+    "RG CODE": "Jalen Brunson",
+    "PLAYER / COACH": "Jalen Brunson",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "Player of the Week",
+    "YEAR": "2026",
+    "RG CODE": "Donovan Mitchell",
+    "PLAYER / COACH": "Donovan Mitchell",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "Player of the Week",
+    "YEAR": "2026",
+    "RG CODE": "Shai Gilgeous-Alexander",
+    "PLAYER / COACH": "Shai Gilgeous-Alexander",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "Player of the Week",
+    "YEAR": "2026",
+    "RG CODE": "Jalen Johnson",
+    "PLAYER / COACH": "Jalen Johnson",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "Player of the Week",
+    "YEAR": "2026",
+    "RG CODE": "Nikola Jokic",
+    "PLAYER / COACH": "Nikola Jokic",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "Player of the Week",
+    "YEAR": "2026",
+    "RG CODE": "Cade Cunningham",
+    "PLAYER / COACH": "Cade Cunningham",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "Player of the Week",
+    "YEAR": "2026",
+    "RG CODE": "Nikola Jokic",
+    "PLAYER / COACH": "Nikola Jokic",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "Player of the Week",
+    "YEAR": "2026",
+    "RG CODE": "Tyrese Maxey",
+    "PLAYER / COACH": "Tyrese Maxey",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "Player of the Week",
+    "YEAR": "2026",
+    "RG CODE": "Shai Gilgeous-Alexander",
+    "PLAYER / COACH": "Shai Gilgeous-Alexander",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "Player of the Week",
+    "YEAR": "2026",
+    "RG CODE": "Giannis Antetokounmpo",
+    "PLAYER / COACH": "Giannis Antetokounmpo",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "Player of the Week",
+    "YEAR": "2026",
+    "RG CODE": "Victor Wembanyama",
+    "PLAYER / COACH": "Victor Wembanyama",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "Defensive Player of the Month",
+    "YEAR": "2026",
+    "RG CODE": "Ausar Thompson",
+    "PLAYER / COACH": "Ausar Thompson",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "Defensive Player of the Month",
+    "YEAR": "2026",
+    "RG CODE": "Victor Wembanyama",
+    "PLAYER / COACH": "Victor Wembanyama",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "Defensive Player of the Month",
+    "YEAR": "2026",
+    "RG CODE": "Isaiah Stewart",
+    "PLAYER / COACH": "Isaiah Stewart",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "Defensive Player of the Month",
+    "YEAR": "2026",
+    "RG CODE": "Chet Holmgren",
+    "PLAYER / COACH": "Chet Holmgren",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "Defensive Player of the Month",
+    "YEAR": "2026",
+    "RG CODE": "Scottie Barnes",
+    "PLAYER / COACH": "Scottie Barnes",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "Defensive Player of the Month",
+    "YEAR": "2026",
+    "RG CODE": "Cason Wallace",
+    "PLAYER / COACH": "Cason Wallace",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "NBA Cup MVP",
+    "YEAR": "2026",
+    "RG CODE": "Jalen Brunson",
+    "PLAYER / COACH": "Jalen Brunson",
+    "TEAM": "New York Knicks",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "All-Tournament Cup Team",
+    "YEAR": "2026",
+    "RG CODE": "Jalen Brunson",
+    "PLAYER / COACH": "Jalen Brunson",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "All-Tournament Cup Team",
+    "YEAR": "2026",
+    "RG CODE": "Luka Doncic",
+    "PLAYER / COACH": "Luka Doncic",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "All-Tournament Cup Team",
+    "YEAR": "2026",
+    "RG CODE": "De'Aaron Fox",
+    "PLAYER / COACH": "De'Aaron Fox",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "All-Tournament Cup Team",
+    "YEAR": "2026",
+    "RG CODE": "Shai Gilgeous-Alexander",
+    "PLAYER / COACH": "Shai Gilgeous-Alexander",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "All-Tournament Cup Team",
+    "YEAR": "2026",
+    "RG CODE": "Karl-Anthony Towns",
+    "PLAYER / COACH": "Karl-Anthony Towns",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "NBA Cup Champion",
+    "YEAR": "2026",
+    "RG CODE": "OG Anunoby",
+    "PLAYER / COACH": "OG Anunoby",
+    "TEAM": "New York Knicks",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "NBA Cup Champion",
+    "YEAR": "2026",
+    "RG CODE": "Karl-Anthony Towns",
+    "PLAYER / COACH": "Karl-Anthony Towns",
+    "TEAM": "New York Knicks",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "NBA Cup Champion",
+    "YEAR": "2026",
+    "RG CODE": "Josh Hart",
+    "PLAYER / COACH": "Josh Hart",
+    "TEAM": "New York Knicks",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "NBA Cup Champion",
+    "YEAR": "2026",
+    "RG CODE": "Mikal Bridges",
+    "PLAYER / COACH": "Mikal Bridges",
+    "TEAM": "New York Knicks",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "NBA Cup Champion",
+    "YEAR": "2026",
+    "RG CODE": "Jalen Brunson",
+    "PLAYER / COACH": "Jalen Brunson",
+    "TEAM": "New York Knicks",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "NBA Cup Champion",
+    "YEAR": "2026",
+    "RG CODE": "Mitchell Robinson",
+    "PLAYER / COACH": "Mitchell Robinson",
+    "TEAM": "New York Knicks",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "NBA Cup Champion",
+    "YEAR": "2026",
+    "RG CODE": "Ariel Hukporti",
+    "PLAYER / COACH": "Ariel Hukporti",
+    "TEAM": "New York Knicks",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "NBA Cup Champion",
+    "YEAR": "2026",
+    "RG CODE": "Jordan Clarkson",
+    "PLAYER / COACH": "Jordan Clarkson",
+    "TEAM": "New York Knicks",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "NBA Cup Champion",
+    "YEAR": "2026",
+    "RG CODE": "Tyler Kolek",
+    "PLAYER / COACH": "Tyler Kolek",
+    "TEAM": "New York Knicks",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "NBA Cup Champion",
+    "YEAR": "2026",
+    "RG CODE": "Guerschon Yabusele",
+    "PLAYER / COACH": "Guerschon Yabusele",
+    "TEAM": "New York Knicks",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "NBA Cup Champion",
+    "YEAR": "2026",
+    "RG CODE": "Trey Jemison",
+    "PLAYER / COACH": "Trey Jemison",
+    "TEAM": "New York Knicks",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "NBA Cup Champion",
+    "YEAR": "2026",
+    "RG CODE": "Tosan Evbuomwan",
+    "PLAYER / COACH": "Tosan Evbuomwan",
+    "TEAM": "New York Knicks",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "NBA Cup Champion",
+    "YEAR": "2026",
+    "RG CODE": "Pacome Dadiet",
+    "PLAYER / COACH": "Pacome Dadiet",
+    "TEAM": "New York Knicks",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "NBA Cup Champion",
+    "YEAR": "2026",
+    "RG CODE": "Mohamed Diawara",
+    "PLAYER / COACH": "Mohamed Diawara",
+    "TEAM": "New York Knicks",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "NBA Cup Champion",
+    "YEAR": "2026",
+    "RG CODE": "Kevin McCullar",
+    "PLAYER / COACH": "Kevin McCullar",
+    "TEAM": "New York Knicks",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "All-Star",
+    "YEAR": "2026",
+    "RG CODE": "Scottie Barnes",
+    "PLAYER / COACH": "Scottie Barnes",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "All-Star",
+    "YEAR": "2026",
+    "RG CODE": "Devin Booker",
+    "PLAYER / COACH": "Devin Booker",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "All-Star",
+    "YEAR": "2026",
+    "RG CODE": "Cade Cunningham",
+    "PLAYER / COACH": "Cade Cunningham",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "All-Star",
+    "YEAR": "2026",
+    "RG CODE": "Jalen Duren",
+    "PLAYER / COACH": "Jalen Duren",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "All-Star",
+    "YEAR": "2026",
+    "RG CODE": "Anthony Edwards",
+    "PLAYER / COACH": "Anthony Edwards",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "All-Star",
+    "YEAR": "2026",
+    "RG CODE": "Chet Holmgren",
+    "PLAYER / COACH": "Chet Holmgren",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "All-Star",
+    "YEAR": "2026",
+    "RG CODE": "Jalen Johnson",
+    "PLAYER / COACH": "Jalen Johnson",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "All-Star",
+    "YEAR": "2026",
+    "RG CODE": "Tyrese Maxey",
+    "PLAYER / COACH": "Tyrese Maxey",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "All-Star",
+    "YEAR": "2026",
+    "RG CODE": "Jaylen Brown",
+    "PLAYER / COACH": "Jaylen Brown",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "All-Star",
+    "YEAR": "2026",
+    "RG CODE": "Jalen Brunson",
+    "PLAYER / COACH": "Jalen Brunson",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "All-Star",
+    "YEAR": "2026",
+    "RG CODE": "Kevin Durant",
+    "PLAYER / COACH": "Kevin Durant",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "All-Star",
+    "YEAR": "2026",
+    "RG CODE": "De'Aaron Fox",
+    "PLAYER / COACH": "De'Aaron Fox",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "All-Star",
+    "YEAR": "2026",
+    "RG CODE": "Brandon Ingram",
+    "PLAYER / COACH": "Brandon Ingram",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "All-Star",
+    "YEAR": "2026",
+    "RG CODE": "LeBron James",
+    "PLAYER / COACH": "LeBron James",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "All-Star",
+    "YEAR": "2026",
+    "RG CODE": "Kawhi Leonard",
+    "PLAYER / COACH": "Kawhi Leonard",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "All-Star",
+    "YEAR": "2026",
+    "RG CODE": "Donovan Mitchell",
+    "PLAYER / COACH": "Donovan Mitchell",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "All-Star",
+    "YEAR": "2026",
+    "RG CODE": "Stephen Curry",
+    "PLAYER / COACH": "Stephen Curry",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "All-Star",
+    "YEAR": "2026",
+    "RG CODE": "Deni Avdija",
+    "PLAYER / COACH": "Deni Avdija",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "All-Star",
+    "YEAR": "2026",
+    "RG CODE": "Luka Doncic",
+    "PLAYER / COACH": "Luka Doncic",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "All-Star",
+    "YEAR": "2026",
+    "RG CODE": "Shai Gilgeous-Alexander",
+    "PLAYER / COACH": "Shai Gilgeous-Alexander",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "All-Star",
+    "YEAR": "2026",
+    "RG CODE": "Nikola Jokic",
+    "PLAYER / COACH": "Nikola Jokic",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "All-Star",
+    "YEAR": "2026",
+    "RG CODE": "Jamal Murray",
+    "PLAYER / COACH": "Jamal Murray",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "All-Star",
+    "YEAR": "2026",
+    "RG CODE": "Norman Powell",
+    "PLAYER / COACH": "Norman Powell",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "All-Star",
+    "YEAR": "2026",
+    "RG CODE": "Alperen Sengun",
+    "PLAYER / COACH": "Alperen Sengun",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "All-Star",
+    "YEAR": "2026",
+    "RG CODE": "Pascal Siakam",
+    "PLAYER / COACH": "Pascal Siakam",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "All-Star",
+    "YEAR": "2026",
+    "RG CODE": "Karl-Anthony Towns",
+    "PLAYER / COACH": "Karl-Anthony Towns",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "All-Star",
+    "YEAR": "2026",
+    "RG CODE": "Victor Wembanyama",
+    "PLAYER / COACH": "Victor Wembanyama",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "All-Star",
+    "YEAR": "2026",
+    "RG CODE": "Giannis Antetokounmpo",
+    "PLAYER / COACH": "Giannis Antetokounmpo",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "Three-Point Contest",
+    "YEAR": "2026",
+    "RG CODE": "Damian Lillard",
+    "PLAYER / COACH": "Damian Lillard",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "Dunk Contest",
+    "YEAR": "2026",
+    "RG CODE": "Keshad Johnson",
+    "PLAYER / COACH": "Keshad Johnson",
+    "TEAM": "",
+    "CAREER AWARDS": "",
+    "SEASON AWARDS": ""
+  },
+  {
+    "": "",
+    "AWARD": "All-Star MVP",
+    "YEAR": "2026",
+    "RG CODE": "Anthony Edwards",
+    "PLAYER / COACH": "Anthony Edwards",
+    "TEAM": "",
     "CAREER AWARDS": "",
     "SEASON AWARDS": ""
   }
