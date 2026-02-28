@@ -5,932 +5,2115 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NBA Season Comparison Tool - HoopsHype</title>
     <meta name="description" content="Compare any two NBA player seasons across 80+ categories including stats, advanced metrics, and more.">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg: #f5f5f7;
-            --surface: #ffffff;
-            --surface-hover: #f0f0f2;
-            --border: #d1d1d6;
-            --text: #1d1d1f;
-            --text-secondary: #6e6e73;
-            --accent: #3b82f6;
-            --accent-dim: rgba(59, 130, 246, 0.15);
-            --green: #34c759;
-            --green-dim: rgba(52, 199, 89, 0.15);
-            --red: #ff453a;
-            --red-dim: rgba(255, 69, 58, 0.15);
-            --purple: #9333ea;
-            --purple-dim: rgba(147, 51, 234, 0.15);
-            --orange: #f59e0b;
-            --orange-dim: rgba(245, 158, 11, 0.15);
-        }
-
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        
         body {
-            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-            line-height: 1.5;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+            line-height: 1.6;
         }
-
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 2rem 1.5rem;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
-
-        header {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-
-        h1 {
-            font-size: 2rem;
-            font-weight: 700;
-            letter-spacing: -0.03em;
-            margin-bottom: 0.5rem;
-        }
-
-        .subtitle {
-            color: var(--text-secondary);
-            font-size: 1rem;
-        }
-
+        h1 { color: #1a1a1a; margin-bottom: 10px; font-size: 2.5em; text-align: center; }
+        .subtitle { text-align: center; color: #666; margin-bottom: 30px; font-size: 1.1em; }
         .player-selector {
             display: grid;
             grid-template-columns: 1fr auto 1fr;
-            gap: 1.5rem;
-            margin-bottom: 2rem;
+            gap: 20px;
+            margin-bottom: 30px;
             align-items: start;
         }
-
-        .player-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 1.5rem;
+        .player-select-card {
+            background: #fafafa;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
         }
-
-        .player-card h3 {
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: var(--text-secondary);
+        .player-select-card h3 {
+            font-size: 14px;
+            color: #666;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 1rem;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
             text-align: center;
         }
-
-        .input-group { margin-bottom: 1rem; }
-
-        .input-group label {
+        .select-group { margin-bottom: 15px; }
+        .select-group label {
             display: block;
-            font-size: 0.6875rem;
-            font-weight: 600;
-            color: var(--text-secondary);
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 5px;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 0.375rem;
         }
-
-        .player-input, .season-select {
+        .player-autocomplete, .season-select {
             width: 100%;
-            padding: 0.75rem 1rem;
-            font-size: 0.9375rem;
-            font-family: inherit;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-            background: var(--surface);
-            color: var(--text);
-            transition: all 0.15s;
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            background-color: white;
+            transition: border-color 0.3s;
         }
-
-        .player-input:hover, .season-select:hover { border-color: var(--accent); }
-        .player-input:focus, .season-select:focus {
-            outline: none;
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px var(--accent-dim);
-        }
-
-        .player-input::placeholder { color: var(--text-secondary); }
-
-        .autocomplete-wrapper { position: relative; }
-
-        .autocomplete-list {
+        .player-autocomplete:hover, .season-select:hover { border-color: #007bff; }
+        .player-autocomplete:focus, .season-select:focus { outline: none; border-color: #007bff; }
+        .player-select-wrapper { position: relative; }
+        .autocomplete-suggestions {
             position: absolute;
             top: 100%;
             left: 0;
             right: 0;
-            background: var(--surface);
-            border: 1px solid var(--accent);
-            border-radius: 0 0 8px 8px;
-            max-height: 280px;
+            background: white;
+            border: 2px solid #007bff;
+            border-top: none;
+            border-radius: 0 0 6px 6px;
+            max-height: 300px;
             overflow-y: auto;
             z-index: 1000;
             display: none;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
-
-        .autocomplete-item {
-            padding: 0.75rem 1rem;
+        .autocomplete-suggestion {
+            padding: 10px 12px;
             cursor: pointer;
-            border-bottom: 1px solid var(--border);
-            font-size: 0.875rem;
+            border-bottom: 1px solid #eee;
         }
-
-        .autocomplete-item:hover { background: var(--surface-hover); }
-        .autocomplete-item:last-child { border-bottom: none; }
-
-        .vs-divider {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--text-secondary);
+        .autocomplete-suggestion:hover { background-color: #f0f8ff; }
+        .autocomplete-suggestion:last-child { border-bottom: none; }
+        .vs-text {
+            font-size: 24px;
+            font-weight: bold;
+            color: #666;
             text-align: center;
-            padding-top: 3.5rem;
+            padding-top: 60px;
         }
-
-        .btn {
-            padding: 0.75rem 1.5rem;
-            font-size: 0.9375rem;
-            font-family: inherit;
-            font-weight: 600;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.15s;
-            border: none;
-        }
-
-        .btn-primary {
-            background: var(--accent);
+        .compare-button {
+            background-color: #007bff;
             color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 18px;
+            border-radius: 6px;
+            cursor: pointer;
             display: block;
-            margin: 0 auto 2rem;
+            margin: 0 auto 30px;
+            transition: background-color 0.3s;
         }
-
-        .btn-primary:hover { background: #2563eb; }
-        .btn-primary:disabled { background: var(--border); cursor: not-allowed; }
-
-        .loading {
-            text-align: center;
-            padding: 3rem;
+        .compare-button:hover { background-color: #0056b3; }
+        .compare-button:disabled { background-color: #ccc; cursor: not-allowed; }
+        .loop-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
         }
-
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 3px solid var(--border);
-            border-top-color: var(--accent);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 1rem;
+        .loop-button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s;
         }
-
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        .loading-text { color: var(--text-secondary); font-size: 0.9375rem; }
-
-        .progress-bar {
-            width: 200px;
+        .loop-button:hover { background-color: #218838; }
+        .loop-button.active {
+            background-color: #dc3545;
+        }
+        .loop-button.active:hover { background-color: #c82333; }
+        .loop-interval {
+            padding: 8px 12px;
+            font-size: 14px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            background: white;
+        }
+        .loop-progress {
+            width: 100%;
             height: 4px;
-            background: var(--border);
+            background: #e0e0e0;
             border-radius: 2px;
-            margin: 1rem auto;
+            margin-top: 10px;
             overflow: hidden;
         }
-
+        .loop-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #28a745, #20c997);
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+        .loading { text-align: center; padding: 40px; font-size: 18px; color: #666; }
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #007bff;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .loading-status { font-size: 14px; color: #888; margin-top: 10px; }
+        .progress-bar {
+            width: 200px;
+            height: 6px;
+            background: #e0e0e0;
+            border-radius: 3px;
+            margin: 15px auto;
+            overflow: hidden;
+        }
         .progress-fill {
             height: 100%;
-            background: var(--accent);
-            border-radius: 2px;
+            background: #007bff;
+            border-radius: 3px;
             transition: width 0.3s;
         }
-
-        /* Score Summary */
         .score-summary {
             display: grid;
             grid-template-columns: 1fr auto 1fr;
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-            padding: 2rem;
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-            border-radius: 16px;
+            gap: 20px;
+            margin-bottom: 30px;
+            padding: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
             color: white;
-            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
-
         .player-score { text-align: center; }
-        .player-score .name { font-size: 1.25rem; font-weight: 600; opacity: 0.95; }
-        .player-score .season { font-size: 0.875rem; opacity: 0.8; margin-top: 0.25rem; }
-        .player-score .team { font-size: 0.75rem; opacity: 0.7; margin-top: 0.25rem; }
-        .player-score .score { font-size: 3.5rem; font-weight: 700; margin-top: 0.75rem; }
-        .score-divider { display: flex; align-items: center; font-size: 2rem; opacity: 0.6; }
-
-        /* Share URL */
-        .share-section {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 1.25rem;
-            margin-bottom: 2rem;
-        }
-
-        .share-section h3 {
-            font-size: 0.875rem;
-            font-weight: 600;
-            margin-bottom: 0.75rem;
-        }
-
-        .share-input {
-            width: 100%;
-            padding: 0.625rem 0.875rem;
-            font-size: 0.8125rem;
-            font-family: 'JetBrains Mono', monospace;
-            border-radius: 6px;
-            border: 1px solid var(--border);
-            background: var(--bg);
-            color: var(--text);
-            cursor: pointer;
-        }
-
-        .share-input:focus { outline: none; border-color: var(--accent); }
-
-        /* Category Sections */
-        .category {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            margin-bottom: 1.5rem;
-            overflow: hidden;
-        }
-
-        .category-header {
-            padding: 1rem 1.25rem;
-            background: var(--surface-hover);
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
+        .player-name-score { font-size: 20px; font-weight: 600; margin-bottom: 5px; opacity: 0.9; cursor: pointer; transition: opacity 0.2s; }
+        .player-name-score:hover { opacity: 1; text-decoration: underline; }
+        .clickable-name { cursor: pointer; transition: color 0.2s; }
+        .clickable-name:hover { color: #007bff; text-decoration: underline; }
+        .suggested-matchups { margin-top: 40px; padding: 20px; background: #f8f9fa; border-radius: 8px; }
+        .suggested-matchups h3 { font-size: 18px; color: #333; margin-bottom: 15px; text-align: center; }
+        .matchup-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 12px; }
+        .matchup-card { background: white; padding: 12px 15px; border-radius: 6px; border: 1px solid #ddd; cursor: pointer; transition: all 0.2s; text-align: center; }
+        .matchup-card:hover { border-color: #007bff; box-shadow: 0 2px 8px rgba(0,123,255,0.2); transform: translateY(-2px); }
+        .matchup-players { font-weight: 600; color: #333; margin-bottom: 4px; }
+        .matchup-seasons { font-size: 12px; color: #666; }
+        .player-season-label { font-size: 14px; opacity: 0.8; margin-bottom: 5px; }
+        .player-team-label { font-size: 12px; opacity: 0.7; margin-bottom: 15px; }
+        .score-value { font-size: 56px; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        .score-divider { display: flex; align-items: center; justify-content: center; font-size: 36px; font-weight: 300; opacity: 0.7; }
+        .category-section { margin-bottom: 50px; }
         .category-title {
-            font-size: 0.875rem;
+            font-size: 24px;
             font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 4px solid #007bff;
             text-transform: uppercase;
-            letter-spacing: 0.03em;
+            letter-spacing: 0.5px;
         }
-
-        .category-score {
-            font-size: 0.8125rem;
-            font-weight: 600;
-            color: var(--text-secondary);
-        }
-
-        .category-body { padding: 0.5rem; }
-
-        /* Comparison Rows */
-        .stat-row {
+        .section-score { font-size: 16px; font-weight: 600; color: #666; margin-top: 8px; text-align: left; }
+        .comparison-row {
             display: grid;
-            grid-template-columns: 1fr 2fr auto 2fr 1fr;
-            gap: 0.75rem;
-            padding: 0.875rem 1rem;
-            margin: 0.375rem 0;
+            grid-template-columns: 2fr 3fr 1fr 3fr 2fr;
+            gap: 15px;
+            padding: 18px 20px;
+            margin-bottom: 12px;
             border-radius: 8px;
+            background-color: #fafafa;
             align-items: center;
-            transition: all 0.15s;
+            transition: transform 0.2s, box-shadow 0.2s;
         }
-
-        .stat-row:hover { background: var(--surface-hover); }
-
-        .stat-row.win-left {
-            background: var(--green-dim);
-            border-left: 3px solid var(--green);
+        .comparison-row:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .comparison-row.winner-left {
+            background: linear-gradient(90deg, #d4edda 0%, #fafafa 50%, #fafafa 100%);
+            border-left: 4px solid #28a745;
         }
-
-        .stat-row.win-right {
-            background: var(--green-dim);
-            border-right: 3px solid var(--green);
+        .comparison-row.winner-right {
+            background: linear-gradient(90deg, #fafafa 0%, #fafafa 50%, #d4edda 100%);
+            border-right: 4px solid #28a745;
         }
-
-        .stat-row.tie {
-            background: var(--orange-dim);
-            border-left: 3px solid var(--orange);
-            border-right: 3px solid var(--orange);
+        .comparison-row.tie {
+            background: linear-gradient(90deg, #fff3cd 0%, #fafafa 50%, #fff3cd 100%);
+            border-left: 4px solid #ffc107;
+            border-right: 4px solid #ffc107;
         }
-
-        .stat-value {
-            font-size: 1.0625rem;
-            font-weight: 600;
-            text-align: center;
-        }
-
-        .stat-value.winner { color: var(--green); }
-        .stat-value.no-data { color: var(--text-secondary); font-style: italic; font-weight: 400; }
-
-        .stat-name {
-            font-size: 0.8125rem;
-            color: var(--text-secondary);
-            text-align: center;
-        }
-
-        .stat-player {
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-            text-align: center;
-        }
-
-        .error-box {
-            background: var(--red-dim);
-            border: 1px solid var(--red);
-            color: var(--red);
-            padding: 1.25rem;
+        .player-value { font-size: 19px; font-weight: 600; text-align: center; color: #333; }
+        .player-value.winner { color: #28a745; font-size: 20px; }
+        .metric-name { font-size: 15px; color: #555; text-align: center; font-weight: 500; }
+        .no-data { color: #999; font-style: italic; font-weight: 400; }
+        .error-message {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 20px;
             border-radius: 8px;
+            margin-bottom: 20px;
             text-align: center;
+            border: 1px solid #f5c6cb;
         }
+        .data-timestamp {
+            text-align: center;
+            font-size: 12px;
+            color: #999;
+            margin-top: 10px;
+        }
+        /* Bottom selector area */
+        .bottom-selector {
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px solid #e0e0e0;
+        }
+        .bottom-selector .player-selector { margin-bottom: 20px; }
+        .bottom-selector .compare-button { margin-bottom: 15px; }
+        .bottom-selector .loop-controls { margin-bottom: 10px; }
 
         @media (max-width: 768px) {
-            .player-selector { grid-template-columns: 1fr; gap: 1rem; }
-            .vs-divider { padding-top: 0; padding-bottom: 0; }
-            .stat-row { grid-template-columns: 1fr; gap: 0.5rem; text-align: center; }
-            .score-summary { grid-template-columns: 1fr; gap: 1rem; }
-            .player-score .score { font-size: 2.5rem; }
+            body { padding: 8px; }
+            .container { padding: 12px; border-radius: 6px; }
+            h1 { font-size: 1.5em; margin-bottom: 6px; }
+            .subtitle { font-size: 0.9em; margin-bottom: 15px; }
+
+            /* Player selector stacked */
+            .player-selector { grid-template-columns: 1fr; gap: 10px; margin-bottom: 15px; }
+            .player-select-card { padding: 12px; }
+            .player-select-card h3 { font-size: 12px; margin-bottom: 8px; }
+            .player-autocomplete, .season-select { padding: 10px; font-size: 15px; }
+            .vs-text { padding-top: 0; margin: 5px 0; font-size: 18px; }
+            .select-group { margin-bottom: 10px; }
+
+            /* Buttons */
+            .compare-button { padding: 12px 30px; font-size: 16px; margin-bottom: 15px; }
+            .loop-controls { flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+            .loop-button { padding: 8px 14px; font-size: 13px; }
+            .loop-interval { padding: 6px 8px; font-size: 13px; }
+
+            /* Score summary - side by side */
+            .score-summary {
+                grid-template-columns: 1fr auto 1fr;
+                gap: 8px;
+                padding: 16px 12px;
+                border-radius: 8px;
+                margin-bottom: 20px;
+            }
+            .player-name-score { font-size: 14px; }
+            .player-season-label { font-size: 11px; }
+            .player-team-label { font-size: 10px; margin-bottom: 8px; }
+            .score-value { font-size: 36px; }
+            .score-divider { font-size: 24px; }
+
+            /* Category sections */
+            .category-section { margin-bottom: 30px; }
+            .category-title { font-size: 16px; padding-bottom: 8px; border-bottom-width: 3px; margin-bottom: 12px; }
+            .section-score { font-size: 13px; }
+
+            /* Comparison rows: 3 columns = Value | Metric | Value */
+            .comparison-row {
+                grid-template-columns: 1fr auto 1fr;
+                gap: 6px;
+                padding: 10px 8px;
+                margin-bottom: 6px;
+                border-radius: 6px;
+            }
+            .comparison-row:hover { transform: none; box-shadow: none; }
+            /* Hide player names on mobile (they're in the header) */
+            .comparison-row .player-name-cell { display: none; }
+            .player-value { font-size: 15px; text-align: center; }
+            .player-value.winner { font-size: 16px; text-align: center; }
+            .metric-name { font-size: 11px; min-width: 70px; text-align: center; }
+
+            /* Suggested matchups */
+            .suggested-matchups { padding: 12px; margin-top: 25px; }
+            .suggested-matchups h3 { font-size: 15px; margin-bottom: 10px; }
+            .matchup-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+            .matchup-card { padding: 10px; }
+            .matchup-players { font-size: 13px; }
+            .matchup-seasons { font-size: 11px; }
+
+            /* Bottom selector */
+            .bottom-selector { margin-top: 25px; padding-top: 20px; }
         }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 </head>
 <body>
     <div class="container">
-        <header>
-            <h1>🏀 NBA Season Comparison Tool</h1>
-            <p class="subtitle">Compare any two player seasons across 80+ categories</p>
-        </header>
+        <h1>🏀 NBA Season Comparison Tool</h1>
+        <div class="subtitle">Compare any two player seasons across 80+ categories</div>
 
-        <div id="loading" class="loading">
+        <div id="loadingMessage" class="loading">
             <div class="spinner"></div>
-            <div class="loading-text">Loading player database...</div>
-            <div class="progress-bar"><div class="progress-fill" id="progress" style="width: 0%"></div></div>
-            <div class="loading-text" id="status">Connecting...</div>
+            <div>Loading player database...</div>
+            <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width: 0%"></div></div>
+            <div class="loading-status" id="loadingStatus">Connecting to data sources...</div>
         </div>
 
-        <div id="app" style="display: none;">
+        <div id="mainContent" style="display: none;">
             <div class="player-selector">
-                <div class="player-card">
+                <div class="player-select-card">
                     <h3>Player 1</h3>
-                    <div class="input-group">
+                    <div class="select-group">
                         <label>Player Name</label>
-                        <div class="autocomplete-wrapper">
-                            <input type="text" id="p1Input" class="player-input" placeholder="Type player name...">
-                            <div id="p1List" class="autocomplete-list"></div>
+                        <div class="player-select-wrapper">
+                            <input type="text" id="player1Input" class="player-autocomplete" placeholder="Type player name...">
+                            <div id="suggestions1" class="autocomplete-suggestions"></div>
                         </div>
                     </div>
-                    <div class="input-group">
+                    <div class="select-group">
                         <label>Season</label>
-                        <select id="p1Season" class="season-select" disabled>
-                            <option value="">Select player first</option>
+                        <select id="season1Select" class="season-select" disabled>
+                            <option value="">-- Select Player First --</option>
                         </select>
                     </div>
                 </div>
-                <div class="vs-divider">VS</div>
-                <div class="player-card">
+                <div class="vs-text">VS</div>
+                <div class="player-select-card">
                     <h3>Player 2</h3>
-                    <div class="input-group">
+                    <div class="select-group">
                         <label>Player Name</label>
-                        <div class="autocomplete-wrapper">
-                            <input type="text" id="p2Input" class="player-input" placeholder="Type player name...">
-                            <div id="p2List" class="autocomplete-list"></div>
+                        <div class="player-select-wrapper">
+                            <input type="text" id="player2Input" class="player-autocomplete" placeholder="Type player name...">
+                            <div id="suggestions2" class="autocomplete-suggestions"></div>
                         </div>
                     </div>
-                    <div class="input-group">
+                    <div class="select-group">
                         <label>Season</label>
-                        <select id="p2Season" class="season-select" disabled>
-                            <option value="">Select player first</option>
+                        <select id="season2Select" class="season-select" disabled>
+                            <option value="">-- Select Player First --</option>
                         </select>
                     </div>
                 </div>
             </div>
-            <button class="btn btn-primary" id="compareBtn" disabled>Compare Seasons</button>
+            <button class="compare-button" id="compareBtn" disabled>Compare Seasons</button>
+            <div class="loop-controls">
+                <button class="loop-button" id="loopBtn">Start Comparison Loop</button>
+                <select id="scrollDuration" class="loop-interval" title="Scroll speed">
+                    <option value="15">15s scroll</option>
+                    <option value="30" selected>30s scroll</option>
+                    <option value="45">45s scroll</option>
+                </select>
+                <select id="stickyPlayer" class="loop-interval">
+                    <option value="none">Randomize Both</option>
+                    <option value="p1" id="stickyP1Option">Keep Player 1</option>
+                    <option value="p2" id="stickyP2Option">Keep Player 2</option>
+                </select>
+            </div>
+            <div id="dataTimestamp" class="data-timestamp"></div>
             <div id="results"></div>
         </div>
+        <div id="errorMessage" style="display: none;"></div>
     </div>
 
     <script>
-        // ===== CONFIG =====
-        const SHEETS = {
-            allTime: '1ZrDfzqiC31Hu3YCtxT4aZbZF4QVCVyGe6wBytR2LF30',
-            current: '1JH2FUBIyQ1zEHzZBxgP8vHBZ7d8EtP5-fSVG3zMgCgg',
-            historical: '1nPSI-VVKHkGYW9IY2KDP-v_xW6qi9_L9WpCnUFKRi8A'
+        // ===== CONFIGURATION =====
+        // Google Sheet for 2025-26 data
+        const GSHEET_ID = '1JH2FUBIyQ1zEHzZBxgP8vHBZ7d8EtP5-fSVG3zMgCgg';
+        
+        // Google Sheet tab GIDs
+        const GSHEET_TABS = {
+            rsStats: 1169156479,           // Player Traditional Stats (totals)
+            rsStatsPerGame: 1181534071,    // Player Traditional Stats Per Game
+            advanced: 339737563,           // Player Advanced
+            misc: 52077302,                // Player Misc (includes scoring breakdown)
+            scoring: 867936474,            // Player Scoring
+            usage: 1415078232,             // Player Usage
+            clutch: 10789411,              // Player Clutch
+            bio: 442838927,                // Player Bio
+            hustle: 439158060,             // Player Hustle
+            shotLocation: 1205457990,      // Shot Location
+            defense: 1957258468            // Defense
         };
+        
+        // Helper to build Google Sheets CSV export URL
+        function getGSheetURL(gid) {
+            return `https://docs.google.com/spreadsheets/d/${GSHEET_ID}/export?format=csv&gid=${gid}`;
+        }
+        
+        // Fallback JSON URL (in case Google Sheets is unavailable)
+        const JSON_URL = 'https://jsierrahoopshype.github.io/nba-player-data/nba-2025-26-data.json';
+        
+        // Fetch and parse Google Sheet CSV
+        async function fetchGoogleSheet(gid, sheetName) {
+            const url = getGSheetURL(gid);
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    console.warn(`Failed to fetch Google Sheet ${sheetName}: ${response.status}`);
+                    return null;
+                }
+                const csvText = await response.text();
+                const lines = csvText.split('\n');
+                
+                // Skip rows until we find one that looks like column headers
+                let headerRowIndex = 0;
+                for (let i = 0; i < Math.min(lines.length, 10); i++) {
+                    const line = lines[i].toLowerCase();
+                    if (line.includes('player') || line.includes('team') || line.includes('gp,') || line.includes(',gp,')) {
+                        headerRowIndex = i;
+                        break;
+                    }
+                }
+                
+                // Remove all rows before the header row
+                const cleanedLines = lines.slice(headerRowIndex);
+                const cleanedCsv = cleanedLines.join('\n');
+                
+                // Parse CSV using Papa Parse
+                const parsed = Papa.parse(cleanedCsv, {
+                    header: true,
+                    skipEmptyLines: true,
+                    dynamicTyping: false,
+                    transformHeader: (header) => header.trim(),
+                    transform: (value) => typeof value === 'string' ? value.trim() : value
+                });
+                
+                console.log(`${sheetName}: ${parsed.data.length} rows, cols: ${Object.keys(parsed.data[0] || {}).slice(0, 5).join(', ')}...`);
+                return parsed.data;
+            } catch (error) {
+                console.warn(`Error fetching Google Sheet ${sheetName}:`, error);
+                return null;
+            }
+        }
+        
+        // Load all 2025-26 data from Google Sheets
+        async function loadGoogleSheetsData() {
+            const data = {
+                rsStats: null,
+                rsStatsPerGame: null,
+                advanced: null,
+                misc: null,
+                scoring: null,
+                usage: null,
+                clutch: null,
+                bio: null,
+                hustle: null,
+                shotLocation: null,
+                defense: null,
+                lastUpdated: new Date().toISOString()
+            };
+            
+            // Fetch each configured tab in parallel for speed
+            const fetchPromises = Object.entries(GSHEET_TABS).map(async ([key, gid]) => {
+                if (gid) {
+                    const result = await fetchGoogleSheet(gid, key);
+                    return { key, result };
+                }
+                return { key, result: null };
+            });
+            
+            const results = await Promise.all(fetchPromises);
+            results.forEach(({ key, result }) => {
+                data[key] = result;
+            });
+            
+            return data;
+        }
+        
+        // Static JSON files for historical data (1996-2025) - split for GitHub 25MB limit
+        const HISTORICAL_RS_URL = 'https://jsierrahoopshype.github.io/nba-player-data/nba-historical-rs.json';
+        const HISTORICAL_PO_URL = 'https://jsierrahoopshype.github.io/nba-player-data/nba-historical-po.json';
+        const HISTORICAL_ADV1_URL = 'https://jsierrahoopshype.github.io/nba-player-data/nba-historical-adv1.json';
+        const HISTORICAL_ADV2_URL = 'https://jsierrahoopshype.github.io/nba-player-data/nba-historical-adv2.json';
 
-        const TABS = {
-            rs: 0, po: 1591736011, adv: 339737563, trad: 1169156479,
-            scoring: 52077302, shotLoc: 1205457990, defense: 1957258468,
-            usage: 1415078232, clutch: 10789411, hustle: 439158060
-        };
-
-        const STARS = [
+        // 2025-26 Stars for random matchups
+        const STARS_2526 = [
             'Shai Gilgeous-Alexander', 'Victor Wembanyama', 'Luka Doncic', 'Giannis Antetokounmpo',
             'Nikola Jokic', 'Jayson Tatum', 'Anthony Edwards', 'Kevin Durant', 'LeBron James',
-            'Stephen Curry', 'Donovan Mitchell', 'Tyrese Haliburton', 'Trae Young', 'Devin Booker',
-            'Anthony Davis', 'Jaylen Brown', "De'Aaron Fox", 'Paolo Banchero', 'Chet Holmgren',
-            'Tyrese Maxey', 'Domantas Sabonis', 'Jalen Brunson', 'Bam Adebayo', 'Franz Wagner'
+            'Stephen Curry', 'Donovan Mitchell', 'Tyrese Haliburton', 'Ja Morant', 'Trae Young',
+            'Devin Booker', 'Anthony Davis', 'Jaylen Brown', "De'Aaron Fox", 'Paolo Banchero',
+            'Chet Holmgren', 'Tyrese Maxey', 'Domantas Sabonis', 'Jalen Brunson', 'Bam Adebayo',
+            'Karl-Anthony Towns', 'Alperen Sengun', 'Franz Wagner', 'Evan Mobley', 'Scottie Barnes'
         ];
 
-        // ===== DATA =====
-        let data = { rs: [], po: [], current: {}, historical: {} };
-        let players = [], playerSeasons = {}, playerPO = {};
-        let currentIndex = {}; // Indexed by normalized name
+        // ===== DATA STORAGE =====
+        let data = {
+            rsStats: [],
+            poStats: [],
+            teamStats: [],
+            current: {}, // 2025-26 from JSON
+            historical: {}
+        };
+        let players = [];
+        let playerSeasons = {};
+        let playerPOSeasons = {};
+        let current2526Players = {}; // Index by player name for fast lookup
+        let current2526PlayersNormalized = {}; // Index by normalized name
+        let dataLastUpdated = null;
+        let dataSource = 'JSON'; // 'Google Sheets' or 'JSON'
+        let historicalDataLoaded = false;
 
-        // ===== HELPERS =====
-        function normalize(name) {
+        // Normalize player names (remove accents/diacritics)
+        function normalizeName(name) {
             if (!name) return '';
-            return name.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-                .replace(/[ćčĆČ]/gi, 'c').replace(/[žŽ]/gi, 'z').replace(/[šŠ]/gi, 's').replace(/[đĐ]/gi, 'd')
-                .replace(/Ä‡/g, 'c').replace(/Ä/g, 'c').replace(/Å¡/g, 's').replace(/Å¾/g, 'z')
-                .toLowerCase().trim();
+            return fixMojibake(name).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
         }
 
-        function sheetURL(id, gid) {
-            return `https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:csv&gid=${gid}`;
-        }
-
-        function parseCSV(text, skip = 0) {
-            const lines = text.trim().split('\n');
-            if (lines.length < skip + 2) return [];
-            const headers = parseLine(lines[skip]);
-            return lines.slice(skip + 1).map(line => {
-                const vals = parseLine(line);
-                const row = {};
-                headers.forEach((h, i) => row[h.replace(/"/g, '').trim()] = (vals[i] || '').replace(/"/g, '').trim());
-                return row;
-            }).filter(r => Object.keys(r).length > 1);
-        }
-
-        function parseLine(line) {
-            const result = []; let cur = '', inQ = false;
-            for (const c of line) {
-                if (c === '"') inQ = !inQ;
-                else if (c === ',' && !inQ) { result.push(cur); cur = ''; }
-                else cur += c;
-            }
-            result.push(cur);
-            return result;
-        }
-
-        async function fetchSheet(id, gid, skip = 0) {
+        // Fix mojibake encoding in historical JSON (e.g. "JokiÄ‡" → "Jokić")
+        function fixMojibake(str) {
+            if (!str) return str;
+            let hi = false;
+            for (let i = 0; i < str.length; i++) if (str.charCodeAt(i) > 127) { hi = true; break; }
+            if (!hi) return str;
+            const w = {0x2021:0x87,0x20AC:0x80,0x201A:0x82,0x0192:0x83,0x201E:0x84,0x2026:0x85,0x2020:0x86,0x02C6:0x88,0x2030:0x89,0x0160:0x8A,0x2039:0x8B,0x0152:0x8C,0x017D:0x8E,0x2018:0x91,0x2019:0x92,0x201C:0x93,0x201D:0x94,0x2022:0x95,0x2013:0x96,0x2014:0x97,0x02DC:0x98,0x2122:0x99,0x0161:0x9A,0x203A:0x9B,0x0153:0x9C,0x017E:0x9E,0x0178:0x9F};
             try {
-                const res = await fetch(sheetURL(id, gid));
-                return parseCSV(await res.text(), skip);
-            } catch (e) { console.error(e); return []; }
-        }
-
-        function setProgress(pct, msg) {
-            document.getElementById('progress').style.width = pct + '%';
-            document.getElementById('status').textContent = msg;
-        }
-
-        // ===== LOAD DATA =====
-        async function loadData() {
-            setProgress(5, 'Loading data...');
-            
-            const results = await Promise.all([
-                fetchSheet(SHEETS.allTime, TABS.rs),
-                fetchSheet(SHEETS.allTime, TABS.po),
-                fetchSheet(SHEETS.current, TABS.adv, 2),
-                fetchSheet(SHEETS.current, TABS.trad, 2),
-                fetchSheet(SHEETS.current, TABS.scoring, 2),
-                fetchSheet(SHEETS.current, TABS.shotLoc, 2),
-                fetchSheet(SHEETS.current, TABS.defense, 2),
-                fetchSheet(SHEETS.current, TABS.usage, 2),
-                fetchSheet(SHEETS.current, TABS.clutch, 2),
-                fetchSheet(SHEETS.current, TABS.hustle, 2)
-            ]);
-
-            data.rs = results[0];
-            data.po = results[1];
-            data.current = {
-                adv: results[2], trad: results[3], scoring: results[4],
-                shotLoc: results[5], defense: results[6], usage: results[7],
-                clutch: results[8], hustle: results[9]
-            };
-
-            setProgress(70, 'Indexing players...');
-
-            // Index 2025-26 players by NORMALIZED name
-            Object.keys(data.current).forEach(key => {
-                data.current[key].forEach(row => {
-                    const name = row.PLAYER_NAME || row.PLAYER;
-                    if (!name) return;
-                    const norm = normalize(name);
-                    if (!currentIndex[norm]) currentIndex[norm] = {};
-                    currentIndex[norm][key] = row;
-                });
-            });
-
-            console.log('Indexed 2025-26 players:', Object.keys(currentIndex).length);
-            console.log('Sample keys:', Object.keys(currentIndex).slice(0, 10));
-
-            // Build player list from RS stats
-            const map = new Map(), poMap = new Map();
-            data.rs.forEach(r => {
-                if (r.PLAYER && r.YEAR) {
-                    if (!map.has(r.PLAYER)) map.set(r.PLAYER, []);
-                    map.get(r.PLAYER).push({ year: r.YEAR, team: r.TEAM, data: r });
+                const b = [];
+                for (let i = 0; i < str.length; i++) {
+                    const c = str.charCodeAt(i);
+                    if (c < 128) b.push(c);
+                    else if (w[c] !== undefined) b.push(w[c]);
+                    else if (c < 256) b.push(c);
+                    else return str;
                 }
-            });
-            data.po.forEach(r => {
-                if (r.PLAYER && r.YEAR) {
-                    if (!poMap.has(r.PLAYER)) poMap.set(r.PLAYER, []);
-                    poMap.get(r.PLAYER).push({ year: r.YEAR, team: r.TEAM, data: r });
-                }
-            });
-
-            players = Array.from(map.keys()).sort();
-            map.forEach((s, n) => playerSeasons[n] = s.sort((a, b) => b.year - a.year));
-            poMap.forEach((s, n) => playerPO[n] = s.sort((a, b) => b.year - a.year));
-
-            setProgress(90, 'Loading historical data...');
-            loadHistorical();
-            setProgress(100, 'Ready!');
-            return data.rs.length > 0;
+                const d = new TextDecoder('utf-8').decode(new Uint8Array(b));
+                if (d && !d.includes('\uFFFD')) return d;
+            } catch(e) {}
+            return str;
         }
 
-        async function loadHistorical() {
-            const results = await Promise.all([
-                fetchSheet(SHEETS.historical, TABS.adv, 2),
-                fetchSheet(SHEETS.historical, TABS.trad, 2),
-                fetchSheet(SHEETS.historical, TABS.scoring, 2),
-                fetchSheet(SHEETS.historical, TABS.shotLoc, 2),
-                fetchSheet(SHEETS.historical, TABS.defense, 2),
-                fetchSheet(SHEETS.historical, TABS.usage, 2),
-                fetchSheet(SHEETS.historical, TABS.clutch, 2),
-                fetchSheet(SHEETS.historical, TABS.hustle, 2)
-            ]);
-            data.historical = {
-                adv: results[0], trad: results[1], scoring: results[2],
-                shotLoc: results[3], defense: results[4], usage: results[5],
-                clutch: results[6], hustle: results[7]
-            };
-            console.log('Historical loaded');
-        }
-
-        // ===== COMPARISON CONFIG =====
-        const CONFIG = [
-            { cat: 'COUNTING STATS: AVERAGES', metrics: [
-                { n: 'Points', s: 'rs', c: 'PTS / G', h: 1, f: 'd' },
-                { n: 'Rebounds', s: 'rs', c: 'REB / G', h: 1, f: 'd' },
-                { n: 'Assists', s: 'rs', c: 'AST / G', h: 1, f: 'd' },
-                { n: 'Steals', s: 'rs', c: 'STL / G', h: 1, f: 'd' },
-                { n: 'Blocks', s: 'rs', c: 'BLK / G', h: 1, f: 'd' },
-                { n: 'Field Goal %', s: 'rs', c: 'FG%', h: 1, f: 'p' },
-                { n: 'Three Point %', s: 'rs', c: '3P%', h: 1, f: 'p' },
-                { n: 'Free Throw %', s: 'rs', c: 'FT%', h: 1, f: 'p' },
-                { n: 'Turnovers', s: 'rs', c: 'TOV / G', h: 0, f: 'd' },
-                { n: 'Points PO', s: 'po', c: 'PTS / G', h: 1, f: 'd' },
-                { n: 'Rebounds PO', s: 'po', c: 'REB / G', h: 1, f: 'd' },
-                { n: 'Assists PO', s: 'po', c: 'AST / G', h: 1, f: 'd' },
-                { n: 'Steals PO', s: 'po', c: 'STL / G', h: 1, f: 'd' },
-                { n: 'Blocks PO', s: 'po', c: 'BLK / G', h: 1, f: 'd' },
-                { n: 'FG% PO', s: 'po', c: 'FG%', h: 1, f: 'p' },
-                { n: '3P% PO', s: 'po', c: '3P%', h: 1, f: 'p' },
-                { n: 'FT% PO', s: 'po', c: 'FT%', h: 1, f: 'p' },
-                { n: 'Turnovers PO', s: 'po', c: 'TOV / G', h: 0, f: 'd' }
-            ]},
-            { cat: 'COUNTING STATS: TOTALS', metrics: [
-                { n: 'Points', s: 'rs', c: 'PTS', h: 1, f: 'i' },
-                { n: 'Rebounds', s: 'rs', c: 'REB', h: 1, f: 'i' },
-                { n: 'Assists', s: 'rs', c: 'AST', h: 1, f: 'i' },
-                { n: 'Steals', s: 'rs', c: 'STL', h: 1, f: 'i' },
-                { n: 'Blocks', s: 'rs', c: 'BLK', h: 1, f: 'i' },
-                { n: 'Turnovers', s: 'rs', c: 'TOV', h: 0, f: 'i' },
-                { n: 'Points PO', s: 'po', c: 'PTS', h: 1, f: 'i' },
-                { n: 'Rebounds PO', s: 'po', c: 'REB', h: 1, f: 'i' },
-                { n: 'Assists PO', s: 'po', c: 'AST', h: 1, f: 'i' },
-                { n: 'Steals PO', s: 'po', c: 'STL', h: 1, f: 'i' },
-                { n: 'Blocks PO', s: 'po', c: 'BLK', h: 1, f: 'i' },
-                { n: 'Turnovers PO', s: 'po', c: 'TOV', h: 0, f: 'i' }
-            ]},
-            { cat: 'ADVANCED STATS', metrics: [
-                { n: 'Plus-Minus', s: 'trad', c: 'PLUS_MINUS', h: 1, f: 'd' },
-                { n: 'Offensive Rating', s: 'adv', c: 'OFF_RATING', h: 1, f: 'd' },
-                { n: 'Defensive Rating', s: 'adv', c: 'DEF_RATING', h: 0, f: 'd' },
-                { n: 'Net Rating', s: 'adv', c: 'NET_RATING', h: 1, f: 'd' }
-            ]},
-            { cat: 'SCORING', metrics: [
-                { n: 'Effective FG%', s: 'adv', c: 'EFG_PCT', h: 1, f: 'p' },
-                { n: 'True Shooting%', s: 'adv', c: 'TS_PCT', h: 1, f: 'p' },
-                { n: 'Pts off Turnovers', s: 'scoring', c: 'PTS_OFF_TOV', h: 1, f: 'd', pg: 'GP' },
-                { n: '2nd Chance Pts', s: 'scoring', c: 'PTS_2ND_CHANCE', h: 1, f: 'd', pg: 'GP' },
-                { n: 'Fast Break Pts', s: 'scoring', c: 'PTS_FB', h: 1, f: 'd', pg: 'GP' },
-                { n: 'Paint Pts', s: 'scoring', c: 'PTS_PAINT', h: 1, f: 'd', pg: 'GP' }
-            ]},
-            { cat: 'SHOT LOCATION', metrics: [
-                { n: 'Paint FG%', s: 'shotLoc', c: 'Restricted Area_FG_PCT', h: 1, f: 'p' },
-                { n: 'Mid-Range FG%', s: 'shotLoc', c: 'Mid-Range_FG_PCT', h: 1, f: 'p' },
-                { n: 'Left Corner 3%', s: 'shotLoc', c: 'Left Corner 3_FG_PCT', h: 1, f: 'p' },
-                { n: 'Right Corner 3%', s: 'shotLoc', c: 'Right Corner 3_FG_PCT', h: 1, f: 'p' },
-                { n: 'Above Break 3%', s: 'shotLoc', c: 'Above the Break 3_FG_PCT', h: 1, f: 'p' }
-            ]},
-            { cat: 'DEFENSE', metrics: [
-                { n: 'Defended FG%', s: 'defense', c: 'D_FG_PCT', h: 0, f: 'p' },
-                { n: 'FG% +/-', s: 'defense', c: 'PCT_PLUSMINUS', h: 0, f: 'ps' }
-            ]},
-            { cat: 'REBOUNDS', metrics: [
-                { n: 'OREB%', s: 'adv', c: 'OREB_PCT', h: 1, f: 'p' },
-                { n: 'DREB%', s: 'adv', c: 'DREB_PCT', h: 1, f: 'p' },
-                { n: 'REB%', s: 'adv', c: 'REB_PCT', h: 1, f: 'p' }
-            ]},
-            { cat: 'ASSISTS & TURNOVERS', metrics: [
-                { n: 'AST%', s: 'adv', c: 'AST_PCT', h: 1, f: 'p' },
-                { n: 'AST Ratio', s: 'adv', c: 'AST_RATIO', h: 1, f: 'd' },
-                { n: 'AST/TO', s: 'adv', c: 'AST_TO', h: 1, f: 'd' },
-                { n: 'TOV%', s: 'adv', c: 'TM_TOV_PCT', h: 0, f: 'p' }
-            ]},
-            { cat: 'USAGE', metrics: [
-                { n: 'USG%', s: 'usage', c: 'USG_PCT', h: 1, f: 'p' },
-                { n: '% Team PTS', s: 'usage', c: 'PCT_PTS', h: 1, f: 'p' },
-                { n: '% Team REB', s: 'usage', c: 'PCT_REB', h: 1, f: 'p' },
-                { n: '% Team AST', s: 'usage', c: 'PCT_AST', h: 1, f: 'p' },
-                { n: '% Team BLK', s: 'usage', c: 'PCT_BLK', h: 1, f: 'p' },
-                { n: '% Team STL', s: 'usage', c: 'PCT_STL', h: 1, f: 'p' }
-            ]},
-            { cat: 'CLUTCH', metrics: [
-                { n: 'Points', s: 'clutch', c: 'PTS', h: 1, f: 'd', pg: 'GP' },
-                { n: 'Rebounds', s: 'clutch', c: 'REB', h: 1, f: 'd', pg: 'GP' },
-                { n: 'Assists', s: 'clutch', c: 'AST', h: 1, f: 'd', pg: 'GP' },
-                { n: 'Steals', s: 'clutch', c: 'STL', h: 1, f: 'd', pg: 'GP' },
-                { n: 'Blocks', s: 'clutch', c: 'BLK', h: 1, f: 'd', pg: 'GP' },
-                { n: 'FG%', s: 'clutch', c: 'FG_PCT', h: 1, f: 'p' },
-                { n: '3P%', s: 'clutch', c: 'FG3_PCT', h: 1, f: 'p' },
-                { n: 'FT%', s: 'clutch', c: 'FT_PCT', h: 1, f: 'p' },
-                { n: 'Turnovers', s: 'clutch', c: 'TOV', h: 0, f: 'd', pg: 'GP' }
-            ]},
-            { cat: 'HUSTLE', metrics: [
-                { n: 'Contested Shots', s: 'hustle', c: 'CONTESTED_SHOTS', h: 1, f: 'd', pg: 'G' },
-                { n: 'Deflections', s: 'hustle', c: 'DEFLECTIONS', h: 1, f: 'd', pg: 'G' },
-                { n: 'Charges Drawn', s: 'hustle', c: 'CHARGES_DRAWN', h: 1, f: 'd', pg: 'G' },
-                { n: 'Screen Assists', s: 'hustle', c: 'SCREEN_ASSISTS', h: 1, f: 'd', pg: 'G' },
-                { n: 'Screen Ast Pts', s: 'hustle', c: 'SCREEN_AST_PTS', h: 1, f: 'd', pg: 'G' },
-                { n: 'Loose Balls', s: 'hustle', c: 'LOOSE_BALLS_RECOVERED', h: 1, f: 'd', pg: 'G' },
-                { n: 'Off Boxouts', s: 'hustle', c: 'OFF_BOXOUTS', h: 1, f: 'd', pg: 'G' },
-                { n: 'Def Boxouts', s: 'hustle', c: 'DEF_BOXOUTS', h: 1, f: 'd', pg: 'G' }
-            ]},
-            { cat: 'TEAM SUCCESS', metrics: [
-                { n: 'Wins', s: 'adv', c: 'W', h: 1, f: 'i' },
-                { n: 'Win%', s: 'adv', c: 'W_PCT', h: 1, f: 'p' }
-            ]},
-            { cat: 'FOULS', metrics: [
-                { n: 'Fouls/G', s: 'rs', c: 'PF', h: 0, f: 'd', pg: 'GP' },
-                { n: 'Fouls/G PO', s: 'po', c: 'PF', h: 0, f: 'd', pg: 'GP' }
-            ]}
-        ];
-
-        // ===== GET DATA =====
-        function getData(name, year, src) {
-            const isCurrent = year === '2026';
-            
-            if (src === 'rs') {
-                const s = playerSeasons[name];
-                const m = s?.find(x => x.year === year);
-                return m?.data || null;
-            }
-            if (src === 'po') {
-                const s = playerPO[name];
-                const m = s?.find(x => x.year === year);
-                return m?.data || null;
-            }
-
-            // For advanced stats - use normalized name lookup
-            if (isCurrent) {
-                const norm = normalize(name);
-                const pd = currentIndex[norm];
-                return pd?.[src] || null;
-            } else {
-                const ds = data.historical[src];
-                if (!ds?.length) return null;
-                const norm = normalize(name);
-                return ds.find(r => {
-                    const rn = normalize(r.PLAYER_NAME || r.PLAYER);
-                    if (rn !== norm) return false;
-                    const rs = r.SEASON_ID || r.SEASON || r.YEAR;
-                    return rs === year || rs?.includes?.(year);
-                });
-            }
-        }
-
-        function getVal(d, col, pg) {
-            if (!d) return null;
-            let v = d[col];
-            if (v === undefined || v === '') return null;
-            if (pg) {
-                const g = parseFloat(d[pg]);
-                const t = parseFloat(v);
-                return (!isNaN(g) && !isNaN(t) && g > 0) ? t / g : null;
-            }
-            return v;
-        }
-
-        function fmt(v, f) {
-            if (v === null || v === '') return '-';
-            const n = parseFloat(v);
-            if (isNaN(n)) return v;
-            if (f === 'i') return Math.round(n).toLocaleString();
-            if (f === 'd') return n.toFixed(1);
-            if (f === 'p') return (Math.abs(n) <= 1 ? n * 100 : n).toFixed(1) + '%';
-            if (f === 'ps') { const p = Math.abs(n) <= 1 ? n * 100 : n; return (p >= 0 ? '+' : '') + p.toFixed(1) + '%'; }
-            return v;
-        }
-
-        function cmp(a, b, hi) {
-            const na = parseFloat(a), nb = parseFloat(b);
-            if (isNaN(na) && isNaN(nb)) return 'tie';
-            if (isNaN(na)) return 'p2';
-            if (isNaN(nb)) return 'p1';
-            if (Math.abs(na - nb) < 0.001) return 'tie';
-            return hi ? (na > nb ? 'p1' : 'p2') : (na < nb ? 'p1' : 'p2');
-        }
-
-        // ===== UI =====
-        function setupUI() {
-            [['p1Input', 'p1List', 'p1Season'], ['p2Input', 'p2List', 'p2Season']].forEach(([inp, list, sel]) => {
-                const i = document.getElementById(inp);
-                const l = document.getElementById(list);
-                const s = document.getElementById(sel);
-
-                i.addEventListener('input', () => {
-                    const v = i.value.toLowerCase();
-                    if (v.length < 2) { l.style.display = 'none'; return; }
-                    const m = players.filter(p => p.toLowerCase().includes(v)).slice(0, 10);
-                    if (!m.length) { l.style.display = 'none'; return; }
-                    l.innerHTML = m.map(p => `<div class="autocomplete-item" data-p="${p}">${p}</div>`).join('');
-                    l.style.display = 'block';
-                    l.querySelectorAll('.autocomplete-item').forEach(el => {
-                        el.onclick = () => {
-                            i.value = el.dataset.p;
-                            l.style.display = 'none';
-                            fillSeasons(s, el.dataset.p);
-                            checkBtn();
-                        };
+        // Clean mojibake names in all historical arrays after loading
+        function fixHistoricalNames(arrays) {
+            let n = 0;
+            arrays.forEach(arr => {
+                if (!arr) return;
+                arr.forEach(row => {
+                    ['PLAYER_NAME', 'PLAYER', 'NAME'].forEach(k => {
+                        if (row[k]) {
+                            const fixed = fixMojibake(row[k]);
+                            if (fixed !== row[k]) {
+                                row[k] = fixed.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+                                n++;
+                            }
+                        }
                     });
                 });
+            });
+            if (n > 0) console.log('Fixed ' + n + ' mojibake player names');
+        }
 
-                document.addEventListener('click', e => {
-                    if (!i.contains(e.target) && !l.contains(e.target)) l.style.display = 'none';
+        // Fix column swaps in data
+        // 2025-26 RS: STL/BLK/TOV columns are rotated (STL has TOV values, BLK has STL, TOV has BLK)
+        // Historical PO: STL and TOV columns are swapped
+        function fixColumnSwaps() {
+            let rsFixed = 0, poFixed = 0;
+            
+            // Fix 2025-26 RS data: 3-way rotation
+            data.rsStats.forEach(row => {
+                if (row.YEAR === '2026') {
+                    // Per-game: actual STL = old BLK, actual BLK = old TOV, actual TOV = old STL
+                    const oldSTLG = row['STL / G'];
+                    const oldBLKG = row['BLK / G'];
+                    const oldTOVG = row['TOV / G'];
+                    row['STL / G'] = oldBLKG;
+                    row['BLK / G'] = oldTOVG;
+                    row['TOV / G'] = oldSTLG;
+                    
+                    // Totals (if they exist)
+                    if (row['STL'] !== undefined || row['BLK'] !== undefined || row['TOV'] !== undefined) {
+                        const oldSTL = row['STL'];
+                        const oldBLK = row['BLK'];
+                        const oldTOV = row['TOV'];
+                        row['STL'] = oldBLK;
+                        row['BLK'] = oldTOV;
+                        row['TOV'] = oldSTL;
+                    }
+                    rsFixed++;
+                }
+            });
+            
+            // Fix all historical PO data: STL ↔ TOV swap
+            data.poStats.forEach(row => {
+                // Per-game swap
+                const tmpG = row['STL / G'];
+                row['STL / G'] = row['TOV / G'];
+                row['TOV / G'] = tmpG;
+                
+                // Totals swap (if they exist)
+                if (row['STL'] !== undefined || row['TOV'] !== undefined) {
+                    const tmpT = row['STL'];
+                    row['STL'] = row['TOV'];
+                    row['TOV'] = tmpT;
+                }
+                poFixed++;
+            });
+            
+            console.log('Fixed column swaps: ' + rsFixed + ' RS rows (2025-26), ' + poFixed + ' PO rows');
+        }
+
+        // ===== DATA LOADING =====
+        async function fetchJSON(url) {
+            console.log('Fetching:', url.split('/').pop()); // Log filename only
+            try {
+                // Add 30-second timeout
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 30000);
+                
+                const response = await fetch(url, { signal: controller.signal });
+                clearTimeout(timeoutId);
+                
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                return await response.json();
+            } catch (error) {
+                if (error.name === 'AbortError') {
+                    console.error('Fetch timeout:', url);
+                } else {
+                    console.error('Error fetching JSON:', url, error);
+                }
+                return null;
+            }
+        }
+
+        function updateProgress(percent, message) {
+            document.getElementById('progressFill').style.width = percent + '%';
+            document.getElementById('loadingStatus').textContent = message;
+        }
+
+        async function loadAllData() {
+            try {
+                console.time('Total Load');
+                updateProgress(5, 'Loading data...');
+                
+                // Try to load 2025-26 data from Google Sheets first
+                updateProgress(10, 'Loading 2025-26 data from Google Sheets...');
+                let currentData = await loadGoogleSheetsData();
+                
+                // Check if we got any data from Google Sheets
+                const hasGSheetData = currentData && (currentData.rsStats || currentData.advanced);
+                
+                if (hasGSheetData) {
+                    dataSource = 'Google Sheets';
+                    console.log('2025-26 data loaded from Google Sheets');
+                } else {
+                    // Fallback to JSON if Google Sheets failed
+                    dataSource = 'JSON';
+                    console.log('Google Sheets unavailable, falling back to JSON...');
+                    updateProgress(15, 'Loading 2025-26 data from JSON fallback...');
+                    currentData = await fetchJSON(JSON_URL);
+                }
+                
+                console.log('Starting historical data load...');
+                updateProgress(20, 'Loading historical data...');
+                
+                // Load historical JSON files in parallel
+                const [rsData, poData, adv1Data, adv2Data] = await Promise.all([
+                    fetchJSON(HISTORICAL_RS_URL).then(d => { console.log('RS data fetched'); return d; }),
+                    fetchJSON(HISTORICAL_PO_URL).then(d => { console.log('PO data fetched'); return d; }),
+                    fetchJSON(HISTORICAL_ADV1_URL).then(d => { console.log('ADV1 data fetched'); return d; }),
+                    fetchJSON(HISTORICAL_ADV2_URL).then(d => { console.log('ADV2 data fetched'); return d; })
+                ]);
+                
+                console.log('All historical data fetched');
+                
+                updateProgress(50, 'Processing data...');
+                
+                // Process historical RS stats
+                if (rsData) {
+                    data.rsStats = rsData.rsStats || [];
+                    console.log('RS Stats loaded:', data.rsStats.length);
+                }
+                
+                // Process historical PO stats
+                if (poData) {
+                    data.poStats = poData.poStats || [];
+                    console.log('PO Stats loaded:', data.poStats.length);
+                }
+                
+                // Process historical advanced data (part 1)
+                if (adv1Data) {
+                    data.historical.advanced = adv1Data.advanced || [];
+                    data.historical.scoring = adv1Data.scoring || [];
+                    data.historical.shotLocation = adv1Data.shotLocation || [];
+                    data.historical.defense = adv1Data.defense || [];
+                    console.log('Historical adv1 loaded:', {
+                        advanced: data.historical.advanced.length,
+                        scoring: data.historical.scoring.length
+                    });
+                }
+                
+                // Process historical advanced data (part 2)
+                if (adv2Data) {
+                    data.historical.usage = adv2Data.usage || [];
+                    data.historical.clutch = adv2Data.clutch || [];
+                    data.historical.hustle = adv2Data.hustle || [];
+                    data.historical.plusMinus = adv2Data.plusMinus || [];
+                    data.historical.winsLosses = adv2Data.winsLosses || [];
+                    console.log('Historical adv2 loaded:', {
+                        clutch: data.historical.clutch.length,
+                        hustle: data.historical.hustle.length,
+                        plusMinus: data.historical.plusMinus.length
+                    });
+                    historicalDataLoaded = true;
+                }
+                
+                // Fix mojibake player names in ALL data (JokiÄ‡ → Jokic, DonÄiÄ‡ → Doncic, etc.)
+                fixHistoricalNames([
+                    data.rsStats, data.poStats,
+                    data.historical.advanced, data.historical.scoring,
+                    data.historical.shotLocation, data.historical.defense,
+                    data.historical.usage, data.historical.clutch,
+                    data.historical.hustle, data.historical.plusMinus,
+                    data.historical.winsLosses
+                ]);
+                
+                // Fix column swaps in data
+                fixColumnSwaps();
+                
+                // Process 2025-26 current season data (from Google Sheets or JSON)
+                if (currentData) {
+                    dataLastUpdated = currentData.lastUpdated;
+                    data.current = {
+                        rsStats: currentData.rsStats || [],
+                        rsStatsPerGame: currentData.rsStatsPerGame || [],
+                        poStats: currentData.poStats || [],
+                        teamStats: currentData.teamStats || [],
+                        advanced: currentData.advanced || [],
+                        misc: currentData.misc || [],
+                        scoring: currentData.scoring || [],
+                        shotLocation: currentData.shotLocation || [],
+                        defense: currentData.defense || [],
+                        usage: currentData.usage || [],
+                        clutch: currentData.clutch || [],
+                        bio: currentData.bio || [],
+                        hustle: currentData.hustle || []
+                    };
+                    
+                    // Build index of 2025-26 players from all data sources
+                    // Helper to find player name from various possible column names
+                    function getPlayerNameFromRow(row) {
+                        // Try exact matches first
+                        if (row.PLAYER_NAME) return row.PLAYER_NAME;
+                        if (row.PLAYER) return row.PLAYER;
+                        if (row.Player) return row.Player;
+                        if (row.player) return row.player;
+                        if (row['Player Name']) return row['Player Name'];
+                        if (row['PLAYER NAME']) return row['PLAYER NAME'];
+                        if (row.NAME) return row.NAME;
+                        if (row.Name) return row.Name;
+                        
+                        // Try to find any column containing 'player' or 'name'
+                        const keys = Object.keys(row);
+                        const playerCol = keys.find(k => 
+                            k.toLowerCase().includes('player') && 
+                            !k.toLowerCase().includes('id') &&
+                            typeof row[k] === 'string'
+                        );
+                        if (playerCol && row[playerCol]) return row[playerCol];
+                        
+                        return null;
+                    }
+                    
+                    const sources = ['advanced', 'misc', 'scoring', 'shotLocation', 'defense', 'usage', 'clutch', 'hustle', 'bio', 'rsStatsPerGame'];
+                    sources.forEach(key => {
+                        if (data.current[key]) {
+                            let count = 0;
+                            data.current[key].forEach(row => {
+                                const name = getPlayerNameFromRow(row);
+                                if (name) {
+                                    if (!current2526Players[name]) current2526Players[name] = {};
+                                    current2526Players[name][key] = row;
+                                    
+                                    const normalizedName = normalizeName(name);
+                                    if (!current2526PlayersNormalized[normalizedName]) {
+                                        current2526PlayersNormalized[normalizedName] = {};
+                                    }
+                                    current2526PlayersNormalized[normalizedName][key] = row;
+                                    current2526PlayersNormalized[normalizedName]._originalName = name;
+                                    count++;
+                                }
+                            });
+                            console.log(`Indexed ${count} players from ${key}`);
+                        }
+                    });
+                    
+                    // Index RS stats for 2025-26
+                    if (data.current.rsStats) {
+                        data.current.rsStats.forEach(row => {
+                            const name = getPlayerNameFromRow(row);
+                            if (name) {
+                                if (!current2526Players[name]) current2526Players[name] = {};
+                                current2526Players[name].rsStats = row;
+                                
+                                const normalizedName = normalizeName(name);
+                                if (!current2526PlayersNormalized[normalizedName]) {
+                                    current2526PlayersNormalized[normalizedName] = {};
+                                }
+                                current2526PlayersNormalized[normalizedName].rsStats = row;
+                                current2526PlayersNormalized[normalizedName]._originalName = name;
+                            }
+                        });
+                    }
+                    
+                    // Index PO stats for 2025-26
+                    if (data.current.poStats) {
+                        data.current.poStats.forEach(row => {
+                            const name = getPlayerNameFromRow(row);
+                            if (name) {
+                                if (!current2526Players[name]) current2526Players[name] = {};
+                                current2526Players[name].poStats = row;
+                                
+                                const normalizedName = normalizeName(name);
+                                if (!current2526PlayersNormalized[normalizedName]) {
+                                    current2526PlayersNormalized[normalizedName] = {};
+                                }
+                                current2526PlayersNormalized[normalizedName].poStats = row;
+                                current2526PlayersNormalized[normalizedName]._originalName = name;
+                            }
+                        });
+                    }
+                    
+                    console.log('2025-26 data loaded:', Object.keys(current2526Players).length, 'players');
+                }
+
+                updateProgress(80, 'Building player database...');
+
+                if (data.rsStats.length > 0) {
+                    buildPlayerList();
+                    
+                    updateProgress(100, 'Ready!');
+                    console.timeEnd('Total Load');
+                    
+                    return true;
+                }
+                return false;
+            } catch (error) {
+                console.error('Error loading data:', error);
+                return false;
+            }
+        }
+        
+        function buildPlayerList() {
+            const playersMap = new Map();
+            const poPlayersMap = new Map();
+
+            data.rsStats.forEach(row => {
+                const name = row.PLAYER;
+                const year = row.YEAR;
+                const team = row.TEAM;
+                if (name && year) {
+                    if (!playersMap.has(name)) playersMap.set(name, []);
+                    playersMap.get(name).push({ year, team, data: row });
+                }
+            });
+
+            data.poStats.forEach(row => {
+                const name = row.PLAYER;
+                const year = row.YEAR;
+                const team = row.TEAM;
+                if (name && year) {
+                    if (!poPlayersMap.has(name)) poPlayersMap.set(name, []);
+                    poPlayersMap.get(name).push({ year, team, data: row });
+                }
+            });
+
+            players = Array.from(playersMap.keys()).sort();
+            playersMap.forEach((seasons, name) => {
+                playerSeasons[name] = seasons.sort((a, b) => parseInt(b.year) - parseInt(a.year));
+            });
+            poPlayersMap.forEach((seasons, name) => {
+                playerPOSeasons[name] = seasons.sort((a, b) => parseInt(b.year) - parseInt(a.year));
+            });
+
+            console.log('Built player list:', players.length, 'players');
+        }
+
+        // ===== COMPARISON CONFIGURATION =====
+        const comparisonConfig = [
+            {
+                category: 'COUNTING STATS: AVERAGES',
+                metrics: [
+                    { name: 'Points', src: 'rs', col: 'PTS', higher: true, fmt: 'dec', pg: 'GP' },
+                    { name: 'Rebounds', src: 'rs', col: 'REB', higher: true, fmt: 'dec', pg: 'GP' },
+                    { name: 'Assists', src: 'rs', col: 'AST', higher: true, fmt: 'dec', pg: 'GP' },
+                    { name: 'Steals', src: 'rs', col: 'STL', higher: true, fmt: 'dec', pg: 'GP' },
+                    { name: 'Blocks', src: 'rs', col: 'BLK', higher: true, fmt: 'dec', pg: 'GP' },
+                    { name: 'Field Goal %', src: 'rs', col: 'FG%', higher: true, fmt: 'pct' },
+                    { name: 'Three Point %', src: 'rs', col: '3P%', higher: true, fmt: 'pct' },
+                    { name: 'Free Throw %', src: 'rs', col: 'FT%', higher: true, fmt: 'pct' },
+                    { name: 'Turnovers', src: 'rs', col: 'TOV', higher: false, fmt: 'dec', pg: 'GP' },
+                    { name: 'Points PO', src: 'po', col: 'PTS', higher: true, fmt: 'dec', pg: 'GP' },
+                    { name: 'Rebounds PO', src: 'po', col: 'REB', higher: true, fmt: 'dec', pg: 'GP' },
+                    { name: 'Assists PO', src: 'po', col: 'AST', higher: true, fmt: 'dec', pg: 'GP' },
+                    { name: 'Steals PO', src: 'po', col: 'STL', higher: true, fmt: 'dec', pg: 'GP' },
+                    { name: 'Blocks PO', src: 'po', col: 'BLK', higher: true, fmt: 'dec', pg: 'GP' },
+                    { name: 'Field Goal % PO', src: 'po', col: 'FG%', higher: true, fmt: 'pct' },
+                    { name: 'Three Point % PO', src: 'po', col: '3P%', higher: true, fmt: 'pct' },
+                    { name: 'Free Throw % PO', src: 'po', col: 'FT%', higher: true, fmt: 'pct' },
+                    { name: 'Turnovers PO', src: 'po', col: 'TOV', higher: false, fmt: 'dec', pg: 'GP' }
+                ]
+            },
+            {
+                category: 'COUNTING STATS: TOTALS',
+                metrics: [
+                    { name: 'Points', src: 'rs', col: 'PTS', higher: true, fmt: 'int' },
+                    { name: 'Rebounds', src: 'rs', col: 'REB', higher: true, fmt: 'int' },
+                    { name: 'Assists', src: 'rs', col: 'AST', higher: true, fmt: 'int' },
+                    { name: 'Steals', src: 'rs', col: 'STL', higher: true, fmt: 'int' },
+                    { name: 'Blocks', src: 'rs', col: 'BLK', higher: true, fmt: 'int' },
+                    { name: 'Turnovers', src: 'rs', col: 'TOV', higher: false, fmt: 'int' },
+                    { name: 'Points PO', src: 'po', col: 'PTS', higher: true, fmt: 'int' },
+                    { name: 'Rebounds PO', src: 'po', col: 'REB', higher: true, fmt: 'int' },
+                    { name: 'Assists PO', src: 'po', col: 'AST', higher: true, fmt: 'int' },
+                    { name: 'Steals PO', src: 'po', col: 'STL', higher: true, fmt: 'int' },
+                    { name: 'Blocks PO', src: 'po', col: 'BLK', higher: true, fmt: 'int' },
+                    { name: 'Turnovers PO', src: 'po', col: 'TOV', higher: false, fmt: 'int' }
+                ]
+            },
+            {
+                category: 'ADVANCED STATS',
+                metrics: [
+                    { name: 'Plus-Minus', src: 'plusMinus', col: 'PLUS_MINUS', higher: true, fmt: 'dec' },
+                    { name: 'Offensive Rating', src: 'adv', col: 'OFF_RATING', higher: true, fmt: 'dec' },
+                    { name: 'Defensive Rating', src: 'adv', col: 'DEF_RATING', higher: false, fmt: 'dec' },
+                    { name: 'Net Rating', src: 'adv', col: 'NET_RATING', higher: true, fmt: 'dec' },
+                    { name: 'Global Rating', src: 'rs', col: 'RAT', higher: true, fmt: 'dec' }
+                ]
+            },
+            {
+                category: 'SCORING',
+                metrics: [
+                    { name: 'Effective FG %', src: 'adv', col: 'EFG_PCT', higher: true, fmt: 'pct' },
+                    { name: 'True Shooting %', src: 'adv', col: 'TS_PCT', higher: true, fmt: 'pct' },
+                    { name: 'Points off turnovers', src: 'misc', col: 'PTS_OFF_TOV', higher: true, fmt: 'dec', pg: 'GP' },
+                    { name: 'Second-chance points', src: 'misc', col: 'PTS_2ND_CHANCE', higher: true, fmt: 'dec', pg: 'GP' },
+                    { name: 'Fast-break points', src: 'misc', col: 'PTS_FB', higher: true, fmt: 'dec', pg: 'GP' },
+                    { name: 'Points in the paint', src: 'misc', col: 'PTS_PAINT', higher: true, fmt: 'dec', pg: 'GP' }
+                ]
+            },
+            {
+                category: 'SHOT LOCATION',
+                metrics: [
+                    { name: 'Paint FG%', src: 'shotLocation', col: 'Restricted Area_FG_PCT', higher: true, fmt: 'pct' },
+                    { name: 'Mid-Range FG%', src: 'shotLocation', col: 'Mid-Range_FG_PCT', higher: true, fmt: 'pct' },
+                    { name: 'Left Corner 3P%', src: 'shotLocation', col: 'Left Corner 3_FG_PCT', higher: true, fmt: 'pct' },
+                    { name: 'Right Corner 3P%', src: 'shotLocation', col: 'Right Corner 3_FG_PCT', higher: true, fmt: 'pct' },
+                    { name: 'Above the Break 3P%', src: 'shotLocation', col: 'Above the Break 3_FG_PCT', higher: true, fmt: 'pct' },
+                    { name: 'Backcourt FG%', src: 'shotLocation', col: 'Backcourt_FG_PCT', higher: true, fmt: 'pct' }
+                ]
+            },
+            {
+                category: 'DEFENSE',
+                metrics: [
+                    { name: 'Defended FG %', src: 'defense', col: 'D_FG_PCT', higher: false, fmt: 'pct' },
+                    { name: 'Opponent expected FG %', src: 'defense', col: 'NORMAL_FG_PCT', higher: false, fmt: 'pct' },
+                    { name: 'Plus minus FG %', src: 'defense', col: 'PCT_PLUSMINUS', higher: false, fmt: 'pcts' }
+                ]
+            },
+            {
+                category: 'REBOUNDS',
+                metrics: [
+                    { name: 'Offensive rebounding %', src: 'adv', col: 'OREB_PCT', higher: true, fmt: 'pct' },
+                    { name: 'Defensive rebounding %', src: 'adv', col: 'DREB_PCT', higher: true, fmt: 'pct' },
+                    { name: 'Total rebounding %', src: 'adv', col: 'REB_PCT', higher: true, fmt: 'pct' }
+                ]
+            },
+            {
+                category: 'ASSISTS & TURNOVERS',
+                metrics: [
+                    { name: 'Assist percentage', src: 'adv', col: 'AST_PCT', higher: true, fmt: 'pct' },
+                    { name: 'Assists ratio', src: 'adv', col: 'AST_RATIO', higher: true, fmt: 'dec' },
+                    { name: 'Assists / turnover ratio', src: 'adv', col: 'AST_TO', higher: true, fmt: 'dec' },
+                    { name: 'Turnover %', src: 'adv', col: 'TM_TOV_PCT', higher: false, fmt: 'pct' }
+                ]
+            },
+            {
+                category: 'USAGE',
+                metrics: [
+                    { name: 'Usage percentage', src: 'usage', col: 'USG_PCT', higher: true, fmt: 'pct' },
+                    { name: "Percentage of team's points", src: 'usage', col: 'PCT_PTS', higher: true, fmt: 'pct' },
+                    { name: "Percentage of team's rebounds", src: 'usage', col: 'PCT_REB', higher: true, fmt: 'pct' },
+                    { name: "Percentage of team's assists", src: 'usage', col: 'PCT_AST', higher: true, fmt: 'pct' },
+                    { name: "Percentage of team's blocks", src: 'usage', col: 'PCT_BLK', higher: true, fmt: 'pct' },
+                    { name: "Percentage of team's steals", src: 'usage', col: 'PCT_STL', higher: true, fmt: 'pct' }
+                ]
+            },
+            {
+                category: 'CLUTCH',
+                metrics: [
+                    { name: 'Points', src: 'clutch', col: 'PTS', higher: true, fmt: 'dec', pg: 'GP' },
+                    { name: 'Rebounds', src: 'clutch', col: 'REB', higher: true, fmt: 'dec', pg: 'GP' },
+                    { name: 'Assists', src: 'clutch', col: 'AST', higher: true, fmt: 'dec', pg: 'GP' },
+                    { name: 'Steals', src: 'clutch', col: 'STL', higher: true, fmt: 'dec', pg: 'GP' },
+                    { name: 'Blocks', src: 'clutch', col: 'BLK', higher: true, fmt: 'dec', pg: 'GP' },
+                    { name: 'Field Goal %', src: 'clutch', col: 'FG_PCT', higher: true, fmt: 'pct' },
+                    { name: 'Three Point %', src: 'clutch', col: 'FG3_PCT', higher: true, fmt: 'pct' },
+                    { name: 'Free Throw %', src: 'clutch', col: 'FT_PCT', higher: true, fmt: 'pct' },
+                    { name: 'Turnovers', src: 'clutch', col: 'TOV', higher: false, fmt: 'dec', pg: 'GP' }
+                ]
+            },
+            {
+                category: 'HUSTLE',
+                metrics: [
+                    { name: 'Contested shots', src: 'hustle', col: 'CONTESTED_SHOTS', higher: true, fmt: 'dec', pg: 'G' },
+                    { name: 'Deflections', src: 'hustle', col: 'DEFLECTIONS', higher: true, fmt: 'dec', pg: 'G' },
+                    { name: 'Charges drawn', src: 'hustle', col: 'CHARGES_DRAWN', higher: true, fmt: 'dec', pg: 'G' },
+                    { name: 'Screen assists', src: 'hustle', col: 'SCREEN_ASSISTS', higher: true, fmt: 'dec', pg: 'G' },
+                    { name: 'Screen assist points', src: 'hustle', col: 'SCREEN_AST_PTS', higher: true, fmt: 'dec', pg: 'G' },
+                    { name: 'Loose balls recovered', src: 'hustle', col: 'LOOSE_BALLS_RECOVERED', higher: true, fmt: 'dec', pg: 'G' },
+                    { name: 'Offensive boxouts', src: 'hustle', col: 'OFF_BOXOUTS', higher: true, fmt: 'dec', pg: 'G' },
+                    { name: 'Defensive boxouts', src: 'hustle', col: 'DEF_BOXOUTS', higher: true, fmt: 'dec', pg: 'G' }
+                ]
+            },
+            {
+                category: 'TEAM SUCCESS',
+                metrics: [
+                    { name: 'Wins', src: 'adv', col: 'W', higher: true, fmt: 'int' },
+                    { name: 'Winning percentage', src: 'adv', col: 'W_PCT', higher: true, fmt: 'pct' },
+                    { name: 'Wins PO', src: 'winsLosses', col: 'W PO', higher: true, fmt: 'int' },
+                    { name: 'Winning percentage PO', src: 'winsLosses', col: 'W_PCT_PO', higher: true, fmt: 'pct', calcFromWL: true }
+                ]
+            },
+            {
+                category: 'FOULS',
+                metrics: [
+                    { name: 'Personal fouls per game', src: 'rs', col: 'PF', higher: false, fmt: 'dec', pg: 'GP' },
+                    { name: 'Personal fouls per game PO', src: 'po', col: 'PF', higher: false, fmt: 'dec', pg: 'GP' }
+                ]
+            }
+        ];
+
+        // ===== UI FUNCTIONS =====
+        function setupAutocomplete() {
+            const configs = [
+                { input: 'player1Input', suggestions: 'suggestions1', season: 'season1Select' },
+                { input: 'player2Input', suggestions: 'suggestions2', season: 'season2Select' }
+            ];
+            
+            configs.forEach(config => {
+                const inputEl = document.getElementById(config.input);
+                const suggestionsEl = document.getElementById(config.suggestions);
+                const seasonEl = document.getElementById(config.season);
+                
+                inputEl.addEventListener('input', function() {
+                    const value = this.value.toLowerCase();
+                    if (value.length < 2) { suggestionsEl.style.display = 'none'; return; }
+                    
+                    const matches = players.filter(p => p.toLowerCase().includes(value)).slice(0, 10);
+                    if (matches.length === 0) { suggestionsEl.style.display = 'none'; return; }
+                    
+                    suggestionsEl.innerHTML = matches.map(player => 
+                        `<div class="autocomplete-suggestion" data-player="${player}">${player}</div>`
+                    ).join('');
+                    suggestionsEl.style.display = 'block';
+                    
+                    suggestionsEl.querySelectorAll('.autocomplete-suggestion').forEach(el => {
+                        el.addEventListener('click', function() {
+                            const selectedPlayer = this.getAttribute('data-player');
+                            inputEl.value = selectedPlayer;
+                            suggestionsEl.style.display = 'none';
+                            populateSeasonSelect(seasonEl, selectedPlayer, true);
+                            updateCompareButton();
+                        });
+                    });
                 });
-
-                s.onchange = checkBtn;
+                
+                document.addEventListener('click', function(e) {
+                    if (!inputEl.contains(e.target) && !suggestionsEl.contains(e.target)) {
+                        suggestionsEl.style.display = 'none';
+                    }
+                });
+                
+                seasonEl.addEventListener('change', updateCompareButton);
             });
-
-            document.getElementById('compareBtn').onclick = compare;
         }
 
-        function fillSeasons(sel, name) {
-            sel.innerHTML = '<option value="">Choose season</option>';
-            const s = playerSeasons[name];
-            if (!s) { sel.disabled = true; return; }
-            s.forEach(x => {
-                const o = document.createElement('option');
-                o.value = x.year;
-                o.textContent = `${x.year - 1}-${String(x.year).slice(-2)}${x.team ? ` (${x.team})` : ''}`;
-                sel.appendChild(o);
+        function populateSeasonSelect(selectEl, playerName, autoSelect2526 = false) {
+            selectEl.innerHTML = '<option value="">-- Choose Season --</option>';
+            if (!playerName || !playerSeasons[playerName]) { selectEl.disabled = true; return; }
+            
+            const seasons = playerSeasons[playerName];
+            seasons.forEach(s => {
+                const option = document.createElement('option');
+                option.value = s.year;
+                option.textContent = formatSeasonYear(s.year) + (s.team ? ` (${s.team})` : '');
+                selectEl.appendChild(option);
             });
-            sel.disabled = false;
-            // Auto-select 2025-26 or most recent
-            if (s.some(x => x.year === '2026')) sel.value = '2026';
-            else if (s.length) sel.value = s[0].year;
+            selectEl.disabled = false;
+            
+            if (autoSelect2526) {
+                const has2526 = seasons.some(s => s.year === '2026');
+                if (has2526) {
+                    selectEl.value = '2026';
+                } else if (seasons.length > 0) {
+                    selectEl.value = seasons[0].year;
+                }
+            }
         }
 
-        function checkBtn() {
-            const ok = document.getElementById('p1Input').value && document.getElementById('p1Season').value &&
-                       document.getElementById('p2Input').value && document.getElementById('p2Season').value;
-            document.getElementById('compareBtn').disabled = !ok;
+        function formatSeasonYear(year) {
+            const endYear = parseInt(year);
+            if (isNaN(endYear)) return year;
+            return `${endYear - 1}-${String(endYear).slice(-2)}`;
         }
 
-        function nameToURL(n) {
-            return n.toLowerCase().replace(/[.']/g, '').replace(/\s+/g, '-');
+        function updateCompareButton() {
+            const p1 = document.getElementById('player1Input').value;
+            const s1 = document.getElementById('season1Select').value;
+            const p2 = document.getElementById('player2Input').value;
+            const s2 = document.getElementById('season2Select').value;
+            document.getElementById('compareBtn').disabled = !(p1 && s1 && p2 && s2);
+            updateStickyPlayerOptions();
         }
 
-        function urlToName(u) {
-            return players.find(p => nameToURL(p) === u.toLowerCase()) || null;
+        // ===== URL & RANDOM =====
+        function playerNameToURL(name) {
+            return name.toLowerCase().replace(/\./g, '').replace(/'/g, '').replace(/,/g, '')
+                .replace(/jr$/i, 'jr').replace(/sr$/i, 'sr').replace(/iii$/i, 'iii').replace(/ii$/i, 'ii').replace(/iv$/i, 'iv')
+                .replace(/\s+/g, '-');
         }
 
-        function loadURL() {
-            const p = new URLSearchParams(location.search);
-            const p1 = p.get('p1'), s1 = p.get('s1'), p2 = p.get('p2'), s2 = p.get('s2');
+        function urlToPlayerName(url) {
+            const urlLower = url.toLowerCase();
+            return players.find(p => playerNameToURL(p) === urlLower) || null;
+        }
+
+        function loadFromURL() {
+            const params = new URLSearchParams(window.location.search);
+            const p1 = params.get('p1'), s1 = params.get('s1');
+            const p2 = params.get('p2'), s2 = params.get('s2');
+            
             if (p1 && s1 && p2 && s2) {
-                const n1 = urlToName(p1), n2 = urlToName(p2);
-                if (n1 && n2) {
-                    document.getElementById('p1Input').value = n1;
-                    fillSeasons(document.getElementById('p1Season'), n1);
-                    document.getElementById('p1Season').value = s1;
-                    document.getElementById('p2Input').value = n2;
-                    fillSeasons(document.getElementById('p2Season'), n2);
-                    document.getElementById('p2Season').value = s2;
-                    checkBtn();
-                    setTimeout(compare, 100);
+                const player1 = urlToPlayerName(p1);
+                const player2 = urlToPlayerName(p2);
+                if (player1 && player2) {
+                    document.getElementById('player1Input').value = player1;
+                    populateSeasonSelect(document.getElementById('season1Select'), player1);
+                    document.getElementById('season1Select').value = s1;
+                    document.getElementById('player2Input').value = player2;
+                    populateSeasonSelect(document.getElementById('season2Select'), player2);
+                    document.getElementById('season2Select').value = s2;
+                    updateCompareButton();
+                    setTimeout(() => runComparison(), 100);
                     return true;
                 }
             }
             return false;
         }
 
-        function loadRandom() {
-            const avail = STARS.filter(n => playerSeasons[n]?.some(s => s.year === '2026'));
-            if (avail.length < 2) return;
-            const i1 = Math.floor(Math.random() * avail.length);
-            let i2 = Math.floor(Math.random() * avail.length);
-            while (i2 === i1) i2 = Math.floor(Math.random() * avail.length);
-            document.getElementById('p1Input').value = avail[i1];
-            fillSeasons(document.getElementById('p1Season'), avail[i1]);
-            document.getElementById('p2Input').value = avail[i2];
-            fillSeasons(document.getElementById('p2Season'), avail[i2]);
-            checkBtn();
-            setTimeout(compare, 100);
+        function loadRandomStars() {
+            const availableStars = STARS_2526.filter(name => {
+                const seasons = playerSeasons[name];
+                return seasons && seasons.some(s => s.year === '2026');
+            });
+            
+            if (availableStars.length < 2) {
+                console.log('Not enough stars found');
+                return;
+            }
+            
+            const idx1 = Math.floor(Math.random() * availableStars.length);
+            let idx2 = Math.floor(Math.random() * availableStars.length);
+            while (idx2 === idx1) idx2 = Math.floor(Math.random() * availableStars.length);
+            
+            const player1 = availableStars[idx1];
+            const player2 = availableStars[idx2];
+            
+            document.getElementById('player1Input').value = player1;
+            populateSeasonSelect(document.getElementById('season1Select'), player1, true);
+            
+            document.getElementById('player2Input').value = player2;
+            populateSeasonSelect(document.getElementById('season2Select'), player2, true);
+            
+            updateCompareButton();
+            setTimeout(() => runComparison(), 100);
         }
 
-        // ===== COMPARE =====
-        function compare() {
-            const n1 = document.getElementById('p1Input').value;
-            const y1 = document.getElementById('p1Season').value;
-            const n2 = document.getElementById('p2Input').value;
-            const y2 = document.getElementById('p2Season').value;
-            if (!n1 || !y1 || !n2 || !y2) return;
-
-            const rs1 = getData(n1, y1, 'rs'), rs2 = getData(n2, y2, 'rs');
-            const adv1 = getData(n1, y1, 'adv'), adv2 = getData(n2, y2, 'adv');
-            const t1 = rs1?.TEAM || adv1?.TEAM_ABBREVIATION || '';
-            const t2 = rs2?.TEAM || adv2?.TEAM_ABBREVIATION || '';
-
-            let s1 = 0, s2 = 0, html = '';
-            const url = `${location.origin}${location.pathname}?p1=${nameToURL(n1)}&s1=${y1}&p2=${nameToURL(n2)}&s2=${y2}`;
-            history.replaceState({}, '', url);
-
-            CONFIG.forEach(cat => {
-                let rows = '', hasData = false, cs1 = 0, cs2 = 0;
-                cat.metrics.forEach(m => {
-                    const d1 = getData(n1, y1, m.s), d2 = getData(n2, y2, m.s);
-                    const v1 = getVal(d1, m.c, m.pg), v2 = getVal(d2, m.c, m.pg);
-                    if ((v1 === null) && (v2 === null)) return;
-                    hasData = true;
-                    const w = cmp(v1, v2, m.h);
-                    if (w === 'p1') { s1++; cs1++; }
-                    if (w === 'p2') { s2++; cs2++; }
-                    const f1 = fmt(v1, m.f), f2 = fmt(v2, m.f);
-                    const cls = w === 'p1' ? 'win-left' : w === 'p2' ? 'win-right' : 'tie';
-                    rows += `<div class="stat-row ${cls}">
-                        <div class="stat-value${w === 'p1' ? ' winner' : ''}${f1 === '-' ? ' no-data' : ''}">${f1}</div>
-                        <div class="stat-player">${n1}</div>
-                        <div class="stat-name">${m.n}</div>
-                        <div class="stat-player">${n2}</div>
-                        <div class="stat-value${w === 'p2' ? ' winner' : ''}${f2 === '-' ? ' no-data' : ''}">${f2}</div>
-                    </div>`;
+        function randomizeOpponent(keepPlayer) {
+            const currentPlayer1 = document.getElementById('player1Input').value;
+            const currentPlayer2 = document.getElementById('player2Input').value;
+            const currentSeason1 = document.getElementById('season1Select').value;
+            const currentSeason2 = document.getElementById('season2Select').value;
+            
+            // Determine which player/season to keep and which to randomize
+            const keepPlayerName = keepPlayer === 1 ? currentPlayer1 : currentPlayer2;
+            const keepSeason = keepPlayer === 1 ? currentSeason1 : currentSeason2;
+            const otherPlayer = keepPlayer === 1 ? currentPlayer2 : currentPlayer1;
+            
+            // Get top scorers from the same season
+            let topScorers = [];
+            
+            if (keepSeason === '2026') {
+                // Use 2025-26 stars list for current season
+                topScorers = STARS_2526.filter(name => {
+                    const seasons = playerSeasons[name];
+                    return seasons && seasons.some(s => s.year === '2026');
                 });
-                if (hasData) {
-                    html += `<div class="category">
-                        <div class="category-header">
-                            <div class="category-title">${cat.cat}</div>
-                            <div class="category-score">${n1} ${cs1} – ${n2} ${cs2}</div>
+            } else {
+                // Find top 70 scorers from that historical season
+                const seasonPlayers = data.rsStats
+                    .filter(row => row.YEAR === keepSeason && row.PLAYER)
+                    .map(row => ({
+                        name: row.PLAYER,
+                        pts: parseFloat(row['PTS / G']) || parseFloat(row['PTS']) / parseFloat(row['GP']) || 0
+                    }))
+                    .sort((a, b) => b.pts - a.pts)
+                    .slice(0, 70)
+                    .map(p => p.name);
+                
+                topScorers = seasonPlayers;
+            }
+            
+            if (topScorers.length < 2) {
+                console.log('Not enough players found for season', keepSeason);
+                return;
+            }
+            
+            // Pick a new random opponent that's different from both current players
+            let newOpponent;
+            let attempts = 0;
+            do {
+                newOpponent = topScorers[Math.floor(Math.random() * topScorers.length)];
+                attempts++;
+            } while ((newOpponent === keepPlayerName || newOpponent === otherPlayer) && attempts < 50);
+            
+            if (keepPlayer === 1) {
+                // Keep player 1, randomize player 2 with same season
+                document.getElementById('player2Input').value = newOpponent;
+                populateSeasonSelect(document.getElementById('season2Select'), newOpponent);
+                document.getElementById('season2Select').value = keepSeason;
+            } else {
+                // Keep player 2, randomize player 1 with same season
+                document.getElementById('player1Input').value = newOpponent;
+                populateSeasonSelect(document.getElementById('season1Select'), newOpponent);
+                document.getElementById('season1Select').value = keepSeason;
+            }
+            
+            updateCompareButton();
+            setTimeout(() => runComparison(), 100);
+        }
+
+        // ===== COMPARISON LOGIC =====
+        // Helper to find player in current2526Players with flexible name matching
+        function findCurrent2526Player(playerName) {
+            // Try exact match first
+            if (current2526Players[playerName]) {
+                return current2526Players[playerName];
+            }
+            
+            // Try normalized name
+            const normalizedSearch = normalizeName(playerName);
+            if (current2526PlayersNormalized[normalizedSearch]) {
+                return current2526PlayersNormalized[normalizedSearch];
+            }
+            
+            // Try adding/removing suffixes (Jr., Sr., III, II, IV)
+            const suffixes = [' Jr.', ' Sr.', ' III', ' II', ' IV', ' Jr', ' Sr'];
+            for (const suffix of suffixes) {
+                // Try adding suffix
+                if (current2526Players[playerName + suffix]) {
+                    return current2526Players[playerName + suffix];
+                }
+                // Try removing suffix
+                if (playerName.endsWith(suffix)) {
+                    const baseName = playerName.slice(0, -suffix.length);
+                    if (current2526Players[baseName]) {
+                        return current2526Players[baseName];
+                    }
+                }
+            }
+            
+            return null;
+        }
+
+        function getPlayerData(playerName, season, source) {
+            const isCurrent = (season === '2026');
+            
+            if (source === 'rs') {
+                // For 2025-26, check JSON data first
+                if (isCurrent) {
+                    const playerObj = findCurrent2526Player(playerName);
+                    if (playerObj) {
+                        // Return rsStats for totals - DO NOT merge with rsStatsPerGame
+                        // The getStatValue function will handle column alternatives
+                        if (playerObj.rsStats) return playerObj.rsStats;
+                    }
+                }
+                // Fall back to all-time database
+                const seasons = playerSeasons[playerName];
+                if (!seasons) return null;
+                const match = seasons.find(s => s.year === season);
+                return match ? match.data : null;
+            }
+            
+            // Special handling for per-game stats in 2025-26
+            if (source === 'rsPerGame') {
+                if (isCurrent) {
+                    const playerObj = findCurrent2526Player(playerName);
+                    if (playerObj?.rsStatsPerGame) return playerObj.rsStatsPerGame;
+                }
+                return null;
+            }
+            
+            if (source === 'po') {
+                // For 2025-26, check JSON data first
+                if (isCurrent) {
+                    const playerObj = findCurrent2526Player(playerName);
+                    if (playerObj?.poStats) return playerObj.poStats;
+                }
+                // Fall back to all-time database
+                const seasons = playerPOSeasons[playerName];
+                if (!seasons) return null;
+                const match = seasons.find(s => s.year === season);
+                return match ? match.data : null;
+            }
+            
+            const sourceMap = {
+                'adv': 'advanced',
+                'scoring': 'scoring',
+                'shotLocation': 'shotLocation',
+                'defense': 'defense',
+                'usage': 'usage',
+                'clutch': 'clutch',
+                'hustle': 'hustle',
+                'plusMinus': 'plusMinus',
+                'winsLosses': 'winsLosses',
+                'misc': 'misc',
+                'bio': 'bio',
+                'rsPerGame': 'rsStatsPerGame'
+            };
+            
+            const dataKey = sourceMap[source] || source;
+            
+            if (isCurrent) {
+                const playerObj = findCurrent2526Player(playerName);
+                // For plusMinus in current season, use clutch data (where PLUS_MINUS is stored)
+                if (source === 'plusMinus') {
+                    if (playerObj && playerObj['clutch']) {
+                        return playerObj['clutch'];
+                    }
+                    return null;
+                }
+                if (playerObj && playerObj[dataKey]) {
+                    return playerObj[dataKey];
+                }
+                return null;
+            } else {
+                const dataSource = data.historical[dataKey];
+                if (!dataSource || dataSource.length === 0) return null;
+                
+                // Convert season (e.g., "2025") to historical format (e.g., "2024-25")
+                const seasonYear = parseInt(season);
+                const historicalFormat = `${seasonYear - 1}-${String(seasonYear).slice(-2)}`;
+                
+                const normalizedPlayerName = normalizeName(playerName);
+                
+                const found = dataSource.find(row => {
+                    // Try different name columns (PLAYER_NAME, PLAYER, NAME)
+                    const rowName = row.PLAYER_NAME || row.PLAYER || row.NAME;
+                    if (!rowName) return false;
+                    
+                    // Match player name (exact or normalized)
+                    const nameMatch = rowName === playerName || normalizeName(rowName) === normalizedPlayerName;
+                    if (!nameMatch) return false;
+                    
+                    // Match season - try different column names and formats
+                    const rowSeason = row.SEASON_ID || row.SEASON || row.GROUP_VALUE || row.YEAR;
+                    // YEAR column uses just the ending year (e.g., "2025" for 2024-25 season)
+                    return rowSeason === historicalFormat || rowSeason === season || rowSeason === String(seasonYear);
+                });
+                
+                return found;
+            }
+        }
+
+        function getStatValue(playerData, column, perGameCol = null, metric = null) {
+            if (!playerData || !column) return null;
+            
+            // Special handling for playoff win percentage calculation
+            if (metric && metric.calcFromWL) {
+                const wins = parseFloat(playerData['W PO'] || playerData['W'] || 0);
+                const losses = parseFloat(playerData['L PO'] || playerData['L'] || 0);
+                if (!isNaN(wins) && !isNaN(losses) && (wins + losses) > 0) {
+                    return wins / (wins + losses);
+                }
+                return null;
+            }
+            
+            // Column name alternatives (JSON might have different names)
+            const columnAlternatives = {
+                'PLUS_MINUS': ['PLUS_MINUS', '+/-', 'PM', 'PLUSMINUS', 'PLUS MINUS'],
+                'OFF_RATING': ['OFF_RATING', 'OFFRTG', 'ORtg', 'O_RTG', 'E_OFF_RATING'],
+                'DEF_RATING': ['DEF_RATING', 'DEFRTG', 'DRtg', 'D_RTG', 'E_DEF_RATING'],
+                'NET_RATING': ['NET_RATING', 'NETRTG', 'NRtg', 'N_RTG', 'E_NET_RATING'],
+                'EFG_PCT': ['EFG_PCT', 'eFG%', 'EFG', 'EFF_FG_PCT'],
+                'TS_PCT': ['TS_PCT', 'TS%', 'TS', 'TRUE_SHOOTING_PCT'],
+                'OREB_PCT': ['OREB_PCT', 'ORB%', 'OREB'],
+                'DREB_PCT': ['DREB_PCT', 'DRB%', 'DREB'],
+                'REB_PCT': ['REB_PCT', 'TRB%', 'REB'],
+                'AST_PCT': ['AST_PCT', 'AST%'],
+                'AST_RATIO': ['AST_RATIO', 'AST/TO'],
+                'AST_TO': ['AST_TO', 'AST_TOV', 'A/TO'],
+                'TM_TOV_PCT': ['TM_TOV_PCT', 'TOV%', 'TOV_PCT'],
+                'USG_PCT': ['USG_PCT', 'USG%', 'USG'],
+                'W_PCT': ['W_PCT', 'WIN%', 'WPCT'],
+                'FG_PCT': ['FG_PCT', 'FG%'],
+                'FG3_PCT': ['FG3_PCT', 'FG3%', '3P%', '3PT_PCT'],
+                'FT_PCT': ['FT_PCT', 'FT%'],
+                'D_FG_PCT': ['D_FG_PCT', 'DFG%', 'DFG_PCT'],
+                'NORMAL_FG_PCT': ['NORMAL_FG_PCT', 'DFGM_PCT'],
+                'PCT_PLUSMINUS': ['PCT_PLUSMINUS', 'DIFF%', 'DIFF', 'PCT_PLUS_MINUS'],
+                'PTS_OFF_TOV': ['PTS_OFF_TOV', 'PTS_TOV'],
+                'PTS_2ND_CHANCE': ['PTS_2ND_CHANCE', '2ND_PTS'],
+                'PTS_FB': ['PTS_FB', 'FB_PTS'],
+                'PTS_PAINT': ['PTS_PAINT', 'PAINT_PTS'],
+                'PCT_PTS': ['PCT_PTS', 'PCT_TEAM_PTS'],
+                'PCT_REB': ['PCT_REB', 'PCT_TEAM_REB'],
+                'PCT_AST': ['PCT_AST', 'PCT_TEAM_AST'],
+                'PCT_BLK': ['PCT_BLK', 'PCT_TEAM_BLK'],
+                'PCT_STL': ['PCT_STL', 'PCT_TEAM_STL'],
+                // Totals columns (historical uses different names)
+                'PTS': ['PTS', 'POINTS'],
+                'REB': ['REB', 'TRB', 'REBOUNDS'],
+                'AST': ['AST', 'ASSISTS'],
+                'STL': ['STL', 'STEALS'],
+                'BLK': ['BLK', 'BLOCKS'],
+                'TOV': ['TOV', 'TURNOVERS', 'TO'],
+                'GP': ['GP', 'G', 'GAMES'],
+                // Percentage columns
+                'FG%': ['FG%', 'FG_PCT'],
+                '3P%': ['3P%', 'FG3_PCT', '3PT_PCT'],
+                'FT%': ['FT%', 'FT_PCT'],
+                // Global Rating
+                'RAT': ['RAT', 'PIE', 'RATING'],
+                // Shot Location columns
+                'Restricted Area_FG_PCT': ['Restricted Area_FG_PCT', 'RA_FG_PCT', 'RESTRICTED_AREA_FG_PCT'],
+                'Mid-Range_FG_PCT': ['Mid-Range_FG_PCT', 'MR_FG_PCT', 'MID_RANGE_FG_PCT'],
+                'Left Corner 3_FG_PCT': ['Left Corner 3_FG_PCT', 'LC3_FG_PCT', 'LEFT_CORNER_3_FG_PCT'],
+                'Right Corner 3_FG_PCT': ['Right Corner 3_FG_PCT', 'RC3_FG_PCT', 'RIGHT_CORNER_3_FG_PCT'],
+                'Above the Break 3_FG_PCT': ['Above the Break 3_FG_PCT', 'ATB3_FG_PCT', 'ABOVE_THE_BREAK_3_FG_PCT'],
+                'Backcourt_FG_PCT': ['Backcourt_FG_PCT', 'BC_FG_PCT', 'BACKCOURT_FG_PCT']
+            };
+            
+            // Try to find the value with primary column first
+            let val = playerData[column];
+            
+            // If not found, try alternate column names
+            if (val === undefined || val === null || val === '') {
+                const alternatives = columnAlternatives[column];
+                if (alternatives) {
+                    for (const alt of alternatives) {
+                        if (playerData[alt] !== undefined && playerData[alt] !== null && playerData[alt] !== '') {
+                            val = playerData[alt];
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            // Try altCol if specified in metric
+            if ((val === undefined || val === '' || val === null) && metric && metric.altCol) {
+                val = playerData[metric.altCol];
+            }
+            
+            if (val === undefined || val === '' || val === null) return null;
+            
+            if (perGameCol) {
+                let gp = parseFloat(playerData[perGameCol]);
+                
+                // If GP not in this data source, it will be passed separately via the metric
+                if (isNaN(gp) && metric && metric._gp) {
+                    gp = metric._gp;
+                }
+                
+                const total = parseFloat(val);
+                if (!isNaN(gp) && !isNaN(total) && gp > 0) {
+                    return total / gp;
+                }
+                return null;
+            }
+            return val;
+        }
+
+        function formatValue(value, format) {
+            if (value === null || value === undefined || value === '' || value === '-') return '-';
+            const num = parseFloat(value);
+            if (isNaN(num)) return value;
+            
+            switch (format) {
+                case 'int': return Math.round(num).toLocaleString();
+                case 'dec': return num.toFixed(1);
+                case 'pct':
+                    if (Math.abs(num) > 1) return num.toFixed(1) + '%';
+                    return (num * 100).toFixed(1) + '%';
+                case 'pcts':
+                    const pct = Math.abs(num) > 1 ? num : num * 100;
+                    return (pct >= 0 ? '+' : '') + pct.toFixed(1) + '%';
+                default: return value;
+            }
+        }
+
+        function compareValues(val1, val2, higherWins, isPercentage = false) {
+            let num1 = parseFloat(val1);
+            let num2 = parseFloat(val2);
+            
+            // If EITHER player has no data, it's a tie (no points awarded)
+            if (isNaN(num1) || isNaN(num2)) return 'tie';
+            
+            // Normalize percentages - if one is decimal (< 1) and one is not, convert
+            if (isPercentage) {
+                // If value is less than 1.5, assume it's decimal format (e.g., 0.462 = 46.2%)
+                if (num1 < 1.5 && num1 > 0) num1 = num1 * 100;
+                if (num2 < 1.5 && num2 > 0) num2 = num2 * 100;
+            }
+            
+            // Both have valid data - compare them
+            if (Math.abs(num1 - num2) < 0.001) return 'tie';
+            return higherWins ? (num1 > num2 ? 'p1' : 'p2') : (num1 < num2 ? 'p1' : 'p2');
+        }
+
+        function runComparison() {
+            const player1 = document.getElementById('player1Input').value;
+            const season1 = document.getElementById('season1Select').value;
+            const player2 = document.getElementById('player2Input').value;
+            const season2 = document.getElementById('season2Select').value;
+            
+            if (!player1 || !season1 || !player2 || !season2) return;
+            
+            const rsData1 = getPlayerData(player1, season1, 'rs');
+            const rsData2 = getPlayerData(player2, season2, 'rs');
+            const advData1 = getPlayerData(player1, season1, 'adv');
+            const advData2 = getPlayerData(player2, season2, 'adv');
+
+            const team1 = rsData1?.TEAM || advData1?.TEAM_ABBREVIATION || '';
+            const team2 = rsData2?.TEAM || advData2?.TEAM_ABBREVIATION || '';
+            
+            let p1Score = 0, p2Score = 0;
+            let html = '';
+            const sectionScores = {};
+            
+            const shareURL = `${window.location.origin}${window.location.pathname}?p1=${playerNameToURL(player1)}&s1=${season1}&p2=${playerNameToURL(player2)}&s2=${season2}`;
+            window.history.replaceState({}, '', shareURL);
+            
+            comparisonConfig.forEach(category => {
+                let categoryHtml = '';
+                let hasData = false;
+                sectionScores[category.category] = { p1: 0, p2: 0 };
+                
+                category.metrics.forEach(metric => {
+                    const data1 = getPlayerData(player1, season1, metric.src);
+                    const data2 = getPlayerData(player2, season2, metric.src);
+                    
+                    // For per-game stats where the data source doesn't have GP, get it from RS stats
+                    const needsExternalGP = metric.pg && (metric.pg === 'GP' || metric.pg === 'G');
+                    
+                    if (needsExternalGP && data1 && !data1.GP && !data1.G) {
+                        const rs1 = getPlayerData(player1, season1, 'rs');
+                        metric._gp = null;
+                        if (rs1) {
+                            const gp1 = parseFloat(rs1.GP || rs1.G);
+                            if (!isNaN(gp1)) metric._gp = gp1;
+                        }
+                    } else {
+                        metric._gp = null;
+                    }
+                    let val1 = getStatValue(data1, metric.col, metric.pg, metric);
+                    
+                    if (needsExternalGP && data2 && !data2.GP && !data2.G) {
+                        const rs2 = getPlayerData(player2, season2, 'rs');
+                        metric._gp = null;
+                        if (rs2) {
+                            const gp2 = parseFloat(rs2.GP || rs2.G);
+                            if (!isNaN(gp2)) metric._gp = gp2;
+                        }
+                    } else {
+                        metric._gp = null;
+                    }
+                    let val2 = getStatValue(data2, metric.col, metric.pg, metric);
+                    
+                    if ((val1 === null || val1 === '') && (val2 === null || val2 === '')) return;
+                    
+                    hasData = true;
+                    const isPercentage = metric.fmt === 'pct';
+                    const winner = compareValues(val1, val2, metric.higher, isPercentage);
+                    
+                    if (winner === 'p1') { p1Score++; sectionScores[category.category].p1++; }
+                    if (winner === 'p2') { p2Score++; sectionScores[category.category].p2++; }
+                    
+                    const formatted1 = formatValue(val1, metric.fmt);
+                    const formatted2 = formatValue(val2, metric.fmt);
+                    
+                    const rowClass = winner === 'p1' ? 'winner-left' : winner === 'p2' ? 'winner-right' : 'tie';
+                    const p1Class = winner === 'p1' ? 'player-value winner' : 'player-value';
+                    const p2Class = winner === 'p2' ? 'player-value winner' : 'player-value';
+                    
+                    categoryHtml += `
+                        <div class="comparison-row ${rowClass}">
+                            <div class="${p1Class}">${formatted1 === '-' ? '<span class="no-data">–</span>' : formatted1}</div>
+                            <div class="player-value clickable-name player-name-cell" style="font-weight: normal; font-size: 16px;" onclick="randomizeOpponent(1)" title="Click to get a new random opponent">${player1}</div>
+                            <div class="metric-name">${metric.name}</div>
+                            <div class="player-value clickable-name player-name-cell" style="font-weight: normal; font-size: 16px;" onclick="randomizeOpponent(2)" title="Click to get a new random opponent">${player2}</div>
+                            <div class="${p2Class}">${formatted2 === '-' ? '<span class="no-data">–</span>' : formatted2}</div>
                         </div>
-                        <div class="category-body">${rows}</div>
-                    </div>`;
+                    `;
+                });
+                
+                if (hasData) {
+                    const sScore = sectionScores[category.category];
+                    const sectionScoreHTML = (sScore.p1 > 0 || sScore.p2 > 0) ? 
+                        `<div class="section-score"><span class="clickable-name" onclick="randomizeOpponent(1)">${player1}</span> ${sScore.p1} – <span class="clickable-name" onclick="randomizeOpponent(2)">${player2}</span> ${sScore.p2}</div>` : '';
+                    html += `<div class="category-section"><div class="category-title">${category.category}${sectionScoreHTML}</div>${categoryHtml}</div>`;
                 }
             });
-
+            
             document.getElementById('results').innerHTML = `
                 <div class="score-summary">
                     <div class="player-score">
-                        <div class="name">${n1}</div>
-                        <div class="season">${y1 - 1}-${String(y1).slice(-2)}</div>
-                        ${t1 ? `<div class="team">${t1}</div>` : ''}
-                        <div class="score">${s1}</div>
+                        <div class="player-name-score" onclick="randomizeOpponent(1)" title="Click to get a new random opponent">${player1}</div>
+                        <div class="player-season-label">${formatSeasonYear(season1)}</div>
+                        ${team1 ? `<div class="player-team-label">${team1}</div>` : ''}
+                        <div class="score-value">${p1Score}</div>
                     </div>
                     <div class="score-divider">–</div>
                     <div class="player-score">
-                        <div class="name">${n2}</div>
-                        <div class="season">${y2 - 1}-${String(y2).slice(-2)}</div>
-                        ${t2 ? `<div class="team">${t2}</div>` : ''}
-                        <div class="score">${s2}</div>
+                        <div class="player-name-score" onclick="randomizeOpponent(2)" title="Click to get a new random opponent">${player2}</div>
+                        <div class="player-season-label">${formatSeasonYear(season2)}</div>
+                        ${team2 ? `<div class="player-team-label">${team2}</div>` : ''}
+                        <div class="score-value">${p2Score}</div>
                     </div>
                 </div>
-                <div class="share-section">
-                    <h3>📤 Share This Comparison</h3>
-                    <input type="text" class="share-input" value="${url}" readonly onclick="this.select();document.execCommand('copy');alert('Copied!');">
+                ${html}
+                ${generateSuggestedMatchups(player1, player2)}
+                ${generateBottomSelector()}
+            `;
+            // Only scroll to results during loop mode; otherwise stay at top
+            if (loopActive) {
+                document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+            // Sync bottom selector with current values
+            syncBottomSelector();
+        }
+
+        function generateBottomSelector() {
+            return `
+                <div class="bottom-selector">
+                    <div class="player-selector">
+                        <div class="player-select-card">
+                            <h3>Player 1</h3>
+                            <div class="select-group">
+                                <label>Player Name</label>
+                                <div class="player-select-wrapper">
+                                    <input type="text" id="player1InputBottom" class="player-autocomplete" placeholder="Type player name...">
+                                    <div id="suggestionsBottom1" class="autocomplete-suggestions"></div>
+                                </div>
+                            </div>
+                            <div class="select-group">
+                                <label>Season</label>
+                                <select id="season1SelectBottom" class="season-select">
+                                    <option value="">-- Choose Season --</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="vs-text">VS</div>
+                        <div class="player-select-card">
+                            <h3>Player 2</h3>
+                            <div class="select-group">
+                                <label>Player Name</label>
+                                <div class="player-select-wrapper">
+                                    <input type="text" id="player2InputBottom" class="player-autocomplete" placeholder="Type player name...">
+                                    <div id="suggestionsBottom2" class="autocomplete-suggestions"></div>
+                                </div>
+                            </div>
+                            <div class="select-group">
+                                <label>Season</label>
+                                <select id="season2SelectBottom" class="season-select">
+                                    <option value="">-- Choose Season --</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="compare-button" id="compareBtnBottom" onclick="compareFromBottom()">Compare Seasons</button>
+                    <div class="loop-controls">
+                        <button class="loop-button" id="loopBtnBottom" onclick="toggleLoop()">${loopActive ? 'Stop Comparison Loop' : 'Start Comparison Loop'}</button>
+                    </div>
                 </div>
-                ${html}`;
-            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+            `;
+        }
+
+        function syncBottomSelector() {
+            const p1Bottom = document.getElementById('player1InputBottom');
+            const p2Bottom = document.getElementById('player2InputBottom');
+            const s1Bottom = document.getElementById('season1SelectBottom');
+            const s2Bottom = document.getElementById('season2SelectBottom');
+            if (!p1Bottom) return;
+
+            const p1 = document.getElementById('player1Input').value;
+            const p2 = document.getElementById('player2Input').value;
+            const s1 = document.getElementById('season1Select').value;
+            const s2 = document.getElementById('season2Select').value;
+
+            p1Bottom.value = p1;
+            p2Bottom.value = p2;
+            populateSeasonSelect(s1Bottom, p1);
+            s1Bottom.value = s1;
+            populateSeasonSelect(s2Bottom, p2);
+            s2Bottom.value = s2;
+
+            // Setup autocomplete for bottom inputs
+            setupBottomAutocomplete('player1InputBottom', 'suggestionsBottom1', 'season1SelectBottom');
+            setupBottomAutocomplete('player2InputBottom', 'suggestionsBottom2', 'season2SelectBottom');
+        }
+
+        function setupBottomAutocomplete(inputId, suggestionsId, seasonId) {
+            const inputEl = document.getElementById(inputId);
+            const suggestionsEl = document.getElementById(suggestionsId);
+            const seasonEl = document.getElementById(seasonId);
+            if (!inputEl) return;
+
+            // Remove old listeners by cloning
+            const newInput = inputEl.cloneNode(true);
+            inputEl.parentNode.replaceChild(newInput, inputEl);
+
+            newInput.addEventListener('input', function() {
+                const value = this.value.toLowerCase();
+                if (value.length < 2) { suggestionsEl.style.display = 'none'; return; }
+                const matches = players.filter(p => p.toLowerCase().includes(value)).slice(0, 10);
+                if (matches.length === 0) { suggestionsEl.style.display = 'none'; return; }
+                suggestionsEl.innerHTML = matches.map(player =>
+                    `<div class="autocomplete-suggestion" data-player="${player}">${player}</div>`
+                ).join('');
+                suggestionsEl.style.display = 'block';
+                suggestionsEl.querySelectorAll('.autocomplete-suggestion').forEach(el => {
+                    el.addEventListener('click', function() {
+                        newInput.value = this.getAttribute('data-player');
+                        suggestionsEl.style.display = 'none';
+                        populateSeasonSelect(seasonEl, newInput.value, true);
+                    });
+                });
+            });
+
+            document.addEventListener('click', function(e) {
+                if (!newInput.contains(e.target) && !suggestionsEl.contains(e.target)) {
+                    suggestionsEl.style.display = 'none';
+                }
+            });
+        }
+
+        function compareFromBottom() {
+            const p1 = document.getElementById('player1InputBottom').value;
+            const p2 = document.getElementById('player2InputBottom').value;
+            const s1 = document.getElementById('season1SelectBottom').value;
+            const s2 = document.getElementById('season2SelectBottom').value;
+            if (!p1 || !s1 || !p2 || !s2) return;
+
+            // Sync to top selectors
+            document.getElementById('player1Input').value = p1;
+            populateSeasonSelect(document.getElementById('season1Select'), p1);
+            document.getElementById('season1Select').value = s1;
+            document.getElementById('player2Input').value = p2;
+            populateSeasonSelect(document.getElementById('season2Select'), p2);
+            document.getElementById('season2Select').value = s2;
+            updateCompareButton();
+
+            // Scroll to top, then run comparison
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            setTimeout(() => runComparison(), 300);
+        }
+
+        function generateSuggestedMatchups(currentP1, currentP2) {
+            // Generate 6 random suggested matchups
+            const matchups = [];
+            const usedPairs = new Set([`${currentP1}-${currentP2}`, `${currentP2}-${currentP1}`]);
+            
+            const availableStars = STARS_2526.filter(name => {
+                const seasons = playerSeasons[name];
+                return seasons && seasons.some(s => s.year === '2026');
+            });
+            
+            // Generate matchups - mix of current players vs new opponents and completely random
+            const attempts = 0;
+            
+            // 2 matchups with current player 1 vs random
+            for (let i = 0; i < 2 && matchups.length < 6; i++) {
+                const opponent = availableStars[Math.floor(Math.random() * availableStars.length)];
+                const pairKey = `${currentP1}-${opponent}`;
+                if (opponent !== currentP1 && opponent !== currentP2 && !usedPairs.has(pairKey)) {
+                    matchups.push({ p1: currentP1, p2: opponent, s1: '2026', s2: '2026' });
+                    usedPairs.add(pairKey);
+                    usedPairs.add(`${opponent}-${currentP1}`);
+                }
+            }
+            
+            // 2 matchups with current player 2 vs random
+            for (let i = 0; i < 2 && matchups.length < 6; i++) {
+                const opponent = availableStars[Math.floor(Math.random() * availableStars.length)];
+                const pairKey = `${currentP2}-${opponent}`;
+                if (opponent !== currentP1 && opponent !== currentP2 && !usedPairs.has(pairKey)) {
+                    matchups.push({ p1: currentP2, p2: opponent, s1: '2026', s2: '2026' });
+                    usedPairs.add(pairKey);
+                    usedPairs.add(`${opponent}-${currentP2}`);
+                }
+            }
+            
+            // Fill remaining with completely random matchups
+            while (matchups.length < 6) {
+                const p1 = availableStars[Math.floor(Math.random() * availableStars.length)];
+                const p2 = availableStars[Math.floor(Math.random() * availableStars.length)];
+                const pairKey = `${p1}-${p2}`;
+                if (p1 !== p2 && !usedPairs.has(pairKey)) {
+                    matchups.push({ p1, p2, s1: '2026', s2: '2026' });
+                    usedPairs.add(pairKey);
+                    usedPairs.add(`${p2}-${p1}`);
+                }
+            }
+            
+            const matchupCards = matchups.map(m => `
+                <div class="matchup-card" onclick="loadMatchup('${m.p1}', '${m.s1}', '${m.p2}', '${m.s2}')">
+                    <div class="matchup-players">${m.p1} vs ${m.p2}</div>
+                    <div class="matchup-seasons">${formatSeasonYear(m.s1)}</div>
+                </div>
+            `).join('');
+            
+            return `
+                <div class="suggested-matchups">
+                    <h3>🔥 More Matchups to Explore</h3>
+                    <div class="matchup-grid">${matchupCards}</div>
+                </div>
+            `;
+        }
+
+        function loadMatchup(p1, s1, p2, s2) {
+            document.getElementById('player1Input').value = p1;
+            populateSeasonSelect(document.getElementById('season1Select'), p1);
+            document.getElementById('season1Select').value = s1;
+            
+            document.getElementById('player2Input').value = p2;
+            populateSeasonSelect(document.getElementById('season2Select'), p2);
+            document.getElementById('season2Select').value = s2;
+            
+            updateCompareButton();
+            runComparison();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // ===== COMPARISON LOOP =====
+        let loopActive = false;
+        let usedOpponents = new Set();
+        let scrollAnimationId = null;
+
+        function updateStickyPlayerOptions() {
+            const p1Name = document.getElementById('player1Input').value || 'Player 1';
+            const p2Name = document.getElementById('player2Input').value || 'Player 2';
+            
+            document.getElementById('stickyP1Option').textContent = `Keep ${p1Name}`;
+            document.getElementById('stickyP2Option').textContent = `Keep ${p2Name}`;
+        }
+
+        function getTopPlayersForSeason(season) {
+            if (season === '2026') {
+                // Use current season stars
+                return STARS_2526.filter(name => {
+                    const seasons = playerSeasons[name];
+                    return seasons && seasons.some(s => s.year === '2026');
+                });
+            } else {
+                // Get top 70 scorers from that historical season
+                const seasonPlayers = data.rsStats
+                    .filter(r => r.YEAR === season && r.PLAYER)
+                    .map(r => ({
+                        name: r.PLAYER,
+                        pts: parseFloat(r['PTS / G']) || parseFloat(r['PTS']) / parseFloat(r['GP']) || 0
+                    }))
+                    .sort((a, b) => b.pts - a.pts)
+                    .slice(0, 70)
+                    .map(p => p.name);
+                
+                return seasonPlayers;
+            }
+        }
+
+        function getRandomOpponent(season, excludePlayers) {
+            const topPlayers = getTopPlayersForSeason(season);
+            const available = topPlayers.filter(p => 
+                !excludePlayers.includes(p) && !usedOpponents.has(p)
+            );
+            
+            // If we've used all opponents, reset the used list
+            if (available.length === 0) {
+                usedOpponents.clear();
+                const freshAvailable = topPlayers.filter(p => !excludePlayers.includes(p));
+                if (freshAvailable.length === 0) return null;
+                const pick = freshAvailable[Math.floor(Math.random() * freshAvailable.length)];
+                usedOpponents.add(pick);
+                return pick;
+            }
+            
+            const pick = available[Math.floor(Math.random() * available.length)];
+            usedOpponents.add(pick);
+            return pick;
+        }
+
+        function smoothScrollToBottom(durationMs) {
+            // Cancel any existing scroll animation
+            if (scrollAnimationId) {
+                cancelAnimationFrame(scrollAnimationId);
+            }
+            
+            // Start from the results/score area, not the very top
+            const resultsHeader = document.querySelector('.results-header');
+            const startY = resultsHeader ? resultsHeader.offsetTop - 20 : 200;
+            
+            // Scroll to starting position instantly
+            window.scrollTo(0, startY);
+            
+            const targetY = document.documentElement.scrollHeight - window.innerHeight;
+            const distance = targetY - startY;
+            const startTime = performance.now();
+            
+            // If no scrolling needed, trigger next comparison after pause
+            if (distance <= 0) {
+                setTimeout(() => {
+                    if (loopActive) runLoopComparison();
+                }, 1500);
+                return;
+            }
+            
+            function animateScroll(currentTime) {
+                if (!loopActive) return; // Stop if loop was stopped
+                
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / durationMs, 1);
+                
+                // Linear scrolling - constant speed
+                window.scrollTo(0, startY + (distance * progress));
+                
+                if (progress < 1) {
+                    scrollAnimationId = requestAnimationFrame(animateScroll);
+                } else {
+                    // Scroll finished - trigger next comparison after 1.5 seconds
+                    setTimeout(() => {
+                        if (loopActive) runLoopComparison();
+                    }, 1500);
+                }
+            }
+            
+            scrollAnimationId = requestAnimationFrame(animateScroll);
+        }
+
+        function startLoop() {
+            const loopBtn = document.getElementById('loopBtn');
+            const scrollSelect = document.getElementById('scrollDuration');
+            const stickySelect = document.getElementById('stickyPlayer');
+            
+            loopActive = true;
+            loopBtn.textContent = 'Stop Comparison Loop';
+            loopBtn.classList.add('active');
+            scrollSelect.disabled = true;
+            stickySelect.disabled = true;
+            usedOpponents.clear();
+            
+            // Run first comparison immediately (scroll callback will trigger next)
+            runLoopComparison();
+        }
+
+        function stopLoop() {
+            const loopBtn = document.getElementById('loopBtn');
+            const scrollSelect = document.getElementById('scrollDuration');
+            const stickySelect = document.getElementById('stickyPlayer');
+            
+            loopActive = false;
+            loopBtn.textContent = 'Start Comparison Loop';
+            loopBtn.classList.remove('active');
+            scrollSelect.disabled = false;
+            stickySelect.disabled = false;
+            
+            if (scrollAnimationId) {
+                cancelAnimationFrame(scrollAnimationId);
+                scrollAnimationId = null;
+            }
+        }
+
+        function toggleLoop() {
+            if (loopActive) {
+                stopLoop();
+            } else {
+                startLoop();
+            }
+        }
+
+        function runLoopComparison() {
+            const stickyMode = document.getElementById('stickyPlayer').value;
+            const scrollDuration = parseInt(document.getElementById('scrollDuration').value) * 1000;
+            const currentP1 = document.getElementById('player1Input').value;
+            const currentP2 = document.getElementById('player2Input').value;
+            const currentS1 = document.getElementById('season1Select').value;
+            const currentS2 = document.getElementById('season2Select').value;
+            
+            // Use the season from the sticky player, or player 1's season if both random
+            const activeSeason = stickyMode === 'p2' ? currentS2 : currentS1;
+            
+            if (stickyMode === 'p1') {
+                // Keep Player 1, randomize Player 2
+                const newOpponent = getRandomOpponent(activeSeason, [currentP1]);
+                if (!newOpponent) return;
+                
+                document.getElementById('player2Input').value = newOpponent;
+                populateSeasonSelect(document.getElementById('season2Select'), newOpponent);
+                document.getElementById('season2Select').value = activeSeason;
+                
+            } else if (stickyMode === 'p2') {
+                // Keep Player 2, randomize Player 1
+                const newOpponent = getRandomOpponent(activeSeason, [currentP2]);
+                if (!newOpponent) return;
+                
+                document.getElementById('player1Input').value = newOpponent;
+                populateSeasonSelect(document.getElementById('season1Select'), newOpponent);
+                document.getElementById('season1Select').value = activeSeason;
+                
+            } else {
+                // Randomize both players from the same season
+                const topPlayers = getTopPlayersForSeason(activeSeason);
+                if (topPlayers.length < 2) return;
+                
+                const idx1 = Math.floor(Math.random() * Math.min(topPlayers.length, 40));
+                let idx2 = Math.floor(Math.random() * Math.min(topPlayers.length, 40));
+                while (idx2 === idx1) idx2 = Math.floor(Math.random() * Math.min(topPlayers.length, 40));
+                
+                document.getElementById('player1Input').value = topPlayers[idx1];
+                populateSeasonSelect(document.getElementById('season1Select'), topPlayers[idx1]);
+                document.getElementById('season1Select').value = activeSeason;
+                
+                document.getElementById('player2Input').value = topPlayers[idx2];
+                populateSeasonSelect(document.getElementById('season2Select'), topPlayers[idx2]);
+                document.getElementById('season2Select').value = activeSeason;
+            }
+            
+            updateCompareButton();
+            runComparison();
+            
+            // Start smooth scroll after brief delay for content to render
+            setTimeout(() => {
+                if (loopActive) {
+                    smoothScrollToBottom(scrollDuration);
+                }
+            }, 1500);
         }
 
         // ===== INIT =====
         async function init() {
-            if (await loadData()) {
-                document.getElementById('loading').style.display = 'none';
-                document.getElementById('app').style.display = 'block';
-                setupUI();
-                if (!loadURL()) loadRandom();
+            const success = await loadAllData();
+            if (success && players.length > 0) {
+                document.getElementById('loadingMessage').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'block';
+                
+                // Show last updated timestamp and data source
+                if (dataLastUpdated) {
+                    const date = new Date(dataLastUpdated);
+                    document.getElementById('dataTimestamp').textContent = 
+                        `2025-26 data (${dataSource}): ${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+                } else if (dataSource === 'Google Sheets') {
+                    document.getElementById('dataTimestamp').textContent = 
+                        `2025-26 data: Live from Google Sheets`;
+                }
+                
+                setupAutocomplete();
+                document.getElementById('compareBtn').addEventListener('click', runComparison);
+                document.getElementById('loopBtn').addEventListener('click', toggleLoop);
+                if (!loadFromURL()) loadRandomStars();
             } else {
-                document.getElementById('loading').innerHTML = '<div class="error-box">Failed to load data. Please refresh.</div>';
+                document.getElementById('loadingMessage').innerHTML = `
+                    <div class="error-message">
+                        <h3>Unable to load data</h3>
+                        <p>Please check that the data sources are available and try refreshing.</p>
+                    </div>
+                `;
             }
         }
 
