@@ -1522,33 +1522,31 @@
                 val = playerData[metric.altCol];
             }
             
-            // For shooting percentages, calculate from made/attempted if value is 0 or missing
+            // For shooting percentages, ALWAYS calculate from made/attempted for accuracy
+            // The pre-stored FG%, 3P%, FT% values are often rounded
             const shootingCalc = {
                 'FG%': { made: ['FGM', 'FG'], att: ['FGA'] },
                 'FG_PCT': { made: ['FGM', 'FG'], att: ['FGA'] },
-                '3P%': { made: ['3P', '3PM', 'FG3M'], att: ['3PA', 'FG3A'] },
-                'FG3_PCT': { made: ['3P', '3PM', 'FG3M'], att: ['3PA', 'FG3A'] },
+                '3P%': { made: ['3PM', '3P', 'FG3M'], att: ['3PA', 'FG3A'] },
+                'FG3_PCT': { made: ['3PM', '3P', 'FG3M'], att: ['3PA', 'FG3A'] },
                 'FT%': { made: ['FTM', 'FT'], att: ['FTA'] },
                 'FT_PCT': { made: ['FTM', 'FT'], att: ['FTA'] }
             };
             
             const calcConfig = shootingCalc[column];
             if (calcConfig) {
-                const numVal = parseFloat(val);
-                // If value is missing, zero, or very small (likely rounded to 0)
-                if (isNaN(numVal) || numVal === 0 || (numVal > 0 && numVal < 0.01)) {
-                    let made = null, att = null;
-                    for (const col of calcConfig.made) {
-                        const v = parseFloat(playerData[col]);
-                        if (!isNaN(v)) { made = v; break; }
-                    }
-                    for (const col of calcConfig.att) {
-                        const v = parseFloat(playerData[col]);
-                        if (!isNaN(v)) { att = v; break; }
-                    }
-                    if (made !== null && att !== null && att > 0) {
-                        val = (made / att) * 100; // Return as percentage (e.g., 45.6)
-                    }
+                let made = null, att = null;
+                for (const col of calcConfig.made) {
+                    const v = parseFloat(playerData[col]);
+                    if (!isNaN(v)) { made = v; break; }
+                }
+                for (const col of calcConfig.att) {
+                    const v = parseFloat(playerData[col]);
+                    if (!isNaN(v)) { att = v; break; }
+                }
+                // Always use calculated value if we have made/attempted
+                if (made !== null && att !== null && att > 0) {
+                    val = (made / att) * 100; // Return as percentage (e.g., 49.5)
                 }
             }
             
