@@ -880,6 +880,9 @@
             }
         }
         
+        let playerSeasonsNormalized = {}; // Index by normalized name for Cyrillic matching
+        let playerPOSeasonsNormalized = {}; // Index by normalized name for PO stats
+        
         function buildPlayerList() {
             const playersMap = new Map();
             const poPlayersMap = new Map();
@@ -889,8 +892,12 @@
                 const year = row.YEAR;
                 const team = row.TEAM;
                 if (name && year) {
-                    if (!playersMap.has(name)) playersMap.set(name, []);
-                    playersMap.get(name).push({ year, team, data: row });
+                    // Fix name encoding first (Cyrillic mojibake)
+                    const fixedName = fixMojibake(name).normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+                    row.PLAYER = fixedName; // Update the row with fixed name
+                    
+                    if (!playersMap.has(fixedName)) playersMap.set(fixedName, []);
+                    playersMap.get(fixedName).push({ year, team, data: row });
                 }
             });
 
@@ -899,17 +906,31 @@
                 const year = row.YEAR;
                 const team = row.TEAM;
                 if (name && year) {
-                    if (!poPlayersMap.has(name)) poPlayersMap.set(name, []);
-                    poPlayersMap.get(name).push({ year, team, data: row });
+                    // Fix name encoding first (Cyrillic mojibake)
+                    const fixedName = fixMojibake(name).normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+                    row.PLAYER = fixedName; // Update the row with fixed name
+                    
+                    if (!poPlayersMap.has(fixedName)) poPlayersMap.set(fixedName, []);
+                    poPlayersMap.get(fixedName).push({ year, team, data: row });
                 }
             });
 
             players = Array.from(playersMap.keys()).sort();
             playersMap.forEach((seasons, name) => {
                 playerSeasons[name] = seasons.sort((a, b) => parseInt(b.year) - parseInt(a.year));
+                // Also index by normalized name (lowercase, no accents)
+                const normalizedName = normalizeName(name);
+                if (normalizedName !== name.toLowerCase()) {
+                    playerSeasonsNormalized[normalizedName] = name; // Map normalized -> original
+                }
             });
             poPlayersMap.forEach((seasons, name) => {
                 playerPOSeasons[name] = seasons.sort((a, b) => parseInt(b.year) - parseInt(a.year));
+                // Also index by normalized name
+                const normalizedName = normalizeName(name);
+                if (normalizedName !== name.toLowerCase()) {
+                    playerPOSeasonsNormalized[normalizedName] = name;
+                }
             });
 
             console.log('Built player list:', players.length, 'players');
@@ -1117,9 +1138,19 @@
 
         function populateSeasonSelect(selectEl, playerName, autoSelect2526 = false) {
             selectEl.innerHTML = '<option value="">-- Choose Season --</option>';
-            if (!playerName || !playerSeasons[playerName]) { selectEl.disabled = true; return; }
             
-            const seasons = playerSeasons[playerName];
+            // Try direct lookup first, then normalized
+            let seasons = playerSeasons[playerName];
+            if (!seasons) {
+                const normalizedName = normalizeName(playerName);
+                const originalName = playerSeasonsNormalized[normalizedName];
+                if (originalName) {
+                    seasons = playerSeasons[originalName];
+                }
+            }
+            
+            if (!playerName || !seasons) { selectEl.disabled = true; return; }
+            
             seasons.forEach(s => {
                 const option = document.createElement('option');
                 option.value = s.year;
@@ -1190,7 +1221,15 @@
 
         function loadRandomStars() {
             const availableStars = STARS_2526.filter(name => {
-                const seasons = playerSeasons[name];
+                // Try direct lookup first, then normalized
+                let seasons = playerSeasons[name];
+                if (!seasons) {
+                    const normalizedName = normalizeName(name);
+                    const originalName = playerSeasonsNormalized[normalizedName];
+                    if (originalName) {
+                        seasons = playerSeasons[originalName];
+                    }
+                }
                 return seasons && seasons.some(s => s.year === '2026');
             });
             
@@ -1233,7 +1272,12 @@
             if (keepSeason === '2026') {
                 // Use 2025-26 stars list for current season
                 topScorers = STARS_2526.filter(name => {
-                    const seasons = playerSeasons[name];
+                    let seasons = playerSeasons[name];
+                    if (!seasons) {
+                        const normalizedName = normalizeName(name);
+                        const originalName = playerSeasonsNormalized[normalizedName];
+                        if (originalName) seasons = playerSeasons[originalName];
+                    }
                     return seasons && seasons.some(s => s.year === '2026');
                 });
             } else {
@@ -1316,6 +1360,30 @@
         function getPlayerData(playerName, season, source) {
             const isCurrent = (season === '2026');
             
+            // Helper to find player in playerSeasons with fallback to normalized name
+            function findInPlayerSeasons(name) {
+                if (playerSeasons[name]) return playerSeasons[name];
+                // Try normalized lookup
+                const normalizedName = normalizeName(name);
+                const originalName = playerSeasonsNormalized[normalizedName];
+                if (originalName && playerSeasons[originalName]) {
+                    return playerSeasons[originalName];
+                }
+                return null;
+            }
+            
+            // Helper to find player in playerPOSeasons with fallback to normalized name
+            function findInPlayerPOSeasons(name) {
+                if (playerPOSeasons[name]) return playerPOSeasons[name];
+                // Try normalized lookup
+                const normalizedName = normalizeName(name);
+                const originalName = playerPOSeasonsNormalized[normalizedName];
+                if (originalName && playerPOSeasons[originalName]) {
+                    return playerPOSeasons[originalName];
+                }
+                return null;
+            }
+            
             if (source === 'rs') {
                 // For 2025-26, check JSON data first
                 if (isCurrent) {
@@ -1326,8 +1394,8 @@
                         if (playerObj.rsStats) return playerObj.rsStats;
                     }
                 }
-                // Fall back to all-time database
-                const seasons = playerSeasons[playerName];
+                // Fall back to all-time database with normalized name fallback
+                const seasons = findInPlayerSeasons(playerName);
                 if (!seasons) return null;
                 const match = seasons.find(s => s.year === season);
                 return match ? match.data : null;
@@ -1348,8 +1416,8 @@
                     const playerObj = findCurrent2526Player(playerName);
                     if (playerObj?.poStats) return playerObj.poStats;
                 }
-                // Fall back to all-time database
-                const seasons = playerPOSeasons[playerName];
+                // Fall back to all-time database with normalized name fallback
+                const seasons = findInPlayerPOSeasons(playerName);
                 if (!seasons) return null;
                 const match = seasons.find(s => s.year === season);
                 return match ? match.data : null;
@@ -1374,10 +1442,10 @@
             
             if (isCurrent) {
                 const playerObj = findCurrent2526Player(playerName);
-                // For plusMinus in current season, use clutch data (where PLUS_MINUS is stored)
+                // For plusMinus in current season, use rsStats (column AF: PLUS_MINUS in gid=1169156479)
                 if (source === 'plusMinus') {
-                    if (playerObj && playerObj['clutch']) {
-                        return playerObj['clutch'];
+                    if (playerObj && playerObj['rsStats']) {
+                        return playerObj['rsStats'];
                     }
                     return null;
                 }
@@ -1524,17 +1592,36 @@
 
         function formatValue(value, format) {
             if (value === null || value === undefined || value === '' || value === '-') return '-';
-            const num = parseFloat(value);
+            
+            // Handle string values that might have % sign already
+            let strVal = String(value).trim();
+            if (strVal.endsWith('%')) {
+                strVal = strVal.slice(0, -1);
+            }
+            
+            const num = parseFloat(strVal);
             if (isNaN(num)) return value;
             
             switch (format) {
                 case 'int': return Math.round(num).toLocaleString();
                 case 'dec': return num.toFixed(1);
                 case 'pct':
-                    if (Math.abs(num) > 1) return num.toFixed(1) + '%';
+                    // Handle different percentage formats:
+                    // - Decimal (0.456) -> multiply by 100
+                    // - Already percentage (45.6) -> use as-is
+                    // - Very small decimals (0.001) -> still multiply
+                    // Use threshold of 1.5 to distinguish (handles edge cases like 1.0% correctly)
+                    if (Math.abs(num) >= 1.5) return num.toFixed(1) + '%';
+                    if (Math.abs(num) < 0.0001) return '0.0%'; // Effectively zero
                     return (num * 100).toFixed(1) + '%';
                 case 'pcts':
-                    const pct = Math.abs(num) > 1 ? num : num * 100;
+                    // Signed percentage (for +/- values like defensive impact)
+                    let pct;
+                    if (Math.abs(num) >= 1.5) {
+                        pct = num;
+                    } else {
+                        pct = num * 100;
+                    }
                     return (pct >= 0 ? '+' : '') + pct.toFixed(1) + '%';
                 default: return value;
             }
@@ -1547,11 +1634,11 @@
             // If EITHER player has no data, it's a tie (no points awarded)
             if (isNaN(num1) || isNaN(num2)) return 'tie';
             
-            // Normalize percentages - if one is decimal (< 1) and one is not, convert
+            // Normalize percentages - if one is decimal (< 1.5) and one is not, convert
             if (isPercentage) {
                 // If value is less than 1.5, assume it's decimal format (e.g., 0.462 = 46.2%)
-                if (num1 < 1.5 && num1 > 0) num1 = num1 * 100;
-                if (num2 < 1.5 && num2 > 0) num2 = num2 * 100;
+                if (Math.abs(num1) < 1.5 && Math.abs(num1) > 0.0001) num1 = num1 * 100;
+                if (Math.abs(num2) < 1.5 && Math.abs(num2) > 0.0001) num2 = num2 * 100;
             }
             
             // Both have valid data - compare them
@@ -1813,7 +1900,12 @@
             const usedPairs = new Set([`${currentP1}-${currentP2}`, `${currentP2}-${currentP1}`]);
             
             const availableStars = STARS_2526.filter(name => {
-                const seasons = playerSeasons[name];
+                let seasons = playerSeasons[name];
+                if (!seasons) {
+                    const normalizedName = normalizeName(name);
+                    const originalName = playerSeasonsNormalized[normalizedName];
+                    if (originalName) seasons = playerSeasons[originalName];
+                }
                 return seasons && seasons.some(s => s.year === '2026');
             });
             
@@ -1900,7 +1992,12 @@
             if (season === '2026') {
                 // Use current season stars
                 return STARS_2526.filter(name => {
-                    const seasons = playerSeasons[name];
+                    let seasons = playerSeasons[name];
+                    if (!seasons) {
+                        const normalizedName = normalizeName(name);
+                        const originalName = playerSeasonsNormalized[normalizedName];
+                        if (originalName) seasons = playerSeasons[originalName];
+                    }
                     return seasons && seasons.some(s => s.year === '2026');
                 });
             } else {
