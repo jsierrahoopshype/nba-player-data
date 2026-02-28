@@ -548,26 +548,63 @@
             return fixMojibake(name).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
         }
 
-        // Fix mojibake encoding in historical JSON (e.g. "JokiÄ‡" → "Jokić")
+        // Fix mojibake encoding in historical JSON (e.g. "JokiÄ‡" → "Jokić" → "Jokic")
+        // Common mojibake patterns from UTF-8 interpreted as Windows-1252
         function fixMojibake(str) {
             if (!str) return str;
-            let hi = false;
-            for (let i = 0; i < str.length; i++) if (str.charCodeAt(i) > 127) { hi = true; break; }
-            if (!hi) return str;
-            const w = {0x2021:0x87,0x20AC:0x80,0x201A:0x82,0x0192:0x83,0x201E:0x84,0x2026:0x85,0x2020:0x86,0x02C6:0x88,0x2030:0x89,0x0160:0x8A,0x2039:0x8B,0x0152:0x8C,0x017D:0x8E,0x2018:0x91,0x2019:0x92,0x201C:0x93,0x201D:0x94,0x2022:0x95,0x2013:0x96,0x2014:0x97,0x02DC:0x98,0x2122:0x99,0x0161:0x9A,0x203A:0x9B,0x0153:0x9C,0x017E:0x9E,0x0178:0x9F};
-            try {
-                const b = [];
-                for (let i = 0; i < str.length; i++) {
-                    const c = str.charCodeAt(i);
-                    if (c < 128) b.push(c);
-                    else if (w[c] !== undefined) b.push(w[c]);
-                    else if (c < 256) b.push(c);
-                    else return str;
-                }
-                const d = new TextDecoder('utf-8').decode(new Uint8Array(b));
-                if (d && !d.includes('\uFFFD')) return d;
-            } catch(e) {}
-            return str;
+            
+            // Direct pattern replacements for common mojibake sequences
+            const mojibakePatterns = [
+                // Serbian/Croatian characters
+                ['Ä‡', 'ć'],  // ć
+                ['Ä†', 'Ć'],  // Ć
+                ['Ä', 'č'],   // č (when followed by nothing or certain chars)
+                ['ÄŒ', 'Č'],  // Č
+                ['Å¡', 'š'],  // š
+                ['Å ', 'Š'],  // Š
+                ['Å¾', 'ž'],  // ž
+                ['Å½', 'Ž'],  // Ž
+                ['Ä'', 'đ'],  // đ
+                ['Ä', 'Đ'],  // Đ
+                // Additional patterns
+                ['Ã¡', 'á'],
+                ['Ã©', 'é'],
+                ['Ã­', 'í'],
+                ['Ã³', 'ó'],
+                ['Ãº', 'ú'],
+                ['Ã±', 'ñ'],
+                ['Ã¼', 'ü'],
+                ['Ã¶', 'ö'],
+                ['Ã¤', 'ä'],
+                ['Ã', 'í'],   // Common single char mojibake
+            ];
+            
+            let result = str;
+            for (const [pattern, replacement] of mojibakePatterns) {
+                result = result.split(pattern).join(replacement);
+            }
+            
+            // Also try the complex decoder for any remaining issues
+            if (result === str) {
+                let hi = false;
+                for (let i = 0; i < str.length; i++) if (str.charCodeAt(i) > 127) { hi = true; break; }
+                if (!hi) return str;
+                const w = {0x2021:0x87,0x20AC:0x80,0x201A:0x82,0x0192:0x83,0x201E:0x84,0x2026:0x85,0x2020:0x86,0x02C6:0x88,0x2030:0x89,0x0160:0x8A,0x2039:0x8B,0x0152:0x8C,0x017D:0x8E,0x2018:0x91,0x2019:0x92,0x201C:0x93,0x201D:0x94,0x2022:0x95,0x2013:0x96,0x2014:0x97,0x02DC:0x98,0x2122:0x99,0x0161:0x9A,0x203A:0x9B,0x0153:0x9C,0x017E:0x9E,0x0178:0x9F};
+                try {
+                    const b = [];
+                    for (let i = 0; i < str.length; i++) {
+                        const c = str.charCodeAt(i);
+                        if (c < 128) b.push(c);
+                        else if (w[c] !== undefined) b.push(w[c]);
+                        else if (c < 256) b.push(c);
+                        else return result;
+                    }
+                    const d = new TextDecoder('utf-8').decode(new Uint8Array(b));
+                    if (d && !d.includes('\uFFFD')) return d;
+                } catch(e) {}
+            }
+            
+            return result;
         }
 
         // Clean mojibake names in all historical arrays after loading
@@ -1462,20 +1499,43 @@
                 const historicalFormat = `${seasonYear - 1}-${String(seasonYear).slice(-2)}`;
                 
                 const normalizedPlayerName = normalizeName(playerName);
+                // Get first name and start of last name for fuzzy matching (handles Jokic, Doncic, etc.)
+                const nameParts = playerName.split(' ');
+                const firstName = nameParts[0] ? nameParts[0].toLowerCase() : '';
+                const lastNameStart = nameParts[1] ? nameParts[1].substring(0, 4).toLowerCase() : '';
                 
                 const found = dataSource.find(row => {
                     // Try different name columns (PLAYER_NAME, PLAYER, NAME)
                     const rowName = row.PLAYER_NAME || row.PLAYER || row.NAME;
                     if (!rowName) return false;
                     
-                    // Match player name (exact or normalized)
-                    const nameMatch = rowName === playerName || normalizeName(rowName) === normalizedPlayerName;
-                    if (!nameMatch) return false;
-                    
-                    // Match season - try different column names and formats
+                    // Check season first (quick rejection)
                     const rowSeason = row.SEASON_ID || row.SEASON || row.GROUP_VALUE || row.YEAR;
-                    // YEAR column uses just the ending year (e.g., "2025" for 2024-25 season)
-                    return rowSeason === historicalFormat || rowSeason === season || rowSeason === String(seasonYear);
+                    const seasonMatch = rowSeason === historicalFormat || rowSeason === season || rowSeason === String(seasonYear);
+                    if (!seasonMatch) return false;
+                    
+                    // Match player name - try multiple approaches
+                    // 1. Exact match
+                    if (rowName === playerName) return true;
+                    
+                    // 2. Normalized match (removes accents)
+                    if (normalizeName(rowName) === normalizedPlayerName) return true;
+                    
+                    // 3. Fuzzy match for Cyrillic names (first name + start of last name)
+                    // Handles cases like "Nikola JokiÄ‡" matching "Nikola Jokic"
+                    if (firstName && lastNameStart) {
+                        const rowNameLower = rowName.toLowerCase();
+                        const rowParts = rowName.split(' ');
+                        const rowFirstName = rowParts[0] ? rowParts[0].toLowerCase() : '';
+                        const rowLastNameStart = rowParts[1] ? rowParts[1].substring(0, 4).toLowerCase() : '';
+                        
+                        // Match if first name exact and last name starts similarly
+                        if (rowFirstName === firstName && rowLastNameStart.substring(0, 3) === lastNameStart.substring(0, 3)) {
+                            return true;
+                        }
+                    }
+                    
+                    return false;
                 });
                 
                 return found;
@@ -1569,6 +1629,45 @@
             // Try altCol if specified in metric
             if ((val === undefined || val === '' || val === null) && metric && metric.altCol) {
                 val = playerData[metric.altCol];
+            }
+            
+            // For shooting percentages, calculate from made/attempted if value is 0, missing, or invalid
+            const shootingPctColumns = {
+                'FG%': { made: ['FGM', 'FG'], attempted: ['FGA'] },
+                'FG_PCT': { made: ['FGM', 'FG'], attempted: ['FGA'] },
+                '3P%': { made: ['3P', '3PM', 'FG3M', '3P MADE'], attempted: ['3PA', 'FG3A', '3P ATT'] },
+                'FG3_PCT': { made: ['3P', '3PM', 'FG3M'], attempted: ['3PA', 'FG3A'] },
+                '3PT_PCT': { made: ['3P', '3PM', 'FG3M'], attempted: ['3PA', 'FG3A'] },
+                'FT%': { made: ['FTM', 'FT'], attempted: ['FTA'] },
+                'FT_PCT': { made: ['FTM', 'FT'], attempted: ['FTA'] }
+            };
+            
+            const pctConfig = shootingPctColumns[column];
+            if (pctConfig) {
+                const numVal = parseFloat(val);
+                // If percentage is missing, zero, or seems invalid (should be 0-1 or 0-100)
+                if (isNaN(numVal) || numVal === 0) {
+                    // Try to calculate from made/attempted
+                    let made = null, attempted = null;
+                    
+                    for (const madeCol of pctConfig.made) {
+                        if (playerData[madeCol] !== undefined && playerData[madeCol] !== '' && playerData[madeCol] !== null) {
+                            made = parseFloat(playerData[madeCol]);
+                            if (!isNaN(made)) break;
+                        }
+                    }
+                    
+                    for (const attCol of pctConfig.attempted) {
+                        if (playerData[attCol] !== undefined && playerData[attCol] !== '' && playerData[attCol] !== null) {
+                            attempted = parseFloat(playerData[attCol]);
+                            if (!isNaN(attempted)) break;
+                        }
+                    }
+                    
+                    if (made !== null && attempted !== null && !isNaN(made) && !isNaN(attempted) && attempted > 0) {
+                        val = (made / attempted) * 100; // Return as percentage (45.6 not 0.456)
+                    }
+                }
             }
             
             if (val === undefined || val === '' || val === null) return null;
