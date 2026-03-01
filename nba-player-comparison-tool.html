@@ -422,20 +422,33 @@
         @media (max-width: 768px) {
             .container { padding: 1rem; }
             h1 { font-size: 1.25rem; }
-            .subtitle { font-size: 0.8125rem; margin-bottom: 1.25rem; }
+            .subtitle { font-size: 0.8125rem; margin-bottom: 1rem; }
             
+            /* Horizontal compact selector on mobile */
             .player-selector {
-                grid-template-columns: 1fr;
-                gap: 0.75rem;
+                grid-template-columns: 1fr auto 1fr;
+                gap: 0.5rem;
                 margin-bottom: 1rem;
+                align-items: start;
             }
-            .player-select-card { padding: 1rem; }
-            .player-select-card h3 { font-size: 0.625rem; margin-bottom: 0.625rem; }
-            .select-group { margin-bottom: 0.75rem; }
-            .player-autocomplete { padding: 0.625rem 0.875rem; font-size: 0.875rem; }
-            .vs-text { font-size: 1rem; margin: 0.375rem 0; }
+            .player-select-card { 
+                padding: 0.5rem; 
+                background: transparent;
+                border: none;
+            }
+            /* Hide headers and labels on mobile */
+            .player-select-card h3 { display: none; }
+            .select-group label { display: none; }
             
-            .compare-button { padding: 0.75rem 1.5rem; font-size: 0.875rem; margin-bottom: 1rem; }
+            .select-group { margin-bottom: 0; }
+            .player-autocomplete { padding: 0.5rem 0.625rem; font-size: 0.8125rem; }
+            .vs-text { 
+                padding-top: 0.5rem; 
+                font-size: 0.875rem;
+                font-weight: 600;
+            }
+            
+            .compare-button { padding: 0.625rem 1.25rem; font-size: 0.8125rem; margin-bottom: 0.75rem; }
             
             .score-summary {
                 grid-template-columns: 1fr auto 1fr;
@@ -471,8 +484,8 @@
             .suggestion-btn { padding: 0.625rem 1rem; font-size: 0.8125rem; }
             
             .loop-controls { flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
-            .loop-button { padding: 0.5rem 1rem; font-size: 0.8125rem; }
-            .loop-interval { padding: 0.5rem 0.625rem; font-size: 0.8125rem; }
+            .loop-button { padding: 0.5rem 0.75rem; font-size: 0.75rem; }
+            .loop-interval { padding: 0.375rem 0.5rem; font-size: 0.75rem; }
         }
     </style>
 </head>
