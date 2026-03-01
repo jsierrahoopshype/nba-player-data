@@ -1842,6 +1842,9 @@
             const shareURL = `${window.location.origin}${window.location.pathname}?p1=${playerNameToURL(player1)}&s1=${season1}&p2=${playerNameToURL(player2)}&s2=${season2}`;
             window.history.replaceState({}, '', shareURL);
             
+            // Update page title
+            document.title = `${player1} ${formatSeasonYear(season1)} vs ${player2} ${formatSeasonYear(season2)} - NBA Season Comparison`;
+            
             comparisonConfig.forEach(category => {
                 let categoryHtml = '';
                 let hasData = false;
