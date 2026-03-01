@@ -1472,6 +1472,9 @@
             
             const MIN_GAMES_FOR_PEAK = 20;
             
+            // For players with only one season, use that season as their peak regardless of games played
+            const isSingleSeasonPlayer = playerRows.length === 1;
+            
             // Check if this is a per-game peak metric
             if (peakPerGameMetrics[metric]) {
                 const statColumn = peakPerGameMetrics[metric];
@@ -1481,7 +1484,10 @@
                     const stat = parseFloat(row[statColumn]);
                     const games = parseFloat(row['GP']);
                     
-                    if (!isNaN(stat) && !isNaN(games) && games >= MIN_GAMES_FOR_PEAK) {
+                    // For single-season players, skip the minimum games requirement
+                    const meetsGamesRequirement = isSingleSeasonPlayer || (games >= MIN_GAMES_FOR_PEAK);
+                    
+                    if (!isNaN(stat) && !isNaN(games) && games > 0 && meetsGamesRequirement) {
                         const perGame = stat / games;
                         if (perGame > maxValue) {
                             maxValue = perGame;
@@ -1502,9 +1508,13 @@
                     const att = parseFloat(row[pctInfo.att]);
                     const games = parseFloat(row['GP']);
                     
+                    // For single-season players, relax the minimum attempts and games requirements
+                    const meetsRequirements = isSingleSeasonPlayer 
+                        ? (att > 0)
+                        : (att >= pctInfo.minAtt && !isNaN(games) && games >= MIN_GAMES_FOR_PEAK);
+                    
                     // Require minimum attempts AND minimum games to avoid fluky small-sample peaks
-                    if (!isNaN(made) && !isNaN(att) && att >= pctInfo.minAtt && 
-                        !isNaN(games) && games >= MIN_GAMES_FOR_PEAK) {
+                    if (!isNaN(made) && !isNaN(att) && meetsRequirements) {
                         const pct = (made / att) * 100;
                         if (pct > maxPct) {
                             maxPct = pct;
@@ -1633,6 +1643,9 @@
             
             const MIN_GAMES_FOR_PO_PEAK = 4; // At least one full series
             
+            // For players with only one playoff season, use that season as their peak
+            const isSinglePlayoffSeasonPlayer = playerRows.length === 1;
+            
             // Check if this is a per-game PO peak metric
             if (peakPerGameMetricsPO[metric]) {
                 const statColumn = peakPerGameMetricsPO[metric];
@@ -1642,7 +1655,10 @@
                     const stat = parseFloat(row[statColumn]);
                     const games = parseFloat(row['GP']);
                     
-                    if (!isNaN(stat) && !isNaN(games) && games >= MIN_GAMES_FOR_PO_PEAK) {
+                    // For single-season players, skip the minimum games requirement
+                    const meetsGamesRequirement = isSinglePlayoffSeasonPlayer || (games >= MIN_GAMES_FOR_PO_PEAK);
+                    
+                    if (!isNaN(stat) && !isNaN(games) && games > 0 && meetsGamesRequirement) {
                         const perGame = stat / games;
                         if (perGame > maxValue) {
                             maxValue = perGame;
@@ -1663,8 +1679,12 @@
                     const att = parseFloat(row[pctInfo.att]);
                     const games = parseFloat(row['GP']);
                     
-                    if (!isNaN(made) && !isNaN(att) && att >= pctInfo.minAtt &&
-                        !isNaN(games) && games >= MIN_GAMES_FOR_PO_PEAK) {
+                    // For single-season players, relax the minimum requirements
+                    const meetsRequirements = isSinglePlayoffSeasonPlayer
+                        ? (att > 0)
+                        : (att >= pctInfo.minAtt && !isNaN(games) && games >= MIN_GAMES_FOR_PO_PEAK);
+                    
+                    if (!isNaN(made) && !isNaN(att) && meetsRequirements) {
                         const pct = (made / att) * 100;
                         if (pct > maxPct) {
                             maxPct = pct;
