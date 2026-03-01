@@ -768,15 +768,32 @@
                 
                 setupAutocomplete();
                 
-                // Load random All-Star comparison on start
-                const randomP1 = getRandomAllStar();
-                const randomP2 = getRandomAllStar();
+                // Check URL params for player comparison
+                const urlParams = new URLSearchParams(window.location.search);
+                const urlP1 = urlParams.get('p1');
+                const urlP2 = urlParams.get('p2');
                 
-                if (randomP1 && randomP2 && randomP1 !== randomP2) {
-                    document.getElementById('player1-top').value = randomP1;
-                    document.getElementById('player2-top').value = randomP2;
-                    document.getElementById('player1-bottom').value = randomP1;
-                    document.getElementById('player2-bottom').value = randomP2;
+                let p1, p2;
+                
+                if (urlP1 && urlP2 && players.includes(urlP1) && players.includes(urlP2)) {
+                    // Use players from URL
+                    p1 = urlP1;
+                    p2 = urlP2;
+                } else {
+                    // Load random All-Star comparison on start
+                    p1 = getRandomAllStar();
+                    p2 = getRandomAllStar();
+                    // Make sure they're different
+                    while (p2 === p1 && players.length > 1) {
+                        p2 = getRandomAllStar();
+                    }
+                }
+                
+                if (p1 && p2 && p1 !== p2) {
+                    document.getElementById('player1-top').value = p1;
+                    document.getElementById('player2-top').value = p2;
+                    document.getElementById('player1-bottom').value = p1;
+                    document.getElementById('player2-bottom').value = p2;
                     updateStickyPlayerOptions();
                     setTimeout(() => compareFromInputs(), 500);
                 }
@@ -1010,6 +1027,15 @@
         function comparePlayer(player1Name, player2Name) {
             const resultsDiv = document.getElementById('results');
             resultsDiv.innerHTML = '<div class="loading"><div class="spinner"></div><div>Comparing players...</div></div>';
+            
+            // Update URL with player names
+            const url = new URL(window.location);
+            url.searchParams.set('p1', player1Name);
+            url.searchParams.set('p2', player2Name);
+            window.history.pushState({}, '', url);
+            
+            // Update page title
+            document.title = `${player1Name} vs ${player2Name} - NBA Career Comparison`;
             
             setTimeout(() => {
                 const results = performComparison(player1Name, player2Name);
