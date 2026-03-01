@@ -602,60 +602,7 @@
 
         // Fix column swaps in STL/BLK/TOV
         // The JSON export has these columns incorrectly mapped
-        // Symptom: Ja Morant's "steals peak" shows ~3.8 (his actual TOV)
-        // This means: data_STL contains actual_TOV values
-        // Pattern appears to be: data_STL=actual_TOV, data_BLK=actual_STL, data_TOV=actual_BLK
-        // Fix: reverse the rotation
-        function fixColumnSwaps(dataArray, label) {
-            if (!dataArray || dataArray.length === 0) return;
-            
-            let fixCount = 0;
-            
-            // Log a sample before fix (for debugging)
-            const jaMorant = dataArray.find(r => r.PLAYER && r.PLAYER.includes('Ja Morant'));
-            if (jaMorant) {
-                console.log(`[${label}] Before fix - Ja Morant:`, {
-                    STL: jaMorant.STL,
-                    BLK: jaMorant.BLK, 
-                    TOV: jaMorant.TOV,
-                    GP: jaMorant.GP
-                });
-            }
-            
-            dataArray.forEach(row => {
-                // Check if row has the columns we need to fix
-                const hasSTL = row.STL !== undefined;
-                const hasBLK = row.BLK !== undefined;
-                const hasTOV = row.TOV !== undefined;
-                
-                if (hasSTL && hasBLK && hasTOV) {
-                    // Current state: STL has TOV values, BLK has STL values, TOV has BLK values
-                    // Fix: rotate back
-                    const oldSTL = row.STL;  // Contains actual TOV
-                    const oldBLK = row.BLK;  // Contains actual STL
-                    const oldTOV = row.TOV;  // Contains actual BLK
-                    
-                    row.STL = oldBLK;  // Steals = what was in BLK (actual steals)
-                    row.BLK = oldTOV;  // Blocks = what was in TOV (actual blocks)
-                    row.TOV = oldSTL;  // Turnovers = what was in STL (actual turnovers)
-                    
-                    fixCount++;
-                }
-            });
-            
-            // Log after fix
-            if (jaMorant) {
-                const jaMorantAfter = dataArray.find(r => r.PLAYER && r.PLAYER.includes('Ja Morant'));
-                console.log(`[${label}] After fix - Ja Morant:`, {
-                    STL: jaMorantAfter.STL,
-                    BLK: jaMorantAfter.BLK,
-                    TOV: jaMorantAfter.TOV,
-                    GP: jaMorantAfter.GP
-                });
-            }
-            
-            console.log(`[${label}] Fixed STL/BLK/TOV rotation in ${fixCount} rows`);
-        }
+        // Note: Previous column swap fix removed - data is now correctly formatted via update-rs-stats.py
 
         // Load JSON data from GitHub
         async function loadData() {
@@ -696,8 +643,8 @@
                 
                 // Fix column swaps in STL/BLK/TOV data
                 // The JSON data has these columns rotated - fix them here
-                fixColumnSwaps(playerData.rsStats, 'RS');
-                fixColumnSwaps(playerData.poStats, 'PO');
+                // Data is now correctly formatted - no column swaps needed
+                // (Previous workaround removed since update-rs-stats.py now generates correct data)
                 
                 // Try to load All-Stars data (optional - for random comparison feature)
                 try {
