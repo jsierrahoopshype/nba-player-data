@@ -10,14 +10,14 @@
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: #1a1a1a;
             color: white;
             padding: 0;
         }
-        
+
         .header {
             background: linear-gradient(135deg, #e31837 0%, #c41230 100%);
             color: white;
@@ -25,24 +25,24 @@
             text-align: center;
             box-shadow: 0 4px 20px rgba(227, 24, 55, 0.3);
         }
-        
+
         .header h1 {
             font-size: 42px;
             margin-bottom: 12px;
             font-weight: 800;
         }
-        
+
         .header p {
             font-size: 18px;
             opacity: 0.95;
         }
-        
+
         .container {
             max-width: 1400px;
             margin: 40px auto;
             padding: 0 30px;
         }
-        
+
         .settings-panel {
             background: #2a2a2a;
             padding: 40px;
@@ -50,36 +50,37 @@
             box-shadow: 0 8px 32px rgba(0,0,0,0.3);
             margin-bottom: 30px;
         }
-        
+
         .settings-section {
             margin-bottom: 35px;
         }
-        
+
         .settings-section:last-child {
             margin-bottom: 0;
         }
-        
+
         .settings-section h3 {
             font-size: 22px;
             margin-bottom: 20px;
             color: #fff;
             font-weight: 700;
         }
-        
+
         .player-inputs {
             display: grid;
             grid-template-columns: 1fr auto 1fr;
             gap: 25px;
-            align-items: center;
+            align-items: start;
         }
-        
+
         .vs-divider {
             font-size: 32px;
             font-weight: bold;
             color: #e31837;
             text-shadow: 0 2px 10px rgba(227, 24, 55, 0.5);
+            padding-top: 12px;
         }
-        
+
         input[type="text"], select {
             width: 100%;
             padding: 16px;
@@ -90,36 +91,57 @@
             border-radius: 8px;
             transition: all 0.3s;
         }
-        
+
         input[type="text"]:focus, select:focus {
             outline: none;
             border-color: #e31837;
             box-shadow: 0 0 0 3px rgba(227, 24, 55, 0.1);
         }
-        
+
         select option {
             background: #2a2a2a;
             color: white;
         }
-        
+
         .video-settings {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 25px;
         }
-        
+
         .setting-group {
             display: flex;
             flex-direction: column;
         }
-        
+
         .setting-group label {
             font-size: 15px;
             margin-bottom: 10px;
             color: #bbb;
             font-weight: 600;
         }
-        
+
+        .season-select-group {
+            margin-top: 12px;
+            display: none;
+        }
+
+        .season-select-group.active {
+            display: block;
+        }
+
+        .season-select-group label {
+            font-size: 13px;
+            color: #bbb;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .season-select-group select {
+            padding: 12px;
+            font-size: 14px;
+        }
+
         .generate-btn {
             width: 100%;
             padding: 22px;
@@ -135,23 +157,23 @@
             letter-spacing: 1px;
             box-shadow: 0 4px 20px rgba(227, 24, 55, 0.4);
         }
-        
+
         .generate-btn:hover:not(:disabled) {
             transform: translateY(-3px);
             box-shadow: 0 6px 30px rgba(227, 24, 55, 0.5);
         }
-        
+
         .generate-btn:active:not(:disabled) {
             transform: translateY(-1px);
         }
-        
+
         .generate-btn:disabled {
             background: #555;
             cursor: not-allowed;
             transform: none;
             box-shadow: none;
         }
-        
+
         .preview-panel {
             background: #2a2a2a;
             padding: 40px;
@@ -159,23 +181,23 @@
             box-shadow: 0 8px 32px rgba(0,0,0,0.3);
             display: none;
         }
-        
+
         .preview-panel.active {
             display: block;
         }
-        
+
         .preview-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 25px;
         }
-        
+
         .preview-header h3 {
             font-size: 24px;
             font-weight: 700;
         }
-        
+
         #videoCanvas {
             width: 100%;
             border: 3px solid #404040;
@@ -183,16 +205,16 @@
             background: #000;
             box-shadow: 0 8px 32px rgba(0,0,0,0.5);
         }
-        
+
         .progress-container {
             margin: 25px 0;
             display: none;
         }
-        
+
         .progress-container.active {
             display: block;
         }
-        
+
         .progress-label {
             font-size: 14px;
             color: #bbb;
@@ -200,7 +222,7 @@
             display: flex;
             justify-content: space-between;
         }
-        
+
         .progress-bar {
             width: 100%;
             height: 12px;
@@ -209,7 +231,7 @@
             overflow: hidden;
             border: 1px solid #404040;
         }
-        
+
         .progress-fill {
             height: 100%;
             background: linear-gradient(90deg, #e31837 0%, #c41230 100%);
@@ -217,7 +239,7 @@
             transition: width 0.3s;
             box-shadow: 0 0 10px rgba(227, 24, 55, 0.5);
         }
-        
+
         .status-message {
             text-align: center;
             padding: 18px;
@@ -227,36 +249,36 @@
             font-weight: 600;
             display: none;
         }
-        
+
         .status-message.active {
             display: block;
         }
-        
+
         .status-message.info {
             background: rgba(33, 150, 243, 0.15);
             color: #42a5f5;
             border: 2px solid rgba(33, 150, 243, 0.3);
         }
-        
+
         .status-message.success {
             background: rgba(76, 175, 80, 0.15);
             color: #66bb6a;
             border: 2px solid rgba(76, 175, 80, 0.3);
         }
-        
+
         .status-message.error {
             background: rgba(244, 67, 54, 0.15);
             color: #ef5350;
             border: 2px solid rgba(244, 67, 54, 0.3);
         }
-        
+
         .button-group {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 15px;
             margin-top: 25px;
         }
-        
+
         .download-btn, .reset-btn {
             padding: 18px;
             font-size: 18px;
@@ -268,27 +290,27 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
-        
+
         .download-btn {
             background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
             color: white;
             box-shadow: 0 4px 20px rgba(76, 175, 80, 0.3);
         }
-        
+
         .download-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 30px rgba(76, 175, 80, 0.4);
         }
-        
+
         .reset-btn {
             background: #404040;
             color: white;
         }
-        
+
         .reset-btn:hover {
             background: #505050;
         }
-        
+
         .autocomplete-suggestions {
             position: absolute;
             background: #2a2a2a;
@@ -302,11 +324,11 @@
             border-radius: 0 0 8px 8px;
             box-shadow: 0 8px 24px rgba(0,0,0,0.4);
         }
-        
+
         .autocomplete-suggestions.active {
             display: block;
         }
-        
+
         .suggestion-item {
             padding: 14px;
             cursor: pointer;
@@ -314,19 +336,19 @@
             color: white;
             transition: background 0.2s;
         }
-        
+
         .suggestion-item:last-child {
             border-bottom: none;
         }
-        
+
         .suggestion-item:hover {
             background: #353535;
         }
-        
+
         .player-select-wrapper {
             position: relative;
         }
-        
+
         .loading-spinner {
             border: 3px solid #404040;
             border-top: 3px solid #e31837;
@@ -338,25 +360,25 @@
             margin-right: 10px;
             vertical-align: middle;
         }
-        
+
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        
+
         ::-webkit-scrollbar {
             width: 10px;
         }
-        
+
         ::-webkit-scrollbar-track {
             background: #1a1a1a;
         }
-        
+
         ::-webkit-scrollbar-thumb {
             background: #404040;
             border-radius: 5px;
         }
-        
+
         ::-webkit-scrollbar-thumb:hover {
             background: #505050;
         }
@@ -364,30 +386,50 @@
 </head>
 <body>
     <div class="header">
-        <h1>🎬 NBA COMPARISON VIDEO GENERATOR</h1>
-        <p>Create high-quality comparison videos for social media • Powered by HoopsHype</p>
+        <h1>NBA COMPARISON VIDEO GENERATOR</h1>
+        <p>Create high-quality comparison videos for social media | Powered by HoopsHype</p>
     </div>
-    
+
     <div class="container">
         <div class="settings-panel">
             <div class="settings-section">
-                <h3>📋 Select Players to Compare</h3>
+                <h3>Select Players to Compare</h3>
                 <div class="player-inputs">
                     <div class="player-select-wrapper">
                         <input type="text" id="player1" placeholder="Type player name..." autocomplete="off">
                         <div id="suggestions1" class="autocomplete-suggestions"></div>
+                        <div class="season-select-group" id="season1Group">
+                            <label>Season for Player 1</label>
+                            <select id="season1Select" disabled>
+                                <option value="">-- Choose Season --</option>
+                            </select>
+                        </div>
                     </div>
                     <div class="vs-divider">VS</div>
                     <div class="player-select-wrapper">
                         <input type="text" id="player2" placeholder="Type player name..." autocomplete="off">
                         <div id="suggestions2" class="autocomplete-suggestions"></div>
+                        <div class="season-select-group" id="season2Group">
+                            <label>Season for Player 2</label>
+                            <select id="season2Select" disabled>
+                                <option value="">-- Choose Season --</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
             </div>
-            
+
             <div class="settings-section">
-                <h3>⚙️ Video Configuration</h3>
+                <h3>Video Configuration</h3>
                 <div class="video-settings">
+                    <div class="setting-group">
+                        <label>Comparison Type</label>
+                        <select id="comparisonType">
+                            <option value="career" selected>Career vs Career</option>
+                            <option value="season">Season vs Season</option>
+                        </select>
+                    </div>
+
                     <div class="setting-group">
                         <label>Resolution / Format</label>
                         <select id="resolution">
@@ -397,7 +439,7 @@
                             <option value="story">Story (1080x1920) - Instagram/TikTok</option>
                         </select>
                     </div>
-                    
+
                     <div class="setting-group">
                         <label>Video Duration</label>
                         <select id="duration">
@@ -407,7 +449,7 @@
                             <option value="90">90 seconds - Complete</option>
                         </select>
                     </div>
-                    
+
                     <div class="setting-group">
                         <label>Frame Rate</label>
                         <select id="framerate">
@@ -416,7 +458,7 @@
                             <option value="60">60 FPS - Smooth</option>
                         </select>
                     </div>
-                    
+
                     <div class="setting-group">
                         <label>Categories to Include</label>
                         <select id="sections">
@@ -429,15 +471,15 @@
                     </div>
                 </div>
             </div>
-            
+
             <button class="generate-btn" id="generateBtn" disabled>
                 <span class="loading-spinner" id="loadingSpinner" style="display: none;"></span>
                 <span id="btnText">Loading Data...</span>
             </button>
         </div>
-        
+
         <div id="statusMessage" class="status-message"></div>
-        
+
         <div class="progress-container" id="progressContainer">
             <div class="progress-label">
                 <span id="progressText">Rendering video...</span>
@@ -447,410 +489,1728 @@
                 <div class="progress-fill" id="progressFill"></div>
             </div>
         </div>
-        
+
         <div class="preview-panel" id="previewPanel">
             <div class="preview-header">
-                <h3>🎥 Video Preview</h3>
+                <h3>Video Preview</h3>
             </div>
             <canvas id="videoCanvas" width="1280" height="720"></canvas>
             <div class="button-group">
-                <button class="download-btn" id="downloadBtn">⬇️ Download Video (WebM)</button>
-                <button class="reset-btn" id="resetBtn">🔄 Create Another</button>
+                <button class="download-btn" id="downloadBtn">Download Video (WebM)</button>
+                <button class="reset-btn" id="resetBtn">Create Another</button>
             </div>
         </div>
     </div>
-    
+
     <script>
         // ========================================
         // CONFIGURATION
         // ========================================
-        
+
         const DATA_BASE_URL = 'https://jsierrahoopshype.github.io/nba-player-data/';
-        const COMPARISON_DATA_URL = DATA_BASE_URL + 'comparisons.json';
-        
+
         // ========================================
         // GLOBAL STATE
         // ========================================
-        
+
         let playerData = {};
-        let comparisonsConfig = [];
         let allPlayers = [];
         let videoBlob = null;
         let mediaRecorder = null;
         let recordedChunks = [];
-        
+
         // ========================================
         // DATA LOADING
         // ========================================
-        
+
         async function loadAllData() {
             try {
                 showStatus('Loading NBA database...', 'info');
                 document.getElementById('btnText').textContent = 'Loading Data...';
-                
-                // Load all necessary data files
-                const [awards, rsStats, poStats, comparisons, allStar, salaries, nba2k, combine] = await Promise.all([
-                    fetch(DATA_BASE_URL + 'awards.json').then(r => r.json()),
-                    fetch(DATA_BASE_URL + 'rsStats.json').then(r => r.json()),
-                    fetch(DATA_BASE_URL + 'poStats.json').then(r => r.json()),
-                    fetch(COMPARISON_DATA_URL).then(r => r.json()),
-                    fetch(DATA_BASE_URL + 'allStar.json').then(r => r.json()),
-                    fetch(DATA_BASE_URL + 'salaries.json').then(r => r.json()),
-                    fetch(DATA_BASE_URL + 'nba2k.json').then(r => r.json()),
-                    fetch(DATA_BASE_URL + 'combine.json').then(r => r.json())
+
+                const timestamp = Date.now();
+                const cb = '?t=' + timestamp;
+
+                const [awards, rsStats, poStats, allStar, salaries, nba2k, combine, comparisons, awardVotes, poSeries, sneakers] = await Promise.all([
+                    fetch(DATA_BASE_URL + 'awards.json' + cb).then(r => r.json()),
+                    fetch(DATA_BASE_URL + 'rsStats.json' + cb).then(r => r.json()),
+                    fetch(DATA_BASE_URL + 'poStats.json' + cb).then(r => r.json()),
+                    fetch(DATA_BASE_URL + 'allStar.json' + cb).then(r => r.json()),
+                    fetch(DATA_BASE_URL + 'salaries.json' + cb).then(r => r.json()),
+                    fetch(DATA_BASE_URL + 'nba2k.json' + cb).then(r => r.json()),
+                    fetch(DATA_BASE_URL + 'combine-v3.json' + cb).then(r => r.json()),
+                    fetch(DATA_BASE_URL + 'comparisons.json' + cb).then(r => r.json()),
+                    fetch(DATA_BASE_URL + 'awardVotes.json' + cb).then(r => r.json()),
+                    fetch(DATA_BASE_URL + 'poSeries.json' + cb).then(r => r.json()),
+                    fetch(DATA_BASE_URL + 'sneakers.json' + cb).then(r => r.json())
                 ]);
-                
-                playerData = {
-                    awards,
-                    rsStats,
-                    poStats,
-                    allStar,
-                    salaries,
-                    nba2k,
-                    combine
-                };
-                
-                comparisonsConfig = comparisons;
-                
+
+                playerData = { awards, rsStats, poStats, allStar, salaries, nba2k, combine, comparisons, awardVotes, poSeries, sneakers };
+
                 // Extract unique players from regular season stats
                 const playerSet = new Set();
                 rsStats.forEach(row => {
                     if (row.PLAYER) playerSet.add(row.PLAYER);
                 });
                 allPlayers = Array.from(playerSet).sort();
-                
-                showStatus(`Database loaded! ${allPlayers.length.toLocaleString()} players ready.`, 'success');
-                document.getElementById('btnText').textContent = '🎬 Generate Video';
+
+                showStatus('Database loaded! ' + allPlayers.length.toLocaleString() + ' players ready.', 'success');
+                document.getElementById('btnText').textContent = 'Generate Video';
                 document.getElementById('generateBtn').disabled = false;
-                
+
             } catch (error) {
                 showStatus('Error loading data: ' + error.message, 'error');
                 document.getElementById('btnText').textContent = 'Error - Reload Page';
             }
         }
-        
+
         // ========================================
         // AUTOCOMPLETE
         // ========================================
-        
+
         function setupAutocomplete(inputId, suggestionsId) {
             const input = document.getElementById(inputId);
             const suggestions = document.getElementById(suggestionsId);
-            
+
             input.addEventListener('input', function() {
                 const value = this.value.toLowerCase();
                 if (value.length < 2) {
                     suggestions.classList.remove('active');
                     return;
                 }
-                
+
                 const matches = allPlayers
                     .filter(p => p.toLowerCase().includes(value))
                     .slice(0, 15);
-                
+
                 if (matches.length > 0) {
-                    suggestions.innerHTML = matches.map(player => 
-                        `<div class="suggestion-item" data-player="${player}">${player}</div>`
+                    suggestions.innerHTML = matches.map(player =>
+                        '<div class="suggestion-item" data-player="' + player + '">' + player + '</div>'
                     ).join('');
                     suggestions.classList.add('active');
-                    
+
                     suggestions.querySelectorAll('.suggestion-item').forEach(item => {
                         item.addEventListener('click', function() {
                             input.value = this.dataset.player;
                             suggestions.classList.remove('active');
+                            // Populate season dropdown for this player
+                            const playerNum = inputId === 'player1' ? '1' : '2';
+                            populateSeasonDropdown(this.dataset.player, playerNum);
                         });
                     });
                 } else {
                     suggestions.classList.remove('active');
                 }
             });
-            
+
             document.addEventListener('click', function(e) {
                 if (!input.contains(e.target) && !suggestions.contains(e.target)) {
                     suggestions.classList.remove('active');
                 }
             });
         }
-        
+
+        // ========================================
+        // SEASON DROPDOWN MANAGEMENT
+        // ========================================
+
+        function populateSeasonDropdown(playerName, playerNum) {
+            const select = document.getElementById('season' + playerNum + 'Select');
+            select.innerHTML = '<option value="">-- Choose Season --</option>';
+
+            if (!playerName) {
+                select.disabled = true;
+                return;
+            }
+
+            // Get unique seasons for this player from rsStats
+            const yearSet = new Set();
+            playerData.rsStats.forEach(row => {
+                if (row.PLAYER === playerName && row.YEAR) {
+                    yearSet.add(row.YEAR);
+                }
+            });
+
+            const years = Array.from(yearSet).sort((a, b) => {
+                return parseInt(b) - parseInt(a); // Most recent first
+            });
+
+            if (years.length === 0) {
+                select.disabled = true;
+                return;
+            }
+
+            years.forEach(year => {
+                const opt = document.createElement('option');
+                opt.value = year;
+                opt.textContent = formatSeasonYear(year);
+                select.appendChild(opt);
+            });
+
+            select.disabled = false;
+            // Auto-select most recent season
+            select.value = years[0];
+        }
+
+        function formatSeasonYear(year) {
+            const endYear = parseInt(year);
+            if (isNaN(endYear)) return year;
+            return (endYear - 1) + '-' + String(endYear).slice(-2);
+        }
+
+        function onComparisonTypeChange() {
+            const type = document.getElementById('comparisonType').value;
+            const isSeason = type === 'season';
+
+            document.getElementById('season1Group').classList.toggle('active', isSeason);
+            document.getElementById('season2Group').classList.toggle('active', isSeason);
+
+            // Update sections dropdown options based on mode
+            const sectionsEl = document.getElementById('sections');
+            if (isSeason) {
+                sectionsEl.innerHTML = '<option value="all" selected>All Categories</option>' +
+                    '<option value="averages">Averages Only</option>' +
+                    '<option value="totals">Totals Only</option>' +
+                    '<option value="shooting">Shooting Only</option>';
+            } else {
+                sectionsEl.innerHTML = '<option value="all" selected>All Categories</option>' +
+                    '<option value="highlights">Highlights Only (Awards + Key Stats)</option>' +
+                    '<option value="awards">Awards & Accolades</option>' +
+                    '<option value="stats">Career Statistics</option>' +
+                    '<option value="playoff">Playoff Performance</option>';
+            }
+        }
+
         // ========================================
         // UI HELPERS
         // ========================================
-        
+
         function showStatus(message, type) {
             const statusEl = document.getElementById('statusMessage');
             statusEl.textContent = message;
-            statusEl.className = `status-message active ${type}`;
+            statusEl.className = 'status-message active ' + type;
         }
-        
-        function updateProgress(percent, text = 'Rendering video...') {
+
+        function updateProgress(percent, text) {
+            text = text || 'Rendering video...';
             const container = document.getElementById('progressContainer');
             const fill = document.getElementById('progressFill');
             const percentEl = document.getElementById('progressPercent');
             const textEl = document.getElementById('progressText');
-            
+
             container.classList.add('active');
             fill.style.width = percent + '%';
             percentEl.textContent = Math.round(percent) + '%';
             textEl.textContent = text;
         }
-        
+
         // ========================================
-        // VIDEO GENERATION - MAIN FUNCTION
+        // CAREER COMPARISON LOGIC
+        // (From nba-player-comparison-tool.html)
         // ========================================
-        
+
+        function parseNumericValue(value) {
+            if (!value && value !== 0) return NaN;
+            var strValue = String(value);
+            // feet-inches format
+            var feetInchesMatch = strValue.match(/(\d+)'\s*([\d.]+)['"]+/);
+            if (feetInchesMatch) {
+                return (parseFloat(feetInchesMatch[1]) * 12) + parseFloat(feetInchesMatch[2]);
+            }
+            return parseFloat(strValue.replace(/[\$,]/g, ''));
+        }
+
+        function deduplicateSeasonRows(playerRows) {
+            var byYear = {};
+            playerRows.forEach(function(row) {
+                var year = row.YEAR || 'unknown';
+                if (!byYear[year]) byYear[year] = [];
+                byYear[year].push(row);
+            });
+
+            var deduplicated = [];
+            for (var year in byYear) {
+                var yearRows = byYear[year];
+                if (yearRows.length === 1) {
+                    deduplicated.push(yearRows[0]);
+                } else {
+                    var totRow = yearRows.find(function(r) {
+                        return r.TEAM === 'TOT' || r.TM === 'TOT' || r.Team === 'TOT';
+                    });
+                    if (totRow) {
+                        deduplicated.push(totRow);
+                    } else {
+                        var aggregated = Object.assign({}, yearRows[0]);
+                        var numericColumns = ['GP', 'PTS', 'REB', 'AST', 'STL', 'BLK', 'TOV',
+                                             'FGM', 'FGA', '3P', '3PA', 'FTM', 'FTA', 'MIN',
+                                             'OREB', 'DREB', 'PF'];
+                        numericColumns.forEach(function(col) { aggregated[col] = 0; });
+                        yearRows.forEach(function(row) {
+                            numericColumns.forEach(function(col) {
+                                var val = parseFloat(row[col]);
+                                if (!isNaN(val)) aggregated[col] = (aggregated[col] || 0) + val;
+                            });
+                        });
+                        deduplicated.push(aggregated);
+                    }
+                }
+            }
+            return deduplicated;
+        }
+
+        function getAwardCount(playerName, awardType) {
+            if (awardType === 'All-NBA Selections') {
+                var total = playerData.awards.filter(function(row) {
+                    return row['PLAYER / COACH'] === playerName &&
+                        (row.AWARD === 'All-NBA First Team' || row.AWARD === 'All-NBA Second Team' || row.AWARD === 'All-NBA Third Team');
+                }).length;
+                return total > 0 ? total : null;
+            }
+
+            if (awardType === 'All-Defensive Team Selections') {
+                var total = playerData.awards.filter(function(row) {
+                    return row['PLAYER / COACH'] === playerName &&
+                        (row.AWARD === 'All-Defensive First Team' || row.AWARD === 'All-Defensive Second Team');
+                }).length;
+                return total > 0 ? total : null;
+            }
+
+            if (awardType === 'Olympic Medals') {
+                var total = playerData.awards.filter(function(row) {
+                    return row['PLAYER / COACH'] === playerName &&
+                        (row.AWARD === 'Olympic Gold' || row.AWARD === 'Olympic Silver' || row.AWARD === 'Olympic Bronze');
+                }).length;
+                return total > 0 ? total : null;
+            }
+
+            if (awardType === 'World Cup Medals') {
+                var total = playerData.awards.filter(function(row) {
+                    return row['PLAYER / COACH'] === playerName &&
+                        (row.AWARD === 'World Cup Gold' || row.AWARD === 'World Cup Silver' || row.AWARD === 'World Cup Bronze');
+                }).length;
+                return total > 0 ? total : null;
+            }
+
+            if (awardType === 'Conference Finals MVP') {
+                var total = playerData.awards.filter(function(row) {
+                    return row['PLAYER / COACH'] === playerName &&
+                        (row.AWARD === 'EC Finals MVP' || row.AWARD === 'WC Finals MVP');
+                }).length;
+                return total > 0 ? total : null;
+            }
+
+            var count = playerData.awards.filter(function(row) {
+                return row['PLAYER / COACH'] === playerName && row.AWARD === awardType;
+            }).length;
+            return count > 0 ? count : null;
+        }
+
+        function getRegularSeasonStat(playerName, metric) {
+            var rawRows = playerData.rsStats.filter(function(row) { return row.PLAYER === playerName; });
+            if (rawRows.length === 0) return null;
+            var playerRows = deduplicateSeasonRows(rawRows);
+
+            var peakPerGameMetrics = {
+                'Points per game peak': 'PTS',
+                'Rebounds per game peak': 'REB',
+                'Assists per game peak': 'AST',
+                'Steals per game peak': 'STL',
+                'Blocks per game peak': 'BLK',
+                'Turnovers per game peak': 'TOV'
+            };
+
+            var peakPctMetrics = {
+                'Field Goal % peak': { made: 'FGM', att: 'FGA', minAtt: 200 },
+                'Three Point % peak': { made: '3P', att: '3PA', minAtt: 50 },
+                'Free Throw % peak': { made: 'FTM', att: 'FTA', minAtt: 50 }
+            };
+
+            var MIN_GAMES_FOR_PEAK = 20;
+            var isSingleSeasonPlayer = playerRows.length === 1;
+
+            if (peakPerGameMetrics[metric]) {
+                var statColumn = peakPerGameMetrics[metric];
+                var maxValue = -Infinity;
+                playerRows.forEach(function(row) {
+                    var stat = parseFloat(row[statColumn]);
+                    var games = parseFloat(row['GP']);
+                    var meetsGames = isSingleSeasonPlayer || (games >= MIN_GAMES_FOR_PEAK);
+                    if (!isNaN(stat) && !isNaN(games) && games > 0 && meetsGames) {
+                        var perGame = stat / games;
+                        if (perGame > maxValue) maxValue = perGame;
+                    }
+                });
+                return maxValue > -Infinity ? maxValue.toFixed(1) : null;
+            }
+
+            if (peakPctMetrics[metric]) {
+                var pctInfo = peakPctMetrics[metric];
+                var maxPct = -Infinity;
+                playerRows.forEach(function(row) {
+                    var made = parseFloat(row[pctInfo.made]);
+                    var att = parseFloat(row[pctInfo.att]);
+                    var games = parseFloat(row['GP']);
+                    var meetsReq = isSingleSeasonPlayer ? (att > 0) :
+                        (att >= pctInfo.minAtt && !isNaN(games) && games >= MIN_GAMES_FOR_PEAK);
+                    if (!isNaN(made) && !isNaN(att) && meetsReq) {
+                        var pct = (made / att) * 100;
+                        if (pct > maxPct) maxPct = pct;
+                    }
+                });
+                return maxPct > -Infinity ? maxPct.toFixed(1) + '%' : null;
+            }
+
+            // Per-game stats
+            var perGameMap = {
+                'Points per game': 'PTS',
+                'Rebounds per game': 'REB',
+                'Assists per game': 'AST',
+                'Steals per game': 'STL',
+                'Blocks per game': 'BLK',
+                'Turnovers per game': 'TOV'
+            };
+
+            if (perGameMap[metric]) {
+                var totalColumn = perGameMap[metric];
+                var totalStat = 0, totalGames = 0;
+                playerRows.forEach(function(row) {
+                    var stat = parseFloat(row[totalColumn]);
+                    var games = parseFloat(row['GP']);
+                    if (!isNaN(stat) && !isNaN(games)) {
+                        totalStat += stat;
+                        totalGames += games;
+                    }
+                });
+                return totalGames > 0 ? (totalStat / totalGames).toFixed(1) : null;
+            }
+
+            // Percentage stats
+            var pctMap = {
+                'Field Goal %': { made: 'FGM', att: 'FGA' },
+                'Three Point %': { made: '3P', att: '3PA' },
+                'Free Throw %': { made: 'FTM', att: 'FTA' }
+            };
+
+            if (pctMap[metric]) {
+                var info = pctMap[metric];
+                var totalMade = 0, totalAtt = 0;
+                playerRows.forEach(function(row) {
+                    var made = parseFloat(row[info.made]);
+                    var att = parseFloat(row[info.att]);
+                    if (!isNaN(made) && !isNaN(att)) {
+                        totalMade += made;
+                        totalAtt += att;
+                    }
+                });
+                if (totalAtt > 0) return ((totalMade / totalAtt) * 100).toFixed(1) + '%';
+                return null;
+            }
+
+            // Totals
+            var totalMap = {
+                'Games': 'GP', 'Points': 'PTS', 'Rebounds': 'REB',
+                'Assists': 'AST', 'Steals': 'STL', 'Blocks': 'BLK', 'Turnovers': 'TOV'
+            };
+
+            if (totalMap[metric]) {
+                var col = totalMap[metric];
+                var total = 0;
+                playerRows.forEach(function(row) {
+                    var val = parseFloat(row[col]);
+                    if (!isNaN(val)) total += val;
+                });
+                return total > 0 ? Math.round(total) : null;
+            }
+
+            return null;
+        }
+
+        function getPlayoffStat(playerName, metric) {
+            var rawRows = playerData.poStats.filter(function(row) { return row.PLAYER === playerName; });
+            if (rawRows.length === 0) return null;
+            var playerRows = deduplicateSeasonRows(rawRows);
+
+            var peakPerGameMetricsPO = {
+                'Points per game PO peak': 'PTS',
+                'Rebounds per game PO peak': 'REB',
+                'Assists per game PO peak': 'AST',
+                'Steals per game PO peak': 'STL',
+                'Blocks per game PO peak': 'BLK',
+                'Turnovers per game PO peak': 'TOV'
+            };
+
+            var peakPctMetricsPO = {
+                'Field Goal % PO peak': { made: 'FGM', att: 'FGA', minAtt: 50 },
+                'Three Point % PO peak': { made: '3P', att: '3PA', minAtt: 15 },
+                'Free Throw % PO peak': { made: 'FTM', att: 'FTA', minAtt: 15 }
+            };
+
+            var MIN_GAMES_FOR_PO_PEAK = 4;
+            var isSingle = playerRows.length === 1;
+
+            if (peakPerGameMetricsPO[metric]) {
+                var statColumn = peakPerGameMetricsPO[metric];
+                var maxValue = -Infinity;
+                playerRows.forEach(function(row) {
+                    var stat = parseFloat(row[statColumn]);
+                    var games = parseFloat(row['GP']);
+                    var meetsGames = isSingle || (games >= MIN_GAMES_FOR_PO_PEAK);
+                    if (!isNaN(stat) && !isNaN(games) && games > 0 && meetsGames) {
+                        var perGame = stat / games;
+                        if (perGame > maxValue) maxValue = perGame;
+                    }
+                });
+                return maxValue > -Infinity ? maxValue.toFixed(1) : null;
+            }
+
+            if (peakPctMetricsPO[metric]) {
+                var pctInfo = peakPctMetricsPO[metric];
+                var maxPct = -Infinity;
+                playerRows.forEach(function(row) {
+                    var made = parseFloat(row[pctInfo.made]);
+                    var att = parseFloat(row[pctInfo.att]);
+                    var games = parseFloat(row['GP']);
+                    var meetsReq = isSingle ? (att > 0) :
+                        (att >= pctInfo.minAtt && !isNaN(games) && games >= MIN_GAMES_FOR_PO_PEAK);
+                    if (!isNaN(made) && !isNaN(att) && meetsReq) {
+                        var pct = (made / att) * 100;
+                        if (pct > maxPct) maxPct = pct;
+                    }
+                });
+                return maxPct > -Infinity ? maxPct.toFixed(1) + '%' : null;
+            }
+
+            // Per-game PO stats
+            var perGameMapPO = {
+                'Points per game PO': 'PTS',
+                'Rebounds per game PO': 'REB',
+                'Assists per game PO': 'AST',
+                'Steals per game PO': 'STL',
+                'Blocks per game PO': 'BLK',
+                'Turnovers per game PO': 'TOV'
+            };
+
+            if (perGameMapPO[metric]) {
+                var totalCol = perGameMapPO[metric];
+                var totalStat = 0, totalGames = 0;
+                playerRows.forEach(function(row) {
+                    var stat = parseFloat(row[totalCol]);
+                    var games = parseFloat(row['GP']);
+                    if (!isNaN(stat) && !isNaN(games)) {
+                        totalStat += stat;
+                        totalGames += games;
+                    }
+                });
+                return totalGames > 0 ? (totalStat / totalGames).toFixed(1) : null;
+            }
+
+            // Percentage PO stats
+            var pctMapPO = {
+                'Field Goal % PO': { made: 'FGM', att: 'FGA' },
+                'Three Point % PO': { made: '3P', att: '3PA' },
+                'Free Throw % PO': { made: 'FTM', att: 'FTA' }
+            };
+
+            if (pctMapPO[metric]) {
+                var info = pctMapPO[metric];
+                var totalMade = 0, totalAtt = 0;
+                playerRows.forEach(function(row) {
+                    var made = parseFloat(row[info.made]);
+                    var att = parseFloat(row[info.att]);
+                    if (!isNaN(made) && !isNaN(att)) {
+                        totalMade += made;
+                        totalAtt += att;
+                    }
+                });
+                if (totalAtt > 0) return ((totalMade / totalAtt) * 100).toFixed(1) + '%';
+                return null;
+            }
+
+            // Totals PO
+            var totalMapPO = {
+                'Games PO': 'GP', 'Points PO': 'PTS', 'Rebounds PO': 'REB',
+                'Assists PO': 'AST', 'Steals PO': 'STL', 'Blocks PO': 'BLK', 'Turnovers PO': 'TOV'
+            };
+
+            if (totalMapPO[metric]) {
+                var col = totalMapPO[metric];
+                var total = 0;
+                playerRows.forEach(function(row) {
+                    var val = parseFloat(row[col]);
+                    if (!isNaN(val)) total += val;
+                });
+                return total > 0 ? Math.round(total) : null;
+            }
+
+            return null;
+        }
+
+        function getPlayoffSeriesStat(playerName, metric) {
+            var rawRows = playerData.poStats.filter(function(row) { return row.PLAYER === playerName; });
+            if (rawRows.length === 0) return null;
+            var playerRows = deduplicateSeasonRows(rawRows);
+
+            var resultCounts = { 'First Round': 0, 'Conf Semis': 0, 'Conf Finalist': 0, 'Finalist': 0, 'Champion': 0 };
+            playerRows.forEach(function(row) {
+                var result = row.RESULT;
+                if (resultCounts.hasOwnProperty(result)) resultCounts[result]++;
+            });
+
+            if (metric === 'Champion') {
+                return resultCounts['Champion'] > 0 ? resultCounts['Champion'] : null;
+            }
+            if (metric === 'Finalist') {
+                var count = resultCounts['Finalist'] + resultCounts['Champion'];
+                return count > 0 ? count : null;
+            }
+            if (metric === 'Conference Finals') {
+                var count = resultCounts['Conf Finalist'] + resultCounts['Finalist'] + resultCounts['Champion'];
+                return count > 0 ? count : null;
+            }
+            if (metric === 'Conference Semis') {
+                var count = resultCounts['Conf Semis'] + resultCounts['Conf Finalist'] + resultCounts['Finalist'] + resultCounts['Champion'];
+                return count > 0 ? count : null;
+            }
+            if (metric === 'First Round') {
+                var count = resultCounts['First Round'] + resultCounts['Conf Semis'] + resultCounts['Conf Finalist'] + resultCounts['Finalist'] + resultCounts['Champion'];
+                return count > 0 ? count : null;
+            }
+
+            // poSeries data
+            var playerSeriesRow = playerData.poSeries.find(function(row) { return row.NAME === playerName; });
+            if (!playerSeriesRow) return null;
+
+            if (metric === 'Playoff series played') return playerSeriesRow.TOT || null;
+            if (metric === 'Playoff series won') return playerSeriesRow.W || null;
+            if (metric === 'Playoff series win %') return playerSeriesRow['% W'] || null;
+
+            return null;
+        }
+
+        function getSalaryStat(playerName, metric) {
+            var playerRows = playerData.salaries.filter(function(row) { return row.PLAYER === playerName; });
+            if (playerRows.length === 0) return null;
+
+            var salariesByYear = {};
+            playerRows.forEach(function(row) {
+                var year = row.YEAR;
+                var salary = parseFloat(String(row.SALARY || '').replace(/[$,]/g, ''));
+                if (!isNaN(salary) && salary > 0 && year) {
+                    if (!salariesByYear[year]) salariesByYear[year] = [];
+                    salariesByYear[year].push(salary);
+                }
+            });
+
+            var yearlyTotals = [];
+            for (var year in salariesByYear) {
+                yearlyTotals.push(salariesByYear[year].reduce(function(sum, val) { return sum + val; }, 0));
+            }
+            if (yearlyTotals.length === 0) return null;
+
+            if (metric === 'Career earnings') {
+                var total = yearlyTotals.reduce(function(sum, val) { return sum + val; }, 0);
+                return '$' + Math.round(total).toLocaleString();
+            }
+            if (metric === 'Average salary') {
+                var avg = yearlyTotals.reduce(function(sum, val) { return sum + val; }, 0) / yearlyTotals.length;
+                return '$' + Math.round(avg).toLocaleString();
+            }
+            if (metric === 'Highest salary') {
+                return '$' + Math.round(Math.max.apply(null, yearlyTotals)).toLocaleString();
+            }
+            if (metric === 'Lowest salary') {
+                return '$' + Math.round(Math.min.apply(null, yearlyTotals)).toLocaleString();
+            }
+            return null;
+        }
+
+        function getCombineStat(playerName, metric) {
+            var playerRow = playerData.combine.find(function(row) { return row.PLAYER === playerName; });
+            if (!playerRow) return null;
+
+            var columnMap = {
+                'Body fat': 'BODY FAT %', 'Hand size': 'HAND SIZE',
+                'Height without shoes': 'HEIGHT W/O SHOES', 'Standing reach': 'STANDING REACH',
+                'Standing reach (inches)': 'STANDING', 'Weight': 'WEIGHT (LBS)',
+                'Wingspan': 'WINGSPAN', 'Lane agility time': 'LANE AGILITY',
+                'Shuttle run': 'SHUTTLE RUN', 'Three quarter sprint': '3/4 SPRINT',
+                'Standing vertical leap': 'STANDING VERT', 'Max vertical leap': 'MAX VERT',
+                'Max bench press': 'MAX BENCH', 'Height': 'HEIGHT'
+            };
+
+            var column = columnMap[metric];
+            if (!column) return null;
+
+            var value = playerRow[column];
+            if (!value || String(value).trim() === '') return null;
+
+            if (metric === 'Height' || metric === 'Standing reach (inches)') {
+                var inches = parseFloat(value);
+                if (!isNaN(inches)) {
+                    var feet = Math.floor(inches / 12);
+                    var rem = inches % 12;
+                    value = feet + "' " + rem.toFixed(2) + "''";
+                }
+            }
+            return value;
+        }
+
+        function getVotingStat(playerName, metric) {
+            var playerVotes = playerData.awardVotes.filter(function(row) { return row.PLAYER === playerName; });
+
+            var awardRankingMap = {
+                'Most Valuable Player': 'MVP', 'Defensive Player of the Year': 'DPOY',
+                'Rookie of the Year': 'ROY', 'Most Improved Player': 'MIP',
+                'Clutch Player of the Year': 'Clutch', 'Sixth Man of the Year': 'Sixth Man',
+                'Hustle Award': 'Hustle'
+            };
+
+            // BEST AWARDS RANKING section
+            if (awardRankingMap[metric]) {
+                var awardType = awardRankingMap[metric];
+                var relevantVotes = playerVotes.filter(function(row) { return row.AWARD === awardType; });
+                if (relevantVotes.length === 0) return null;
+                var bestRank = Infinity;
+                relevantVotes.forEach(function(row) {
+                    var rank = parseInt(row.RNK);
+                    if (!isNaN(rank) && rank < bestRank) bestRank = rank;
+                });
+                return bestRank < Infinity ? bestRank : null;
+            }
+
+            // BEST VOTE RANKING section (same awards but different section)
+            var voteRankMap = { 'MVP': 'MVP', 'DPOY': 'DPOY', 'ROY': 'ROY', 'Sixth Man': 'Sixth Man', 'MIP': 'MIP' };
+            if (voteRankMap[metric]) {
+                var awardType = voteRankMap[metric];
+                var relevantVotes = playerVotes.filter(function(row) { return row.AWARD === awardType; });
+                if (relevantVotes.length === 0) return null;
+                var bestRank = Infinity;
+                relevantVotes.forEach(function(row) {
+                    var rank = parseInt(row.RNK);
+                    if (!isNaN(rank) && rank < bestRank) bestRank = rank;
+                });
+                return bestRank < Infinity ? bestRank : null;
+            }
+
+            // YEARS RECEIVING VOTES section
+            var yearsVotesMap = {
+                'Years with MVP votes': 'MVP', 'Years with DPOY votes': 'DPOY',
+                'Years with ROY votes': 'ROY', 'Years with Sixth Man votes': 'Sixth Man',
+                'Years with MIP votes': 'MIP', 'Years with Clutch Player votes': 'Clutch',
+                'Years with Hustle Award votes': 'Hustle'
+            };
+
+            if (yearsVotesMap[metric]) {
+                var awardType = yearsVotesMap[metric];
+                var count = playerVotes.filter(function(row) { return row.AWARD === awardType; }).length;
+                return count > 0 ? count : null;
+            }
+
+            return null;
+        }
+
+        function getSneakerStat(playerName, metric) {
+            var playerRow = playerData.sneakers.find(function(row) { return row.PLAYER === playerName; });
+            if (!playerRow) return null;
+            if (metric === 'Number of Shoes') return playerRow.NUMBER_OF_SHOES || null;
+            if (metric === 'Years from first to last') {
+                var span = playerRow.LAST_YEAR - playerRow.FIRST_YEAR;
+                return span > 0 ? span : null;
+            }
+            return null;
+        }
+
+        function get2KRating(playerName, metric) {
+            var playerRow = playerData.nba2k.find(function(row) {
+                return row['Full Name'] === playerName ||
+                    (row['First Name'] + ' ' + row['Last Name']) === playerName;
+            });
+            if (!playerRow) return null;
+
+            var ratings = [];
+            for (var key in playerRow) {
+                if (key.startsWith('2K') || key.startsWith('2k')) {
+                    var val = parseInt(playerRow[key]);
+                    if (!isNaN(val)) ratings.push(val);
+                }
+            }
+            if (ratings.length === 0) return null;
+
+            if (metric === 'Average career rating') {
+                return (ratings.reduce(function(a, b) { return a + b; }, 0) / ratings.length).toFixed(1);
+            }
+            if (metric === 'Highest rating') return Math.max.apply(null, ratings);
+            if (metric === 'Lowest rating') return Math.min.apply(null, ratings);
+            return null;
+        }
+
+        function getAllStarContestWins(playerName, metric) {
+            var playerWins = playerData.allStar.filter(function(row) {
+                return row.NAME === playerName && row['WINNER?'] === 'WINNER';
+            });
+            if (metric === 'Dunk Contest') return playerWins.filter(function(r) { return r.CONTEST === 'Dunk Contest'; }).length || null;
+            if (metric === 'Three-Point Contest') return playerWins.filter(function(r) { return r.CONTEST === 'Three-Point Contest'; }).length || null;
+            if (metric === 'Skills Challenge') return playerWins.filter(function(r) { return r.CONTEST === 'Skills Challenge'; }).length || null;
+            return null;
+        }
+
+        function getPlayerStat(playerName, metric, dataSource) {
+            if (!dataSource) return null;
+            if (dataSource === 'Awards.csv') return getAwardCount(playerName, metric);
+            if (dataSource === 'RS-Stats.csv') return getRegularSeasonStat(playerName, metric);
+            if (dataSource === 'PO-Stats.csv') return getPlayoffStat(playerName, metric);
+            if (dataSource === 'PO-series.csv') return getPlayoffSeriesStat(playerName, metric);
+            if (dataSource === 'Salaries.csv') return getSalaryStat(playerName, metric);
+            if (dataSource === 'Combine.csv') return getCombineStat(playerName, metric);
+            if (dataSource === 'Award-Votes.csv') return getVotingStat(playerName, metric);
+            if (dataSource === 'Sneakers.csv') return getSneakerStat(playerName, metric);
+            if (dataSource === 'NBA2K.csv') return get2KRating(playerName, metric);
+            if (dataSource === 'All-Star.csv') return getAllStarContestWins(playerName, metric);
+            return null;
+        }
+
+        // ========================================
+        // CAREER COMPARISON (using comparisons.json)
+        // ========================================
+
+        function performCareerComparison(player1Name, player2Name, sectionFilter) {
+            var player1Score = 0;
+            var player2Score = 0;
+            var sections = [];
+            var currentSection = null;
+            var currentSectionObj = null;
+
+            var alwaysAwardSections = ['ACCOLADES', 'BEST AWARDS RANKING', 'YEARS RECEIVING VOTES', 'SIGNATURE SHOES', 'PLAYOFF SUCCESS'];
+            var requireBothDataSections = ['SALARIES', 'NBA 2K'];
+            var excludeFromOverall = ['DRAFT COMBINE'];
+
+            playerData.comparisons.forEach(function(comp) {
+                var category = comp['Comparison points'];
+                var winCondition = comp['Who wins?'];
+                var dataSource = comp['Wheres the data?'];
+
+                // Section header
+                if (!winCondition && !dataSource) {
+                    currentSection = category;
+                    currentSectionObj = { name: category, items: [], sectionP1: 0, sectionP2: 0 };
+                    sections.push(currentSectionObj);
+                    return;
+                }
+
+                if (!currentSectionObj || !category) return;
+
+                // Apply section filter
+                if (sectionFilter && sectionFilter !== 'all') {
+                    if (sectionFilter === 'awards' && currentSection !== 'ACCOLADES') return;
+                    if (sectionFilter === 'stats' && !['NBA CAREER AVERAGES', 'NBA CAREER TOTALS', 'NBA SEASON PEAK'].includes(currentSection)) return;
+                    if (sectionFilter === 'playoff' && !['PLAYOFF SUCCESS'].includes(currentSection) && !category.includes('PO')) return;
+                    if (sectionFilter === 'highlights' && !['ACCOLADES', 'NBA CAREER AVERAGES'].includes(currentSection)) return;
+                }
+
+                var p1Value = getPlayerStat(player1Name, category, dataSource);
+                var p2Value = getPlayerStat(player2Name, category, dataSource);
+
+                var winner = 'tie';
+                var awardPoint = false;
+                var alwaysAward = alwaysAwardSections.includes(currentSection);
+                var requireBothData = requireBothDataSections.includes(currentSection) || excludeFromOverall.includes(currentSection);
+
+                if (p1Value !== null && p2Value !== null) {
+                    var p1Num = parseNumericValue(p1Value);
+                    var p2Num = parseNumericValue(p2Value);
+
+                    if (!isNaN(p1Num) && !isNaN(p2Num)) {
+                        if (winCondition === 'Most') {
+                            if (p1Num > p2Num) { winner = 'player1'; awardPoint = true; }
+                            else if (p2Num > p1Num) { winner = 'player2'; awardPoint = true; }
+                        } else if (winCondition === 'Least') {
+                            if (p1Num < p2Num) { winner = 'player1'; awardPoint = true; }
+                            else if (p2Num < p1Num) { winner = 'player2'; awardPoint = true; }
+                        }
+
+                        // Untracked stat check
+                        if (awardPoint) {
+                            var untrackedSections = ['NBA CAREER AVERAGES', 'NBA CAREER TOTALS', 'NBA SEASON PEAK'];
+                            var untrackedCategories = ['steals', 'steal', 'blocks', 'block', 'turnovers', 'turnover', 'three', '3p', 'stl', 'blk', 'tov'];
+                            var inUntrackedSection = untrackedSections.some(function(s) {
+                                return currentSection && currentSection.trim().toUpperCase() === s.toUpperCase();
+                            });
+                            var isUntrackedCategory = untrackedCategories.some(function(c) {
+                                return category && category.toLowerCase().includes(c);
+                            });
+
+                            if (inUntrackedSection && isUntrackedCategory) {
+                                var isZero = function(raw, num) {
+                                    if (num === 0) return true;
+                                    var s = String(raw).trim();
+                                    return s === '0' || s === '0.0' || s === '0.00' || parseFloat(s) === 0;
+                                };
+                                if (isZero(p1Value, p1Num) || isZero(p2Value, p2Num)) {
+                                    awardPoint = false;
+                                    winner = 'tie';
+                                }
+                            }
+                        }
+                    }
+                } else if (alwaysAward && !requireBothData) {
+                    if (p1Value !== null && p2Value === null) {
+                        var p1Num = parseNumericValue(p1Value);
+                        if (!isNaN(p1Num) && p1Num > 0) { winner = 'player1'; awardPoint = true; }
+                    } else if (p2Value !== null && p1Value === null) {
+                        var p2Num = parseNumericValue(p2Value);
+                        if (!isNaN(p2Num) && p2Num > 0) { winner = 'player2'; awardPoint = true; }
+                    }
+                }
+
+                if (awardPoint) {
+                    if (winner === 'player1') {
+                        currentSectionObj.sectionP1++;
+                        if (!excludeFromOverall.includes(currentSection)) player1Score++;
+                    } else if (winner === 'player2') {
+                        currentSectionObj.sectionP2++;
+                        if (!excludeFromOverall.includes(currentSection)) player2Score++;
+                    }
+                }
+
+                // Only add items that have data for at least one player
+                if (p1Value !== null || p2Value !== null) {
+                    // Filter out untracked stats where both are zero
+                    var untrackedSections2 = ['NBA CAREER AVERAGES', 'NBA CAREER TOTALS', 'NBA SEASON PEAK'];
+                    var untrackedCategories2 = ['steals', 'steal', 'blocks', 'block', 'turnovers', 'turnover', 'three', '3p', 'stl', 'blk', 'tov'];
+                    var inUT = untrackedSections2.some(function(s) { return currentSection && currentSection.trim().toUpperCase() === s.toUpperCase(); });
+                    var isUT = untrackedCategories2.some(function(c) { return category && category.toLowerCase().includes(c); });
+
+                    var skipRow = false;
+                    if (inUT && isUT) {
+                        var isZ = function(val) {
+                            if (val === null || val === undefined) return true;
+                            var s = String(val).trim();
+                            return s === '0' || s === '0.0' || s === '0.00' || parseFloat(s) === 0;
+                        };
+                        if (isZ(p1Value) && isZ(p2Value)) skipRow = true;
+                    }
+
+                    if (!skipRow) {
+                        currentSectionObj.items.push({
+                            metric: category,
+                            p1Value: p1Value !== null ? String(p1Value) : '-',
+                            p2Value: p2Value !== null ? String(p2Value) : '-',
+                            winner: winner
+                        });
+                    }
+                }
+            });
+
+            // Remove empty sections
+            sections = sections.filter(function(s) { return s.items.length > 0; });
+
+            return {
+                player1Name: player1Name,
+                player2Name: player2Name,
+                player1Score: player1Score,
+                player2Score: player2Score,
+                sections: sections
+            };
+        }
+
+        // ========================================
+        // SEASON COMPARISON LOGIC
+        // ========================================
+
+        function getSeasonData(playerName, year, source) {
+            var dataArr = source === 'po' ? playerData.poStats : playerData.rsStats;
+            var rows = dataArr.filter(function(row) {
+                return row.PLAYER === playerName && row.YEAR === year;
+            });
+            if (rows.length === 0) return null;
+
+            // Handle traded players (TOT row preferred)
+            if (rows.length > 1) {
+                var totRow = rows.find(function(r) { return r.TEAM === 'TOT' || r.TM === 'TOT'; });
+                if (totRow) return totRow;
+                // Aggregate if no TOT
+                var agg = Object.assign({}, rows[0]);
+                var numCols = ['GP', 'PTS', 'REB', 'AST', 'STL', 'BLK', 'TOV', 'FGM', 'FGA', '3P', '3PA', 'FTM', 'FTA', 'MIN', 'OREB', 'DREB', 'PF'];
+                numCols.forEach(function(col) { agg[col] = 0; });
+                rows.forEach(function(row) {
+                    numCols.forEach(function(col) {
+                        var val = parseFloat(row[col]);
+                        if (!isNaN(val)) agg[col] = (agg[col] || 0) + val;
+                    });
+                });
+                return agg;
+            }
+            return rows[0];
+        }
+
+        function performSeasonComparison(player1Name, player2Name, season1, season2, sectionFilter) {
+            var player1Score = 0;
+            var player2Score = 0;
+            var sections = [];
+
+            var rs1 = getSeasonData(player1Name, season1, 'rs');
+            var rs2 = getSeasonData(player2Name, season2, 'rs');
+            var po1 = getSeasonData(player1Name, season1, 'po');
+            var po2 = getSeasonData(player2Name, season2, 'po');
+
+            var gp1 = rs1 ? parseFloat(rs1.GP) : 0;
+            var gp2 = rs2 ? parseFloat(rs2.GP) : 0;
+            var gpPO1 = po1 ? parseFloat(po1.GP) : 0;
+            var gpPO2 = po2 ? parseFloat(po2.GP) : 0;
+
+            // Define season comparison categories
+            var seasonConfig = [
+                {
+                    category: 'COUNTING STATS: AVERAGES',
+                    filterKey: 'averages',
+                    metrics: [
+                        { name: 'Points', col: 'PTS', src: 'rs', higher: true, pg: true },
+                        { name: 'Rebounds', col: 'REB', src: 'rs', higher: true, pg: true },
+                        { name: 'Assists', col: 'AST', src: 'rs', higher: true, pg: true },
+                        { name: 'Steals', col: 'STL', src: 'rs', higher: true, pg: true },
+                        { name: 'Blocks', col: 'BLK', src: 'rs', higher: true, pg: true },
+                        { name: 'Field Goal %', col: 'calc_fg_pct', src: 'rs', higher: true, pct: true },
+                        { name: 'Three Point %', col: 'calc_3p_pct', src: 'rs', higher: true, pct: true },
+                        { name: 'Free Throw %', col: 'calc_ft_pct', src: 'rs', higher: true, pct: true },
+                        { name: 'Turnovers', col: 'TOV', src: 'rs', higher: false, pg: true },
+                        { name: 'Points PO', col: 'PTS', src: 'po', higher: true, pg: true },
+                        { name: 'Rebounds PO', col: 'REB', src: 'po', higher: true, pg: true },
+                        { name: 'Assists PO', col: 'AST', src: 'po', higher: true, pg: true },
+                        { name: 'Steals PO', col: 'STL', src: 'po', higher: true, pg: true },
+                        { name: 'Blocks PO', col: 'BLK', src: 'po', higher: true, pg: true },
+                        { name: 'Field Goal % PO', col: 'calc_fg_pct', src: 'po', higher: true, pct: true },
+                        { name: 'Three Point % PO', col: 'calc_3p_pct', src: 'po', higher: true, pct: true },
+                        { name: 'Free Throw % PO', col: 'calc_ft_pct', src: 'po', higher: true, pct: true },
+                        { name: 'Turnovers PO', col: 'TOV', src: 'po', higher: false, pg: true }
+                    ]
+                },
+                {
+                    category: 'COUNTING STATS: TOTALS',
+                    filterKey: 'totals',
+                    metrics: [
+                        { name: 'Games Played', col: 'GP', src: 'rs', higher: true },
+                        { name: 'Points', col: 'PTS', src: 'rs', higher: true },
+                        { name: 'Rebounds', col: 'REB', src: 'rs', higher: true },
+                        { name: 'Assists', col: 'AST', src: 'rs', higher: true },
+                        { name: 'Steals', col: 'STL', src: 'rs', higher: true },
+                        { name: 'Blocks', col: 'BLK', src: 'rs', higher: true },
+                        { name: 'Turnovers', col: 'TOV', src: 'rs', higher: false },
+                        { name: 'Games Played PO', col: 'GP', src: 'po', higher: true },
+                        { name: 'Points PO', col: 'PTS', src: 'po', higher: true },
+                        { name: 'Rebounds PO', col: 'REB', src: 'po', higher: true },
+                        { name: 'Assists PO', col: 'AST', src: 'po', higher: true },
+                        { name: 'Steals PO', col: 'STL', src: 'po', higher: true },
+                        { name: 'Blocks PO', col: 'BLK', src: 'po', higher: true },
+                        { name: 'Turnovers PO', col: 'TOV', src: 'po', higher: false }
+                    ]
+                },
+                {
+                    category: 'SHOOTING EFFICIENCY',
+                    filterKey: 'shooting',
+                    metrics: [
+                        { name: 'Field Goals Made', col: 'FGM', src: 'rs', higher: true },
+                        { name: 'Field Goals Attempted', col: 'FGA', src: 'rs', higher: true },
+                        { name: 'Three Pointers Made', col: '3P', src: 'rs', higher: true },
+                        { name: 'Three Pointers Attempted', col: '3PA', src: 'rs', higher: true },
+                        { name: 'Free Throws Made', col: 'FTM', src: 'rs', higher: true },
+                        { name: 'Free Throws Attempted', col: 'FTA', src: 'rs', higher: true }
+                    ]
+                }
+            ];
+
+            function getSeasonStatValue(data, gp, metric) {
+                if (!data) return null;
+
+                // Calculated percentages
+                if (metric.col === 'calc_fg_pct') {
+                    var m = parseFloat(data.FGM), a = parseFloat(data.FGA);
+                    if (!isNaN(m) && !isNaN(a) && a > 0) return ((m / a) * 100).toFixed(1) + '%';
+                    return null;
+                }
+                if (metric.col === 'calc_3p_pct') {
+                    var m = parseFloat(data['3P']), a = parseFloat(data['3PA']);
+                    if (!isNaN(m) && !isNaN(a) && a > 0) return ((m / a) * 100).toFixed(1) + '%';
+                    return null;
+                }
+                if (metric.col === 'calc_ft_pct') {
+                    var m = parseFloat(data.FTM), a = parseFloat(data.FTA);
+                    if (!isNaN(m) && !isNaN(a) && a > 0) return ((m / a) * 100).toFixed(1) + '%';
+                    return null;
+                }
+
+                var val = parseFloat(data[metric.col]);
+                if (isNaN(val)) return null;
+
+                if (metric.pg && gp > 0) {
+                    return (val / gp).toFixed(1);
+                }
+
+                return metric.pct ? val.toFixed(1) + '%' : Math.round(val);
+            }
+
+            seasonConfig.forEach(function(cat) {
+                // Apply filter
+                if (sectionFilter && sectionFilter !== 'all') {
+                    if (sectionFilter !== cat.filterKey) return;
+                }
+
+                var sectionObj = { name: cat.category, items: [], sectionP1: 0, sectionP2: 0 };
+
+                cat.metrics.forEach(function(metric) {
+                    var data1 = metric.src === 'po' ? po1 : rs1;
+                    var data2 = metric.src === 'po' ? po2 : rs2;
+                    var g1 = metric.src === 'po' ? gpPO1 : gp1;
+                    var g2 = metric.src === 'po' ? gpPO2 : gp2;
+
+                    var v1 = getSeasonStatValue(data1, g1, metric);
+                    var v2 = getSeasonStatValue(data2, g2, metric);
+
+                    if (v1 === null && v2 === null) return;
+
+                    var winner = 'tie';
+                    var n1 = parseNumericValue(v1);
+                    var n2 = parseNumericValue(v2);
+
+                    if (!isNaN(n1) && !isNaN(n2)) {
+                        if (metric.higher) {
+                            if (n1 > n2) winner = 'player1';
+                            else if (n2 > n1) winner = 'player2';
+                        } else {
+                            if (n1 < n2) winner = 'player1';
+                            else if (n2 < n1) winner = 'player2';
+                        }
+                    }
+
+                    if (winner === 'player1') { sectionObj.sectionP1++; player1Score++; }
+                    if (winner === 'player2') { sectionObj.sectionP2++; player2Score++; }
+
+                    sectionObj.items.push({
+                        metric: metric.name,
+                        p1Value: v1 !== null ? String(v1) : '-',
+                        p2Value: v2 !== null ? String(v2) : '-',
+                        winner: winner
+                    });
+                });
+
+                if (sectionObj.items.length > 0) sections.push(sectionObj);
+            });
+
+            return {
+                player1Name: player1Name + ' (' + formatSeasonYear(season1) + ')',
+                player2Name: player2Name + ' (' + formatSeasonYear(season2) + ')',
+                player1Score: player1Score,
+                player2Score: player2Score,
+                sections: sections
+            };
+        }
+
+        // ========================================
+        // UNIFIED COMPARISON DISPATCHER
+        // ========================================
+
+        function performComparison(player1, player2) {
+            var compType = document.getElementById('comparisonType').value;
+            var sectionFilter = document.getElementById('sections').value;
+
+            if (compType === 'season') {
+                var season1 = document.getElementById('season1Select').value;
+                var season2 = document.getElementById('season2Select').value;
+                return performSeasonComparison(player1, player2, season1, season2, sectionFilter);
+            } else {
+                return performCareerComparison(player1, player2, sectionFilter);
+            }
+        }
+
+        // ========================================
+        // CANVAS RENDERING ENGINE
+        // ========================================
+
+        // Pre-calculate all content layout
+        function buildContentLayout(comparisonData, width, height) {
+            var layout = [];
+            var y = 0;
+            var SECTION_HEADER_HEIGHT = 70;
+            var ITEM_ROW_HEIGHT = 52;
+            var SECTION_GAP = 30;
+            var SECTION_SCORE_HEIGHT = 40;
+
+            comparisonData.sections.forEach(function(section) {
+                // Section header
+                layout.push({ type: 'sectionHeader', y: y, text: section.name, sectionP1: section.sectionP1, sectionP2: section.sectionP2 });
+                y += SECTION_HEADER_HEIGHT;
+
+                // Section score bar
+                layout.push({ type: 'sectionScore', y: y, p1: section.sectionP1, p2: section.sectionP2 });
+                y += SECTION_SCORE_HEIGHT;
+
+                // Items
+                section.items.forEach(function(item) {
+                    layout.push({
+                        type: 'item',
+                        y: y,
+                        metric: item.metric,
+                        p1Value: item.p1Value,
+                        p2Value: item.p2Value,
+                        winner: item.winner
+                    });
+                    y += ITEM_ROW_HEIGHT;
+                });
+
+                y += SECTION_GAP;
+            });
+
+            return { items: layout, totalHeight: y };
+        }
+
+        function drawHeader(ctx, data, width, p1ScoreAnimated, p2ScoreAnimated) {
+            // Red gradient header
+            var gradient = ctx.createLinearGradient(0, 0, width, 0);
+            gradient.addColorStop(0, '#e31837');
+            gradient.addColorStop(1, '#c41230');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, width, 120);
+
+            // Subtle bottom border
+            ctx.fillStyle = 'rgba(0,0,0,0.3)';
+            ctx.fillRect(0, 118, width, 2);
+
+            // Player names
+            ctx.fillStyle = 'white';
+            ctx.textAlign = 'center';
+
+            // Scale font based on name length
+            var fullTitle = data.player1Name + '  VS  ' + data.player2Name;
+            var fontSize = 48;
+            if (fullTitle.length > 40) fontSize = 40;
+            if (fullTitle.length > 50) fontSize = 34;
+            if (fullTitle.length > 60) fontSize = 28;
+
+            ctx.font = 'bold ' + fontSize + 'px Arial';
+            ctx.fillText(data.player1Name + '  VS  ' + data.player2Name, width / 2, 55);
+
+            // Score display
+            ctx.font = 'bold 36px Arial';
+            var scoreText = Math.round(p1ScoreAnimated) + '  -  ' + Math.round(p2ScoreAnimated);
+            ctx.fillText(scoreText, width / 2, 100);
+
+            // Score highlights
+            var scoreWidth = ctx.measureText(scoreText).width;
+            var scoreX = width / 2 - scoreWidth / 2;
+
+            if (p1ScoreAnimated > p2ScoreAnimated) {
+                ctx.fillStyle = '#4caf50';
+                ctx.font = 'bold 36px Arial';
+                ctx.textAlign = 'left';
+                ctx.fillText(Math.round(p1ScoreAnimated), scoreX, 100);
+            } else if (p2ScoreAnimated > p1ScoreAnimated) {
+                ctx.fillStyle = '#4caf50';
+                ctx.font = 'bold 36px Arial';
+                ctx.textAlign = 'right';
+                ctx.fillText(Math.round(p2ScoreAnimated), width / 2 + scoreWidth / 2, 100);
+            }
+
+            ctx.textAlign = 'center';
+        }
+
+        function drawScrollingContent(ctx, contentLayout, width, height, scrollY, data) {
+            var HEADER_HEIGHT = 120;
+            var contentAreaTop = HEADER_HEIGHT;
+            var contentAreaHeight = height - HEADER_HEIGHT;
+
+            ctx.save();
+            ctx.beginPath();
+            ctx.rect(0, contentAreaTop, width, contentAreaHeight);
+            ctx.clip();
+
+            var padding = width * 0.05;
+            var colWidth = (width - padding * 2);
+            var valueColWidth = colWidth * 0.25;
+            var metricColWidth = colWidth * 0.5;
+            var leftValueX = padding + valueColWidth / 2;
+            var rightValueX = width - padding - valueColWidth / 2;
+            var metricCenterX = width / 2;
+
+            contentLayout.items.forEach(function(item) {
+                var drawY = contentAreaTop + item.y - scrollY;
+
+                // Skip if outside visible area
+                if (drawY < contentAreaTop - 80 || drawY > height + 20) return;
+
+                if (item.type === 'sectionHeader') {
+                    // Section header background
+                    var headerGrad = ctx.createLinearGradient(0, drawY, width, drawY);
+                    headerGrad.addColorStop(0, '#333333');
+                    headerGrad.addColorStop(0.5, '#3a3a3a');
+                    headerGrad.addColorStop(1, '#333333');
+                    ctx.fillStyle = headerGrad;
+                    ctx.fillRect(0, drawY, width, 60);
+
+                    // Red accent line
+                    ctx.fillStyle = '#e31837';
+                    ctx.fillRect(0, drawY, 5, 60);
+                    ctx.fillRect(width - 5, drawY, 5, 60);
+
+                    // Section title
+                    ctx.fillStyle = '#ffffff';
+                    var sectionFontSize = Math.min(36, width * 0.028);
+                    ctx.font = 'bold ' + sectionFontSize + 'px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(item.text, width / 2, drawY + 40);
+
+                } else if (item.type === 'sectionScore') {
+                    // Section score bar
+                    ctx.fillStyle = '#2a2a2a';
+                    ctx.fillRect(padding, drawY, width - padding * 2, 32);
+
+                    ctx.font = 'bold 20px Arial';
+                    ctx.fillStyle = item.p1 >= item.p2 && item.p1 > 0 ? '#4caf50' : '#888';
+                    ctx.textAlign = 'left';
+                    ctx.fillText(String(item.p1), padding + 15, drawY + 23);
+
+                    ctx.fillStyle = '#666';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('SECTION SCORE', width / 2, drawY + 23);
+
+                    ctx.fillStyle = item.p2 >= item.p1 && item.p2 > 0 ? '#4caf50' : '#888';
+                    ctx.textAlign = 'right';
+                    ctx.fillText(String(item.p2), width - padding - 15, drawY + 23);
+
+                } else if (item.type === 'item') {
+                    // Row background (alternating subtle)
+                    var rowIdx = contentLayout.items.indexOf(item);
+                    ctx.fillStyle = rowIdx % 2 === 0 ? '#222222' : '#252525';
+                    ctx.fillRect(padding, drawY, width - padding * 2, 46);
+
+                    // Winner highlight bar
+                    if (item.winner === 'player1') {
+                        ctx.fillStyle = 'rgba(76, 175, 80, 0.12)';
+                        ctx.fillRect(padding, drawY, (width - padding * 2) / 2, 46);
+                    } else if (item.winner === 'player2') {
+                        ctx.fillStyle = 'rgba(76, 175, 80, 0.12)';
+                        ctx.fillRect(width / 2, drawY, (width - padding * 2) / 2, 46);
+                    }
+
+                    var valueFontSize = Math.min(26, width * 0.02);
+                    var metricFontSize = Math.min(22, width * 0.017);
+
+                    // Player 1 value
+                    ctx.font = (item.winner === 'player1' ? 'bold ' : '') + valueFontSize + 'px Arial';
+                    ctx.fillStyle = item.winner === 'player1' ? '#4caf50' : '#cccccc';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(item.p1Value, leftValueX, drawY + 30);
+
+                    // Metric name
+                    ctx.font = metricFontSize + 'px Arial';
+                    ctx.fillStyle = '#999999';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(item.metric, metricCenterX, drawY + 30);
+
+                    // Player 2 value
+                    ctx.font = (item.winner === 'player2' ? 'bold ' : '') + valueFontSize + 'px Arial';
+                    ctx.fillStyle = item.winner === 'player2' ? '#4caf50' : '#cccccc';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(item.p2Value, rightValueX, drawY + 30);
+
+                    // Separator line
+                    ctx.fillStyle = '#333333';
+                    ctx.fillRect(padding, drawY + 45, width - padding * 2, 1);
+                }
+            });
+
+            ctx.restore();
+        }
+
+        function drawFinalScreen(ctx, data, width, height, fadeProgress) {
+            // Background
+            ctx.fillStyle = '#1a1a1a';
+            ctx.fillRect(0, 0, width, height);
+
+            // Large gradient overlay
+            var grad = ctx.createRadialGradient(width / 2, height / 2, 0, width / 2, height / 2, width * 0.6);
+            grad.addColorStop(0, 'rgba(227, 24, 55, 0.15)');
+            grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, width, height);
+
+            ctx.globalAlpha = Math.min(1, fadeProgress * 2);
+
+            // "FINAL SCORE" header
+            ctx.fillStyle = '#e31837';
+            ctx.font = 'bold ' + Math.min(52, width * 0.04) + 'px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('FINAL SCORE', width / 2, height * 0.2);
+
+            // Decorative line
+            ctx.fillStyle = '#e31837';
+            ctx.fillRect(width * 0.3, height * 0.23, width * 0.4, 3);
+
+            // Player 1 name and score
+            var nameSize = Math.min(40, width * 0.03);
+            var scoreSize = Math.min(120, width * 0.09);
+
+            ctx.fillStyle = data.player1Score > data.player2Score ? '#4caf50' : (data.player1Score === data.player2Score ? '#ffffff' : '#999999');
+            ctx.font = 'bold ' + nameSize + 'px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(data.player1Name, width * 0.25, height * 0.4);
+
+            ctx.font = 'bold ' + scoreSize + 'px Arial';
+            ctx.fillText(String(data.player1Score), width * 0.25, height * 0.6);
+
+            // VS
+            ctx.fillStyle = '#e31837';
+            ctx.font = 'bold ' + Math.min(48, width * 0.035) + 'px Arial';
+            ctx.fillText('-', width / 2, height * 0.55);
+
+            // Player 2 name and score
+            ctx.fillStyle = data.player2Score > data.player1Score ? '#4caf50' : (data.player1Score === data.player2Score ? '#ffffff' : '#999999');
+            ctx.font = 'bold ' + nameSize + 'px Arial';
+            ctx.fillText(data.player2Name, width * 0.75, height * 0.4);
+
+            ctx.font = 'bold ' + scoreSize + 'px Arial';
+            ctx.fillText(String(data.player2Score), width * 0.75, height * 0.6);
+
+            // Winner text
+            var winnerText = '';
+            if (data.player1Score > data.player2Score) {
+                winnerText = data.player1Name + ' WINS!';
+            } else if (data.player2Score > data.player1Score) {
+                winnerText = data.player2Name + ' WINS!';
+            } else {
+                winnerText = "IT'S A TIE!";
+            }
+
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold ' + Math.min(36, width * 0.028) + 'px Arial';
+            ctx.fillText(winnerText, width / 2, height * 0.78);
+
+            // HoopsHype branding
+            ctx.fillStyle = '#666';
+            ctx.font = '18px Arial';
+            ctx.fillText('HoopsHype', width / 2, height * 0.92);
+
+            ctx.globalAlpha = 1;
+        }
+
+        function drawIntroScreen(ctx, data, width, height, progress) {
+            // Background
+            ctx.fillStyle = '#1a1a1a';
+            ctx.fillRect(0, 0, width, height);
+
+            // Radial gradient accent
+            var grad = ctx.createRadialGradient(width / 2, height / 2, 0, width / 2, height / 2, width * 0.5);
+            grad.addColorStop(0, 'rgba(227, 24, 55, 0.2)');
+            grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, width, height);
+
+            ctx.globalAlpha = Math.min(1, progress * 3);
+
+            // Title
+            ctx.fillStyle = '#e31837';
+            ctx.font = 'bold ' + Math.min(40, width * 0.03) + 'px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('NBA PLAYER COMPARISON', width / 2, height * 0.2);
+
+            // Player 1 name
+            var nameSize = Math.min(56, width * 0.042);
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold ' + nameSize + 'px Arial';
+            ctx.fillText(data.player1Name, width / 2, height * 0.42);
+
+            // VS
+            ctx.fillStyle = '#e31837';
+            ctx.font = 'bold ' + Math.min(64, width * 0.048) + 'px Arial';
+            ctx.fillText('VS', width / 2, height * 0.56);
+
+            // Player 2 name
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold ' + nameSize + 'px Arial';
+            ctx.fillText(data.player2Name, width / 2, height * 0.7);
+
+            // HoopsHype
+            ctx.fillStyle = '#666';
+            ctx.font = '20px Arial';
+            ctx.fillText('HoopsHype', width / 2, height * 0.9);
+
+            ctx.globalAlpha = 1;
+        }
+
+        // ========================================
+        // VIDEO GENERATION
+        // ========================================
+
         async function generateVideo() {
-            const player1 = document.getElementById('player1').value.trim();
-            const player2 = document.getElementById('player2').value.trim();
-            const resolution = document.getElementById('resolution').value;
-            const duration = parseInt(document.getElementById('duration').value);
-            const framerate = parseInt(document.getElementById('framerate').value);
-            const sections = document.getElementById('sections').value;
-            
+            var player1 = document.getElementById('player1').value.trim();
+            var player2 = document.getElementById('player2').value.trim();
+            var compType = document.getElementById('comparisonType').value;
+            var resolution = document.getElementById('resolution').value;
+            var duration = parseInt(document.getElementById('duration').value);
+            var framerate = parseInt(document.getElementById('framerate').value);
+
             // Validation
             if (!player1 || !player2) {
-                showStatus('❌ Please select both players', 'error');
+                showStatus('Please select both players', 'error');
                 return;
             }
-            
+
             if (!allPlayers.includes(player1) || !allPlayers.includes(player2)) {
-                showStatus('❌ Invalid player names. Please select from autocomplete.', 'error');
+                showStatus('Invalid player names. Please select from autocomplete.', 'error');
                 return;
             }
-            
+
             if (player1 === player2) {
-                showStatus('❌ Please select two different players', 'error');
+                showStatus('Please select two different players', 'error');
                 return;
             }
-            
+
+            if (compType === 'season') {
+                var s1 = document.getElementById('season1Select').value;
+                var s2 = document.getElementById('season2Select').value;
+                if (!s1 || !s2) {
+                    showStatus('Please select seasons for both players', 'error');
+                    return;
+                }
+            }
+
             // Disable button and show progress
             document.getElementById('generateBtn').disabled = true;
             document.getElementById('loadingSpinner').style.display = 'inline-block';
             document.getElementById('btnText').textContent = 'Generating...';
-            showStatus('🎬 Starting video generation...', 'info');
+            showStatus('Starting video generation...', 'info');
             updateProgress(0, 'Initializing...');
-            
+
             try {
-                // Set up canvas
-                const canvas = document.getElementById('videoCanvas');
-                const ctx = canvas.getContext('2d');
-                
-                // Configure canvas size
-                const resolutions = {
+                var canvas = document.getElementById('videoCanvas');
+                var ctx = canvas.getContext('2d');
+
+                var resolutions = {
                     '1080p': { width: 1920, height: 1080 },
                     '720p': { width: 1280, height: 720 },
                     'square': { width: 1080, height: 1080 },
                     'story': { width: 1080, height: 1920 }
                 };
-                
-                const { width, height } = resolutions[resolution];
-                canvas.width = width;
-                canvas.height = height;
-                
+
+                var dims = resolutions[resolution];
+                canvas.width = dims.width;
+                canvas.height = dims.height;
+
                 // Show preview panel
                 document.getElementById('previewPanel').classList.add('active');
                 canvas.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                
+
                 updateProgress(10, 'Calculating comparison...');
-                
+
                 // Get comparison data
-                const comparisonResult = await performComparison(player1, player2);
-                
-                updateProgress(20, 'Setting up video recorder...');
-                
+                var comparisonData = performComparison(player1, player2);
+
+                if (comparisonData.sections.length === 0) {
+                    showStatus('No comparison data found for these players. Try different players.', 'error');
+                    document.getElementById('generateBtn').disabled = false;
+                    document.getElementById('loadingSpinner').style.display = 'none';
+                    document.getElementById('btnText').textContent = 'Generate Video';
+                    return;
+                }
+
+                updateProgress(20, 'Building content layout...');
+
+                var contentLayout = buildContentLayout(comparisonData, dims.width, dims.height);
+
+                updateProgress(25, 'Setting up video recorder...');
+
                 // Set up MediaRecorder
-                const stream = canvas.captureStream(framerate);
+                var stream = canvas.captureStream(framerate);
                 recordedChunks = [];
-                
-                const options = {
-                    mimeType: 'video/webm;codecs=vp9',
-                    videoBitsPerSecond: 8000000 // 8 Mbps for high quality
-                };
-                
-                mediaRecorder = new MediaRecorder(stream, options);
-                
-                mediaRecorder.ondataavailable = (event) => {
-                    if (event.data.size > 0) {
-                        recordedChunks.push(event.data);
+
+                var mimeType = 'video/webm;codecs=vp9';
+                if (!MediaRecorder.isTypeSupported(mimeType)) {
+                    mimeType = 'video/webm;codecs=vp8';
+                    if (!MediaRecorder.isTypeSupported(mimeType)) {
+                        mimeType = 'video/webm';
                     }
+                }
+
+                mediaRecorder = new MediaRecorder(stream, {
+                    mimeType: mimeType,
+                    videoBitsPerSecond: 8000000
+                });
+
+                mediaRecorder.ondataavailable = function(event) {
+                    if (event.data.size > 0) recordedChunks.push(event.data);
                 };
-                
-                mediaRecorder.onstop = () => {
+
+                mediaRecorder.onstop = function() {
                     videoBlob = new Blob(recordedChunks, { type: 'video/webm' });
                     updateProgress(100, 'Video complete!');
-                    showStatus(`✅ Video generated successfully! Size: ${(videoBlob.size / 1024 / 1024).toFixed(2)} MB`, 'success');
+                    showStatus('Video generated successfully! Size: ' + (videoBlob.size / 1024 / 1024).toFixed(2) + ' MB', 'success');
                     document.getElementById('downloadBtn').style.display = 'block';
                     document.getElementById('generateBtn').disabled = false;
                     document.getElementById('loadingSpinner').style.display = 'none';
-                    document.getElementById('btnText').textContent = '🎬 Generate Video';
+                    document.getElementById('btnText').textContent = 'Generate Video';
                 };
-                
+
                 // Start recording
                 mediaRecorder.start();
                 updateProgress(30, 'Recording started...');
-                
+
                 // Render animation
-                await renderComparisonAnimation(
-                    ctx, 
-                    player1, 
-                    player2, 
-                    comparisonResult,
-                    width, 
-                    height, 
-                    duration,
-                    framerate
-                );
-                
+                await renderAnimation(ctx, comparisonData, contentLayout, dims.width, dims.height, duration, framerate);
+
                 // Stop recording
                 updateProgress(95, 'Finalizing video...');
                 mediaRecorder.stop();
-                
+
             } catch (error) {
                 console.error('Video generation error:', error);
-                showStatus('❌ Error generating video: ' + error.message, 'error');
+                showStatus('Error generating video: ' + error.message, 'error');
                 document.getElementById('generateBtn').disabled = false;
                 document.getElementById('loadingSpinner').style.display = 'none';
-                document.getElementById('btnText').textContent = '🎬 Generate Video';
+                document.getElementById('btnText').textContent = 'Generate Video';
             }
         }
-        
-        // ========================================
-        // COMPARISON LOGIC
-        // ========================================
-        
-        async function performComparison(player1, player2) {
-            // This would be the full comparison logic
-            // For now, return mock data structure
-            return {
-                player1Name: player1,
-                player2Name: player2,
-                player1Score: 0,
-                player2Score: 0,
-                categories: [
-                    {
-                        section: 'ACCOLADES',
-                        items: [
-                            { category: 'NBA Champion', p1: 4, p2: 6, winner: 'player2' },
-                            { category: 'Finals MVP', p1: 4, p2: 4, winner: 'tie' },
-                            { category: 'Most Valuable Player', p1: 4, p2: 5, winner: 'player2' },
-                        ]
-                    }
-                ]
-            };
-        }
-        
-        // ========================================
-        // CANVAS RENDERING
-        // ========================================
-        
-        async function renderComparisonAnimation(ctx, player1, player2, comparisonData, width, height, duration, framerate) {
-            const totalFrames = duration * framerate;
-            let currentFrame = 0;
-            
-            return new Promise((resolve) => {
+
+        async function renderAnimation(ctx, comparisonData, contentLayout, width, height, duration, framerate) {
+            var totalFrames = duration * framerate;
+            var currentFrame = 0;
+
+            // Timing allocation
+            var introFrames = Math.round(framerate * 2.5); // 2.5s intro
+            var outroFrames = Math.round(framerate * 3);   // 3s final screen
+            var scrollFrames = totalFrames - introFrames - outroFrames;
+
+            // Calculate running scores per content item for animated score counter
+            var runningScores = [];
+            var cumP1 = 0, cumP2 = 0;
+            contentLayout.items.forEach(function(item) {
+                if (item.type === 'item') {
+                    if (item.winner === 'player1') cumP1++;
+                    else if (item.winner === 'player2') cumP2++;
+                }
+                runningScores.push({ p1: cumP1, p2: cumP2 });
+            });
+
+            // Total scroll distance
+            var visibleContentHeight = height - 120; // Below header
+            var totalScrollDistance = Math.max(0, contentLayout.totalHeight - visibleContentHeight + 80);
+
+            return new Promise(function(resolve) {
                 function renderFrame() {
                     // Clear canvas
                     ctx.fillStyle = '#1a1a1a';
                     ctx.fillRect(0, 0, width, height);
-                    
-                    // Draw header
-                    drawHeader(ctx, player1, player2, width);
-                    
-                    // Draw comparison content
-                    const progress = currentFrame / totalFrames;
-                    drawComparisonContent(ctx, comparisonData, width, height, progress);
-                    
-                    // Update progress
-                    const percent = 30 + (progress * 65); // 30-95%
-                    updateProgress(percent, `Rendering frame ${currentFrame}/${totalFrames}...`);
-                    
+
+                    if (currentFrame < introFrames) {
+                        // INTRO PHASE
+                        var introProgress = currentFrame / introFrames;
+                        drawIntroScreen(ctx, comparisonData, width, height, introProgress);
+
+                    } else if (currentFrame < introFrames + scrollFrames) {
+                        // SCROLLING PHASE
+                        var scrollFrame = currentFrame - introFrames;
+                        var scrollProgress = scrollFrame / scrollFrames;
+
+                        // Ease-in-out scroll with slight pause at start
+                        var easedProgress = scrollProgress < 0.05 ? 0 :
+                            (scrollProgress - 0.05) / 0.95;
+                        // Smooth ease
+                        easedProgress = easedProgress * easedProgress * (3 - 2 * easedProgress);
+
+                        var scrollY = easedProgress * totalScrollDistance;
+
+                        // Calculate animated score based on scroll position
+                        var p1Anim = 0, p2Anim = 0;
+                        if (contentLayout.items.length > 0) {
+                            // Find which content items are above the current scroll position
+                            var midScreen = scrollY + visibleContentHeight * 0.4;
+                            for (var i = 0; i < contentLayout.items.length; i++) {
+                                if (contentLayout.items[i].y <= midScreen) {
+                                    p1Anim = runningScores[i].p1;
+                                    p2Anim = runningScores[i].p2;
+                                }
+                            }
+                        }
+
+                        // Draw header with animated scores
+                        drawHeader(ctx, comparisonData, width, p1Anim, p2Anim);
+
+                        // Draw scrolling content
+                        drawScrollingContent(ctx, contentLayout, width, height, scrollY, comparisonData);
+
+                    } else {
+                        // OUTRO/FINAL SCREEN PHASE
+                        var outroFrame = currentFrame - introFrames - scrollFrames;
+                        var outroProgress = outroFrame / outroFrames;
+                        drawFinalScreen(ctx, comparisonData, width, height, outroProgress);
+                    }
+
+                    // Update progress bar
+                    var percent = 30 + ((currentFrame / totalFrames) * 65);
+                    if (currentFrame % (framerate) === 0) { // Update UI every second
+                        updateProgress(percent, 'Rendering frame ' + currentFrame + '/' + totalFrames + '...');
+                    }
+
                     currentFrame++;
-                    
+
                     if (currentFrame < totalFrames) {
                         requestAnimationFrame(renderFrame);
                     } else {
                         resolve();
                     }
                 }
-                
+
                 renderFrame();
             });
         }
-        
-        function drawHeader(ctx, player1, player2, width) {
-            // Red gradient header
-            const gradient = ctx.createLinearGradient(0, 0, width, 0);
-            gradient.addColorStop(0, '#e31837');
-            gradient.addColorStop(1, '#c41230');
-            
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, width, 120);
-            
-            // Player names
-            ctx.fillStyle = 'white';
-            ctx.font = 'bold 56px Arial';
-            ctx.textAlign = 'center';
-            ctx.fillText(`${player1} VS ${player2}`, width / 2, 75);
-        }
-        
-        function drawComparisonContent(ctx, data, width, height, progress) {
-            // Draw scrolling comparison content
-            ctx.fillStyle = 'white';
-            ctx.font = '32px Arial';
-            ctx.textAlign = 'left';
-            
-            const y = 200 + (progress * 500); // Scroll effect
-            ctx.fillText('Comparison in progress...', 50, y);
-            ctx.fillText(`Progress: ${Math.round(progress * 100)}%`, 50, y + 50);
-        }
-        
+
         // ========================================
         // DOWNLOAD
         // ========================================
-        
+
         function downloadVideo() {
             if (!videoBlob) return;
-            
-            const player1 = document.getElementById('player1').value.replace(/\s+/g, '-');
-            const player2 = document.getElementById('player2').value.replace(/\s+/g, '-');
-            const filename = `${player1}-vs-${player2}-comparison.webm`;
-            
-            const url = URL.createObjectURL(videoBlob);
-            const a = document.createElement('a');
+
+            var player1 = document.getElementById('player1').value.replace(/\s+/g, '-');
+            var player2 = document.getElementById('player2').value.replace(/\s+/g, '-');
+            var filename = player1 + '-vs-' + player2 + '-comparison.webm';
+
+            var url = URL.createObjectURL(videoBlob);
+            var a = document.createElement('a');
             a.href = url;
             a.download = filename;
             a.click();
             URL.revokeObjectURL(url);
-            
-            showStatus('✅ Download started! Check your downloads folder.', 'success');
+
+            showStatus('Download started! Check your downloads folder.', 'success');
         }
-        
+
         function resetGenerator() {
             document.getElementById('previewPanel').classList.remove('active');
             document.getElementById('progressContainer').classList.remove('active');
             document.getElementById('statusMessage').classList.remove('active');
             document.getElementById('player1').value = '';
             document.getElementById('player2').value = '';
+            document.getElementById('season1Select').innerHTML = '<option value="">-- Choose Season --</option>';
+            document.getElementById('season2Select').innerHTML = '<option value="">-- Choose Season --</option>';
+            document.getElementById('season1Select').disabled = true;
+            document.getElementById('season2Select').disabled = true;
             videoBlob = null;
             recordedChunks = [];
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
-        
+
         // ========================================
         // INITIALIZATION
         // ========================================
-        
+
         window.addEventListener('DOMContentLoaded', function() {
-            // Load data
             loadAllData();
-            
-            // Setup autocomplete
+
             setupAutocomplete('player1', 'suggestions1');
             setupAutocomplete('player2', 'suggestions2');
-            
-            // Event listeners
+
             document.getElementById('generateBtn').addEventListener('click', generateVideo);
             document.getElementById('downloadBtn').addEventListener('click', downloadVideo);
             document.getElementById('resetBtn').addEventListener('click', resetGenerator);
+            document.getElementById('comparisonType').addEventListener('change', onComparisonTypeChange);
         });
     </script>
 </body>
