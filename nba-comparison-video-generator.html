@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NBA Comparison Video Generator - HoopsHype</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #1a1a1a;
+            color: white;
+            padding: 0;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #e31837 0%, #c41230 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(227, 24, 55, 0.3);
+        }
+        
+        .header h1 {
+            font-size: 42px;
+            margin-bottom: 12px;
+            font-weight: 800;
+        }
+        
+        .header p {
+            font-size: 18px;
+            opacity: 0.95;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 40px auto;
+            padding: 0 30px;
+        }
+        
+        .settings-panel {
+            background: #2a2a2a;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            margin-bottom: 30px;
+        }
+        
+        .settings-section {
+            margin-bottom: 35px;
+        }
+        
+        .settings-section:last-child {
+            margin-bottom: 0;
+        }
+        
+        .settings-section h3 {
+            font-size: 22px;
+            margin-bottom: 20px;
+            color: #fff;
+            font-weight: 700;
+        }
+        
+        .player-inputs {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 25px;
+            align-items: center;
+        }
+        
+        .vs-divider {
+            font-size: 32px;
+            font-weight: bold;
+            color: #e31837;
+            text-shadow: 0 2px 10px rgba(227, 24, 55, 0.5);
+        }
+        
+        input[type="text"], select {
+            width: 100%;
+            padding: 16px;
+            font-size: 16px;
+            background: #1a1a1a;
+            color: white;
+            border: 2px solid #404040;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        
+        input[type="text"]:focus, select:focus {
+            outline: none;
+            border-color: #e31837;
+            box-shadow: 0 0 0 3px rgba(227, 24, 55, 0.1);
+        }
+        
+        select option {
+            background: #2a2a2a;
+            color: white;
+        }
+        
+        .video-settings {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+        }
+        
+        .setting-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .setting-group label {
+            font-size: 15px;
+            margin-bottom: 10px;
+            color: #bbb;
+            font-weight: 600;
+        }
+        
+        .generate-btn {
+            width: 100%;
+            padding: 22px;
+            font-size: 20px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #e31837 0%, #c41230 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 20px rgba(227, 24, 55, 0.4);
+        }
+        
+        .generate-btn:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 30px rgba(227, 24, 55, 0.5);
+        }
+        
+        .generate-btn:active:not(:disabled) {
+            transform: translateY(-1px);
+        }
+        
+        .generate-btn:disabled {
+            background: #555;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .preview-panel {
+            background: #2a2a2a;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            display: none;
+        }
+        
+        .preview-panel.active {
+            display: block;
+        }
+        
+        .preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .preview-header h3 {
+            font-size: 24px;
+            font-weight: 700;
+        }
+        
+        #videoCanvas {
+            width: 100%;
+            border: 3px solid #404040;
+            border-radius: 12px;
+            background: #000;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+        }
+        
+        .progress-container {
+            margin: 25px 0;
+            display: none;
+        }
+        
+        .progress-container.active {
+            display: block;
+        }
+        
+        .progress-label {
+            font-size: 14px;
+            color: #bbb;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 12px;
+            background: #1a1a1a;
+            border-radius: 6px;
+            overflow: hidden;
+            border: 1px solid #404040;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #e31837 0%, #c41230 100%);
+            width: 0%;
+            transition: width 0.3s;
+            box-shadow: 0 0 10px rgba(227, 24, 55, 0.5);
+        }
+        
+        .status-message {
+            text-align: center;
+            padding: 18px;
+            border-radius: 10px;
+            margin: 25px 0;
+            font-size: 16px;
+            font-weight: 600;
+            display: none;
+        }
+        
+        .status-message.active {
+            display: block;
+        }
+        
+        .status-message.info {
+            background: rgba(33, 150, 243, 0.15);
+            color: #42a5f5;
+            border: 2px solid rgba(33, 150, 243, 0.3);
+        }
+        
+        .status-message.success {
+            background: rgba(76, 175, 80, 0.15);
+            color: #66bb6a;
+            border: 2px solid rgba(76, 175, 80, 0.3);
+        }
+        
+        .status-message.error {
+            background: rgba(244, 67, 54, 0.15);
+            color: #ef5350;
+            border: 2px solid rgba(244, 67, 54, 0.3);
+        }
+        
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 25px;
+        }
+        
+        .download-btn, .reset-btn {
+            padding: 18px;
+            font-size: 18px;
+            font-weight: 700;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .download-btn {
+            background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
+            color: white;
+            box-shadow: 0 4px 20px rgba(76, 175, 80, 0.3);
+        }
+        
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 30px rgba(76, 175, 80, 0.4);
+        }
+        
+        .reset-btn {
+            background: #404040;
+            color: white;
+        }
+        
+        .reset-btn:hover {
+            background: #505050;
+        }
+        
+        .autocomplete-suggestions {
+            position: absolute;
+            background: #2a2a2a;
+            border: 2px solid #404040;
+            border-top: none;
+            max-height: 350px;
+            overflow-y: auto;
+            width: 100%;
+            z-index: 1000;
+            display: none;
+            border-radius: 0 0 8px 8px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+        }
+        
+        .autocomplete-suggestions.active {
+            display: block;
+        }
+        
+        .suggestion-item {
+            padding: 14px;
+            cursor: pointer;
+            border-bottom: 1px solid #404040;
+            color: white;
+            transition: background 0.2s;
+        }
+        
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+        
+        .suggestion-item:hover {
+            background: #353535;
+        }
+        
+        .player-select-wrapper {
+            position: relative;
+        }
+        
+        .loading-spinner {
+            border: 3px solid #404040;
+            border-top: 3px solid #e31837;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #404040;
+            border-radius: 5px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #505050;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎬 NBA COMPARISON VIDEO GENERATOR</h1>
+        <p>Create high-quality comparison videos for social media • Powered by HoopsHype</p>
+    </div>
+    
+    <div class="container">
+        <div class="settings-panel">
+            <div class="settings-section">
+                <h3>📋 Select Players to Compare</h3>
+                <div class="player-inputs">
+                    <div class="player-select-wrapper">
+                        <input type="text" id="player1" placeholder="Type player name..." autocomplete="off">
+                        <div id="suggestions1" class="autocomplete-suggestions"></div>
+                    </div>
+                    <div class="vs-divider">VS</div>
+                    <div class="player-select-wrapper">
+                        <input type="text" id="player2" placeholder="Type player name..." autocomplete="off">
+                        <div id="suggestions2" class="autocomplete-suggestions"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="settings-section">
+                <h3>⚙️ Video Configuration</h3>
+                <div class="video-settings">
+                    <div class="setting-group">
+                        <label>Resolution / Format</label>
+                        <select id="resolution">
+                            <option value="1080p">1080p HD (1920x1080) - YouTube/Twitter</option>
+                            <option value="720p" selected>720p HD (1280x720) - Standard</option>
+                            <option value="square">Square (1080x1080) - Instagram Feed</option>
+                            <option value="story">Story (1080x1920) - Instagram/TikTok</option>
+                        </select>
+                    </div>
+                    
+                    <div class="setting-group">
+                        <label>Video Duration</label>
+                        <select id="duration">
+                            <option value="30">30 seconds - Quick</option>
+                            <option value="45" selected>45 seconds - Standard</option>
+                            <option value="60">60 seconds - Detailed</option>
+                            <option value="90">90 seconds - Complete</option>
+                        </select>
+                    </div>
+                    
+                    <div class="setting-group">
+                        <label>Frame Rate</label>
+                        <select id="framerate">
+                            <option value="24">24 FPS - Cinematic</option>
+                            <option value="30" selected>30 FPS - Standard</option>
+                            <option value="60">60 FPS - Smooth</option>
+                        </select>
+                    </div>
+                    
+                    <div class="setting-group">
+                        <label>Categories to Include</label>
+                        <select id="sections">
+                            <option value="all" selected>All Categories</option>
+                            <option value="highlights">Highlights Only (Awards + Key Stats)</option>
+                            <option value="awards">Awards & Accolades</option>
+                            <option value="stats">Career Statistics</option>
+                            <option value="playoff">Playoff Performance</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="generate-btn" id="generateBtn" disabled>
+                <span class="loading-spinner" id="loadingSpinner" style="display: none;"></span>
+                <span id="btnText">Loading Data...</span>
+            </button>
+        </div>
+        
+        <div id="statusMessage" class="status-message"></div>
+        
+        <div class="progress-container" id="progressContainer">
+            <div class="progress-label">
+                <span id="progressText">Rendering video...</span>
+                <span id="progressPercent">0%</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+        
+        <div class="preview-panel" id="previewPanel">
+            <div class="preview-header">
+                <h3>🎥 Video Preview</h3>
+            </div>
+            <canvas id="videoCanvas" width="1280" height="720"></canvas>
+            <div class="button-group">
+                <button class="download-btn" id="downloadBtn">⬇️ Download Video (WebM)</button>
+                <button class="reset-btn" id="resetBtn">🔄 Create Another</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // ========================================
+        // CONFIGURATION
+        // ========================================
+        
+        const DATA_BASE_URL = 'https://jsierrahoopshype.github.io/nba-player-data/';
+        const COMPARISON_DATA_URL = DATA_BASE_URL + 'comparisons.json';
+        
+        // ========================================
+        // GLOBAL STATE
+        // ========================================
+        
+        let playerData = {};
+        let comparisonsConfig = [];
+        let allPlayers = [];
+        let videoBlob = null;
+        let mediaRecorder = null;
+        let recordedChunks = [];
+        
+        // ========================================
+        // DATA LOADING
+        // ========================================
+        
+        async function loadAllData() {
+            try {
+                showStatus('Loading NBA database...', 'info');
+                document.getElementById('btnText').textContent = 'Loading Data...';
+                
+                // Load all necessary data files
+                const [awards, rsStats, poStats, comparisons, allStar, salaries, nba2k, combine] = await Promise.all([
+                    fetch(DATA_BASE_URL + 'awards.json').then(r => r.json()),
+                    fetch(DATA_BASE_URL + 'rsStats.json').then(r => r.json()),
+                    fetch(DATA_BASE_URL + 'poStats.json').then(r => r.json()),
+                    fetch(COMPARISON_DATA_URL).then(r => r.json()),
+                    fetch(DATA_BASE_URL + 'allStar.json').then(r => r.json()),
+                    fetch(DATA_BASE_URL + 'salaries.json').then(r => r.json()),
+                    fetch(DATA_BASE_URL + 'nba2k.json').then(r => r.json()),
+                    fetch(DATA_BASE_URL + 'combine.json').then(r => r.json())
+                ]);
+                
+                playerData = {
+                    awards,
+                    rsStats,
+                    poStats,
+                    allStar,
+                    salaries,
+                    nba2k,
+                    combine
+                };
+                
+                comparisonsConfig = comparisons;
+                
+                // Extract unique players from regular season stats
+                const playerSet = new Set();
+                rsStats.forEach(row => {
+                    if (row.PLAYER) playerSet.add(row.PLAYER);
+                });
+                allPlayers = Array.from(playerSet).sort();
+                
+                showStatus(`Database loaded! ${allPlayers.length.toLocaleString()} players ready.`, 'success');
+                document.getElementById('btnText').textContent = '🎬 Generate Video';
+                document.getElementById('generateBtn').disabled = false;
+                
+            } catch (error) {
+                showStatus('Error loading data: ' + error.message, 'error');
+                document.getElementById('btnText').textContent = 'Error - Reload Page';
+            }
+        }
+        
+        // ========================================
+        // AUTOCOMPLETE
+        // ========================================
+        
+        function setupAutocomplete(inputId, suggestionsId) {
+            const input = document.getElementById(inputId);
+            const suggestions = document.getElementById(suggestionsId);
+            
+            input.addEventListener('input', function() {
+                const value = this.value.toLowerCase();
+                if (value.length < 2) {
+                    suggestions.classList.remove('active');
+                    return;
+                }
+                
+                const matches = allPlayers
+                    .filter(p => p.toLowerCase().includes(value))
+                    .slice(0, 15);
+                
+                if (matches.length > 0) {
+                    suggestions.innerHTML = matches.map(player => 
+                        `<div class="suggestion-item" data-player="${player}">${player}</div>`
+                    ).join('');
+                    suggestions.classList.add('active');
+                    
+                    suggestions.querySelectorAll('.suggestion-item').forEach(item => {
+                        item.addEventListener('click', function() {
+                            input.value = this.dataset.player;
+                            suggestions.classList.remove('active');
+                        });
+                    });
+                } else {
+                    suggestions.classList.remove('active');
+                }
+            });
+            
+            document.addEventListener('click', function(e) {
+                if (!input.contains(e.target) && !suggestions.contains(e.target)) {
+                    suggestions.classList.remove('active');
+                }
+            });
+        }
+        
+        // ========================================
+        // UI HELPERS
+        // ========================================
+        
+        function showStatus(message, type) {
+            const statusEl = document.getElementById('statusMessage');
+            statusEl.textContent = message;
+            statusEl.className = `status-message active ${type}`;
+        }
+        
+        function updateProgress(percent, text = 'Rendering video...') {
+            const container = document.getElementById('progressContainer');
+            const fill = document.getElementById('progressFill');
+            const percentEl = document.getElementById('progressPercent');
+            const textEl = document.getElementById('progressText');
+            
+            container.classList.add('active');
+            fill.style.width = percent + '%';
+            percentEl.textContent = Math.round(percent) + '%';
+            textEl.textContent = text;
+        }
+        
+        // ========================================
+        // VIDEO GENERATION - MAIN FUNCTION
+        // ========================================
+        
+        async function generateVideo() {
+            const player1 = document.getElementById('player1').value.trim();
+            const player2 = document.getElementById('player2').value.trim();
+            const resolution = document.getElementById('resolution').value;
+            const duration = parseInt(document.getElementById('duration').value);
+            const framerate = parseInt(document.getElementById('framerate').value);
+            const sections = document.getElementById('sections').value;
+            
+            // Validation
+            if (!player1 || !player2) {
+                showStatus('❌ Please select both players', 'error');
+                return;
+            }
+            
+            if (!allPlayers.includes(player1) || !allPlayers.includes(player2)) {
+                showStatus('❌ Invalid player names. Please select from autocomplete.', 'error');
+                return;
+            }
+            
+            if (player1 === player2) {
+                showStatus('❌ Please select two different players', 'error');
+                return;
+            }
+            
+            // Disable button and show progress
+            document.getElementById('generateBtn').disabled = true;
+            document.getElementById('loadingSpinner').style.display = 'inline-block';
+            document.getElementById('btnText').textContent = 'Generating...';
+            showStatus('🎬 Starting video generation...', 'info');
+            updateProgress(0, 'Initializing...');
+            
+            try {
+                // Set up canvas
+                const canvas = document.getElementById('videoCanvas');
+                const ctx = canvas.getContext('2d');
+                
+                // Configure canvas size
+                const resolutions = {
+                    '1080p': { width: 1920, height: 1080 },
+                    '720p': { width: 1280, height: 720 },
+                    'square': { width: 1080, height: 1080 },
+                    'story': { width: 1080, height: 1920 }
+                };
+                
+                const { width, height } = resolutions[resolution];
+                canvas.width = width;
+                canvas.height = height;
+                
+                // Show preview panel
+                document.getElementById('previewPanel').classList.add('active');
+                canvas.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                
+                updateProgress(10, 'Calculating comparison...');
+                
+                // Get comparison data
+                const comparisonResult = await performComparison(player1, player2);
+                
+                updateProgress(20, 'Setting up video recorder...');
+                
+                // Set up MediaRecorder
+                const stream = canvas.captureStream(framerate);
+                recordedChunks = [];
+                
+                const options = {
+                    mimeType: 'video/webm;codecs=vp9',
+                    videoBitsPerSecond: 8000000 // 8 Mbps for high quality
+                };
+                
+                mediaRecorder = new MediaRecorder(stream, options);
+                
+                mediaRecorder.ondataavailable = (event) => {
+                    if (event.data.size > 0) {
+                        recordedChunks.push(event.data);
+                    }
+                };
+                
+                mediaRecorder.onstop = () => {
+                    videoBlob = new Blob(recordedChunks, { type: 'video/webm' });
+                    updateProgress(100, 'Video complete!');
+                    showStatus(`✅ Video generated successfully! Size: ${(videoBlob.size / 1024 / 1024).toFixed(2)} MB`, 'success');
+                    document.getElementById('downloadBtn').style.display = 'block';
+                    document.getElementById('generateBtn').disabled = false;
+                    document.getElementById('loadingSpinner').style.display = 'none';
+                    document.getElementById('btnText').textContent = '🎬 Generate Video';
+                };
+                
+                // Start recording
+                mediaRecorder.start();
+                updateProgress(30, 'Recording started...');
+                
+                // Render animation
+                await renderComparisonAnimation(
+                    ctx, 
+                    player1, 
+                    player2, 
+                    comparisonResult,
+                    width, 
+                    height, 
+                    duration,
+                    framerate
+                );
+                
+                // Stop recording
+                updateProgress(95, 'Finalizing video...');
+                mediaRecorder.stop();
+                
+            } catch (error) {
+                console.error('Video generation error:', error);
+                showStatus('❌ Error generating video: ' + error.message, 'error');
+                document.getElementById('generateBtn').disabled = false;
+                document.getElementById('loadingSpinner').style.display = 'none';
+                document.getElementById('btnText').textContent = '🎬 Generate Video';
+            }
+        }
+        
+        // ========================================
+        // COMPARISON LOGIC
+        // ========================================
+        
+        async function performComparison(player1, player2) {
+            // This would be the full comparison logic
+            // For now, return mock data structure
+            return {
+                player1Name: player1,
+                player2Name: player2,
+                player1Score: 0,
+                player2Score: 0,
+                categories: [
+                    {
+                        section: 'ACCOLADES',
+                        items: [
+                            { category: 'NBA Champion', p1: 4, p2: 6, winner: 'player2' },
+                            { category: 'Finals MVP', p1: 4, p2: 4, winner: 'tie' },
+                            { category: 'Most Valuable Player', p1: 4, p2: 5, winner: 'player2' },
+                        ]
+                    }
+                ]
+            };
+        }
+        
+        // ========================================
+        // CANVAS RENDERING
+        // ========================================
+        
+        async function renderComparisonAnimation(ctx, player1, player2, comparisonData, width, height, duration, framerate) {
+            const totalFrames = duration * framerate;
+            let currentFrame = 0;
+            
+            return new Promise((resolve) => {
+                function renderFrame() {
+                    // Clear canvas
+                    ctx.fillStyle = '#1a1a1a';
+                    ctx.fillRect(0, 0, width, height);
+                    
+                    // Draw header
+                    drawHeader(ctx, player1, player2, width);
+                    
+                    // Draw comparison content
+                    const progress = currentFrame / totalFrames;
+                    drawComparisonContent(ctx, comparisonData, width, height, progress);
+                    
+                    // Update progress
+                    const percent = 30 + (progress * 65); // 30-95%
+                    updateProgress(percent, `Rendering frame ${currentFrame}/${totalFrames}...`);
+                    
+                    currentFrame++;
+                    
+                    if (currentFrame < totalFrames) {
+                        requestAnimationFrame(renderFrame);
+                    } else {
+                        resolve();
+                    }
+                }
+                
+                renderFrame();
+            });
+        }
+        
+        function drawHeader(ctx, player1, player2, width) {
+            // Red gradient header
+            const gradient = ctx.createLinearGradient(0, 0, width, 0);
+            gradient.addColorStop(0, '#e31837');
+            gradient.addColorStop(1, '#c41230');
+            
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, width, 120);
+            
+            // Player names
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 56px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(`${player1} VS ${player2}`, width / 2, 75);
+        }
+        
+        function drawComparisonContent(ctx, data, width, height, progress) {
+            // Draw scrolling comparison content
+            ctx.fillStyle = 'white';
+            ctx.font = '32px Arial';
+            ctx.textAlign = 'left';
+            
+            const y = 200 + (progress * 500); // Scroll effect
+            ctx.fillText('Comparison in progress...', 50, y);
+            ctx.fillText(`Progress: ${Math.round(progress * 100)}%`, 50, y + 50);
+        }
+        
+        // ========================================
+        // DOWNLOAD
+        // ========================================
+        
+        function downloadVideo() {
+            if (!videoBlob) return;
+            
+            const player1 = document.getElementById('player1').value.replace(/\s+/g, '-');
+            const player2 = document.getElementById('player2').value.replace(/\s+/g, '-');
+            const filename = `${player1}-vs-${player2}-comparison.webm`;
+            
+            const url = URL.createObjectURL(videoBlob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            showStatus('✅ Download started! Check your downloads folder.', 'success');
+        }
+        
+        function resetGenerator() {
+            document.getElementById('previewPanel').classList.remove('active');
+            document.getElementById('progressContainer').classList.remove('active');
+            document.getElementById('statusMessage').classList.remove('active');
+            document.getElementById('player1').value = '';
+            document.getElementById('player2').value = '';
+            videoBlob = null;
+            recordedChunks = [];
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        // ========================================
+        // INITIALIZATION
+        // ========================================
+        
+        window.addEventListener('DOMContentLoaded', function() {
+            // Load data
+            loadAllData();
+            
+            // Setup autocomplete
+            setupAutocomplete('player1', 'suggestions1');
+            setupAutocomplete('player2', 'suggestions2');
+            
+            // Event listeners
+            document.getElementById('generateBtn').addEventListener('click', generateVideo);
+            document.getElementById('downloadBtn').addEventListener('click', downloadVideo);
+            document.getElementById('resetBtn').addEventListener('click', resetGenerator);
+        });
+    </script>
+</body>
+</html>
