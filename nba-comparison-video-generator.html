@@ -1745,7 +1745,7 @@
             ctx.fillText(String(Math.round(p2Score)), midX + cardW * 0.25, centerY + 30);
         }
 
-        function drawScrollingContent(ctx, contentLayout, width, height, scrollY) {
+        function drawScrollingContent(ctx, contentLayout, width, height, scrollY, revealedItems) {
             var HEADER_HEIGHT = 140;
             var contentAreaTop = HEADER_HEIGHT;
             var contentAreaHeight = height - HEADER_HEIGHT;
@@ -1774,7 +1774,7 @@
             var col4X = pad + col1W + col2W + col3W;
             var col5X = pad + col1W + col2W + col3W + col4W;
 
-            contentLayout.items.forEach(function(item) {
+            contentLayout.items.forEach(function(item, idx) {
                 var drawY = contentAreaTop + item.y - scrollY;
 
                 if (drawY < contentAreaTop - 90 || drawY > height + 20) return;
@@ -1810,10 +1810,18 @@
                     var ROW_H = 52;
                     var RAD = 8;
 
-                    // Determine background tints
-                    var isP1Win = item.winner === 'player1';
-                    var isP2Win = item.winner === 'player2';
-                    var isTie = item.winner === 'tie' && item.p1Value !== '-' && item.p2Value !== '-';
+                    // Check if this item has been revealed (scrolled into view)
+                    var itemKey = String(idx);
+                    var inView = drawY >= contentAreaTop && drawY < height;
+                    if (inView && !revealedItems.has(itemKey)) {
+                        revealedItems.add(itemKey);
+                    }
+                    var revealed = revealedItems.has(itemKey);
+
+                    // Determine highlight state only if revealed
+                    var isP1Win = revealed && item.winner === 'player1';
+                    var isP2Win = revealed && item.winner === 'player2';
+                    var isTie = revealed && item.winner === 'tie' && item.p1Value !== '-' && item.p2Value !== '-';
 
                     // Card background
                     ctx.save();
@@ -1821,7 +1829,7 @@
                     ctx.fillStyle = C.surface;
                     ctx.fill();
 
-                    // Winner / tie gradient tints
+                    // Winner / tie gradient tints (only if revealed)
                     if (isP1Win) {
                         ctx.save();
                         roundRect(ctx, pad, drawY, rowW, ROW_H, RAD);
@@ -1862,10 +1870,9 @@
                     ctx.lineWidth = 1;
                     ctx.stroke();
 
-                    // Winner accent borders (left or right 3px bar)
+                    // Winner accent borders (only if revealed)
                     if (isP1Win) {
                         ctx.fillStyle = C.green;
-                        roundRect(ctx, pad, drawY, 3, ROW_H, RAD);
                         ctx.fillRect(pad, drawY + 4, 3, ROW_H - 8);
                     } else if (isP2Win) {
                         ctx.fillStyle = C.green;
@@ -1883,9 +1890,9 @@
                     var nameColSize = Math.min(14, width * 0.011);
                     var metricSize = Math.min(14, width * 0.011);
 
-                    // Col 1: Player 1 value
+                    // Col 1: Player 1 value — green if revealed winner, gray if unrevealed
                     ctx.font = (isP1Win ? '600 ' : '500 ') + valSize + 'px "Courier New", monospace';
-                    ctx.fillStyle = isP1Win ? C.green : C.text;
+                    ctx.fillStyle = revealed ? (isP1Win ? C.green : C.text) : C.textSec;
                     ctx.textAlign = 'center';
                     ctx.fillText(item.p1Value, col1X + col1W / 2, textY);
 
@@ -1895,7 +1902,6 @@
                     ctx.textAlign = 'center';
                     var p1NameTxt = item.p1Name;
                     ctx.fillText(p1NameTxt, col2X + col2W / 2, textY);
-                    // Underline
                     var p1tw = ctx.measureText(p1NameTxt).width;
                     ctx.fillRect(col2X + (col2W - p1tw) / 2, textY + 3, p1tw, 1);
 
@@ -1914,9 +1920,9 @@
                     var p2tw = ctx.measureText(p2NameTxt).width;
                     ctx.fillRect(col4X + (col4W - p2tw) / 2, textY + 3, p2tw, 1);
 
-                    // Col 5: Player 2 value
+                    // Col 5: Player 2 value — green if revealed winner, gray if unrevealed
                     ctx.font = (isP2Win ? '600 ' : '500 ') + valSize + 'px "Courier New", monospace';
-                    ctx.fillStyle = isP2Win ? C.green : C.text;
+                    ctx.fillStyle = revealed ? (isP2Win ? C.green : C.text) : C.textSec;
                     ctx.textAlign = 'center';
                     ctx.fillText(item.p2Value, col5X + col5W / 2, textY);
                 }
@@ -2332,6 +2338,9 @@
                 var visibleContentHeight = dims.height - 140;
                 var totalScrollDistance = Math.max(0, contentLayout.totalHeight - visibleContentHeight + 80);
 
+                // Track which item rows have been revealed by scrolling into view
+                var revealedItems = new Set();
+
                 for (var frame = 0; frame < totalFrames; frame++) {
                     var frameStart = performance.now();
 
@@ -2340,29 +2349,25 @@
                     offCtx.fillRect(0, 0, dims.width, dims.height);
 
                     if (frame < introFrames + scrollFrames) {
-                        // SCROLLING PHASE
+                        // SCROLLING PHASE — pure linear scroll
                         var scrollFrame = frame - introFrames;
                         var scrollProgress = scrollFrame / scrollFrames;
 
-                        var easedProgress = scrollProgress < 0.05 ? 0 :
-                            (scrollProgress - 0.05) / 0.95;
-                        easedProgress = easedProgress * easedProgress * (3 - 2 * easedProgress);
+                        var scrollY = scrollProgress * totalScrollDistance;
 
-                        var scrollY = easedProgress * totalScrollDistance;
-
+                        // Score counter based on revealed items only
                         var p1Anim = 0, p2Anim = 0;
-                        if (contentLayout.items.length > 0) {
-                            var midScreen = scrollY + visibleContentHeight * 0.4;
-                            for (var i = 0; i < contentLayout.items.length; i++) {
-                                if (contentLayout.items[i].y <= midScreen) {
-                                    p1Anim = runningScores[i].p1;
-                                    p2Anim = runningScores[i].p2;
-                                }
+                        revealedItems.forEach(function(key) {
+                            var idx = parseInt(key, 10);
+                            var it = contentLayout.items[idx];
+                            if (it && it.type === 'item') {
+                                if (it.winner === 'player1') p1Anim++;
+                                else if (it.winner === 'player2') p2Anim++;
                             }
-                        }
+                        });
 
                         drawHeader(offCtx, comparisonData, dims.width, p1Anim, p2Anim);
-                        drawScrollingContent(offCtx, contentLayout, dims.width, dims.height, scrollY);
+                        drawScrollingContent(offCtx, contentLayout, dims.width, dims.height, scrollY, revealedItems);
 
                     } else {
                         // OUTRO/FINAL SCREEN PHASE
