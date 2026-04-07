@@ -1626,34 +1626,46 @@
         // ========================================
 
         // Pre-calculate all content layout
+        // Canvas helper: rounded rectangle
+        function roundRect(ctx, x, y, w, h, r) {
+            ctx.beginPath();
+            ctx.moveTo(x + r, y);
+            ctx.lineTo(x + w - r, y);
+            ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+            ctx.lineTo(x + w, y + h - r);
+            ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+            ctx.lineTo(x + r, y + h);
+            ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+            ctx.lineTo(x, y + r);
+            ctx.quadraticCurveTo(x, y, x + r, y);
+            ctx.closePath();
+        }
+
         function buildContentLayout(comparisonData, width, height) {
             var layout = [];
             var y = 0;
-            var SECTION_HEADER_HEIGHT = 70;
+            var SECTION_HEADER_HEIGHT = 80;
             var ITEM_ROW_HEIGHT = 52;
-            var SECTION_GAP = 30;
-            var SECTION_SCORE_HEIGHT = 40;
+            var ITEM_GAP = 6;
+            var SECTION_GAP = 36;
 
             comparisonData.sections.forEach(function(section) {
-                // Section header
-                layout.push({ type: 'sectionHeader', y: y, text: section.name, sectionP1: section.sectionP1, sectionP2: section.sectionP2 });
+                layout.push({
+                    type: 'sectionHeader', y: y, text: section.name,
+                    sectionP1: section.sectionP1, sectionP2: section.sectionP2,
+                    p1Name: comparisonData.player1Name, p2Name: comparisonData.player2Name
+                });
                 y += SECTION_HEADER_HEIGHT;
 
-                // Section score bar
-                layout.push({ type: 'sectionScore', y: y, p1: section.sectionP1, p2: section.sectionP2 });
-                y += SECTION_SCORE_HEIGHT;
-
-                // Items
                 section.items.forEach(function(item) {
                     layout.push({
-                        type: 'item',
-                        y: y,
+                        type: 'item', y: y,
                         metric: item.metric,
-                        p1Value: item.p1Value,
-                        p2Value: item.p2Value,
-                        winner: item.winner
+                        p1Value: item.p1Value, p2Value: item.p2Value,
+                        winner: item.winner,
+                        p1Name: comparisonData.player1Name, p2Name: comparisonData.player2Name
                     });
-                    y += ITEM_ROW_HEIGHT;
+                    y += ITEM_ROW_HEIGHT + ITEM_GAP;
                 });
 
                 y += SECTION_GAP;
@@ -1662,158 +1674,250 @@
             return { items: layout, totalHeight: y };
         }
 
-        function drawHeader(ctx, data, width, p1ScoreAnimated, p2ScoreAnimated) {
-            // Red gradient header
-            var gradient = ctx.createLinearGradient(0, 0, width, 0);
-            gradient.addColorStop(0, '#e31837');
-            gradient.addColorStop(1, '#c41230');
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, width, 120);
+        // --- Colors from comparison tool CSS variables ---
+        var C = {
+            bg: '#f5f5f7', surface: '#ffffff', border: '#d1d1d6',
+            text: '#1d1d1f', textSec: '#6e6e73', accent: '#3b82f6',
+            green: '#34c759', greenDim: 'rgba(52, 199, 89, 0.15)',
+            orange: '#f59e0b', orangeDim: 'rgba(245, 158, 11, 0.15)'
+        };
 
-            // Subtle bottom border
-            ctx.fillStyle = 'rgba(0,0,0,0.3)';
-            ctx.fillRect(0, 118, width, 2);
+        function drawHeader(ctx, data, width, p1Score, p2Score) {
+            var HEADER_H = 140;
+            // White background behind header card
+            ctx.fillStyle = C.bg;
+            ctx.fillRect(0, 0, width, HEADER_H);
 
-            // Player names
-            ctx.fillStyle = 'white';
+            var pad = Math.round(width * 0.04);
+            var cardX = pad, cardY = 10;
+            var cardW = width - pad * 2, cardH = HEADER_H - 20;
+            var r = 12;
+
+            // Card shadow
+            ctx.save();
+            ctx.shadowColor = 'rgba(0,0,0,0.06)';
+            ctx.shadowBlur = 8;
+            ctx.shadowOffsetY = 2;
+            roundRect(ctx, cardX, cardY, cardW, cardH, r);
+            ctx.fillStyle = C.surface;
+            ctx.fill();
+            ctx.restore();
+
+            // Card border
+            roundRect(ctx, cardX, cardY, cardW, cardH, r);
+            ctx.strokeStyle = C.border;
+            ctx.lineWidth = 1;
+            ctx.stroke();
+
+            var midX = width / 2;
+            var centerY = cardY + cardH / 2;
+
+            // Player 1 name (left)
+            var nameSize = Math.min(24, width * 0.019);
+            ctx.font = '600 ' + nameSize + 'px Arial, sans-serif';
+            ctx.fillStyle = C.text;
             ctx.textAlign = 'center';
+            ctx.fillText(data.player1Name, midX - cardW * 0.25, centerY - 16);
 
-            // Scale font based on name length
-            var fullTitle = data.player1Name + '  VS  ' + data.player2Name;
-            var fontSize = 48;
-            if (fullTitle.length > 40) fontSize = 40;
-            if (fullTitle.length > 50) fontSize = 34;
-            if (fullTitle.length > 60) fontSize = 28;
+            // Player 1 score
+            var scoreSize = Math.min(48, width * 0.037);
+            var p1Won = p1Score > p2Score;
+            var p2Won = p2Score > p1Score;
+            ctx.font = '700 ' + scoreSize + 'px "Courier New", monospace';
+            ctx.fillStyle = p1Won ? C.green : C.accent;
+            ctx.fillText(String(Math.round(p1Score)), midX - cardW * 0.25, centerY + 30);
 
-            ctx.font = 'bold ' + fontSize + 'px Arial';
-            ctx.fillText(data.player1Name + '  VS  ' + data.player2Name, width / 2, 55);
-
-            // Score display
-            ctx.font = 'bold 36px Arial';
-            var scoreText = Math.round(p1ScoreAnimated) + '  -  ' + Math.round(p2ScoreAnimated);
-            ctx.fillText(scoreText, width / 2, 100);
-
-            // Score highlights
-            var scoreWidth = ctx.measureText(scoreText).width;
-            var scoreX = width / 2 - scoreWidth / 2;
-
-            if (p1ScoreAnimated > p2ScoreAnimated) {
-                ctx.fillStyle = '#4caf50';
-                ctx.font = 'bold 36px Arial';
-                ctx.textAlign = 'left';
-                ctx.fillText(Math.round(p1ScoreAnimated), scoreX, 100);
-            } else if (p2ScoreAnimated > p1ScoreAnimated) {
-                ctx.fillStyle = '#4caf50';
-                ctx.font = 'bold 36px Arial';
-                ctx.textAlign = 'right';
-                ctx.fillText(Math.round(p2ScoreAnimated), width / 2 + scoreWidth / 2, 100);
-            }
-
+            // Divider
+            ctx.font = '300 ' + Math.min(30, width * 0.023) + 'px Arial';
+            ctx.fillStyle = C.textSec;
             ctx.textAlign = 'center';
+            ctx.fillText('\u2013', midX, centerY + 8);
+
+            // Player 2 name (right)
+            ctx.font = '600 ' + nameSize + 'px Arial, sans-serif';
+            ctx.fillStyle = C.text;
+            ctx.fillText(data.player2Name, midX + cardW * 0.25, centerY - 16);
+
+            // Player 2 score
+            ctx.font = '700 ' + scoreSize + 'px "Courier New", monospace';
+            ctx.fillStyle = p2Won ? C.green : C.accent;
+            ctx.fillText(String(Math.round(p2Score)), midX + cardW * 0.25, centerY + 30);
         }
 
-        function drawScrollingContent(ctx, contentLayout, width, height, scrollY, data) {
-            var HEADER_HEIGHT = 120;
+        function drawScrollingContent(ctx, contentLayout, width, height, scrollY) {
+            var HEADER_HEIGHT = 140;
             var contentAreaTop = HEADER_HEIGHT;
             var contentAreaHeight = height - HEADER_HEIGHT;
+
+            // Page background
+            ctx.fillStyle = C.bg;
+            ctx.fillRect(0, contentAreaTop, width, contentAreaHeight);
 
             ctx.save();
             ctx.beginPath();
             ctx.rect(0, contentAreaTop, width, contentAreaHeight);
             ctx.clip();
 
-            var padding = width * 0.05;
-            var colWidth = (width - padding * 2);
-            var valueColWidth = colWidth * 0.25;
-            var metricColWidth = colWidth * 0.5;
-            var leftValueX = padding + valueColWidth / 2;
-            var rightValueX = width - padding - valueColWidth / 2;
-            var metricCenterX = width / 2;
+            var pad = Math.round(width * 0.04);
+            var rowW = width - pad * 2;
+            // 5-column grid ratios: 2fr 3fr 1fr 3fr 2fr  (total 11fr)
+            var fr = rowW / 11;
+            var col1W = fr * 2; // p1 value
+            var col2W = fr * 3; // p1 name
+            var col3W = fr * 1; // metric
+            var col4W = fr * 3; // p2 name
+            var col5W = fr * 2; // p2 value
+            var col1X = pad;
+            var col2X = pad + col1W;
+            var col3X = pad + col1W + col2W;
+            var col4X = pad + col1W + col2W + col3W;
+            var col5X = pad + col1W + col2W + col3W + col4W;
 
             contentLayout.items.forEach(function(item) {
                 var drawY = contentAreaTop + item.y - scrollY;
 
-                // Skip if outside visible area
-                if (drawY < contentAreaTop - 80 || drawY > height + 20) return;
+                if (drawY < contentAreaTop - 90 || drawY > height + 20) return;
 
                 if (item.type === 'sectionHeader') {
-                    // Section header background
-                    var headerGrad = ctx.createLinearGradient(0, drawY, width, drawY);
-                    headerGrad.addColorStop(0, '#333333');
-                    headerGrad.addColorStop(0.5, '#3a3a3a');
-                    headerGrad.addColorStop(1, '#333333');
-                    ctx.fillStyle = headerGrad;
-                    ctx.fillRect(0, drawY, width, 60);
+                    // Section header: white background, bold uppercase title, blue underline
+                    ctx.fillStyle = C.bg;
+                    ctx.fillRect(pad, drawY, rowW, 80);
 
-                    // Red accent line
-                    ctx.fillStyle = '#e31837';
-                    ctx.fillRect(0, drawY, 5, 60);
-                    ctx.fillRect(width - 5, drawY, 5, 60);
-
-                    // Section title
-                    ctx.fillStyle = '#ffffff';
-                    var sectionFontSize = Math.min(36, width * 0.028);
-                    ctx.font = 'bold ' + sectionFontSize + 'px Arial';
-                    ctx.textAlign = 'center';
-                    ctx.fillText(item.text, width / 2, drawY + 40);
-
-                } else if (item.type === 'sectionScore') {
-                    // Section score bar
-                    ctx.fillStyle = '#2a2a2a';
-                    ctx.fillRect(padding, drawY, width - padding * 2, 32);
-
-                    ctx.font = 'bold 20px Arial';
-                    ctx.fillStyle = item.p1 >= item.p2 && item.p1 > 0 ? '#4caf50' : '#888';
+                    var titleSize = Math.min(22, width * 0.017);
+                    ctx.font = '600 ' + titleSize + 'px Arial, sans-serif';
+                    ctx.fillStyle = C.text;
                     ctx.textAlign = 'left';
-                    ctx.fillText(String(item.p1), padding + 15, drawY + 23);
+                    ctx.fillText(item.text, pad + 4, drawY + 32);
 
-                    ctx.fillStyle = '#666';
-                    ctx.textAlign = 'center';
-                    ctx.fillText('SECTION SCORE', width / 2, drawY + 23);
+                    // Blue bottom border
+                    ctx.fillStyle = C.accent;
+                    ctx.fillRect(pad, drawY + 52, rowW, 2);
 
-                    ctx.fillStyle = item.p2 >= item.p1 && item.p2 > 0 ? '#4caf50' : '#888';
-                    ctx.textAlign = 'right';
-                    ctx.fillText(String(item.p2), width - padding - 15, drawY + 23);
-
-                } else if (item.type === 'item') {
-                    // Row background (alternating subtle)
-                    var rowIdx = contentLayout.items.indexOf(item);
-                    ctx.fillStyle = rowIdx % 2 === 0 ? '#222222' : '#252525';
-                    ctx.fillRect(padding, drawY, width - padding * 2, 46);
-
-                    // Winner highlight bar
-                    if (item.winner === 'player1') {
-                        ctx.fillStyle = 'rgba(76, 175, 80, 0.12)';
-                        ctx.fillRect(padding, drawY, (width - padding * 2) / 2, 46);
-                    } else if (item.winner === 'player2') {
-                        ctx.fillStyle = 'rgba(76, 175, 80, 0.12)';
-                        ctx.fillRect(width / 2, drawY, (width - padding * 2) / 2, 46);
+                    // Section score subtitle
+                    if (item.sectionP1 > 0 || item.sectionP2 > 0) {
+                        var subSize = Math.min(15, width * 0.012);
+                        ctx.font = '500 ' + subSize + 'px Arial, sans-serif';
+                        ctx.fillStyle = C.textSec;
+                        ctx.textAlign = 'left';
+                        ctx.fillText(
+                            item.p1Name + ' ' + item.sectionP1 + '  \u2013  ' + item.p2Name + ' ' + item.sectionP2,
+                            pad + 4, drawY + 72
+                        );
                     }
 
-                    var valueFontSize = Math.min(26, width * 0.02);
-                    var metricFontSize = Math.min(22, width * 0.017);
+                } else if (item.type === 'item') {
+                    var ROW_H = 52;
+                    var RAD = 8;
 
-                    // Player 1 value
-                    ctx.font = (item.winner === 'player1' ? 'bold ' : '') + valueFontSize + 'px Arial';
-                    ctx.fillStyle = item.winner === 'player1' ? '#4caf50' : '#cccccc';
+                    // Determine background tints
+                    var isP1Win = item.winner === 'player1';
+                    var isP2Win = item.winner === 'player2';
+                    var isTie = item.winner === 'tie' && item.p1Value !== '-' && item.p2Value !== '-';
+
+                    // Card background
+                    ctx.save();
+                    roundRect(ctx, pad, drawY, rowW, ROW_H, RAD);
+                    ctx.fillStyle = C.surface;
+                    ctx.fill();
+
+                    // Winner / tie gradient tints
+                    if (isP1Win) {
+                        ctx.save();
+                        roundRect(ctx, pad, drawY, rowW, ROW_H, RAD);
+                        ctx.clip();
+                        var grad = ctx.createLinearGradient(pad, 0, pad + rowW, 0);
+                        grad.addColorStop(0, C.greenDim);
+                        grad.addColorStop(0.4, 'rgba(255,255,255,0)');
+                        ctx.fillStyle = grad;
+                        ctx.fillRect(pad, drawY, rowW, ROW_H);
+                        ctx.restore();
+                    } else if (isP2Win) {
+                        ctx.save();
+                        roundRect(ctx, pad, drawY, rowW, ROW_H, RAD);
+                        ctx.clip();
+                        var grad = ctx.createLinearGradient(pad, 0, pad + rowW, 0);
+                        grad.addColorStop(0.6, 'rgba(255,255,255,0)');
+                        grad.addColorStop(1, C.greenDim);
+                        ctx.fillStyle = grad;
+                        ctx.fillRect(pad, drawY, rowW, ROW_H);
+                        ctx.restore();
+                    } else if (isTie) {
+                        ctx.save();
+                        roundRect(ctx, pad, drawY, rowW, ROW_H, RAD);
+                        ctx.clip();
+                        var grad = ctx.createLinearGradient(pad, 0, pad + rowW, 0);
+                        grad.addColorStop(0, C.orangeDim);
+                        grad.addColorStop(0.3, 'rgba(255,255,255,0)');
+                        grad.addColorStop(0.7, 'rgba(255,255,255,0)');
+                        grad.addColorStop(1, C.orangeDim);
+                        ctx.fillStyle = grad;
+                        ctx.fillRect(pad, drawY, rowW, ROW_H);
+                        ctx.restore();
+                    }
+
+                    // Card border
+                    roundRect(ctx, pad, drawY, rowW, ROW_H, RAD);
+                    ctx.strokeStyle = C.border;
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+
+                    // Winner accent borders (left or right 3px bar)
+                    if (isP1Win) {
+                        ctx.fillStyle = C.green;
+                        roundRect(ctx, pad, drawY, 3, ROW_H, RAD);
+                        ctx.fillRect(pad, drawY + 4, 3, ROW_H - 8);
+                    } else if (isP2Win) {
+                        ctx.fillStyle = C.green;
+                        ctx.fillRect(pad + rowW - 3, drawY + 4, 3, ROW_H - 8);
+                    } else if (isTie) {
+                        ctx.fillStyle = C.orange;
+                        ctx.fillRect(pad, drawY + 4, 3, ROW_H - 8);
+                        ctx.fillRect(pad + rowW - 3, drawY + 4, 3, ROW_H - 8);
+                    }
+
+                    ctx.restore();
+
+                    var textY = drawY + ROW_H / 2 + 5;
+                    var valSize = Math.min(18, width * 0.014);
+                    var nameColSize = Math.min(14, width * 0.011);
+                    var metricSize = Math.min(14, width * 0.011);
+
+                    // Col 1: Player 1 value
+                    ctx.font = (isP1Win ? '600 ' : '500 ') + valSize + 'px "Courier New", monospace';
+                    ctx.fillStyle = isP1Win ? C.green : C.text;
                     ctx.textAlign = 'center';
-                    ctx.fillText(item.p1Value, leftValueX, drawY + 30);
+                    ctx.fillText(item.p1Value, col1X + col1W / 2, textY);
 
-                    // Metric name
-                    ctx.font = metricFontSize + 'px Arial';
-                    ctx.fillStyle = '#999999';
+                    // Col 2: Player 1 name (underlined secondary)
+                    ctx.font = '400 ' + nameColSize + 'px Arial, sans-serif';
+                    ctx.fillStyle = C.textSec;
                     ctx.textAlign = 'center';
-                    ctx.fillText(item.metric, metricCenterX, drawY + 30);
+                    var p1NameTxt = item.p1Name;
+                    ctx.fillText(p1NameTxt, col2X + col2W / 2, textY);
+                    // Underline
+                    var p1tw = ctx.measureText(p1NameTxt).width;
+                    ctx.fillRect(col2X + (col2W - p1tw) / 2, textY + 3, p1tw, 1);
 
-                    // Player 2 value
-                    ctx.font = (item.winner === 'player2' ? 'bold ' : '') + valueFontSize + 'px Arial';
-                    ctx.fillStyle = item.winner === 'player2' ? '#4caf50' : '#cccccc';
+                    // Col 3: Metric label
+                    ctx.font = '500 ' + metricSize + 'px Arial, sans-serif';
+                    ctx.fillStyle = C.textSec;
                     ctx.textAlign = 'center';
-                    ctx.fillText(item.p2Value, rightValueX, drawY + 30);
+                    ctx.fillText(item.metric, col3X + col3W / 2, textY);
 
-                    // Separator line
-                    ctx.fillStyle = '#333333';
-                    ctx.fillRect(padding, drawY + 45, width - padding * 2, 1);
+                    // Col 4: Player 2 name (underlined secondary)
+                    ctx.font = '400 ' + nameColSize + 'px Arial, sans-serif';
+                    ctx.fillStyle = C.textSec;
+                    ctx.textAlign = 'center';
+                    var p2NameTxt = item.p2Name;
+                    ctx.fillText(p2NameTxt, col4X + col4W / 2, textY);
+                    var p2tw = ctx.measureText(p2NameTxt).width;
+                    ctx.fillRect(col4X + (col4W - p2tw) / 2, textY + 3, p2tw, 1);
+
+                    // Col 5: Player 2 value
+                    ctx.font = (isP2Win ? '600 ' : '500 ') + valSize + 'px "Courier New", monospace';
+                    ctx.fillStyle = isP2Win ? C.green : C.text;
+                    ctx.textAlign = 'center';
+                    ctx.fillText(item.p2Value, col5X + col5W / 2, textY);
                 }
             });
 
@@ -1821,115 +1925,98 @@
         }
 
         function drawFinalScreen(ctx, data, width, height, fadeProgress) {
-            // Background
-            ctx.fillStyle = '#1a1a1a';
-            ctx.fillRect(0, 0, width, height);
-
-            // Large gradient overlay
-            var grad = ctx.createRadialGradient(width / 2, height / 2, 0, width / 2, height / 2, width * 0.6);
-            grad.addColorStop(0, 'rgba(227, 24, 55, 0.15)');
-            grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
-            ctx.fillStyle = grad;
+            ctx.fillStyle = C.bg;
             ctx.fillRect(0, 0, width, height);
 
             ctx.globalAlpha = Math.min(1, fadeProgress * 2);
 
-            // "FINAL SCORE" header
-            ctx.fillStyle = '#e31837';
-            ctx.font = 'bold ' + Math.min(52, width * 0.04) + 'px Arial';
+            // "FINAL SCORE" heading
+            ctx.fillStyle = C.accent;
+            ctx.font = 'bold ' + Math.min(52, width * 0.04) + 'px Arial, sans-serif';
             ctx.textAlign = 'center';
-            ctx.fillText('FINAL SCORE', width / 2, height * 0.2);
+            ctx.fillText('FINAL SCORE', width / 2, height * 0.18);
 
-            // Decorative line
-            ctx.fillStyle = '#e31837';
-            ctx.fillRect(width * 0.3, height * 0.23, width * 0.4, 3);
+            // Decorative blue line
+            ctx.fillStyle = C.accent;
+            ctx.fillRect(width * 0.3, height * 0.21, width * 0.4, 2);
 
-            // Player 1 name and score
             var nameSize = Math.min(40, width * 0.03);
             var scoreSize = Math.min(120, width * 0.09);
+            var p1Won = data.player1Score > data.player2Score;
+            var p2Won = data.player2Score > data.player1Score;
+            var tied = data.player1Score === data.player2Score;
 
-            ctx.fillStyle = data.player1Score > data.player2Score ? '#4caf50' : (data.player1Score === data.player2Score ? '#ffffff' : '#999999');
-            ctx.font = 'bold ' + nameSize + 'px Arial';
-            ctx.textAlign = 'center';
-            ctx.fillText(data.player1Name, width * 0.25, height * 0.4);
+            // Player 1 name
+            ctx.fillStyle = C.text;
+            ctx.font = 'bold ' + nameSize + 'px Arial, sans-serif';
+            ctx.fillText(data.player1Name, width * 0.25, height * 0.38);
 
-            ctx.font = 'bold ' + scoreSize + 'px Arial';
-            ctx.fillText(String(data.player1Score), width * 0.25, height * 0.6);
+            // Player 1 score
+            ctx.font = 'bold ' + scoreSize + 'px "Courier New", monospace';
+            ctx.fillStyle = p1Won ? C.green : C.accent;
+            ctx.fillText(String(data.player1Score), width * 0.25, height * 0.58);
 
-            // VS
-            ctx.fillStyle = '#e31837';
+            // Divider
+            ctx.fillStyle = C.textSec;
             ctx.font = 'bold ' + Math.min(48, width * 0.035) + 'px Arial';
-            ctx.fillText('-', width / 2, height * 0.55);
+            ctx.fillText('\u2013', width / 2, height * 0.52);
 
-            // Player 2 name and score
-            ctx.fillStyle = data.player2Score > data.player1Score ? '#4caf50' : (data.player1Score === data.player2Score ? '#ffffff' : '#999999');
-            ctx.font = 'bold ' + nameSize + 'px Arial';
-            ctx.fillText(data.player2Name, width * 0.75, height * 0.4);
+            // Player 2 name
+            ctx.fillStyle = C.text;
+            ctx.font = 'bold ' + nameSize + 'px Arial, sans-serif';
+            ctx.fillText(data.player2Name, width * 0.75, height * 0.38);
 
-            ctx.font = 'bold ' + scoreSize + 'px Arial';
-            ctx.fillText(String(data.player2Score), width * 0.75, height * 0.6);
+            // Player 2 score
+            ctx.font = 'bold ' + scoreSize + 'px "Courier New", monospace';
+            ctx.fillStyle = p2Won ? C.green : C.accent;
+            ctx.fillText(String(data.player2Score), width * 0.75, height * 0.58);
 
-            // Winner text
-            var winnerText = '';
-            if (data.player1Score > data.player2Score) {
-                winnerText = data.player1Name + ' WINS!';
-            } else if (data.player2Score > data.player1Score) {
-                winnerText = data.player2Name + ' WINS!';
-            } else {
-                winnerText = "IT'S A TIE!";
-            }
-
-            ctx.fillStyle = '#ffffff';
-            ctx.font = 'bold ' + Math.min(36, width * 0.028) + 'px Arial';
-            ctx.fillText(winnerText, width / 2, height * 0.78);
+            // Winner / tie label
+            var winnerText = tied ? "IT'S A TIE!" :
+                (p1Won ? data.player1Name + ' WINS!' : data.player2Name + ' WINS!');
+            ctx.fillStyle = C.text;
+            ctx.font = 'bold ' + Math.min(36, width * 0.028) + 'px Arial, sans-serif';
+            ctx.fillText(winnerText, width / 2, height * 0.75);
 
             // HoopsHype branding
-            ctx.fillStyle = '#666';
-            ctx.font = '18px Arial';
+            ctx.fillStyle = C.textSec;
+            ctx.font = '18px Arial, sans-serif';
             ctx.fillText('HoopsHype', width / 2, height * 0.92);
 
             ctx.globalAlpha = 1;
         }
 
         function drawIntroScreen(ctx, data, width, height, progress) {
-            // Background
-            ctx.fillStyle = '#1a1a1a';
-            ctx.fillRect(0, 0, width, height);
-
-            // Radial gradient accent
-            var grad = ctx.createRadialGradient(width / 2, height / 2, 0, width / 2, height / 2, width * 0.5);
-            grad.addColorStop(0, 'rgba(227, 24, 55, 0.2)');
-            grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
-            ctx.fillStyle = grad;
+            ctx.fillStyle = C.bg;
             ctx.fillRect(0, 0, width, height);
 
             ctx.globalAlpha = Math.min(1, progress * 3);
 
             // Title
-            ctx.fillStyle = '#e31837';
-            ctx.font = 'bold ' + Math.min(40, width * 0.03) + 'px Arial';
+            ctx.fillStyle = C.text;
+            ctx.font = 'bold ' + Math.min(40, width * 0.03) + 'px Arial, sans-serif';
             ctx.textAlign = 'center';
             ctx.fillText('NBA PLAYER COMPARISON', width / 2, height * 0.2);
 
             // Player 1 name
             var nameSize = Math.min(56, width * 0.042);
-            ctx.fillStyle = '#ffffff';
-            ctx.font = 'bold ' + nameSize + 'px Arial';
+            ctx.fillStyle = C.text;
+            ctx.font = 'bold ' + nameSize + 'px Arial, sans-serif';
             ctx.fillText(data.player1Name, width / 2, height * 0.42);
 
             // VS
-            ctx.fillStyle = '#e31837';
-            ctx.font = 'bold ' + Math.min(64, width * 0.048) + 'px Arial';
+            ctx.fillStyle = C.accent;
+            ctx.font = 'bold ' + Math.min(64, width * 0.048) + 'px Arial, sans-serif';
             ctx.fillText('VS', width / 2, height * 0.56);
 
             // Player 2 name
-            ctx.fillStyle = '#ffffff';
-            ctx.font = 'bold ' + nameSize + 'px Arial';
+            ctx.fillStyle = C.text;
+            ctx.font = 'bold ' + nameSize + 'px Arial, sans-serif';
             ctx.fillText(data.player2Name, width / 2, height * 0.7);
 
             // HoopsHype
-            ctx.fillStyle = '#666';
-            ctx.font = '20px Arial';
+            ctx.fillStyle = C.textSec;
+            ctx.font = '20px Arial, sans-serif';
             ctx.fillText('HoopsHype', width / 2, height * 0.9);
 
             ctx.globalAlpha = 1;
@@ -1939,13 +2026,18 @@
         // VIDEO GENERATION
         // ========================================
 
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
         async function generateVideo() {
             var player1 = document.getElementById('player1').value.trim();
             var player2 = document.getElementById('player2').value.trim();
             var compType = document.getElementById('comparisonType').value;
             var resolution = document.getElementById('resolution').value;
-            var duration = parseInt(document.getElementById('duration').value);
-            var framerate = parseInt(document.getElementById('framerate').value);
+            var duration = parseInt(document.getElementById('duration').value, 10);
+            var framerate = parseInt(document.getElementById('framerate').value, 10);
+            console.log('[VideoGen] duration=' + duration + 's, framerate=' + framerate + 'fps, totalFrames=' + (duration * framerate));
 
             // Validation
             if (!player1 || !player2) {
@@ -2017,8 +2109,15 @@
 
                 updateProgress(25, 'Setting up video recorder...');
 
-                // Set up MediaRecorder
-                var stream = canvas.captureStream(framerate);
+                // Create offscreen canvas for recording (immune to tab throttling)
+                var offscreen = document.createElement('canvas');
+                offscreen.width = dims.width;
+                offscreen.height = dims.height;
+                var offCtx = offscreen.getContext('2d');
+                var previewCtx = ctx; // #videoCanvas context for live preview
+
+                // Set up MediaRecorder on the offscreen canvas
+                var stream = offscreen.captureStream(framerate);
                 recordedChunks = [];
 
                 var mimeType = 'video/webm;codecs=vp9';
@@ -2038,88 +2137,60 @@
                     if (event.data.size > 0) recordedChunks.push(event.data);
                 };
 
-                mediaRecorder.onstop = function() {
-                    videoBlob = new Blob(recordedChunks, { type: 'video/webm' });
-                    updateProgress(100, 'Video complete!');
-                    showStatus('Video generated successfully! Size: ' + (videoBlob.size / 1024 / 1024).toFixed(2) + ' MB', 'success');
-                    document.getElementById('downloadBtn').style.display = 'block';
-                    document.getElementById('generateBtn').disabled = false;
-                    document.getElementById('loadingSpinner').style.display = 'none';
-                    document.getElementById('btnText').textContent = 'Generate Video';
-                };
-
-                // Start recording
+                // Start recording and give it time to initialise
                 mediaRecorder.start();
+                await sleep(50);
                 updateProgress(30, 'Recording started...');
 
-                // Render animation
-                await renderAnimation(ctx, comparisonData, contentLayout, dims.width, dims.height, duration, framerate);
+                // --- Frame rendering loop (setTimeout-based, not rAF) ---
+                var totalFrames = duration * framerate;
+                var frameDelay = Math.round(1000 / framerate);
 
-                // Stop recording
-                updateProgress(95, 'Finalizing video...');
-                mediaRecorder.stop();
+                // Timing allocation
+                var introFrames = Math.round(framerate * 2.5);
+                var outroFrames = Math.round(framerate * 3);
+                var scrollFrames = Math.max(1, totalFrames - introFrames - outroFrames);
+                console.log('[VideoGen] totalFrames=' + totalFrames + ', intro=' + introFrames + ', scroll=' + scrollFrames + ', outro=' + outroFrames);
 
-            } catch (error) {
-                console.error('Video generation error:', error);
-                showStatus('Error generating video: ' + error.message, 'error');
-                document.getElementById('generateBtn').disabled = false;
-                document.getElementById('loadingSpinner').style.display = 'none';
-                document.getElementById('btnText').textContent = 'Generate Video';
-            }
-        }
+                // Pre-calculate running scores for animated counter
+                var runningScores = [];
+                var cumP1 = 0, cumP2 = 0;
+                contentLayout.items.forEach(function(item) {
+                    if (item.type === 'item') {
+                        if (item.winner === 'player1') cumP1++;
+                        else if (item.winner === 'player2') cumP2++;
+                    }
+                    runningScores.push({ p1: cumP1, p2: cumP2 });
+                });
 
-        async function renderAnimation(ctx, comparisonData, contentLayout, width, height, duration, framerate) {
-            var totalFrames = duration * framerate;
-            var currentFrame = 0;
+                var visibleContentHeight = dims.height - 140;
+                var totalScrollDistance = Math.max(0, contentLayout.totalHeight - visibleContentHeight + 80);
 
-            // Timing allocation
-            var introFrames = Math.round(framerate * 2.5); // 2.5s intro
-            var outroFrames = Math.round(framerate * 3);   // 3s final screen
-            var scrollFrames = totalFrames - introFrames - outroFrames;
+                for (var frame = 0; frame < totalFrames; frame++) {
+                    var frameStart = performance.now();
 
-            // Calculate running scores per content item for animated score counter
-            var runningScores = [];
-            var cumP1 = 0, cumP2 = 0;
-            contentLayout.items.forEach(function(item) {
-                if (item.type === 'item') {
-                    if (item.winner === 'player1') cumP1++;
-                    else if (item.winner === 'player2') cumP2++;
-                }
-                runningScores.push({ p1: cumP1, p2: cumP2 });
-            });
+                    // Clear offscreen canvas
+                    offCtx.fillStyle = '#f5f5f7';
+                    offCtx.fillRect(0, 0, dims.width, dims.height);
 
-            // Total scroll distance
-            var visibleContentHeight = height - 120; // Below header
-            var totalScrollDistance = Math.max(0, contentLayout.totalHeight - visibleContentHeight + 80);
-
-            return new Promise(function(resolve) {
-                function renderFrame() {
-                    // Clear canvas
-                    ctx.fillStyle = '#1a1a1a';
-                    ctx.fillRect(0, 0, width, height);
-
-                    if (currentFrame < introFrames) {
+                    if (frame < introFrames) {
                         // INTRO PHASE
-                        var introProgress = currentFrame / introFrames;
-                        drawIntroScreen(ctx, comparisonData, width, height, introProgress);
+                        var introProgress = frame / introFrames;
+                        drawIntroScreen(offCtx, comparisonData, dims.width, dims.height, introProgress);
 
-                    } else if (currentFrame < introFrames + scrollFrames) {
+                    } else if (frame < introFrames + scrollFrames) {
                         // SCROLLING PHASE
-                        var scrollFrame = currentFrame - introFrames;
+                        var scrollFrame = frame - introFrames;
                         var scrollProgress = scrollFrame / scrollFrames;
 
-                        // Ease-in-out scroll with slight pause at start
                         var easedProgress = scrollProgress < 0.05 ? 0 :
                             (scrollProgress - 0.05) / 0.95;
-                        // Smooth ease
                         easedProgress = easedProgress * easedProgress * (3 - 2 * easedProgress);
 
                         var scrollY = easedProgress * totalScrollDistance;
 
-                        // Calculate animated score based on scroll position
                         var p1Anim = 0, p2Anim = 0;
                         if (contentLayout.items.length > 0) {
-                            // Find which content items are above the current scroll position
                             var midScreen = scrollY + visibleContentHeight * 0.4;
                             for (var i = 0; i < contentLayout.items.length; i++) {
                                 if (contentLayout.items[i].y <= midScreen) {
@@ -2129,36 +2200,55 @@
                             }
                         }
 
-                        // Draw header with animated scores
-                        drawHeader(ctx, comparisonData, width, p1Anim, p2Anim);
-
-                        // Draw scrolling content
-                        drawScrollingContent(ctx, contentLayout, width, height, scrollY, comparisonData);
+                        drawHeader(offCtx, comparisonData, dims.width, p1Anim, p2Anim);
+                        drawScrollingContent(offCtx, contentLayout, dims.width, dims.height, scrollY);
 
                     } else {
                         // OUTRO/FINAL SCREEN PHASE
-                        var outroFrame = currentFrame - introFrames - scrollFrames;
+                        var outroFrame = frame - introFrames - scrollFrames;
                         var outroProgress = outroFrame / outroFrames;
-                        drawFinalScreen(ctx, comparisonData, width, height, outroProgress);
+                        drawFinalScreen(offCtx, comparisonData, dims.width, dims.height, outroProgress);
                     }
 
-                    // Update progress bar
-                    var percent = 30 + ((currentFrame / totalFrames) * 65);
-                    if (currentFrame % (framerate) === 0) { // Update UI every second
-                        updateProgress(percent, 'Rendering frame ' + currentFrame + '/' + totalFrames + '...');
+                    // Mirror offscreen canvas to the visible preview canvas
+                    previewCtx.drawImage(offscreen, 0, 0);
+
+                    // Update progress bar every 30 frames
+                    if (frame % 30 === 0) {
+                        var percent = 30 + ((frame / totalFrames) * 65);
+                        updateProgress(percent, 'Rendering frame ' + frame + '/' + totalFrames + '...');
                     }
 
-                    currentFrame++;
-
-                    if (currentFrame < totalFrames) {
-                        requestAnimationFrame(renderFrame);
-                    } else {
-                        resolve();
-                    }
+                    // Sleep to maintain target frame rate (not throttled like rAF)
+                    var elapsed = performance.now() - frameStart;
+                    await sleep(Math.max(1, frameDelay - elapsed));
                 }
 
-                renderFrame();
-            });
+                // Stop recording
+                updateProgress(95, 'Finalizing video...');
+                mediaRecorder.stop();
+
+                // Wait for the onstop event to fire and create the blob
+                await new Promise(function(resolve) {
+                    mediaRecorder.onstop = function() {
+                        videoBlob = new Blob(recordedChunks, { type: 'video/webm' });
+                        updateProgress(100, 'Video complete!');
+                        showStatus('Video generated successfully! Size: ' + (videoBlob.size / 1024 / 1024).toFixed(2) + ' MB', 'success');
+                        document.getElementById('downloadBtn').style.display = 'block';
+                        document.getElementById('generateBtn').disabled = false;
+                        document.getElementById('loadingSpinner').style.display = 'none';
+                        document.getElementById('btnText').textContent = 'Generate Video';
+                        resolve();
+                    };
+                });
+
+            } catch (error) {
+                console.error('Video generation error:', error);
+                showStatus('Error generating video: ' + error.message, 'error');
+                document.getElementById('generateBtn').disabled = false;
+                document.getElementById('loadingSpinner').style.display = 'none';
+                document.getElementById('btnText').textContent = 'Generate Video';
+            }
         }
 
         // ========================================
