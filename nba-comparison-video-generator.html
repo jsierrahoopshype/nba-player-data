@@ -518,6 +518,7 @@
         let videoBlob = null;
         let mediaRecorder = null;
         let recordedChunks = [];
+        let lastComparisonData = null;
 
         // ========================================
         // DATA LOADING
@@ -1924,64 +1925,223 @@
             ctx.restore();
         }
 
+        // Priority list for ranking "biggest wins"
+        var WIN_PRIORITY = [
+            'NBA Champion', 'Finals MVP', 'Most Valuable Player', 'Conference Finals MVP',
+            'All-NBA First Team', 'All-NBA Selections', 'All-Star', 'Points', 'Points PO',
+            'Points per game', 'Points per game PO', 'Scoring Leader',
+            'Defensive Player of the Year', 'Rookie of the Year', 'Olympic Gold',
+            'Olympic Medals', 'All-Defensive First Team', 'All-Defensive Team Selections',
+            'Rebounds', 'Rebounds PO', 'Rebounding Leader', 'Rebounds per game',
+            'Rebounds per game PO', 'Assists', 'Assists PO', 'Assists Leader',
+            'Assists per game', 'Assists per game PO', 'World Cup Medals',
+            'Sixth Man of the Year', 'All-Star MVP', 'Player of the Month',
+            'Player of the Week', 'NBA Cup Champion', 'NBA Cup MVP'
+        ];
+
+        var DISPLAY_LABELS = {
+            'All-NBA First Team': 'All-NBA 1st Team',
+            'All-Defensive First Team': 'All-Defense 1st Team'
+        };
+
+        function getTopWins(whichPlayer, compData) {
+            // Collect all wins for the given side
+            var wins = [];
+            var globalIndex = 0;
+            compData.sections.forEach(function(section) {
+                section.items.forEach(function(item) {
+                    if (item.winner === whichPlayer) {
+                        var prioIdx = WIN_PRIORITY.indexOf(item.metric);
+                        // Items not in priority list get a high base + their appearance order
+                        var sortKey = prioIdx >= 0 ? prioIdx : WIN_PRIORITY.length + globalIndex;
+                        wins.push({
+                            metric: item.metric,
+                            p1Value: item.p1Value,
+                            p2Value: item.p2Value,
+                            sortKey: sortKey
+                        });
+                    }
+                    globalIndex++;
+                });
+            });
+
+            wins.sort(function(a, b) { return a.sortKey - b.sortKey; });
+            return wins.slice(0, 10);
+        }
+
+        function formatWinLabel(metric) {
+            return DISPLAY_LABELS[metric] || metric;
+        }
+
         function drawFinalScreen(ctx, data, width, height, fadeProgress) {
             ctx.fillStyle = C.bg;
             ctx.fillRect(0, 0, width, height);
 
             ctx.globalAlpha = Math.min(1, fadeProgress * 2);
 
+            // ---- Top section: scores ----
             // "FINAL SCORE" heading
             ctx.fillStyle = C.accent;
-            ctx.font = 'bold ' + Math.min(52, width * 0.04) + 'px Arial, sans-serif';
+            ctx.font = 'bold ' + Math.min(42, width * 0.032) + 'px Arial, sans-serif';
             ctx.textAlign = 'center';
-            ctx.fillText('FINAL SCORE', width / 2, height * 0.18);
+            ctx.fillText('FINAL SCORE', width / 2, height * 0.07);
 
             // Decorative blue line
             ctx.fillStyle = C.accent;
-            ctx.fillRect(width * 0.3, height * 0.21, width * 0.4, 2);
+            ctx.fillRect(width * 0.3, height * 0.09, width * 0.4, 2);
 
-            var nameSize = Math.min(40, width * 0.03);
-            var scoreSize = Math.min(120, width * 0.09);
+            var nameSize = Math.min(28, width * 0.022);
+            var scoreSize = Math.min(72, width * 0.055);
             var p1Won = data.player1Score > data.player2Score;
             var p2Won = data.player2Score > data.player1Score;
             var tied = data.player1Score === data.player2Score;
 
-            // Player 1 name
+            // Player 1 name + score
             ctx.fillStyle = C.text;
             ctx.font = 'bold ' + nameSize + 'px Arial, sans-serif';
-            ctx.fillText(data.player1Name, width * 0.25, height * 0.38);
+            ctx.fillText(data.player1Name, width * 0.25, height * 0.145);
 
-            // Player 1 score
             ctx.font = 'bold ' + scoreSize + 'px "Courier New", monospace';
             ctx.fillStyle = p1Won ? C.green : C.accent;
-            ctx.fillText(String(data.player1Score), width * 0.25, height * 0.58);
+            ctx.fillText(String(data.player1Score), width * 0.25, height * 0.225);
 
             // Divider
             ctx.fillStyle = C.textSec;
-            ctx.font = 'bold ' + Math.min(48, width * 0.035) + 'px Arial';
-            ctx.fillText('\u2013', width / 2, height * 0.52);
+            ctx.font = 'bold ' + Math.min(36, width * 0.028) + 'px Arial';
+            ctx.fillText('\u2013', width / 2, height * 0.2);
 
-            // Player 2 name
+            // Player 2 name + score
             ctx.fillStyle = C.text;
             ctx.font = 'bold ' + nameSize + 'px Arial, sans-serif';
-            ctx.fillText(data.player2Name, width * 0.75, height * 0.38);
+            ctx.fillText(data.player2Name, width * 0.75, height * 0.145);
 
-            // Player 2 score
             ctx.font = 'bold ' + scoreSize + 'px "Courier New", monospace';
             ctx.fillStyle = p2Won ? C.green : C.accent;
-            ctx.fillText(String(data.player2Score), width * 0.75, height * 0.58);
+            ctx.fillText(String(data.player2Score), width * 0.75, height * 0.225);
 
             // Winner / tie label
             var winnerText = tied ? "IT'S A TIE!" :
                 (p1Won ? data.player1Name + ' WINS!' : data.player2Name + ' WINS!');
             ctx.fillStyle = C.text;
-            ctx.font = 'bold ' + Math.min(36, width * 0.028) + 'px Arial, sans-serif';
-            ctx.fillText(winnerText, width / 2, height * 0.75);
+            ctx.font = 'bold ' + Math.min(26, width * 0.02) + 'px Arial, sans-serif';
+            ctx.fillText(winnerText, width / 2, height * 0.29);
+
+            // ---- Bottom section: top 10 biggest wins per player ----
+            var compData = lastComparisonData;
+            if (compData) {
+                var p1Wins = getTopWins('player1', compData);
+                var p2Wins = getTopWins('player2', compData);
+
+                var colTopY = height * 0.34;
+                var colBottomY = height * 0.88;
+                var availH = colBottomY - colTopY;
+                var headerH = Math.min(24, width * 0.018);
+                var maxLines = 10;
+                var lineH = Math.min((availH - headerH - 8) / maxLines, Math.min(22, width * 0.017));
+                var fontSize = Math.max(10, lineH * 0.7);
+                var valFontSize = Math.max(9, fontSize * 0.9);
+
+                var leftColX = width * 0.05;
+                var rightColX = width * 0.52;
+                var colW = width * 0.43;
+
+                // Column headers
+                ctx.font = 'bold ' + headerH + 'px Arial, sans-serif';
+                ctx.textAlign = 'left';
+
+                ctx.fillStyle = C.text;
+                ctx.fillText(data.player1Name + ' biggest wins', leftColX, colTopY);
+                ctx.fillText(data.player2Name + ' biggest wins', rightColX, colTopY);
+
+                // Thin separator below headers
+                ctx.fillStyle = C.border;
+                ctx.fillRect(leftColX, colTopY + 6, colW, 1);
+                ctx.fillRect(rightColX, colTopY + 6, colW, 1);
+
+                var startY = colTopY + headerH + 10;
+
+                // Draw win lines for a column
+                function drawWinColumn(wins, colX, cW) {
+                    for (var i = 0; i < wins.length; i++) {
+                        var y = startY + i * lineH;
+                        var w = wins[i];
+                        var label = formatWinLabel(w.metric);
+                        var values = w.p1Value + ' - ' + w.p2Value;
+
+                        // Metric label
+                        ctx.font = fontSize + 'px Arial, sans-serif';
+                        ctx.fillStyle = C.textSec;
+                        ctx.textAlign = 'left';
+                        ctx.fillText(label + ':', colX, y);
+
+                        // Values (right-aligned in the column)
+                        ctx.textAlign = 'right';
+                        // Draw p1 value, then " - ", then p2 value with winner bolded
+                        var dashStr = ' - ';
+                        var p1Str = String(w.p1Value);
+                        var p2Str = String(w.p2Value);
+
+                        // Measure parts to position them
+                        ctx.font = valFontSize + 'px "Courier New", monospace';
+                        var dashW = ctx.measureText(dashStr).width;
+                        var p2W_m = ctx.measureText(p2Str).width;
+
+                        // Bold the winner's value
+                        ctx.font = 'bold ' + valFontSize + 'px "Courier New", monospace';
+                        var p1W_m_bold = ctx.measureText(p1Str).width;
+
+                        var rightEdge = colX + cW;
+
+                        // If this is player1's win column, p1 value is the winner
+                        // If this is player2's win column, p2 value is the winner
+                        // We detect by checking: is this the left column or right?
+                        var isP1Column = (colX < width * 0.5);
+
+                        if (isP1Column) {
+                            // p1 value bold green, p2 value normal
+                            // Draw from right: p2Str, dashStr, p1Str
+                            ctx.font = valFontSize + 'px "Courier New", monospace';
+                            ctx.fillStyle = C.text;
+                            ctx.fillText(p2Str, rightEdge, y);
+
+                            ctx.fillStyle = C.textSec;
+                            ctx.fillText(dashStr, rightEdge - p2W_m, y);
+
+                            ctx.font = 'bold ' + valFontSize + 'px "Courier New", monospace';
+                            ctx.fillStyle = C.green;
+                            ctx.fillText(p1Str, rightEdge - p2W_m - dashW, y);
+                        } else {
+                            // p2 value bold green, p1 value normal
+                            ctx.font = 'bold ' + valFontSize + 'px "Courier New", monospace';
+                            ctx.fillStyle = C.green;
+                            ctx.fillText(p2Str, rightEdge, y);
+
+                            ctx.font = valFontSize + 'px "Courier New", monospace';
+                            ctx.fillStyle = C.textSec;
+                            var p2BoldW = ctx.measureText(p2Str).width;
+                            // Re-measure bold p2
+                            ctx.font = 'bold ' + valFontSize + 'px "Courier New", monospace';
+                            p2BoldW = ctx.measureText(p2Str).width;
+
+                            ctx.font = valFontSize + 'px "Courier New", monospace';
+                            ctx.fillStyle = C.textSec;
+                            ctx.fillText(dashStr, rightEdge - p2BoldW, y);
+
+                            ctx.fillStyle = C.text;
+                            ctx.fillText(p1Str, rightEdge - p2BoldW - dashW, y);
+                        }
+                    }
+                }
+
+                drawWinColumn(p1Wins, leftColX, colW);
+                drawWinColumn(p2Wins, rightColX, colW);
+            }
 
             // HoopsHype branding
             ctx.fillStyle = C.textSec;
-            ctx.font = '18px Arial, sans-serif';
-            ctx.fillText('HoopsHype', width / 2, height * 0.92);
+            ctx.font = '16px Arial, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('HoopsHype', width / 2, height * 0.95);
 
             ctx.globalAlpha = 1;
         }
@@ -2094,6 +2254,7 @@
 
                 // Get comparison data
                 var comparisonData = performComparison(player1, player2);
+                lastComparisonData = comparisonData;
 
                 if (comparisonData.sections.length === 0) {
                     showStatus('No comparison data found for these players. Try different players.', 'error');
@@ -2148,7 +2309,7 @@
 
                 // Timing allocation
                 var introFrames = Math.round(framerate * 2.5);
-                var outroFrames = Math.round(framerate * 3);
+                var outroFrames = Math.round(framerate * 5.0);
                 var scrollFrames = Math.max(1, totalFrames - introFrames - outroFrames);
                 console.log('[VideoGen] totalFrames=' + totalFrames + ', intro=' + introFrames + ', scroll=' + scrollFrames + ', outro=' + outroFrames);
 
