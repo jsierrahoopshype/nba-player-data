@@ -563,6 +563,23 @@
                 );
                 await new Promise(function(r) { setTimeout(r, 500); });
 
+                // Pre-fill with two random All-Stars
+                var allStarNames = [];
+                if (playerData.allStar) {
+                    var starSet = new Set();
+                    playerData.allStar.forEach(function(row) {
+                        if (row.NAME && allPlayers.includes(row.NAME)) starSet.add(row.NAME);
+                    });
+                    allStarNames = Array.from(starSet);
+                }
+                if (allStarNames.length >= 2) {
+                    var shuffled = allStarNames.sort(function() { return Math.random() - 0.5; });
+                    document.getElementById('player1').value = shuffled[0];
+                    document.getElementById('player2').value = shuffled[1];
+                    populateSeasonDropdown(shuffled[0], '1');
+                    populateSeasonDropdown(shuffled[1], '2');
+                }
+
                 showStatus('Database loaded! ' + allPlayers.length.toLocaleString() + ' players ready.', 'success');
                 document.getElementById('btnText').textContent = 'Generate Video';
                 document.getElementById('generateBtn').disabled = false;
@@ -1821,8 +1838,9 @@
                     var ROW_H = 52;
                     var RAD = 8;
 
-                    // Track reveal using simple array
-                    var inView = drawY >= contentAreaTop && drawY < height;
+                    // Track reveal: trigger when row crosses the vertical midpoint of content area
+                    var revealLine = contentAreaTop + contentAreaHeight * 0.5;
+                    var inView = drawY >= contentAreaTop && drawY < revealLine;
                     if (inView && itemRevealedAtFrame[idx] === -1) {
                         itemRevealedAtFrame[idx] = currentFrame;
                     }
@@ -1839,13 +1857,24 @@
                     ctx.fillStyle = C.surface;
                     ctx.fill();
 
-                    // Red flash overlay (age 0-7)
+                    // Flash overlay (age 0-7): only flash the winner's half
                     if (age >= 0 && age < 8) {
                         ctx.save();
                         roundRect(ctx, pad, drawY, rowW, ROW_H, RAD);
                         ctx.clip();
-                        ctx.fillStyle = 'rgba(227,24,55,0.2)';
-                        ctx.fillRect(pad, drawY, rowW, ROW_H);
+                        var halfW = rowW / 2;
+                        if (item.winner === 'player1') {
+                            ctx.fillStyle = 'rgba(227,24,55,0.2)';
+                            ctx.fillRect(pad, drawY, halfW, ROW_H);
+                        } else if (item.winner === 'player2') {
+                            ctx.fillStyle = 'rgba(227,24,55,0.2)';
+                            ctx.fillRect(pad + halfW, drawY, halfW, ROW_H);
+                        } else {
+                            // Tie: flash both halves in orange
+                            ctx.fillStyle = 'rgba(245,158,11,0.15)';
+                            ctx.fillRect(pad, drawY, halfW, ROW_H);
+                            ctx.fillRect(pad + halfW, drawY, halfW, ROW_H);
+                        }
                         ctx.restore();
                     }
 
@@ -2102,16 +2131,31 @@
             var p2Won = data.player2Score > data.player1Score;
             var tied = data.player1Score === data.player2Score;
 
-            // Player names
+            // Player names — with overflow protection
             var nameSize = Math.round(24 * S * FS);
-            ctx.font = '800 ' + nameSize + 'px ' + FF_HEAD;
+            var maxNameW = width * 0.45;
+            function fitName(name, baseSize) {
+                var sz = baseSize;
+                ctx.font = '800 ' + sz + 'px ' + FF_HEAD;
+                while (ctx.measureText(name).width > maxNameW && sz > 10) {
+                    sz--;
+                    ctx.font = '800 ' + sz + 'px ' + FF_HEAD;
+                }
+                return sz;
+            }
+            var p1NameSize = fitName(data.player1Name.toUpperCase(), nameSize);
+            var p2NameSize = fitName(data.player2Name.toUpperCase(), nameSize);
+
+            ctx.font = '800 ' + p1NameSize + 'px ' + FF_HEAD;
             ctx.fillStyle = '#ffffff';
             ctx.textAlign = 'center';
             ctx.fillText(data.player1Name.toUpperCase(), width * 0.25, Math.round(height * L.names));
+
+            ctx.font = '800 ' + p2NameSize + 'px ' + FF_HEAD;
             ctx.fillText(data.player2Name.toUpperCase(), width * 0.75, Math.round(height * L.names));
 
-            // Scores — massive
-            var scoreSize = Math.round(140 * S * FS);
+            // Scores — reduced base from 140 to 90 to prevent overflow
+            var scoreSize = Math.round(90 * S * FS);
             ctx.font = '900 ' + scoreSize + 'px ' + FF_MONO;
 
             var scoresY = Math.round(height * L.scores);
