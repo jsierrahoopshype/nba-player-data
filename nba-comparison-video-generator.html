@@ -1745,7 +1745,7 @@
             ctx.fillText(String(Math.round(p2Score)), midX + cardW * 0.25, centerY + 30);
         }
 
-        function drawScrollingContent(ctx, contentLayout, width, height, scrollY, revealedItems) {
+        function drawScrollingContent(ctx, contentLayout, width, height, scrollY, revealedItems, revealFrame, currentFrame) {
             var HEADER_HEIGHT = 140;
             var contentAreaTop = HEADER_HEIGHT;
             var contentAreaHeight = height - HEADER_HEIGHT;
@@ -1761,13 +1761,12 @@
 
             var pad = Math.round(width * 0.04);
             var rowW = width - pad * 2;
-            // 5-column grid ratios: 2fr 3fr 1fr 3fr 2fr  (total 11fr)
             var fr = rowW / 11;
-            var col1W = fr * 2; // p1 value
-            var col2W = fr * 3; // p1 name
-            var col3W = fr * 1; // metric
-            var col4W = fr * 3; // p2 name
-            var col5W = fr * 2; // p2 value
+            var col1W = fr * 2;
+            var col2W = fr * 3;
+            var col3W = fr * 1;
+            var col4W = fr * 3;
+            var col5W = fr * 2;
             var col1X = pad;
             var col2X = pad + col1W;
             var col3X = pad + col1W + col2W;
@@ -1780,7 +1779,6 @@
                 if (drawY < contentAreaTop - 90 || drawY > height + 20) return;
 
                 if (item.type === 'sectionHeader') {
-                    // Section header: white background, bold uppercase title, blue underline
                     ctx.fillStyle = C.bg;
                     ctx.fillRect(pad, drawY, rowW, 80);
 
@@ -1790,11 +1788,9 @@
                     ctx.textAlign = 'left';
                     ctx.fillText(item.text, pad + 4, drawY + 32);
 
-                    // Blue bottom border
                     ctx.fillStyle = C.accent;
                     ctx.fillRect(pad, drawY + 52, rowW, 2);
 
-                    // Section score subtitle
                     if (item.sectionP1 > 0 || item.sectionP2 > 0) {
                         var subSize = Math.min(15, width * 0.012);
                         ctx.font = '500 ' + subSize + 'px Arial, sans-serif';
@@ -1810,18 +1806,23 @@
                     var ROW_H = 52;
                     var RAD = 8;
 
-                    // Check if this item has been revealed (scrolled into view)
                     var itemKey = String(idx);
                     var inView = drawY >= contentAreaTop && drawY < height;
                     if (inView && !revealedItems.has(itemKey)) {
                         revealedItems.add(itemKey);
+                        revealFrame.set(idx, currentFrame);
                     }
                     var revealed = revealedItems.has(itemKey);
 
-                    // Determine highlight state only if revealed
-                    var isP1Win = revealed && item.winner === 'player1';
-                    var isP2Win = revealed && item.winner === 'player2';
-                    var isTie = revealed && item.winner === 'tie' && item.p1Value !== '-' && item.p2Value !== '-';
+                    // Animation stage: 0-3 = flash white, 4-7 = transition to final, 8+ = fully revealed
+                    var animAge = revealed ? (currentFrame - (revealFrame.get(idx) || 0)) : -1;
+                    var fullyRevealed = animAge >= 8;
+                    var flashing = revealed && animAge < 4;
+                    var transitioning = revealed && animAge >= 4 && animAge < 8;
+
+                    var isP1Win = fullyRevealed && item.winner === 'player1';
+                    var isP2Win = fullyRevealed && item.winner === 'player2';
+                    var isTie = fullyRevealed && item.winner === 'tie' && item.p1Value !== '-' && item.p2Value !== '-';
 
                     // Card background
                     ctx.save();
@@ -1829,7 +1830,50 @@
                     ctx.fillStyle = C.surface;
                     ctx.fill();
 
-                    // Winner / tie gradient tints (only if revealed)
+                    // Flash overlay (frames 0-3 after reveal)
+                    if (flashing) {
+                        ctx.save();
+                        roundRect(ctx, pad, drawY, rowW, ROW_H, RAD);
+                        ctx.clip();
+                        var flashAlpha = 0.3 * (1 - animAge / 4);
+                        ctx.fillStyle = 'rgba(255,255,255,' + flashAlpha + ')';
+                        ctx.fillRect(pad, drawY, rowW, ROW_H);
+                        ctx.restore();
+                    }
+
+                    // Transitioning overlay (frames 4-7: fade in final color)
+                    if (transitioning) {
+                        var tProg = (animAge - 4) / 4; // 0 to 1
+                        ctx.save();
+                        roundRect(ctx, pad, drawY, rowW, ROW_H, RAD);
+                        ctx.clip();
+                        ctx.globalAlpha = tProg;
+                        if (item.winner === 'player1') {
+                            var grad = ctx.createLinearGradient(pad, 0, pad + rowW, 0);
+                            grad.addColorStop(0, C.greenDim);
+                            grad.addColorStop(0.4, 'rgba(255,255,255,0)');
+                            ctx.fillStyle = grad;
+                            ctx.fillRect(pad, drawY, rowW, ROW_H);
+                        } else if (item.winner === 'player2') {
+                            var grad = ctx.createLinearGradient(pad, 0, pad + rowW, 0);
+                            grad.addColorStop(0.6, 'rgba(255,255,255,0)');
+                            grad.addColorStop(1, C.greenDim);
+                            ctx.fillStyle = grad;
+                            ctx.fillRect(pad, drawY, rowW, ROW_H);
+                        } else if (item.winner === 'tie' && item.p1Value !== '-' && item.p2Value !== '-') {
+                            var grad = ctx.createLinearGradient(pad, 0, pad + rowW, 0);
+                            grad.addColorStop(0, C.orangeDim);
+                            grad.addColorStop(0.3, 'rgba(255,255,255,0)');
+                            grad.addColorStop(0.7, 'rgba(255,255,255,0)');
+                            grad.addColorStop(1, C.orangeDim);
+                            ctx.fillStyle = grad;
+                            ctx.fillRect(pad, drawY, rowW, ROW_H);
+                        }
+                        ctx.globalAlpha = 1;
+                        ctx.restore();
+                    }
+
+                    // Winner / tie gradient tints (fully revealed)
                     if (isP1Win) {
                         ctx.save();
                         roundRect(ctx, pad, drawY, rowW, ROW_H, RAD);
@@ -1870,7 +1914,7 @@
                     ctx.lineWidth = 1;
                     ctx.stroke();
 
-                    // Winner accent borders (only if revealed)
+                    // Winner accent borders (only if fully revealed)
                     if (isP1Win) {
                         ctx.fillStyle = C.green;
                         ctx.fillRect(pad, drawY + 4, 3, ROW_H - 8);
@@ -1890,19 +1934,21 @@
                     var nameColSize = Math.min(14, width * 0.011);
                     var metricSize = Math.min(14, width * 0.011);
 
-                    // Col 1: Player 1 value — green if revealed winner, gray if unrevealed
-                    ctx.font = (isP1Win ? '600 ' : '500 ') + valSize + 'px "Courier New", monospace';
-                    ctx.fillStyle = revealed ? (isP1Win ? C.green : C.text) : C.textSec;
+                    // Determine text colors based on animation state
+                    var showColors = fullyRevealed || transitioning;
+
+                    // Col 1: Player 1 value
+                    ctx.font = ((showColors && item.winner === 'player1') ? '600 ' : '500 ') + valSize + 'px "Courier New", monospace';
+                    ctx.fillStyle = showColors ? (item.winner === 'player1' ? C.green : C.text) : C.textSec;
                     ctx.textAlign = 'center';
                     ctx.fillText(item.p1Value, col1X + col1W / 2, textY);
 
-                    // Col 2: Player 1 name (underlined secondary)
+                    // Col 2: Player 1 name
                     ctx.font = '400 ' + nameColSize + 'px Arial, sans-serif';
                     ctx.fillStyle = C.textSec;
                     ctx.textAlign = 'center';
-                    var p1NameTxt = item.p1Name;
-                    ctx.fillText(p1NameTxt, col2X + col2W / 2, textY);
-                    var p1tw = ctx.measureText(p1NameTxt).width;
+                    ctx.fillText(item.p1Name, col2X + col2W / 2, textY);
+                    var p1tw = ctx.measureText(item.p1Name).width;
                     ctx.fillRect(col2X + (col2W - p1tw) / 2, textY + 3, p1tw, 1);
 
                     // Col 3: Metric label
@@ -1911,18 +1957,17 @@
                     ctx.textAlign = 'center';
                     ctx.fillText(item.metric, col3X + col3W / 2, textY);
 
-                    // Col 4: Player 2 name (underlined secondary)
+                    // Col 4: Player 2 name
                     ctx.font = '400 ' + nameColSize + 'px Arial, sans-serif';
                     ctx.fillStyle = C.textSec;
                     ctx.textAlign = 'center';
-                    var p2NameTxt = item.p2Name;
-                    ctx.fillText(p2NameTxt, col4X + col4W / 2, textY);
-                    var p2tw = ctx.measureText(p2NameTxt).width;
+                    ctx.fillText(item.p2Name, col4X + col4W / 2, textY);
+                    var p2tw = ctx.measureText(item.p2Name).width;
                     ctx.fillRect(col4X + (col4W - p2tw) / 2, textY + 3, p2tw, 1);
 
-                    // Col 5: Player 2 value — green if revealed winner, gray if unrevealed
-                    ctx.font = (isP2Win ? '600 ' : '500 ') + valSize + 'px "Courier New", monospace';
-                    ctx.fillStyle = revealed ? (isP2Win ? C.green : C.text) : C.textSec;
+                    // Col 5: Player 2 value
+                    ctx.font = ((showColors && item.winner === 'player2') ? '600 ' : '500 ') + valSize + 'px "Courier New", monospace';
+                    ctx.fillStyle = showColors ? (item.winner === 'player2' ? C.green : C.text) : C.textSec;
                     ctx.textAlign = 'center';
                     ctx.fillText(item.p2Value, col5X + col5W / 2, textY);
                 }
@@ -1950,12 +1995,48 @@
             'All-Defensive First Team': 'All-Defense 1st Team'
         };
 
+        // Abbreviated labels for the final card (fits larger fonts)
+        var ABBREV_LABELS = {
+            'Conference Finals MVP': 'Conf. Finals MVP',
+            'Defensive Player of the Year': 'DPOY',
+            'Most Valuable Player': 'MVP',
+            'Rookie of the Year': 'ROY',
+            'Most Improved Player': 'MIP',
+            'Sixth Man of the Year': '6th Man',
+            'Points per game': 'PPG',
+            'Points per game PO': 'PPG (PO)',
+            'Rebounds per game': 'RPG',
+            'Rebounds per game PO': 'RPG (PO)',
+            'Assists per game': 'APG',
+            'Assists per game PO': 'APG (PO)',
+            'All-NBA Selections': 'All-NBA',
+            'All-NBA First Team': 'All-NBA 1st',
+            'All-NBA 1st Team': 'All-NBA 1st',
+            'All-Defensive Team Selections': 'All-Defense',
+            'All-Defensive First Team': 'All-Def 1st',
+            'All-Defense 1st Team': 'All-Def 1st',
+            'World Cup Medals': 'World Cup',
+            'Scoring Leader': 'Scoring Title',
+            'Rebounding Leader': 'Reb. Leader',
+            'Assists Leader': 'Ast. Leader'
+        };
+
+        function labelFor(metric) {
+            // First apply DISPLAY_LABELS, then ABBREV_LABELS
+            var display = DISPLAY_LABELS[metric] || metric;
+            return ABBREV_LABELS[display] || ABBREV_LABELS[metric] || display;
+        }
+
+        // Sections excluded from biggest wins (voting ranks, not actual awards)
+        var EXCLUDED_WIN_SECTIONS = ['BEST AWARDS RANKING', 'BEST VOTE RANKING', 'YEARS RECEIVING VOTES'];
+
         function getTopWins(whichPlayer, compData) {
             var wins = [];
             var globalIndex = 0;
             compData.sections.forEach(function(section) {
+                var skipSection = EXCLUDED_WIN_SECTIONS.indexOf(section.name) >= 0;
                 section.items.forEach(function(item) {
-                    if (item.winner === whichPlayer) {
+                    if (!skipSection && item.winner === whichPlayer) {
                         var prioIdx = WIN_PRIORITY.indexOf(item.metric);
                         var sortKey = prioIdx >= 0 ? prioIdx : WIN_PRIORITY.length + globalIndex;
                         wins.push({
@@ -2011,11 +2092,14 @@
 
         function drawFinalScreen(ctx, data, width, height, fadeProgress) {
             var S = width / 1280;
+            var F = 1.3; // font scale multiplier
+            var isSquare = Math.abs(width - height) < 10;
+            var scoreAreaPct = isSquare ? 0.28 : 0.40;
+            var maxLines = isSquare ? 12 : 10;
 
             // Carbon fiber background
             ctx.fillStyle = '#0a0a0a';
             ctx.fillRect(0, 0, width, height);
-            // Subtle grid texture
             ctx.strokeStyle = 'rgba(255,255,255,0.03)';
             ctx.lineWidth = 1;
             for (var gx = 0; gx < width; gx += 4) {
@@ -2032,11 +2116,10 @@
             ctx.globalAlpha = Math.min(1, fadeProgress * 2);
 
             // "FINAL SCORE" heading — wide letter-spacing
-            var titleSize = Math.round(42 * S);
+            var titleSize = Math.round(42 * S * F);
             ctx.fillStyle = '#ffffff';
             ctx.font = 'bold ' + titleSize + 'px Arial, sans-serif';
             ctx.textAlign = 'center';
-            // Simulate letter-spacing by drawing each char
             var titleStr = 'FINAL SCORE';
             var spacing = Math.round(8 * S);
             var titleTotalW = 0;
@@ -2060,8 +2143,8 @@
             var p2Won = data.player2Score > data.player1Score;
             var tied = data.player1Score === data.player2Score;
 
-            // Player names — white bold uppercase
-            var nameSize = Math.round(24 * S);
+            // Player names
+            var nameSize = Math.round(24 * S * F);
             ctx.font = 'bold ' + nameSize + 'px Arial, sans-serif';
             ctx.fillStyle = '#ffffff';
             ctx.textAlign = 'center';
@@ -2069,27 +2152,26 @@
             ctx.fillText(data.player2Name.toUpperCase(), width * 0.75, Math.round(95 * S));
 
             // Scores — massive
-            var scoreSize = Math.round(140 * S);
+            var scoreSize = Math.round(140 * S * F);
             ctx.font = 'bold ' + scoreSize + 'px "Courier New", monospace';
 
             ctx.fillStyle = p1Won ? '#e31837' : '#444444';
-            ctx.fillText(String(data.player1Score), width * 0.25, Math.round(210 * S));
+            ctx.fillText(String(data.player1Score), width * 0.25, Math.round(height * scoreAreaPct * 0.72));
 
-            // En-dash divider
             ctx.fillStyle = '#333333';
-            ctx.font = 'bold ' + Math.round(48 * S) + 'px Arial';
-            ctx.fillText('\u2013', width / 2, Math.round(185 * S));
+            ctx.font = 'bold ' + Math.round(48 * S * F) + 'px Arial';
+            ctx.fillText('\u2013', width / 2, Math.round(height * scoreAreaPct * 0.62));
 
             ctx.font = 'bold ' + scoreSize + 'px "Courier New", monospace';
             ctx.fillStyle = p2Won ? '#e31837' : '#444444';
-            ctx.fillText(String(data.player2Score), width * 0.75, Math.round(210 * S));
+            ctx.fillText(String(data.player2Score), width * 0.75, Math.round(height * scoreAreaPct * 0.72));
 
             // Winner pill
-            var pillY = Math.round(230 * S);
-            var pillH = Math.round(34 * S);
+            var pillY = Math.round(height * scoreAreaPct * 0.8);
+            var pillH = Math.round(34 * S * F);
             var winnerText = tied ? 'TIE' :
                 (p1Won ? data.player1Name.toUpperCase() + ' WINS' : data.player2Name.toUpperCase() + ' WINS');
-            var pillFontSize = Math.round(16 * S);
+            var pillFontSize = Math.round(16 * S * F);
             ctx.font = 'bold ' + pillFontSize + 'px Arial, sans-serif';
             var pillTextW = ctx.measureText(winnerText).width;
             var pillW = pillTextW + Math.round(36 * S);
@@ -2105,7 +2187,7 @@
             ctx.fillText(winnerText, width / 2, pillY + pillH * 0.67);
 
             // Horizontal divider line
-            var dividerY = Math.round(278 * S);
+            var dividerY = Math.round(height * scoreAreaPct) + Math.round(8 * S);
             ctx.fillStyle = '#222222';
             ctx.fillRect(0, dividerY, width, 1);
 
@@ -2128,14 +2210,13 @@
 
                 // Column headers
                 var hdrY = winsAreaY + Math.round(20 * S);
-                var hdrFont = Math.round(14 * S);
+                var hdrFont = Math.round(14 * S * F);
 
                 function drawColHdr(x, w, pName) {
                     ctx.fillStyle = '#e31837';
                     ctx.font = 'bold ' + hdrFont + 'px Arial, sans-serif';
                     ctx.textAlign = 'left';
                     ctx.fillText(pName.toUpperCase(), x + Math.round(6 * S), hdrY);
-                    // Red underline
                     ctx.fillRect(x + Math.round(6 * S), hdrY + Math.round(4 * S), w - Math.round(12 * S), 1);
                 }
 
@@ -2150,29 +2231,25 @@
                 var rowStartY = hdrY + Math.round(18 * S);
                 var rowBottomLimit = height - Math.round(35 * S);
                 var availRowH = rowBottomLimit - rowStartY;
-                var maxLines = 10;
                 var lineH = Math.min(availRowH / maxLines, Math.round(24 * S));
-                var mFont = Math.max(Math.round(9 * S), Math.round(lineH * 0.52));
-                var vFont = Math.max(Math.round(9 * S), Math.round(lineH * 0.52));
-                // Use condensed font for metric labels
+                var mFont = Math.max(Math.round(9 * S), Math.round(lineH * 0.52 * F));
+                var vFont = Math.max(Math.round(9 * S), Math.round(lineH * 0.52 * F));
                 var condensedFont = '"Arial Narrow", "Arial", sans-serif';
 
                 function drawWinRows(wins, colX, colW, isP1Col) {
                     for (var i = 0; i < wins.length; i++) {
                         var y = rowStartY + i * lineH;
                         var w = wins[i];
-                        var label = formatWinLabel(w.metric);
+                        var label = labelFor(w.metric);
                         var p1v = valOrZero(w.p1Value);
                         var p2v = valOrZero(w.p2Value);
                         var textY = y + lineH * 0.72;
 
-                        // Metric label (left)
                         ctx.font = mFont + 'px ' + condensedFont;
                         ctx.fillStyle = '#888888';
                         ctx.textAlign = 'left';
                         ctx.fillText(label, colX + Math.round(6 * S), textY);
 
-                        // Values (right)
                         var rightEdge = colX + colW - Math.round(6 * S);
                         var dashStr = ' \u2013 ';
 
@@ -2209,7 +2286,6 @@
                             ctx.fillText(p1v, rightEdge - p2BW - dashW, textY);
                         }
 
-                        // Row separator
                         if (i < wins.length - 1) {
                             ctx.fillStyle = '#1a1a1a';
                             ctx.fillRect(colX + Math.round(4 * S), y + lineH - 1, colW - Math.round(8 * S), 1);
@@ -2221,11 +2297,11 @@
                 drawWinRows(p2Wins, rightColX, rightColW, false);
             }
 
-            // HoopsHype branding
+            // Branding
             ctx.fillStyle = '#333333';
-            ctx.font = Math.round(13 * S) + 'px Arial, sans-serif';
+            ctx.font = Math.round(13 * S * F) + 'px Arial, sans-serif';
             ctx.textAlign = 'center';
-            ctx.fillText('HoopsHype', width / 2, height - Math.round(10 * S));
+            ctx.fillText('HoopsMatic.com', width / 2, height - Math.round(10 * S));
 
             ctx.globalAlpha = 1;
         }
@@ -2356,13 +2432,13 @@
                 // --- Frame rendering loop (setTimeout-based, not rAF) ---
                 var frameDelay = Math.round(1000 / framerate);
 
-                // Timing allocation (no intro — video starts on scrolling content)
-                var introFrames = 0;
+                // Timing allocation
+                var startPauseFrames = Math.round(framerate * 2.0);
                 var outroFrames = Math.round(framerate * 10.0);
                 var pauseFrames = Math.round(framerate * 2.0);
-                var scrollFrames = Math.max(1, duration * framerate - introFrames - pauseFrames - outroFrames);
-                var totalFrames = introFrames + scrollFrames + pauseFrames + outroFrames;
-                console.log('[VideoGen] totalFrames=' + totalFrames + ', intro=' + introFrames + ', scroll=' + scrollFrames + ', pause=' + pauseFrames + ', outro=' + outroFrames);
+                var scrollFrames = Math.max(1, duration * framerate - startPauseFrames - pauseFrames - outroFrames);
+                var totalFrames = startPauseFrames + scrollFrames + pauseFrames + outroFrames;
+                console.log('[VideoGen] totalFrames=' + totalFrames + ', startPause=' + startPauseFrames + ', scroll=' + scrollFrames + ', pause=' + pauseFrames + ', outro=' + outroFrames);
 
                 // Pre-calculate running scores for animated counter
                 var runningScores = [];
@@ -2380,6 +2456,22 @@
 
                 // Track which item rows have been revealed by scrolling into view
                 var revealedItems = new Set();
+                // Track the frame number when each item was first revealed (for animation)
+                var revealFrame = new Map();
+
+                // Helper: count revealed scores
+                function countRevealedScores() {
+                    var p1 = 0, p2 = 0;
+                    revealedItems.forEach(function(key) {
+                        var idx = parseInt(key, 10);
+                        var it = contentLayout.items[idx];
+                        if (it && it.type === 'item') {
+                            if (it.winner === 'player1') p1++;
+                            else if (it.winner === 'player2') p2++;
+                        }
+                    });
+                    return { p1: p1, p2: p2 };
+                }
 
                 for (var frame = 0; frame < totalFrames; frame++) {
                     var frameStart = performance.now();
@@ -2388,45 +2480,30 @@
                     offCtx.fillStyle = '#f5f5f7';
                     offCtx.fillRect(0, 0, dims.width, dims.height);
 
-                    if (frame < introFrames + scrollFrames) {
-                        // SCROLLING PHASE — pure linear scroll
-                        var scrollFrame = frame - introFrames;
-                        var scrollProgress = scrollFrame / scrollFrames;
+                    if (frame < startPauseFrames) {
+                        // START PAUSE — hold first frame (scrollY=0, nothing revealed)
+                        drawHeader(offCtx, comparisonData, dims.width, 0, 0);
+                        drawScrollingContent(offCtx, contentLayout, dims.width, dims.height, 0, revealedItems, revealFrame, frame);
 
+                    } else if (frame < startPauseFrames + scrollFrames) {
+                        // SCROLLING PHASE — pure linear scroll
+                        var scrollFrame = frame - startPauseFrames;
+                        var scrollProgress = scrollFrame / scrollFrames;
                         var scrollY = scrollProgress * totalScrollDistance;
 
-                        // Score counter based on revealed items only
-                        var p1Anim = 0, p2Anim = 0;
-                        revealedItems.forEach(function(key) {
-                            var idx = parseInt(key, 10);
-                            var it = contentLayout.items[idx];
-                            if (it && it.type === 'item') {
-                                if (it.winner === 'player1') p1Anim++;
-                                else if (it.winner === 'player2') p2Anim++;
-                            }
-                        });
+                        var scores = countRevealedScores();
+                        drawHeader(offCtx, comparisonData, dims.width, scores.p1, scores.p2);
+                        drawScrollingContent(offCtx, contentLayout, dims.width, dims.height, scrollY, revealedItems, revealFrame, frame);
 
-                        drawHeader(offCtx, comparisonData, dims.width, p1Anim, p2Anim);
-                        drawScrollingContent(offCtx, contentLayout, dims.width, dims.height, scrollY, revealedItems);
-
-                    } else if (frame < introFrames + scrollFrames + pauseFrames) {
-                        // PAUSE PHASE — hold last scroll frame with final scores
-                        var p1Anim = 0, p2Anim = 0;
-                        revealedItems.forEach(function(key) {
-                            var idx = parseInt(key, 10);
-                            var it = contentLayout.items[idx];
-                            if (it && it.type === 'item') {
-                                if (it.winner === 'player1') p1Anim++;
-                                else if (it.winner === 'player2') p2Anim++;
-                            }
-                        });
-
-                        drawHeader(offCtx, comparisonData, dims.width, p1Anim, p2Anim);
-                        drawScrollingContent(offCtx, contentLayout, dims.width, dims.height, totalScrollDistance, revealedItems);
+                    } else if (frame < startPauseFrames + scrollFrames + pauseFrames) {
+                        // END PAUSE — hold last scroll frame with final scores
+                        var scores = countRevealedScores();
+                        drawHeader(offCtx, comparisonData, dims.width, scores.p1, scores.p2);
+                        drawScrollingContent(offCtx, contentLayout, dims.width, dims.height, totalScrollDistance, revealedItems, revealFrame, frame);
 
                     } else {
                         // OUTRO/FINAL SCREEN PHASE
-                        var outroFrame = frame - introFrames - scrollFrames - pauseFrames;
+                        var outroFrame = frame - startPauseFrames - scrollFrames - pauseFrames;
                         var outroProgress = outroFrame / outroFrames;
                         drawFinalScreen(offCtx, comparisonData, dims.width, dims.height, outroProgress);
                     }
