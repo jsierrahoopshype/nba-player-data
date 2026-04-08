@@ -1980,6 +1980,22 @@
                     deduped.push(wins[i]);
                 }
             }
+
+            // Cap one-time awards to max display value of 1
+            var oneTimeAwards = [
+                'Rookie of the Year', 'Most Valuable Player',
+                'Defensive Player of the Year', 'Most Improved Player',
+                'Sixth Man of the Year', 'Finals MVP'
+            ];
+            deduped.forEach(function(w) {
+                if (oneTimeAwards.indexOf(w.metric) >= 0) {
+                    var n1 = parseFloat(w.p1Value);
+                    var n2 = parseFloat(w.p2Value);
+                    if (!isNaN(n1) && n1 > 1) w.p1Value = '1';
+                    if (!isNaN(n2) && n2 > 1) w.p2Value = '1';
+                }
+            });
+
             return deduped.slice(0, 10);
         }
 
@@ -1994,127 +2010,152 @@
         }
 
         function drawFinalScreen(ctx, data, width, height, fadeProgress) {
-            var S = width / 1280; // scale factor relative to 720p baseline width
+            var S = width / 1280;
 
-            // Deep navy background
-            ctx.fillStyle = '#0f172a';
+            // Carbon fiber background
+            ctx.fillStyle = '#0a0a0a';
             ctx.fillRect(0, 0, width, height);
+            // Subtle grid texture
+            ctx.strokeStyle = 'rgba(255,255,255,0.03)';
+            ctx.lineWidth = 1;
+            for (var gx = 0; gx < width; gx += 4) {
+                ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, height); ctx.stroke();
+            }
+            for (var gy = 0; gy < height; gy += 4) {
+                ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(width, gy); ctx.stroke();
+            }
 
-            // Red accent stripe at very top
+            // Top red accent bar
             ctx.fillStyle = '#e31837';
-            ctx.fillRect(0, 0, width, Math.round(8 * S));
+            ctx.fillRect(0, 0, width, Math.round(6 * S));
 
             ctx.globalAlpha = Math.min(1, fadeProgress * 2);
 
-            // ---- TOP AREA (top ~35%) ----
-            var topH = height * 0.35;
-
-            // "FINAL SCORE" heading
-            var titleSize = Math.round(44 * S);
+            // "FINAL SCORE" heading — wide letter-spacing
+            var titleSize = Math.round(42 * S);
             ctx.fillStyle = '#ffffff';
             ctx.font = 'bold ' + titleSize + 'px Arial, sans-serif';
             ctx.textAlign = 'center';
-            ctx.fillText('FINAL SCORE', width / 2, Math.round(55 * S));
+            // Simulate letter-spacing by drawing each char
+            var titleStr = 'FINAL SCORE';
+            var spacing = Math.round(8 * S);
+            var titleTotalW = 0;
+            for (var ci = 0; ci < titleStr.length; ci++) {
+                titleTotalW += ctx.measureText(titleStr[ci]).width + (ci < titleStr.length - 1 ? spacing : 0);
+            }
+            var titleStartX = (width - titleTotalW) / 2;
+            var titleY = Math.round(50 * S);
+            for (var ci = 0; ci < titleStr.length; ci++) {
+                ctx.textAlign = 'left';
+                ctx.fillText(titleStr[ci], titleStartX, titleY);
+                titleStartX += ctx.measureText(titleStr[ci]).width + spacing;
+            }
 
-            // Red underline bar
-            var barW = Math.round(120 * S);
+            // Red underline
+            var ulW = Math.round(60 * S);
             ctx.fillStyle = '#e31837';
-            ctx.fillRect((width - barW) / 2, Math.round(65 * S), barW, Math.round(4 * S));
+            ctx.fillRect((width - ulW) / 2, Math.round(60 * S), ulW, Math.round(2 * S));
 
             var p1Won = data.player1Score > data.player2Score;
             var p2Won = data.player2Score > data.player1Score;
             var tied = data.player1Score === data.player2Score;
 
-            // Player names
-            var nameSize = Math.round(28 * S);
+            // Player names — white bold uppercase
+            var nameSize = Math.round(24 * S);
             ctx.font = 'bold ' + nameSize + 'px Arial, sans-serif';
             ctx.fillStyle = '#ffffff';
-            ctx.fillText(data.player1Name, width * 0.25, Math.round(105 * S));
-            ctx.fillText(data.player2Name, width * 0.75, Math.round(105 * S));
+            ctx.textAlign = 'center';
+            ctx.fillText(data.player1Name.toUpperCase(), width * 0.25, Math.round(95 * S));
+            ctx.fillText(data.player2Name.toUpperCase(), width * 0.75, Math.round(95 * S));
 
-            // Scores — very large
-            var scoreSize = Math.round(110 * S);
+            // Scores — massive
+            var scoreSize = Math.round(140 * S);
             ctx.font = 'bold ' + scoreSize + 'px "Courier New", monospace';
 
-            ctx.fillStyle = p1Won ? '#22c55e' : '#94a3b8';
-            ctx.fillText(String(data.player1Score), width * 0.25, Math.round(200 * S));
+            ctx.fillStyle = p1Won ? '#e31837' : '#444444';
+            ctx.fillText(String(data.player1Score), width * 0.25, Math.round(210 * S));
 
             // En-dash divider
-            ctx.fillStyle = '#475569';
+            ctx.fillStyle = '#333333';
             ctx.font = 'bold ' + Math.round(48 * S) + 'px Arial';
-            ctx.fillText('\u2013', width / 2, Math.round(180 * S));
+            ctx.fillText('\u2013', width / 2, Math.round(185 * S));
 
             ctx.font = 'bold ' + scoreSize + 'px "Courier New", monospace';
-            ctx.fillStyle = p2Won ? '#22c55e' : '#94a3b8';
-            ctx.fillText(String(data.player2Score), width * 0.75, Math.round(200 * S));
+            ctx.fillStyle = p2Won ? '#e31837' : '#444444';
+            ctx.fillText(String(data.player2Score), width * 0.75, Math.round(210 * S));
 
-            // Winner banner — rounded rect with green bg
-            var bannerY = Math.round(225 * S);
-            var bannerH = Math.round(38 * S);
-            var winnerText = tied ? "IT'S A TIE" :
-                (p1Won ? data.player1Name + ' WINS!' : data.player2Name + ' WINS!');
-            var bannerFontSize = Math.round(20 * S);
-            ctx.font = 'bold ' + bannerFontSize + 'px Arial, sans-serif';
-            var bannerTextW = ctx.measureText(winnerText).width;
-            var bannerW = bannerTextW + Math.round(40 * S);
-            var bannerX = (width - bannerW) / 2;
-            var bannerR = Math.round(8 * S);
+            // Winner pill
+            var pillY = Math.round(230 * S);
+            var pillH = Math.round(34 * S);
+            var winnerText = tied ? 'TIE' :
+                (p1Won ? data.player1Name.toUpperCase() + ' WINS' : data.player2Name.toUpperCase() + ' WINS');
+            var pillFontSize = Math.round(16 * S);
+            ctx.font = 'bold ' + pillFontSize + 'px Arial, sans-serif';
+            var pillTextW = ctx.measureText(winnerText).width;
+            var pillW = pillTextW + Math.round(36 * S);
+            var pillX = (width - pillW) / 2;
+            var pillR = Math.round(pillH / 2);
 
-            ctx.fillStyle = tied ? '#475569' : '#22c55e';
-            roundRect(ctx, bannerX, bannerY, bannerW, bannerH, bannerR);
+            ctx.fillStyle = tied ? '#333333' : '#e31837';
+            roundRect(ctx, pillX, pillY, pillW, pillH, pillR);
             ctx.fill();
 
             ctx.fillStyle = '#ffffff';
-            ctx.font = 'bold ' + bannerFontSize + 'px Arial, sans-serif';
             ctx.textAlign = 'center';
-            ctx.fillText(winnerText, width / 2, bannerY + bannerH * 0.68);
+            ctx.fillText(winnerText, width / 2, pillY + pillH * 0.67);
 
-            // ---- BOTTOM AREA: Two columns of biggest wins ----
+            // Horizontal divider line
+            var dividerY = Math.round(278 * S);
+            ctx.fillStyle = '#222222';
+            ctx.fillRect(0, dividerY, width, 1);
+
+            // ---- BIGGEST WINS AREA ----
+            var winsAreaY = dividerY + 1;
+            ctx.fillStyle = '#111111';
+            ctx.fillRect(0, winsAreaY, width, height - winsAreaY);
+
             var compData = lastComparisonData;
             if (compData) {
                 var p1Wins = getTopWins('player1', compData);
                 var p2Wins = getTopWins('player2', compData);
 
-                var colPad = Math.round(30 * S);
+                var colPad = Math.round(24 * S);
                 var midX = width / 2;
                 var leftColX = colPad;
-                var leftColW = midX - colPad - Math.round(10 * S);
-                var rightColX = midX + Math.round(10 * S);
+                var leftColW = midX - colPad - Math.round(6 * S);
+                var rightColX = midX + Math.round(6 * S);
                 var rightColW = width - rightColX - colPad;
 
-                var headerCardY = Math.round(280 * S);
-                var headerCardH = Math.round(40 * S);
-                var headerR = Math.round(6 * S);
-                var headerFont = Math.round(16 * S);
+                // Column headers
+                var hdrY = winsAreaY + Math.round(20 * S);
+                var hdrFont = Math.round(14 * S);
 
-                // Column header cards
-                function drawColHeader(x, w, pName, sP1, sP2) {
-                    ctx.fillStyle = 'rgba(255,255,255,0.08)';
-                    roundRect(ctx, x, headerCardY, w, headerCardH, headerR);
-                    ctx.fill();
-
-                    ctx.fillStyle = '#ffffff';
-                    ctx.font = 'bold ' + headerFont + 'px Arial, sans-serif';
+                function drawColHdr(x, w, pName) {
+                    ctx.fillStyle = '#e31837';
+                    ctx.font = 'bold ' + hdrFont + 'px Arial, sans-serif';
                     ctx.textAlign = 'left';
-                    ctx.fillText(pName + ' biggest wins', x + Math.round(12 * S), headerCardY + headerCardH * 0.65);
+                    ctx.fillText(pName.toUpperCase(), x + Math.round(6 * S), hdrY);
+                    // Red underline
+                    ctx.fillRect(x + Math.round(6 * S), hdrY + Math.round(4 * S), w - Math.round(12 * S), 1);
                 }
 
-                // Section scores for header
-                drawColHeader(leftColX, leftColW, data.player1Name);
-                drawColHeader(rightColX, rightColW, data.player2Name);
+                drawColHdr(leftColX, leftColW, data.player1Name);
+                drawColHdr(rightColX, rightColW, data.player2Name);
 
                 // Vertical center divider
-                ctx.fillStyle = '#1e293b';
-                ctx.fillRect(midX - 0.5, headerCardY, 1, height - headerCardY - Math.round(40 * S));
+                ctx.fillStyle = '#222222';
+                ctx.fillRect(midX - 0.5, winsAreaY, 1, height - winsAreaY - Math.round(30 * S));
 
                 // Win rows
-                var rowStartY = headerCardY + headerCardH + Math.round(12 * S);
-                var rowBottomLimit = height - Math.round(45 * S);
+                var rowStartY = hdrY + Math.round(18 * S);
+                var rowBottomLimit = height - Math.round(35 * S);
                 var availRowH = rowBottomLimit - rowStartY;
                 var maxLines = 10;
-                var lineH = Math.min(availRowH / maxLines, Math.round(26 * S));
-                var metricFont = Math.max(Math.round(9 * S), Math.round(lineH * 0.52));
-                var valFont = Math.max(Math.round(9 * S), Math.round(lineH * 0.52));
+                var lineH = Math.min(availRowH / maxLines, Math.round(24 * S));
+                var mFont = Math.max(Math.round(9 * S), Math.round(lineH * 0.52));
+                var vFont = Math.max(Math.round(9 * S), Math.round(lineH * 0.52));
+                // Use condensed font for metric labels
+                var condensedFont = '"Arial Narrow", "Arial", sans-serif';
 
                 function drawWinRows(wins, colX, colW, isP1Col) {
                     for (var i = 0; i < wins.length; i++) {
@@ -2123,56 +2164,54 @@
                         var label = formatWinLabel(w.metric);
                         var p1v = valOrZero(w.p1Value);
                         var p2v = valOrZero(w.p2Value);
-                        var textY = y + lineH * 0.7;
+                        var textY = y + lineH * 0.72;
 
-                        // Metric label (left-aligned)
-                        ctx.font = metricFont + 'px Arial, sans-serif';
-                        ctx.fillStyle = '#94a3b8';
+                        // Metric label (left)
+                        ctx.font = mFont + 'px ' + condensedFont;
+                        ctx.fillStyle = '#888888';
                         ctx.textAlign = 'left';
-                        ctx.fillText(label, colX + Math.round(8 * S), textY);
+                        ctx.fillText(label, colX + Math.round(6 * S), textY);
 
-                        // Values (right-aligned): "winnerVal – loserVal"
-                        var rightEdge = colX + colW - Math.round(8 * S);
+                        // Values (right)
+                        var rightEdge = colX + colW - Math.round(6 * S);
                         var dashStr = ' \u2013 ';
 
-                        ctx.font = valFont + 'px "Courier New", monospace';
+                        ctx.font = vFont + 'px "Courier New", monospace';
                         var dashW = ctx.measureText(dashStr).width;
 
                         if (isP1Col) {
-                            // p1 is winner (bold green), p2 is loser (white)
-                            ctx.font = valFont + 'px "Courier New", monospace';
+                            ctx.font = vFont + 'px "Courier New", monospace';
                             var p2W = ctx.measureText(p2v).width;
 
-                            ctx.fillStyle = '#ffffff';
+                            ctx.fillStyle = '#555555';
                             ctx.textAlign = 'right';
                             ctx.fillText(p2v, rightEdge, textY);
 
-                            ctx.fillStyle = '#475569';
+                            ctx.fillStyle = '#333333';
                             ctx.fillText(dashStr, rightEdge - p2W, textY);
 
-                            ctx.font = 'bold ' + valFont + 'px "Courier New", monospace';
-                            ctx.fillStyle = '#22c55e';
+                            ctx.font = 'bold ' + vFont + 'px "Courier New", monospace';
+                            ctx.fillStyle = '#e31837';
                             ctx.fillText(p1v, rightEdge - p2W - dashW, textY);
                         } else {
-                            // p2 is winner (bold green), p1 is loser (white)
-                            ctx.font = 'bold ' + valFont + 'px "Courier New", monospace';
+                            ctx.font = 'bold ' + vFont + 'px "Courier New", monospace';
                             var p2BW = ctx.measureText(p2v).width;
 
-                            ctx.fillStyle = '#22c55e';
+                            ctx.fillStyle = '#e31837';
                             ctx.textAlign = 'right';
                             ctx.fillText(p2v, rightEdge, textY);
 
-                            ctx.font = valFont + 'px "Courier New", monospace';
-                            ctx.fillStyle = '#475569';
+                            ctx.font = vFont + 'px "Courier New", monospace';
+                            ctx.fillStyle = '#333333';
                             ctx.fillText(dashStr, rightEdge - p2BW, textY);
 
-                            ctx.fillStyle = '#ffffff';
+                            ctx.fillStyle = '#555555';
                             ctx.fillText(p1v, rightEdge - p2BW - dashW, textY);
                         }
 
-                        // Separator line between rows
+                        // Row separator
                         if (i < wins.length - 1) {
-                            ctx.fillStyle = '#1e293b';
+                            ctx.fillStyle = '#1a1a1a';
                             ctx.fillRect(colX + Math.round(4 * S), y + lineH - 1, colW - Math.round(8 * S), 1);
                         }
                     }
@@ -2183,10 +2222,10 @@
             }
 
             // HoopsHype branding
-            ctx.fillStyle = '#475569';
-            ctx.font = Math.round(14 * S) + 'px Arial, sans-serif';
+            ctx.fillStyle = '#333333';
+            ctx.font = Math.round(13 * S) + 'px Arial, sans-serif';
             ctx.textAlign = 'center';
-            ctx.fillText('HoopsHype', width / 2, height - Math.round(14 * S));
+            ctx.fillText('HoopsHype', width / 2, height - Math.round(10 * S));
 
             ctx.globalAlpha = 1;
         }
@@ -2315,14 +2354,15 @@
                 updateProgress(30, 'Recording started...');
 
                 // --- Frame rendering loop (setTimeout-based, not rAF) ---
-                var totalFrames = duration * framerate;
                 var frameDelay = Math.round(1000 / framerate);
 
                 // Timing allocation (no intro — video starts on scrolling content)
                 var introFrames = 0;
-                var outroFrames = Math.round(framerate * 5.0);
-                var scrollFrames = Math.max(1, totalFrames - introFrames - outroFrames);
-                console.log('[VideoGen] totalFrames=' + totalFrames + ', intro=' + introFrames + ', scroll=' + scrollFrames + ', outro=' + outroFrames);
+                var outroFrames = Math.round(framerate * 10.0);
+                var pauseFrames = Math.round(framerate * 2.0);
+                var scrollFrames = Math.max(1, duration * framerate - introFrames - pauseFrames - outroFrames);
+                var totalFrames = introFrames + scrollFrames + pauseFrames + outroFrames;
+                console.log('[VideoGen] totalFrames=' + totalFrames + ', intro=' + introFrames + ', scroll=' + scrollFrames + ', pause=' + pauseFrames + ', outro=' + outroFrames);
 
                 // Pre-calculate running scores for animated counter
                 var runningScores = [];
@@ -2369,9 +2409,24 @@
                         drawHeader(offCtx, comparisonData, dims.width, p1Anim, p2Anim);
                         drawScrollingContent(offCtx, contentLayout, dims.width, dims.height, scrollY, revealedItems);
 
+                    } else if (frame < introFrames + scrollFrames + pauseFrames) {
+                        // PAUSE PHASE — hold last scroll frame with final scores
+                        var p1Anim = 0, p2Anim = 0;
+                        revealedItems.forEach(function(key) {
+                            var idx = parseInt(key, 10);
+                            var it = contentLayout.items[idx];
+                            if (it && it.type === 'item') {
+                                if (it.winner === 'player1') p1Anim++;
+                                else if (it.winner === 'player2') p2Anim++;
+                            }
+                        });
+
+                        drawHeader(offCtx, comparisonData, dims.width, p1Anim, p2Anim);
+                        drawScrollingContent(offCtx, contentLayout, dims.width, dims.height, totalScrollDistance, revealedItems);
+
                     } else {
                         // OUTRO/FINAL SCREEN PHASE
-                        var outroFrame = frame - introFrames - scrollFrames;
+                        var outroFrame = frame - introFrames - scrollFrames - pauseFrames;
                         var outroProgress = outroFrame / outroFrames;
                         drawFinalScreen(offCtx, comparisonData, dims.width, dims.height, outroProgress);
                     }
