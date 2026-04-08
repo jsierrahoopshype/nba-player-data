@@ -435,8 +435,8 @@
                         <label>Resolution / Format</label>
                         <select id="resolution">
                             <option value="1080p">1080p HD (1920x1080) - YouTube/Twitter</option>
-                            <option value="720p" selected>720p HD (1280x720) - Standard</option>
-                            <option value="square">Square (1080x1080) - Instagram Feed</option>
+                            <option value="720p">720p HD (1280x720) - Standard</option>
+                            <option value="square" selected>Square (1080x1080) - Instagram Feed</option>
                             <option value="story">Story (1080x1920) - Instagram/TikTok</option>
                         </select>
                     </div>
@@ -445,8 +445,8 @@
                         <label>Video Duration</label>
                         <select id="duration">
                             <option value="30">30 seconds - Quick</option>
-                            <option value="45" selected>45 seconds - Standard</option>
-                            <option value="60">60 seconds - Detailed</option>
+                            <option value="45">45 seconds - Standard</option>
+                            <option value="60" selected>60 seconds - Detailed</option>
                             <option value="90">90 seconds - Complete</option>
                         </select>
                     </div>
@@ -455,8 +455,8 @@
                         <label>Frame Rate</label>
                         <select id="framerate">
                             <option value="24">24 FPS - Cinematic</option>
-                            <option value="30" selected>30 FPS - Standard</option>
-                            <option value="60">60 FPS - Smooth</option>
+                            <option value="30">30 FPS - Standard</option>
+                            <option value="60" selected>60 FPS - Smooth</option>
                         </select>
                     </div>
 
@@ -1857,59 +1857,49 @@
                     ctx.fillStyle = C.surface;
                     ctx.fill();
 
-                    // Flash overlay (age 0-7): only flash the winner's half
+                    // Flash overlay (age 0-7): only flash the outer value cell (25% width)
+                    var quarterL = width * 0.25 - pad; // left value cell width
+                    var quarterR = pad + rowW - width * 0.75; // right value cell width
                     if (age >= 0 && age < 8) {
                         ctx.save();
                         roundRect(ctx, pad, drawY, rowW, ROW_H, RAD);
                         ctx.clip();
-                        var halfW = rowW / 2;
                         if (item.winner === 'player1') {
                             ctx.fillStyle = 'rgba(227,24,55,0.2)';
-                            ctx.fillRect(pad, drawY, halfW, ROW_H);
+                            ctx.fillRect(pad, drawY, quarterL, ROW_H);
                         } else if (item.winner === 'player2') {
                             ctx.fillStyle = 'rgba(227,24,55,0.2)';
-                            ctx.fillRect(pad + halfW, drawY, halfW, ROW_H);
+                            ctx.fillRect(width * 0.75, drawY, quarterR, ROW_H);
                         } else {
-                            // Tie: flash both halves in orange
                             ctx.fillStyle = 'rgba(245,158,11,0.15)';
-                            ctx.fillRect(pad, drawY, halfW, ROW_H);
-                            ctx.fillRect(pad + halfW, drawY, halfW, ROW_H);
+                            ctx.fillRect(pad, drawY, quarterL, ROW_H);
+                            ctx.fillRect(width * 0.75, drawY, quarterR, ROW_H);
                         }
                         ctx.restore();
                     }
 
-                    // Final winner/tie tints (settled, age >= 8)
+                    // Final winner/tie tints (settled, age >= 8): only outer value cell
                     if (isP1Win) {
                         ctx.save();
                         roundRect(ctx, pad, drawY, rowW, ROW_H, RAD);
                         ctx.clip();
-                        var grad = ctx.createLinearGradient(pad, 0, pad + rowW, 0);
-                        grad.addColorStop(0, C.greenDim);
-                        grad.addColorStop(0.4, 'rgba(255,255,255,0)');
-                        ctx.fillStyle = grad;
-                        ctx.fillRect(pad, drawY, rowW, ROW_H);
+                        ctx.fillStyle = C.greenDim;
+                        ctx.fillRect(pad, drawY, quarterL, ROW_H);
                         ctx.restore();
                     } else if (isP2Win) {
                         ctx.save();
                         roundRect(ctx, pad, drawY, rowW, ROW_H, RAD);
                         ctx.clip();
-                        var grad = ctx.createLinearGradient(pad, 0, pad + rowW, 0);
-                        grad.addColorStop(0.6, 'rgba(255,255,255,0)');
-                        grad.addColorStop(1, C.greenDim);
-                        ctx.fillStyle = grad;
-                        ctx.fillRect(pad, drawY, rowW, ROW_H);
+                        ctx.fillStyle = C.greenDim;
+                        ctx.fillRect(width * 0.75, drawY, quarterR, ROW_H);
                         ctx.restore();
                     } else if (isTie) {
                         ctx.save();
                         roundRect(ctx, pad, drawY, rowW, ROW_H, RAD);
                         ctx.clip();
-                        var grad = ctx.createLinearGradient(pad, 0, pad + rowW, 0);
-                        grad.addColorStop(0, C.orangeDim);
-                        grad.addColorStop(0.3, 'rgba(255,255,255,0)');
-                        grad.addColorStop(0.7, 'rgba(255,255,255,0)');
-                        grad.addColorStop(1, C.orangeDim);
-                        ctx.fillStyle = grad;
-                        ctx.fillRect(pad, drawY, rowW, ROW_H);
+                        ctx.fillStyle = C.orangeDim;
+                        ctx.fillRect(pad, drawY, quarterL, ROW_H);
+                        ctx.fillRect(width * 0.75, drawY, quarterR, ROW_H);
                         ctx.restore();
                     }
 
@@ -2220,7 +2210,7 @@
                     ctx.fillStyle = '#e31837';
                     ctx.font = '800 ' + hdrFont + 'px ' + FF_HEAD;
                     ctx.textAlign = 'left';
-                    ctx.fillText(pName.toUpperCase(), x + Math.round(6 * S), hdrY);
+                    ctx.fillText(pName + ' biggest wins', x + Math.round(6 * S), hdrY);
                     ctx.fillRect(x + Math.round(6 * S), hdrY + Math.round(4 * S), w - Math.round(12 * S), 1);
                 }
 
