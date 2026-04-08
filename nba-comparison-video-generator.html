@@ -1857,19 +1857,23 @@
                     ctx.fillStyle = C.surface;
                     ctx.fill();
 
-                    // Flash overlay (age 0-7): only flash the outer value cell (25% width)
-                    var quarterL = width * 0.25 - pad; // left value cell width
-                    var quarterR = pad + rowW - width * 0.75; // right value cell width
+                    // Tint dimensions: outer 50% for wins (value + name), outer 25% for ties
+                    var halfL = width * 0.5 - pad;    // left half width (value + name)
+                    var halfR = pad + rowW - width * 0.5; // right half width
+                    var quarterL = width * 0.25 - pad; // left quarter (value cell only)
+                    var quarterR = pad + rowW - width * 0.75; // right quarter
+
+                    // Flash overlay (age 0-7): outer 50% for wins, outer 25% for ties
                     if (age >= 0 && age < 8) {
                         ctx.save();
                         roundRect(ctx, pad, drawY, rowW, ROW_H, RAD);
                         ctx.clip();
                         if (item.winner === 'player1') {
                             ctx.fillStyle = 'rgba(227,24,55,0.2)';
-                            ctx.fillRect(pad, drawY, quarterL, ROW_H);
+                            ctx.fillRect(pad, drawY, halfL, ROW_H);
                         } else if (item.winner === 'player2') {
                             ctx.fillStyle = 'rgba(227,24,55,0.2)';
-                            ctx.fillRect(width * 0.75, drawY, quarterR, ROW_H);
+                            ctx.fillRect(width * 0.5, drawY, halfR, ROW_H);
                         } else {
                             ctx.fillStyle = 'rgba(245,158,11,0.15)';
                             ctx.fillRect(pad, drawY, quarterL, ROW_H);
@@ -1878,20 +1882,20 @@
                         ctx.restore();
                     }
 
-                    // Final winner/tie tints (settled, age >= 8): only outer value cell
+                    // Final winner/tie tints (settled, age >= 8): outer 50% for wins, 25% for ties
                     if (isP1Win) {
                         ctx.save();
                         roundRect(ctx, pad, drawY, rowW, ROW_H, RAD);
                         ctx.clip();
                         ctx.fillStyle = C.greenDim;
-                        ctx.fillRect(pad, drawY, quarterL, ROW_H);
+                        ctx.fillRect(pad, drawY, halfL, ROW_H);
                         ctx.restore();
                     } else if (isP2Win) {
                         ctx.save();
                         roundRect(ctx, pad, drawY, rowW, ROW_H, RAD);
                         ctx.clip();
                         ctx.fillStyle = C.greenDim;
-                        ctx.fillRect(width * 0.75, drawY, quarterR, ROW_H);
+                        ctx.fillRect(width * 0.5, drawY, halfR, ROW_H);
                         ctx.restore();
                     } else if (isTie) {
                         ctx.save();
