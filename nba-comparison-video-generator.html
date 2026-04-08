@@ -1675,6 +1675,9 @@
             return { items: layout, totalHeight: y };
         }
 
+        // Global font scale multiplier (1.3 = 30% larger across all drawing)
+        var FS = 1.3;
+
         // --- Colors from comparison tool CSS variables ---
         var C = {
             bg: '#f5f5f7', surface: '#ffffff', border: '#d1d1d6',
@@ -1714,14 +1717,14 @@
             var centerY = cardY + cardH / 2;
 
             // Player 1 name (left)
-            var nameSize = Math.min(24, width * 0.019);
+            var nameSize = Math.round(Math.min(24, width * 0.019) * FS);
             ctx.font = '600 ' + nameSize + 'px Arial, sans-serif';
             ctx.fillStyle = C.text;
             ctx.textAlign = 'center';
             ctx.fillText(data.player1Name, midX - cardW * 0.25, centerY - 16);
 
             // Player 1 score
-            var scoreSize = Math.min(48, width * 0.037);
+            var scoreSize = Math.round(Math.min(48, width * 0.037) * FS);
             var p1Won = p1Score > p2Score;
             var p2Won = p2Score > p1Score;
             ctx.font = '700 ' + scoreSize + 'px "Courier New", monospace';
@@ -1729,7 +1732,7 @@
             ctx.fillText(String(Math.round(p1Score)), midX - cardW * 0.25, centerY + 30);
 
             // Divider
-            ctx.font = '300 ' + Math.min(30, width * 0.023) + 'px Arial';
+            ctx.font = '300 ' + Math.round(Math.min(30, width * 0.023) * FS) + 'px Arial';
             ctx.fillStyle = C.textSec;
             ctx.textAlign = 'center';
             ctx.fillText('\u2013', midX, centerY + 8);
@@ -1749,8 +1752,8 @@
             var HEADER_HEIGHT = 140;
             var contentAreaTop = HEADER_HEIGHT;
             var contentAreaHeight = height - HEADER_HEIGHT;
+            var REVEAL_FRAMES = 15;
 
-            // Page background
             ctx.fillStyle = C.bg;
             ctx.fillRect(0, contentAreaTop, width, contentAreaHeight);
 
@@ -1782,7 +1785,7 @@
                     ctx.fillStyle = C.bg;
                     ctx.fillRect(pad, drawY, rowW, 80);
 
-                    var titleSize = Math.min(22, width * 0.017);
+                    var titleSize = Math.round(Math.min(22, width * 0.017) * FS);
                     ctx.font = '600 ' + titleSize + 'px Arial, sans-serif';
                     ctx.fillStyle = C.text;
                     ctx.textAlign = 'left';
@@ -1792,7 +1795,7 @@
                     ctx.fillRect(pad, drawY + 52, rowW, 2);
 
                     if (item.sectionP1 > 0 || item.sectionP2 > 0) {
-                        var subSize = Math.min(15, width * 0.012);
+                        var subSize = Math.round(Math.min(15, width * 0.012) * FS);
                         ctx.font = '500 ' + subSize + 'px Arial, sans-serif';
                         ctx.fillStyle = C.textSec;
                         ctx.textAlign = 'left';
@@ -1806,6 +1809,7 @@
                     var ROW_H = 52;
                     var RAD = 8;
 
+                    // Track reveal
                     var itemKey = String(idx);
                     var inView = drawY >= contentAreaTop && drawY < height;
                     if (inView && !revealedItems.has(itemKey)) {
@@ -1813,16 +1817,13 @@
                         revealFrame.set(idx, currentFrame);
                     }
                     var revealed = revealedItems.has(itemKey);
-
-                    // Animation stage: 0-3 = flash white, 4-7 = transition to final, 8+ = fully revealed
                     var animAge = revealed ? (currentFrame - (revealFrame.get(idx) || 0)) : -1;
-                    var fullyRevealed = animAge >= 8;
-                    var flashing = revealed && animAge < 4;
-                    var transitioning = revealed && animAge >= 4 && animAge < 8;
+                    var settled = animAge > REVEAL_FRAMES;
 
-                    var isP1Win = fullyRevealed && item.winner === 'player1';
-                    var isP2Win = fullyRevealed && item.winner === 'player2';
-                    var isTie = fullyRevealed && item.winner === 'tie' && item.p1Value !== '-' && item.p2Value !== '-';
+                    // Winner state (only after settled)
+                    var isP1Win = settled && item.winner === 'player1';
+                    var isP2Win = settled && item.winner === 'player2';
+                    var isTie = settled && item.winner === 'tie' && item.p1Value !== '-' && item.p2Value !== '-';
 
                     // Card background
                     ctx.save();
@@ -1830,50 +1831,48 @@
                     ctx.fillStyle = C.surface;
                     ctx.fill();
 
-                    // Flash overlay (frames 0-3 after reveal)
-                    if (flashing) {
+                    // Reveal animation: frames 0-5 red flash, 6-15 transition to final
+                    if (revealed && animAge <= REVEAL_FRAMES) {
                         ctx.save();
                         roundRect(ctx, pad, drawY, rowW, ROW_H, RAD);
                         ctx.clip();
-                        var flashAlpha = 0.3 * (1 - animAge / 4);
-                        ctx.fillStyle = 'rgba(255,255,255,' + flashAlpha + ')';
-                        ctx.fillRect(pad, drawY, rowW, ROW_H);
-                        ctx.restore();
-                    }
 
-                    // Transitioning overlay (frames 4-7: fade in final color)
-                    if (transitioning) {
-                        var tProg = (animAge - 4) / 4; // 0 to 1
-                        ctx.save();
-                        roundRect(ctx, pad, drawY, rowW, ROW_H, RAD);
-                        ctx.clip();
-                        ctx.globalAlpha = tProg;
-                        if (item.winner === 'player1') {
-                            var grad = ctx.createLinearGradient(pad, 0, pad + rowW, 0);
-                            grad.addColorStop(0, C.greenDim);
-                            grad.addColorStop(0.4, 'rgba(255,255,255,0)');
-                            ctx.fillStyle = grad;
+                        if (animAge <= 5) {
+                            // Red flash (fading out)
+                            var flashAlpha = 0.15 * (1 - animAge / 5);
+                            ctx.fillStyle = 'rgba(227,24,55,' + flashAlpha.toFixed(3) + ')';
                             ctx.fillRect(pad, drawY, rowW, ROW_H);
-                        } else if (item.winner === 'player2') {
-                            var grad = ctx.createLinearGradient(pad, 0, pad + rowW, 0);
-                            grad.addColorStop(0.6, 'rgba(255,255,255,0)');
-                            grad.addColorStop(1, C.greenDim);
-                            ctx.fillStyle = grad;
-                            ctx.fillRect(pad, drawY, rowW, ROW_H);
-                        } else if (item.winner === 'tie' && item.p1Value !== '-' && item.p2Value !== '-') {
-                            var grad = ctx.createLinearGradient(pad, 0, pad + rowW, 0);
-                            grad.addColorStop(0, C.orangeDim);
-                            grad.addColorStop(0.3, 'rgba(255,255,255,0)');
-                            grad.addColorStop(0.7, 'rgba(255,255,255,0)');
-                            grad.addColorStop(1, C.orangeDim);
-                            ctx.fillStyle = grad;
-                            ctx.fillRect(pad, drawY, rowW, ROW_H);
+                        } else {
+                            // Transition to final color (frames 6-15)
+                            var tProg = (animAge - 6) / (REVEAL_FRAMES - 6);
+                            ctx.globalAlpha = tProg;
+                            if (item.winner === 'player1') {
+                                var grad = ctx.createLinearGradient(pad, 0, pad + rowW, 0);
+                                grad.addColorStop(0, C.greenDim);
+                                grad.addColorStop(0.4, 'rgba(255,255,255,0)');
+                                ctx.fillStyle = grad;
+                                ctx.fillRect(pad, drawY, rowW, ROW_H);
+                            } else if (item.winner === 'player2') {
+                                var grad = ctx.createLinearGradient(pad, 0, pad + rowW, 0);
+                                grad.addColorStop(0.6, 'rgba(255,255,255,0)');
+                                grad.addColorStop(1, C.greenDim);
+                                ctx.fillStyle = grad;
+                                ctx.fillRect(pad, drawY, rowW, ROW_H);
+                            } else if (item.winner === 'tie' && item.p1Value !== '-' && item.p2Value !== '-') {
+                                var grad = ctx.createLinearGradient(pad, 0, pad + rowW, 0);
+                                grad.addColorStop(0, C.orangeDim);
+                                grad.addColorStop(0.3, 'rgba(255,255,255,0)');
+                                grad.addColorStop(0.7, 'rgba(255,255,255,0)');
+                                grad.addColorStop(1, C.orangeDim);
+                                ctx.fillStyle = grad;
+                                ctx.fillRect(pad, drawY, rowW, ROW_H);
+                            }
+                            ctx.globalAlpha = 1;
                         }
-                        ctx.globalAlpha = 1;
                         ctx.restore();
                     }
 
-                    // Winner / tie gradient tints (fully revealed)
+                    // Final winner/tie tints (settled)
                     if (isP1Win) {
                         ctx.save();
                         roundRect(ctx, pad, drawY, rowW, ROW_H, RAD);
@@ -1914,7 +1913,7 @@
                     ctx.lineWidth = 1;
                     ctx.stroke();
 
-                    // Winner accent borders (only if fully revealed)
+                    // Winner accent borders (only if settled)
                     if (isP1Win) {
                         ctx.fillStyle = C.green;
                         ctx.fillRect(pad, drawY + 4, 3, ROW_H - 8);
@@ -1930,12 +1929,12 @@
                     ctx.restore();
 
                     var textY = drawY + ROW_H / 2 + 5;
-                    var valSize = Math.min(18, width * 0.014);
-                    var nameColSize = Math.min(14, width * 0.011);
-                    var metricSize = Math.min(14, width * 0.011);
+                    var valSize = Math.round(Math.min(18, width * 0.014) * FS);
+                    var nameColSize = Math.round(Math.min(14, width * 0.011) * FS);
+                    var metricSize = Math.round(Math.min(14, width * 0.011) * FS);
 
-                    // Determine text colors based on animation state
-                    var showColors = fullyRevealed || transitioning;
+                    // Text colors: gray if not yet settled, final colors if settled or transitioning (age > 5)
+                    var showColors = animAge > 5;
 
                     // Col 1: Player 1 value
                     ctx.font = ((showColors && item.winner === 'player1') ? '600 ' : '500 ') + valSize + 'px "Courier New", monospace';
@@ -2092,10 +2091,13 @@
 
         function drawFinalScreen(ctx, data, width, height, fadeProgress) {
             var S = width / 1280;
-            var F = 1.3; // font scale multiplier
-            var isSquare = Math.abs(width - height) < 10;
-            var scoreAreaPct = isSquare ? 0.28 : 0.40;
+            var isSquare = Math.abs(width - height) < 50;
             var maxLines = isSquare ? 12 : 10;
+
+            // Layout percentages (of height)
+            var L = isSquare
+                ? { title: 0.06, names: 0.14, scores: 0.22, banner: 0.33, winsTop: 0.38, winsBot: 0.96 }
+                : { title: 0.05, names: 0.12, scores: 0.22, banner: 0.33, winsTop: 0.40, winsBot: 0.93 };
 
             // Carbon fiber background
             ctx.fillStyle = '#0a0a0a';
@@ -2116,7 +2118,7 @@
             ctx.globalAlpha = Math.min(1, fadeProgress * 2);
 
             // "FINAL SCORE" heading — wide letter-spacing
-            var titleSize = Math.round(42 * S * F);
+            var titleSize = Math.round(42 * S * FS);
             ctx.fillStyle = '#ffffff';
             ctx.font = 'bold ' + titleSize + 'px Arial, sans-serif';
             ctx.textAlign = 'center';
@@ -2127,7 +2129,7 @@
                 titleTotalW += ctx.measureText(titleStr[ci]).width + (ci < titleStr.length - 1 ? spacing : 0);
             }
             var titleStartX = (width - titleTotalW) / 2;
-            var titleY = Math.round(50 * S);
+            var titleY = Math.round(height * L.title);
             for (var ci = 0; ci < titleStr.length; ci++) {
                 ctx.textAlign = 'left';
                 ctx.fillText(titleStr[ci], titleStartX, titleY);
@@ -2137,41 +2139,42 @@
             // Red underline
             var ulW = Math.round(60 * S);
             ctx.fillStyle = '#e31837';
-            ctx.fillRect((width - ulW) / 2, Math.round(60 * S), ulW, Math.round(2 * S));
+            ctx.fillRect((width - ulW) / 2, titleY + Math.round(10 * S), ulW, Math.round(2 * S));
 
             var p1Won = data.player1Score > data.player2Score;
             var p2Won = data.player2Score > data.player1Score;
             var tied = data.player1Score === data.player2Score;
 
             // Player names
-            var nameSize = Math.round(24 * S * F);
+            var nameSize = Math.round(24 * S * FS);
             ctx.font = 'bold ' + nameSize + 'px Arial, sans-serif';
             ctx.fillStyle = '#ffffff';
             ctx.textAlign = 'center';
-            ctx.fillText(data.player1Name.toUpperCase(), width * 0.25, Math.round(95 * S));
-            ctx.fillText(data.player2Name.toUpperCase(), width * 0.75, Math.round(95 * S));
+            ctx.fillText(data.player1Name.toUpperCase(), width * 0.25, Math.round(height * L.names));
+            ctx.fillText(data.player2Name.toUpperCase(), width * 0.75, Math.round(height * L.names));
 
             // Scores — massive
-            var scoreSize = Math.round(140 * S * F);
+            var scoreSize = Math.round(140 * S * FS);
             ctx.font = 'bold ' + scoreSize + 'px "Courier New", monospace';
 
+            var scoresY = Math.round(height * L.scores);
             ctx.fillStyle = p1Won ? '#e31837' : '#444444';
-            ctx.fillText(String(data.player1Score), width * 0.25, Math.round(height * scoreAreaPct * 0.72));
+            ctx.fillText(String(data.player1Score), width * 0.25, scoresY);
 
             ctx.fillStyle = '#333333';
-            ctx.font = 'bold ' + Math.round(48 * S * F) + 'px Arial';
-            ctx.fillText('\u2013', width / 2, Math.round(height * scoreAreaPct * 0.62));
+            ctx.font = 'bold ' + Math.round(48 * S * FS) + 'px Arial';
+            ctx.fillText('\u2013', width / 2, scoresY - Math.round(20 * S));
 
             ctx.font = 'bold ' + scoreSize + 'px "Courier New", monospace';
             ctx.fillStyle = p2Won ? '#e31837' : '#444444';
-            ctx.fillText(String(data.player2Score), width * 0.75, Math.round(height * scoreAreaPct * 0.72));
+            ctx.fillText(String(data.player2Score), width * 0.75, scoresY);
 
             // Winner pill
-            var pillY = Math.round(height * scoreAreaPct * 0.8);
-            var pillH = Math.round(34 * S * F);
+            var pillY = Math.round(height * L.banner);
+            var pillH = Math.round(34 * S * FS);
             var winnerText = tied ? 'TIE' :
                 (p1Won ? data.player1Name.toUpperCase() + ' WINS' : data.player2Name.toUpperCase() + ' WINS');
-            var pillFontSize = Math.round(16 * S * F);
+            var pillFontSize = Math.round(16 * S * FS);
             ctx.font = 'bold ' + pillFontSize + 'px Arial, sans-serif';
             var pillTextW = ctx.measureText(winnerText).width;
             var pillW = pillTextW + Math.round(36 * S);
@@ -2187,7 +2190,7 @@
             ctx.fillText(winnerText, width / 2, pillY + pillH * 0.67);
 
             // Horizontal divider line
-            var dividerY = Math.round(height * scoreAreaPct) + Math.round(8 * S);
+            var dividerY = Math.round(height * L.winsTop) - Math.round(4 * S);
             ctx.fillStyle = '#222222';
             ctx.fillRect(0, dividerY, width, 1);
 
@@ -2210,7 +2213,7 @@
 
                 // Column headers
                 var hdrY = winsAreaY + Math.round(20 * S);
-                var hdrFont = Math.round(14 * S * F);
+                var hdrFont = Math.round(14 * S * FS);
 
                 function drawColHdr(x, w, pName) {
                     ctx.fillStyle = '#e31837';
@@ -2229,11 +2232,11 @@
 
                 // Win rows
                 var rowStartY = hdrY + Math.round(18 * S);
-                var rowBottomLimit = height - Math.round(35 * S);
+                var rowBottomLimit = Math.round(height * L.winsBot);
                 var availRowH = rowBottomLimit - rowStartY;
-                var lineH = Math.min(availRowH / maxLines, Math.round(24 * S));
-                var mFont = Math.max(Math.round(9 * S), Math.round(lineH * 0.52 * F));
-                var vFont = Math.max(Math.round(9 * S), Math.round(lineH * 0.52 * F));
+                var lineH = availRowH / maxLines;
+                var mFont = Math.max(Math.round(9 * S), Math.round(lineH * 0.52 * FS));
+                var vFont = Math.max(Math.round(9 * S), Math.round(lineH * 0.52 * FS));
                 var condensedFont = '"Arial Narrow", "Arial", sans-serif';
 
                 function drawWinRows(wins, colX, colW, isP1Col) {
@@ -2299,7 +2302,7 @@
 
             // Branding
             ctx.fillStyle = '#333333';
-            ctx.font = Math.round(13 * S * F) + 'px Arial, sans-serif';
+            ctx.font = Math.round(13 * S * FS) + 'px Arial, sans-serif';
             ctx.textAlign = 'center';
             ctx.fillText('HoopsMatic.com', width / 2, height - Math.round(10 * S));
 
@@ -2459,15 +2462,18 @@
                 // Track the frame number when each item was first revealed (for animation)
                 var revealFrame = new Map();
 
-                // Helper: count revealed scores
-                function countRevealedScores() {
+                // Helper: count scores for items settled > 15 frames
+                function countRevealedScores(curFrame) {
                     var p1 = 0, p2 = 0;
                     revealedItems.forEach(function(key) {
                         var idx = parseInt(key, 10);
                         var it = contentLayout.items[idx];
                         if (it && it.type === 'item') {
-                            if (it.winner === 'player1') p1++;
-                            else if (it.winner === 'player2') p2++;
+                            var rFrame = revealFrame.get(idx);
+                            if (rFrame !== undefined && (curFrame - rFrame) > 15) {
+                                if (it.winner === 'player1') p1++;
+                                else if (it.winner === 'player2') p2++;
+                            }
                         }
                     });
                     return { p1: p1, p2: p2 };
@@ -2491,13 +2497,13 @@
                         var scrollProgress = scrollFrame / scrollFrames;
                         var scrollY = scrollProgress * totalScrollDistance;
 
-                        var scores = countRevealedScores();
+                        var scores = countRevealedScores(frame);
                         drawHeader(offCtx, comparisonData, dims.width, scores.p1, scores.p2);
                         drawScrollingContent(offCtx, contentLayout, dims.width, dims.height, scrollY, revealedItems, revealFrame, frame);
 
                     } else if (frame < startPauseFrames + scrollFrames + pauseFrames) {
                         // END PAUSE — hold last scroll frame with final scores
-                        var scores = countRevealedScores();
+                        var scores = countRevealedScores(frame);
                         drawHeader(offCtx, comparisonData, dims.width, scores.p1, scores.p2);
                         drawScrollingContent(offCtx, contentLayout, dims.width, dims.height, totalScrollDistance, revealedItems, revealFrame, frame);
 
