@@ -1805,6 +1805,7 @@
             var col4X = pad + col1W + col2W + col3W;
             var col5X = pad + col1W + col2W + col3W + col4W;
 
+            var revealsThisFrame = 0;
             contentLayout.items.forEach(function(item, idx) {
                 var drawY = contentAreaTop + item.y - scrollY;
 
@@ -1839,10 +1840,12 @@
                     var RAD = 8;
 
                     // Track reveal: trigger when row crosses the vertical midpoint (only during scroll phase)
+                    // Only allow ONE new reveal per frame to stagger score increments
                     var revealLine = contentAreaTop + contentAreaHeight * 0.5;
                     var inView = drawY >= contentAreaTop && drawY < revealLine;
-                    if (isScrollPhase && inView && itemRevealedAtFrame[idx] === -1) {
+                    if (isScrollPhase && inView && itemRevealedAtFrame[idx] === -1 && revealsThisFrame < 1) {
                         itemRevealedAtFrame[idx] = currentFrame;
+                        revealsThisFrame++;
                     }
                     var age = itemRevealedAtFrame[idx] === -1 ? -1 : (currentFrame - itemRevealedAtFrame[idx]);
                     var settled = age >= 8;
@@ -1858,9 +1861,9 @@
                     ctx.fill();
 
                     // Tint boundaries: value+name cells stop before metric label
-                    // Metric label occupies center ~25% (width*0.375 to width*0.625)
-                    var tintLeftEnd = width * 0.375;   // p1 value+name stops here
-                    var tintRightStart = width * 0.625; // p2 name+value starts here
+                    // Tint covers value + full player name, stops before metric label
+                    var tintLeftEnd = width * 0.42;    // p1 value+name stops here
+                    var tintRightStart = width * 0.58; // p2 name+value starts here
                     var tintLeftW = tintLeftEnd - pad;
                     var tintRightW = pad + rowW - tintRightStart;
 
@@ -2449,7 +2452,7 @@
                 });
 
                 var visibleContentHeight = dims.height - 140;
-                var totalScrollDistance = Math.max(0, contentLayout.totalHeight - visibleContentHeight + 80);
+                var totalScrollDistance = Math.max(0, contentLayout.totalHeight - visibleContentHeight + 200);
 
                 // Track when each item was first revealed (-1 = never seen)
                 var itemRevealedAtFrame = new Array(contentLayout.items.length).fill(-1);
