@@ -1778,7 +1778,7 @@
             ctx.fillText(String(Math.round(p2Score)), midX + cardW * 0.25, centerY + 30);
         }
 
-        function drawScrollingContent(ctx, contentLayout, width, height, scrollY, itemRevealedAtFrame, currentFrame, isScrollPhase, prevScrollY, scrollProgress) {
+        function drawScrollingContent(ctx, contentLayout, width, height, scrollY, itemRevealedAtFrame, currentFrame, isScrollPhase, prevScrollY) {
             var HEADER_HEIGHT = 140;
             var contentAreaTop = HEADER_HEIGHT;
             var contentAreaHeight = height - HEADER_HEIGHT;
@@ -1839,25 +1839,14 @@
                     var ROW_H = 52;
                     var RAD = 8;
 
-                    // Three-zone reveal logic (one reveal per frame max)
+                    // Track reveal: trigger when row CROSSES the midpoint during this frame's scroll
+                    // Only allow ONE new reveal per frame to stagger score increments
                     var revealLine = contentAreaTop + contentAreaHeight * 0.5;
-                    var inVisible = drawY >= contentAreaTop && drawY < height;
-                    if (isScrollPhase && itemRevealedAtFrame[idx] === -1 && revealsThisFrame < 1) {
-                        var doReveal = false;
-                        if (scrollProgress < 0.1) {
-                            // ZONE 1: start of scroll — reveal any visible item (top to bottom)
-                            if (inVisible) doReveal = true;
-                        } else if (scrollProgress > 0.9) {
-                            // ZONE 3: end of scroll — reveal any remaining visible item
-                            if (inVisible) doReveal = true;
-                        } else {
-                            // ZONE 2: middle — reveal on midpoint crossing
-                            if (prevScrollY >= 0) {
-                                var prevDrawY = contentAreaTop + item.y - prevScrollY;
-                                if (prevDrawY > revealLine && drawY <= revealLine) doReveal = true;
-                            }
-                        }
-                        if (doReveal) {
+                    if (isScrollPhase && itemRevealedAtFrame[idx] === -1 && revealsThisFrame < 1 && prevScrollY >= 0) {
+                        var prevDrawY = contentAreaTop + item.y - prevScrollY;
+                        var currDrawY = drawY;
+                        // Row was below midpoint last frame, now at or above midpoint
+                        if (prevDrawY > revealLine && currDrawY <= revealLine) {
                             itemRevealedAtFrame[idx] = currentFrame;
                             revealsThisFrame++;
                         }
@@ -2467,7 +2456,7 @@
                 });
 
                 var visibleContentHeight = dims.height - 140;
-                var totalScrollDistance = Math.max(0, contentLayout.totalHeight - visibleContentHeight + 40);
+                var totalScrollDistance = Math.max(0, contentLayout.totalHeight - visibleContentHeight * 0.5 + 100);
 
                 // Track when each item was first revealed (-1 = never seen)
                 var itemRevealedAtFrame = new Array(contentLayout.items.length).fill(-1);
@@ -2496,7 +2485,7 @@
                     if (frame < startPauseFrames) {
                         // START PAUSE — hold first frame (scrollY=0, nothing revealed)
                         drawHeader(offCtx, comparisonData, dims.width, 0, 0);
-                        drawScrollingContent(offCtx, contentLayout, dims.width, dims.height, 0, itemRevealedAtFrame, frame, false, -1, 0);
+                        drawScrollingContent(offCtx, contentLayout, dims.width, dims.height, 0, itemRevealedAtFrame, frame, false, -1);
 
                     } else if (frame < startPauseFrames + scrollFrames) {
                         // SCROLLING PHASE — pure linear scroll
@@ -2506,14 +2495,14 @@
 
                         var scores = countRevealedScores(frame);
                         drawHeader(offCtx, comparisonData, dims.width, scores.p1, scores.p2);
-                        drawScrollingContent(offCtx, contentLayout, dims.width, dims.height, scrollY, itemRevealedAtFrame, frame, true, prevScrollY, scrollProgress);
+                        drawScrollingContent(offCtx, contentLayout, dims.width, dims.height, scrollY, itemRevealedAtFrame, frame, true, prevScrollY);
                         prevScrollY = scrollY;
 
                     } else if (frame < startPauseFrames + scrollFrames + pauseFrames) {
                         // END PAUSE — hold last scroll frame with final scores
                         var scores = countRevealedScores(frame);
                         drawHeader(offCtx, comparisonData, dims.width, scores.p1, scores.p2);
-                        drawScrollingContent(offCtx, contentLayout, dims.width, dims.height, totalScrollDistance, itemRevealedAtFrame, frame, false, -1, 1);
+                        drawScrollingContent(offCtx, contentLayout, dims.width, dims.height, totalScrollDistance, itemRevealedAtFrame, frame, false, -1);
 
                     } else {
                         // OUTRO/FINAL SCREEN PHASE
