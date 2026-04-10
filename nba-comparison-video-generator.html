@@ -1778,7 +1778,7 @@
             ctx.fillText(String(Math.round(p2Score)), midX + cardW * 0.25, centerY + 30);
         }
 
-        function drawScrollingContent(ctx, contentLayout, width, height, scrollY, itemRevealedAtFrame, currentFrame, isScrollPhase, prevScrollY) {
+        function drawScrollingContent(ctx, contentLayout, width, height, scrollY, itemRevealSchedule, currentFrame) {
             var HEADER_HEIGHT = 140;
             var contentAreaTop = HEADER_HEIGHT;
             var contentAreaHeight = height - HEADER_HEIGHT;
@@ -1805,7 +1805,6 @@
             var col4X = pad + col1W + col2W + col3W;
             var col5X = pad + col1W + col2W + col3W + col4W;
 
-            var revealsThisFrame = 0;
             contentLayout.items.forEach(function(item, idx) {
                 var drawY = contentAreaTop + item.y - scrollY;
 
@@ -1839,19 +1838,9 @@
                     var ROW_H = 52;
                     var RAD = 8;
 
-                    // Track reveal: trigger when row CROSSES the midpoint during this frame's scroll
-                    // Only allow ONE new reveal per frame to stagger score increments
-                    var revealLine = contentAreaTop + contentAreaHeight * 0.5;
-                    if (isScrollPhase && itemRevealedAtFrame[idx] === -1 && revealsThisFrame < 1 && prevScrollY >= 0) {
-                        var prevDrawY = contentAreaTop + item.y - prevScrollY;
-                        var currDrawY = drawY;
-                        // Row was below midpoint last frame, now at or above midpoint
-                        if (prevDrawY > revealLine && currDrawY <= revealLine) {
-                            itemRevealedAtFrame[idx] = currentFrame;
-                            revealsThisFrame++;
-                        }
-                    }
-                    var age = itemRevealedAtFrame[idx] === -1 ? -1 : (currentFrame - itemRevealedAtFrame[idx]);
+                    // Time-based reveal using pre-built schedule
+                    var schedFrame = itemRevealSchedule[idx];
+                    var age = (schedFrame === -1 || currentFrame < schedFrame) ? -1 : (currentFrame - schedFrame);
                     var settled = age >= 8;
 
                     var isP1Win = settled && item.winner === 'player1';
@@ -1864,14 +1853,13 @@
                     ctx.fillStyle = C.surface;
                     ctx.fill();
 
-                    // Tint boundaries: value+name cells stop before metric label
-                    // Tint covers value + full player name, stops before metric label
-                    var tintLeftEnd = width * 0.42;    // p1 value+name stops here
-                    var tintRightStart = width * 0.58; // p2 name+value starts here
+                    // Tint boundaries
+                    var tintLeftEnd = width * 0.42;
+                    var tintRightStart = width * 0.58;
                     var tintLeftW = tintLeftEnd - pad;
                     var tintRightW = pad + rowW - tintRightStart;
 
-                    // Flash overlay (age 0-7): tint value+name cells only
+                    // Flash overlay (age 0-7): winner's half only
                     if (age >= 0 && age < 8) {
                         ctx.save();
                         roundRect(ctx, pad, drawY, rowW, ROW_H, RAD);
@@ -1890,7 +1878,7 @@
                         ctx.restore();
                     }
 
-                    // Final winner/tie tints (settled, age >= 8): value+name cells only
+                    // Settled tints (age >= 8)
                     if (isP1Win) {
                         ctx.save();
                         roundRect(ctx, pad, drawY, rowW, ROW_H, RAD);
@@ -1943,31 +1931,26 @@
 
                     var showColors = settled;
 
-                    // Col 1: Player 1 value
                     ctx.font = ((showColors && item.winner === 'player1') ? '700 ' : '600 ') + valSize + 'px ' + FF_MONO;
                     ctx.fillStyle = showColors ? (item.winner === 'player1' ? C.green : C.text) : C.textSec;
                     ctx.textAlign = 'center';
                     ctx.fillText(item.p1Value, col1X + col1W / 2, textY);
 
-                    // Col 2: Player 1 name
                     ctx.font = '400 ' + nameColSize + 'px ' + FF_BODY;
                     ctx.fillStyle = C.textSec;
                     ctx.textAlign = 'center';
                     ctx.fillText(item.p1Name, col2X + col2W / 2, textY);
 
-                    // Col 3: Metric label
                     ctx.font = '600 ' + metricSize + 'px ' + FF_HEAD;
                     ctx.fillStyle = C.textSec;
                     ctx.textAlign = 'center';
                     ctx.fillText(item.metric, col3X + col3W / 2, textY);
 
-                    // Col 4: Player 2 name
                     ctx.font = '400 ' + nameColSize + 'px ' + FF_BODY;
                     ctx.fillStyle = C.textSec;
                     ctx.textAlign = 'center';
                     ctx.fillText(item.p2Name, col4X + col4W / 2, textY);
 
-                    // Col 5: Player 2 value
                     ctx.font = ((showColors && item.winner === 'player2') ? '700 ' : '600 ') + valSize + 'px ' + FF_MONO;
                     ctx.fillStyle = showColors ? (item.winner === 'player2' ? C.green : C.text) : C.textSec;
                     ctx.textAlign = 'center';
@@ -2456,18 +2439,32 @@
                 });
 
                 var visibleContentHeight = dims.height - 140;
-                var totalScrollDistance = Math.max(0, contentLayout.totalHeight - visibleContentHeight * 0.5 + 100);
+                var totalScrollDistance = Math.max(0, contentLayout.totalHeight - visibleContentHeight + 40);
 
-                // Track when each item was first revealed (-1 = never seen)
-                var itemRevealedAtFrame = new Array(contentLayout.items.length).fill(-1);
-                var prevScrollY = -1;
+                // Build time-based reveal schedule
+                var itemRevealSchedule = new Array(contentLayout.items.length).fill(-1);
+                var revealableCount = 0;
+                for (var ri = 0; ri < contentLayout.items.length; ri++) {
+                    if (contentLayout.items[ri].type === 'item') revealableCount++;
+                }
+                var REVEAL_INTERVAL = revealableCount > 0 ? Math.floor((scrollFrames - 5) / revealableCount) : 8;
+                REVEAL_INTERVAL = Math.max(8, Math.min(REVEAL_INTERVAL, Math.floor(framerate * 1.5)));
+                var revealIdx = 0;
+                for (var ri = 0; ri < contentLayout.items.length; ri++) {
+                    if (contentLayout.items[ri].type === 'item') {
+                        itemRevealSchedule[ri] = startPauseFrames + 5 + revealIdx * REVEAL_INTERVAL;
+                        revealIdx++;
+                    }
+                }
+                console.log('[VideoGen] revealableCount=' + revealableCount + ', REVEAL_INTERVAL=' + REVEAL_INTERVAL);
 
                 // Helper: count scores for settled items (age >= 8)
                 function countRevealedScores(curFrame) {
                     var p1 = 0, p2 = 0;
                     for (var i = 0; i < contentLayout.items.length; i++) {
                         var it = contentLayout.items[i];
-                        if (it.type === 'item' && itemRevealedAtFrame[i] !== -1 && (curFrame - itemRevealedAtFrame[i]) >= 8) {
+                        var sched = itemRevealSchedule[i];
+                        if (sched !== -1 && curFrame >= sched + 8) {
                             if (it.winner === 'player1') p1++;
                             else if (it.winner === 'player2') p2++;
                         }
@@ -2484,8 +2481,9 @@
 
                     if (frame < startPauseFrames) {
                         // START PAUSE — hold first frame (scrollY=0, nothing revealed)
-                        drawHeader(offCtx, comparisonData, dims.width, 0, 0);
-                        drawScrollingContent(offCtx, contentLayout, dims.width, dims.height, 0, itemRevealedAtFrame, frame, false, -1);
+                        var scores = countRevealedScores(frame);
+                        drawHeader(offCtx, comparisonData, dims.width, scores.p1, scores.p2);
+                        drawScrollingContent(offCtx, contentLayout, dims.width, dims.height, 0, itemRevealSchedule, frame);
 
                     } else if (frame < startPauseFrames + scrollFrames) {
                         // SCROLLING PHASE — pure linear scroll
@@ -2495,14 +2493,13 @@
 
                         var scores = countRevealedScores(frame);
                         drawHeader(offCtx, comparisonData, dims.width, scores.p1, scores.p2);
-                        drawScrollingContent(offCtx, contentLayout, dims.width, dims.height, scrollY, itemRevealedAtFrame, frame, true, prevScrollY);
-                        prevScrollY = scrollY;
+                        drawScrollingContent(offCtx, contentLayout, dims.width, dims.height, scrollY, itemRevealSchedule, frame);
 
                     } else if (frame < startPauseFrames + scrollFrames + pauseFrames) {
                         // END PAUSE — hold last scroll frame with final scores
                         var scores = countRevealedScores(frame);
                         drawHeader(offCtx, comparisonData, dims.width, scores.p1, scores.p2);
-                        drawScrollingContent(offCtx, contentLayout, dims.width, dims.height, totalScrollDistance, itemRevealedAtFrame, frame, false, -1);
+                        drawScrollingContent(offCtx, contentLayout, dims.width, dims.height, totalScrollDistance, itemRevealSchedule, frame);
 
                     } else {
                         // OUTRO/FINAL SCREEN PHASE
