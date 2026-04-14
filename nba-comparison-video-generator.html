@@ -1823,7 +1823,7 @@
 
                     if (item.sectionP1 > 0 || item.sectionP2 > 0) {
                         var subSize = Math.round(Math.min(15, width * 0.012) * FS);
-                        ctx.font = '500 ' + subSize + 'px ' + FF_BODY;
+                        ctx.font = '400 ' + subSize + 'px ' + FF_HEAD;
                         ctx.fillStyle = C.textSec;
                         ctx.textAlign = 'left';
                         ctx.fillText(
@@ -1929,27 +1929,27 @@
 
                     var showColors = settled;
 
-                    ctx.font = ((showColors && item.winner === 'player1') ? '700 ' : '600 ') + valSize + 'px ' + FF_MONO;
+                    ctx.font = ((showColors && item.winner === 'player1') ? '700 ' : '600 ') + valSize + 'px ' + FF_HEAD;
                     ctx.fillStyle = showColors ? (item.winner === 'player1' ? C.green : C.text) : C.textSec;
                     ctx.textAlign = 'center';
                     ctx.fillText(item.p1Value, col1X + col1W / 2, textY);
 
-                    ctx.font = '400 ' + nameColSize + 'px ' + FF_BODY;
+                    ctx.font = '600 ' + nameColSize + 'px ' + FF_HEAD;
                     ctx.fillStyle = C.textSec;
                     ctx.textAlign = 'center';
                     ctx.fillText(item.p1Name, col2X + col2W / 2, textY);
 
-                    ctx.font = '600 ' + metricSize + 'px ' + FF_HEAD;
+                    ctx.font = '400 ' + metricSize + 'px ' + FF_HEAD;
                     ctx.fillStyle = C.textSec;
                     ctx.textAlign = 'center';
                     ctx.fillText(item.metric, col3X + col3W / 2, textY);
 
-                    ctx.font = '400 ' + nameColSize + 'px ' + FF_BODY;
+                    ctx.font = '600 ' + nameColSize + 'px ' + FF_HEAD;
                     ctx.fillStyle = C.textSec;
                     ctx.textAlign = 'center';
                     ctx.fillText(item.p2Name, col4X + col4W / 2, textY);
 
-                    ctx.font = ((showColors && item.winner === 'player2') ? '700 ' : '600 ') + valSize + 'px ' + FF_MONO;
+                    ctx.font = ((showColors && item.winner === 'player2') ? '700 ' : '600 ') + valSize + 'px ' + FF_HEAD;
                     ctx.fillStyle = showColors ? (item.winner === 'player2' ? C.green : C.text) : C.textSec;
                     ctx.textAlign = 'center';
                     ctx.fillText(item.p2Value, col5X + col5W / 2, textY);
@@ -2151,16 +2151,24 @@
             // Winner label — 52*S, auto-shrink to 28*S
             if (!tied) {
                 var winLabelSize = Math.round(52 * S);
-                var winLabel = '\uD83C\uDFC6 ' + winnerName.toUpperCase();
+                var winNameStr = winnerName.toUpperCase();
                 var centerColW = width * 0.3;
+                var emojiGap = Math.round(8 * S);
+                // Shrink name to fit
                 ctx.font = '900 ' + winLabelSize + 'px ' + FF_HEAD;
-                while (ctx.measureText(winLabel).width > centerColW && winLabelSize > Math.round(28 * S)) {
+                var emojiW = ctx.measureText('\uD83C\uDFC6').width + emojiGap;
+                while ((emojiW + ctx.measureText(winNameStr).width) > centerColW && winLabelSize > Math.round(28 * S)) {
                     winLabelSize--;
                     ctx.font = '900 ' + winLabelSize + 'px ' + FF_HEAD;
+                    emojiW = ctx.measureText('\uD83C\uDFC6').width + emojiGap;
                 }
+                var totalLabelW = emojiW + ctx.measureText(winNameStr).width;
+                var labelStartX = midX - totalLabelW / 2;
+                var winLabelY = centerTopY + Math.round(28 * S);
                 ctx.fillStyle = '#111111';
-                ctx.textAlign = 'center';
-                ctx.fillText(winLabel, midX, centerTopY + Math.round(28 * S));
+                ctx.textAlign = 'left';
+                ctx.fillText('\uD83C\uDFC6', labelStartX, winLabelY);
+                ctx.fillText(winNameStr, labelStartX + emojiW, winLabelY);
             } else {
                 ctx.font = '900 ' + Math.round(52 * S) + 'px ' + FF_HEAD;
                 ctx.fillStyle = '#111111';
