@@ -2083,8 +2083,8 @@
             var scoreY = Math.round(height * 0.22);
 
             // Player 1 name + score (left)
-            var nameSize = Math.round(64 * S);
-            var maxNameW = width * 0.45;
+            var nameSize = Math.round(32 * S);
+            var maxNameW = width * 0.38;
             function fitN(name, base) {
                 var sz = base;
                 ctx.font = '800 ' + sz + 'px ' + FF_HEAD;
@@ -2101,13 +2101,8 @@
             ctx.textAlign = 'left';
             ctx.fillText(data.player1Name.toUpperCase(), pad, nameY);
 
-            var scoreSize = Math.round(220 * S);
-            var maxScoreW = width * 0.40;
+            var scoreSize = Math.round(110 * S);
             ctx.font = '900 ' + scoreSize + 'px ' + FF_HEAD;
-            while (ctx.measureText(String(data.player1Score)).width > maxScoreW && scoreSize > 60) {
-                scoreSize--;
-                ctx.font = '900 ' + scoreSize + 'px ' + FF_HEAD;
-            }
             ctx.fillStyle = p1Won ? '#22a861' : '#111111';
             ctx.textAlign = 'left';
             ctx.fillText(String(data.player1Score), pad, scoreY + scoreSize * 0.35);
@@ -2126,7 +2121,7 @@
 
             // Center: FINAL + winner
             var centerTopY = Math.round(height * 0.09);
-            var finalSize = Math.round(28 * S);
+            var finalSize = Math.round(16 * S);
             ctx.font = '400 ' + finalSize + 'px ' + FF_HEAD;
             ctx.fillStyle = '#aaaaaa';
             ctx.textAlign = 'center';
@@ -2144,10 +2139,10 @@
 
             // Winner label
             if (!tied) {
-                var winLabelSize = Math.round(44 * S);
+                var winLabelSize = Math.round(26 * S);
                 var winLabel = '\uD83C\uDFC6 ' + winnerName.toUpperCase();
                 ctx.font = '700 ' + winLabelSize + 'px ' + FF_HEAD;
-                var centerColW = width * 0.3;
+                var centerColW = width * 0.2;
                 while (ctx.measureText(winLabel).width > centerColW && winLabelSize > 8) {
                     winLabelSize--;
                     ctx.font = '700 ' + winLabelSize + 'px ' + FF_HEAD;
@@ -2156,7 +2151,7 @@
                 ctx.textAlign = 'center';
                 ctx.fillText(winLabel, midX, centerTopY + Math.round(22 * S));
             } else {
-                ctx.font = '700 ' + Math.round(44 * S) + 'px ' + FF_HEAD;
+                ctx.font = '700 ' + Math.round(16 * S) + 'px ' + FF_HEAD;
                 ctx.fillStyle = '#111111';
                 ctx.textAlign = 'center';
                 ctx.fillText('TIE', midX, centerTopY + Math.round(22 * S));
@@ -2174,8 +2169,8 @@
             ctx.fillStyle = '#fafafa';
             ctx.fillRect(0, hdrTop, width, hdrH);
 
-            var hdrNameSize = Math.round(78 * S);
-            var hdrScoreSize = Math.round(66 * S);
+            var hdrNameSize = Math.round(26 * S);
+            var hdrScoreSize = Math.round(22 * S);
             var hdrSpacing = Math.round(hdrNameSize * 0.06);
 
             // Helper: draw spaced uppercase text
@@ -2229,16 +2224,16 @@
                 var rightColX = midX;
                 var rightColW = width - midX;
 
-                var minRowH = Math.round(80 * S);
+                var minRowH = Math.round(52 * S);
                 var maxWins = Math.max(p1Wins.length, p2Wins.length, 1);
-                // Reduce displayLines until rows fit
+                // Reduce maxLines until rows fit
                 var displayLines = Math.min(maxWins, maxLines);
-                while (displayLines > 4 && rowAvailH / displayLines < minRowH) displayLines--;
+                while (displayLines > 6 && rowAvailH / displayLines < minRowH) displayLines--;
                 var rowH = rowAvailH / displayLines;
-                var mFontSize = Math.round(84 * S);
-                var vWinSize = Math.round(96 * S);
-                var vLoseSize = Math.round(84 * S);
-                var numSize = Math.round(54 * S);
+                var mFontSize = Math.round(28 * S);
+                var vWinSize = Math.round(32 * S);
+                var vLoseSize = Math.round(28 * S);
+                var numSize = Math.round(18 * S);
 
                 function drawDataCol(wins, colX, colW, isP1Col) {
                     ctx.save();
@@ -2310,7 +2305,7 @@
             ctx.fillStyle = '#fafafa';
             ctx.fillRect(0, rowBot, width, height - rowBot);
 
-            ctx.font = '400 ' + Math.round(48 * S) + 'px ' + FF_BODY;
+            ctx.font = '400 ' + Math.round(16 * S) + 'px ' + FF_BODY;
             ctx.fillStyle = '#bbbbbb';
             ctx.textAlign = 'center';
             // Spaced branding
