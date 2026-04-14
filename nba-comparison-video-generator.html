@@ -1836,9 +1836,9 @@
                     var ROW_H = 52;
                     var RAD = 8;
 
-                    // Schedule-based reveal
+                    // Schedule-based reveal (-2 = always settled tie, -1 = non-item, >= 0 = reveal frame)
                     var schedFrame = itemRevealSchedule[idx];
-                    var age = (schedFrame === -1 || currentFrame < schedFrame) ? -1 : (currentFrame - schedFrame);
+                    var age = (schedFrame === -2) ? 999 : ((schedFrame === -1 || currentFrame < schedFrame) ? -1 : (currentFrame - schedFrame));
                     var settled = age >= 8;
 
                     var isP1Win = settled && item.winner === 'player1';
@@ -2121,7 +2121,7 @@
 
             // Center: FINAL + winner
             var centerTopY = Math.round(height * 0.09);
-            var finalSize = Math.round(11 * S);
+            var finalSize = Math.round(16 * S);
             ctx.font = '400 ' + finalSize + 'px ' + FF_HEAD;
             ctx.fillStyle = '#aaaaaa';
             ctx.textAlign = 'center';
@@ -2139,7 +2139,7 @@
 
             // Winner label
             if (!tied) {
-                var winLabelSize = Math.round(16 * S);
+                var winLabelSize = Math.round(26 * S);
                 var winLabel = '\uD83C\uDFC6 ' + winnerName.toUpperCase();
                 ctx.font = '700 ' + winLabelSize + 'px ' + FF_HEAD;
                 var centerColW = width * 0.2;
@@ -2169,9 +2169,9 @@
             ctx.fillStyle = '#fafafa';
             ctx.fillRect(0, hdrTop, width, hdrH);
 
-            var hdrNameSize = Math.round(11 * S);
-            var hdrScoreSize = Math.round(10 * S);
-            var hdrSpacing = Math.round(hdrNameSize * 0.18);
+            var hdrNameSize = Math.round(26 * S);
+            var hdrScoreSize = Math.round(22 * S);
+            var hdrSpacing = Math.round(hdrNameSize * 0.06);
 
             // Helper: draw spaced uppercase text
             function drawSpaced(str, x, y, spacing, align) {
@@ -2224,12 +2224,16 @@
                 var rightColX = midX;
                 var rightColW = width - midX;
 
-                var lineCount = Math.max(p1Wins.length, p2Wins.length, 1);
-                var rowH = Math.max(Math.round(28 * S), rowAvailH / lineCount);
-                var mFontSize = Math.round(13 * S);
-                var vWinSize = Math.round(14 * S);
-                var vLoseSize = Math.round(13 * S);
-                var numSize = Math.round(10 * S);
+                var minRowH = Math.round(52 * S);
+                var maxWins = Math.max(p1Wins.length, p2Wins.length, 1);
+                // Reduce maxLines until rows fit
+                var displayLines = Math.min(maxWins, maxLines);
+                while (displayLines > 6 && rowAvailH / displayLines < minRowH) displayLines--;
+                var rowH = rowAvailH / displayLines;
+                var mFontSize = Math.round(28 * S);
+                var vWinSize = Math.round(32 * S);
+                var vLoseSize = Math.round(28 * S);
+                var numSize = Math.round(18 * S);
 
                 function drawDataCol(wins, colX, colW, isP1Col) {
                     ctx.save();
@@ -2237,7 +2241,7 @@
                     ctx.rect(colX, rowTop, colW, rowAvailH);
                     ctx.clip();
 
-                    for (var i = 0; i < wins.length && i < maxLines; i++) {
+                    for (var i = 0; i < wins.length && i < displayLines; i++) {
                         var y = rowTop + i * rowH;
                         var w = wins[i];
                         var label = labelFor(w.metric).toUpperCase();
@@ -2281,7 +2285,7 @@
                         ctx.fillText(winVal, rEdge - loseW - dashW, textY);
 
                         // Row separator
-                        if (i < wins.length - 1 && i < maxLines - 1) {
+                        if (i < wins.length - 1 && i < displayLines - 1) {
                             ctx.fillStyle = '#f0f0f0';
                             ctx.fillRect(colX + Math.round(10 * S), y + rowH - 1, colW - Math.round(20 * S), 1);
                         }
@@ -2301,7 +2305,7 @@
             ctx.fillStyle = '#fafafa';
             ctx.fillRect(0, rowBot, width, height - rowBot);
 
-            ctx.font = '400 ' + Math.round(10 * S) + 'px ' + FF_BODY;
+            ctx.font = '400 ' + Math.round(16 * S) + 'px ' + FF_BODY;
             ctx.fillStyle = '#bbbbbb';
             ctx.textAlign = 'center';
             // Spaced branding
@@ -2435,12 +2439,19 @@
                 // --- Frame rendering loop (setTimeout-based, not rAF) ---
                 var frameDelay = Math.round(1000 / framerate);
 
-                // Build reveal schedule
+                // Build reveal schedule (skip ties — they show instantly as settled)
                 var revealGap = Math.round(framerate * 0.66);
                 var itemRevealSchedule = new Array(contentLayout.items.length).fill(-1);
                 var revealableIndices = [];
                 for (var ri = 0; ri < contentLayout.items.length; ri++) {
-                    if (contentLayout.items[ri].type === 'item') revealableIndices.push(ri);
+                    var rItem = contentLayout.items[ri];
+                    if (rItem.type === 'item') {
+                        if (rItem.winner === 'tie') {
+                            itemRevealSchedule[ri] = -2; // always settled, no flash
+                        } else {
+                            revealableIndices.push(ri);
+                        }
+                    }
                 }
                 var startPauseFrames = Math.round(framerate * 2.0);
                 for (var ri = 0; ri < revealableIndices.length; ri++) {
