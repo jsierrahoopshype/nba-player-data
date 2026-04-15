@@ -275,7 +275,7 @@
 
         .button-group {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr 1fr 1fr;
             gap: 15px;
             margin-top: 25px;
         }
@@ -384,6 +384,7 @@
             background: #505050;
         }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/mp4-muxer@latest/build/mp4-muxer.js"></script>
 </head>
 <body>
     <div class="header">
@@ -494,7 +495,8 @@
             </div>
             <canvas id="videoCanvas" width="1280" height="720"></canvas>
             <div class="button-group">
-                <button class="download-btn" id="downloadBtn">Download Video (WebM)</button>
+                <button class="download-btn" id="downloadMp4Btn">Download MP4</button>
+                <button class="reset-btn" id="downloadBtn">Download WebM</button>
                 <button class="reset-btn" id="resetBtn">Create Another</button>
             </div>
         </div>
@@ -2453,6 +2455,34 @@
                 await sleep(50);
                 updateProgress(30, 'Recording started...');
 
+                // Set up parallel MP4 muxer
+                var mp4Muxer = new Mp4Muxer.Muxer({
+                    target: new Mp4Muxer.ArrayBufferTarget(),
+                    fastStart: 'in-memory',
+                    video: {
+                        codec: 'avc',
+                        width: dims.width,
+                        height: dims.height
+                    }
+                });
+
+                var videoEncoder = new VideoEncoder({
+                    output: function(chunk, meta) {
+                        mp4Muxer.addVideoChunk(chunk, meta);
+                    },
+                    error: function(e) {
+                        console.error('VideoEncoder error:', e);
+                    }
+                });
+
+                videoEncoder.configure({
+                    codec: 'avc1.4d0034',
+                    width: dims.width,
+                    height: dims.height,
+                    bitrate: 8_000_000,
+                    framerate: framerate
+                });
+
                 // --- Frame rendering loop (setTimeout-based, not rAF) ---
                 var frameDelay = Math.round(1000 / framerate);
 
@@ -2547,6 +2577,11 @@
                     // Mirror offscreen canvas to the visible preview canvas
                     previewCtx.drawImage(offscreen, 0, 0);
 
+                    // Capture frame for MP4 encoder
+                    var videoFrame = new VideoFrame(offscreen, { timestamp: (frame * 1_000_000) / framerate });
+                    videoEncoder.encode(videoFrame, { keyFrame: frame % (framerate * 2) === 0 });
+                    videoFrame.close();
+
                     // Update progress bar every 30 frames
                     if (frame % 30 === 0) {
                         var percent = 30 + ((frame / totalFrames) * 65);
@@ -2558,6 +2593,11 @@
                     await sleep(Math.max(1, frameDelay - elapsed));
                 }
 
+                // Finalize MP4
+                await videoEncoder.flush();
+                mp4Muxer.finalize();
+                window.mp4Buffer = mp4Muxer.target.buffer;
+
                 // Stop recording
                 updateProgress(95, 'Finalizing video...');
                 mediaRecorder.stop();
@@ -2568,6 +2608,7 @@
                         videoBlob = new Blob(recordedChunks, { type: 'video/webm' });
                         updateProgress(100, 'Video complete!');
                         showStatus('Video generated successfully! Size: ' + (videoBlob.size / 1024 / 1024).toFixed(2) + ' MB', 'success');
+                        document.getElementById('downloadMp4Btn').style.display = 'block';
                         document.getElementById('downloadBtn').style.display = 'block';
                         document.getElementById('generateBtn').disabled = false;
                         document.getElementById('loadingSpinner').style.display = 'none';
@@ -2606,6 +2647,20 @@
             showStatus('Download started! Check your downloads folder.', 'success');
         }
 
+        function downloadMP4() {
+            if (!window.mp4Buffer) return;
+            var blob = new Blob([window.mp4Buffer], { type: 'video/mp4' });
+            var p1 = document.getElementById('player1').value.replace(/\s+/g, '-');
+            var p2 = document.getElementById('player2').value.replace(/\s+/g, '-');
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = p1 + '-vs-' + p2 + '-comparison.mp4';
+            a.click();
+            URL.revokeObjectURL(url);
+            showStatus('MP4 download started! Check your downloads folder.', 'success');
+        }
+
         function resetGenerator() {
             document.getElementById('previewPanel').classList.remove('active');
             document.getElementById('progressContainer').classList.remove('active');
@@ -2618,6 +2673,7 @@
             document.getElementById('season2Select').disabled = true;
             videoBlob = null;
             recordedChunks = [];
+            window.mp4Buffer = null;
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
@@ -2632,6 +2688,7 @@
             setupAutocomplete('player2', 'suggestions2');
 
             document.getElementById('generateBtn').addEventListener('click', generateVideo);
+            document.getElementById('downloadMp4Btn').addEventListener('click', downloadMP4);
             document.getElementById('downloadBtn').addEventListener('click', downloadVideo);
             document.getElementById('resetBtn').addEventListener('click', resetGenerator);
             document.getElementById('comparisonType').addEventListener('change', onComparisonTypeChange);
