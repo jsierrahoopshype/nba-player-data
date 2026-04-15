@@ -1812,7 +1812,7 @@
                     ctx.fillStyle = C.bg;
                     ctx.fillRect(pad, drawY, rowW, 80);
 
-                    var titleSize = Math.round(Math.min(22, width * 0.017) * FS);
+                    var titleSize = Math.round(Math.min(22, width * 0.017) * FS * 1.15);
                     ctx.font = '700 ' + titleSize + 'px ' + FF_HEAD;
                     ctx.fillStyle = C.text;
                     ctx.textAlign = 'left';
@@ -1822,7 +1822,7 @@
                     ctx.fillRect(pad, drawY + 52, rowW, 2);
 
                     if (item.sectionP1 > 0 || item.sectionP2 > 0) {
-                        var subSize = Math.round(Math.min(15, width * 0.012) * FS);
+                        var subSize = Math.round(Math.min(15, width * 0.012) * FS * 1.15);
                         ctx.font = '400 ' + subSize + 'px ' + FF_HEAD;
                         ctx.fillStyle = C.textSec;
                         ctx.textAlign = 'left';
@@ -1923,9 +1923,9 @@
                     ctx.restore();
 
                     var textY = drawY + ROW_H / 2 + 5;
-                    var valSize = Math.round(Math.min(18, width * 0.014) * FS);
-                    var nameColSize = Math.round(Math.min(14, width * 0.011) * FS);
-                    var metricSize = Math.round(Math.min(14, width * 0.011) * FS);
+                    var valSize = Math.round(Math.min(18, width * 0.014) * FS * 1.15);
+                    var nameColSize = Math.round(Math.min(14, width * 0.011) * FS * 1.15);
+                    var metricSize = Math.round(Math.min(14, width * 0.011) * FS * 1.15);
 
                     var showColors = settled;
 
