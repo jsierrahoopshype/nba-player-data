@@ -548,6 +548,15 @@
 
                 playerData = { awards, rsStats, poStats, allStar, salaries, nba2k, combine, comparisons, awardVotes, poSeries, sneakers };
 
+                // Load player headshots lookup
+                try {
+                    var headshots = await fetch(DATA_BASE_URL + 'player-headshots.json' + cb).then(r => r.json());
+                    playerData.headshots = headshots;
+                } catch (e) {
+                    console.warn('Could not load headshots:', e);
+                    playerData.headshots = {};
+                }
+
                 // Extract unique players from regular season stats
                 const playerSet = new Set();
                 rsStats.forEach(row => {
@@ -633,6 +642,17 @@
                     suggestions.classList.remove('active');
                 }
             });
+        }
+
+        // ========================================
+        // HEADSHOT HELPER
+        // ========================================
+
+        function getHeadshotUrl(playerName) {
+            if (playerData.headshots && playerData.headshots[playerName]) {
+                return 'https://jsierrahoopshype.github.io/nba-headshots/players/headshots/face/' + playerData.headshots[playerName] + '.png';
+            }
+            return null;
         }
 
         // ========================================
@@ -1715,8 +1735,9 @@
             orange: '#f59e0b', orangeDim: 'rgba(245, 158, 11, 0.15)'
         };
 
-        function drawHeader(ctx, data, width, p1Score, p2Score) {
+        function drawHeader(ctx, data, width, p1Score, p2Score, p1Img, p2Img) {
             var HEADER_H = 140;
+            var S = width / 1280;
             // White background behind header card
             ctx.fillStyle = C.bg;
             ctx.fillRect(0, 0, width, HEADER_H);
@@ -1744,6 +1765,32 @@
 
             var midX = width / 2;
             var centerY = cardY + cardH / 2;
+
+            // Player 1 headshot (circle-clipped, left side)
+            var hsD = Math.round(70 * S);
+            var hsR = hsD / 2;
+            if (p1Img) {
+                var p1cx = cardX + Math.round(20 * S) + hsR;
+                var p1cy = centerY;
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(p1cx, p1cy, hsR, 0, Math.PI * 2);
+                ctx.clip();
+                ctx.drawImage(p1Img, p1cx - hsR, p1cy - hsR, hsD, hsD);
+                ctx.restore();
+            }
+
+            // Player 2 headshot (circle-clipped, right side)
+            if (p2Img) {
+                var p2cx = cardX + cardW - Math.round(20 * S) - hsR;
+                var p2cy = centerY;
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(p2cx, p2cy, hsR, 0, Math.PI * 2);
+                ctx.clip();
+                ctx.drawImage(p2Img, p2cx - hsR, p2cy - hsR, hsD, hsD);
+                ctx.restore();
+            }
 
             // Player 1 name (left)
             var nameSize = Math.round(Math.min(24, width * 0.019) * FS);
@@ -2060,7 +2107,7 @@
             return String(v);
         }
 
-        function drawFinalScreen(ctx, data, width, height, fadeProgress) {
+        function drawFinalScreen(ctx, data, width, height, fadeProgress, p1Img, p2Img) {
             var S = width / 1280;
             var isSquare = Math.abs(width - height) < 50;
             var maxLines = isSquare ? 12 : 10;
@@ -2084,9 +2131,15 @@
             var nameY = Math.round(height * 0.10);
             var scoreY = Math.round(height * 0.22);
 
+            // Headshot sizing for final screen
+            var fHsD = Math.round(90 * S);
+            var fHsR = fHsD / 2;
+            var fHsGap = Math.round(12 * S);
+            var fHsOffset = (p1Img || p2Img) ? fHsD + fHsGap : 0;
+
             // Player names — 48*S, auto-shrink to 28*S
             var nameSize = Math.round(48 * S);
-            var maxNameW = width * 0.45;
+            var maxNameW = width * 0.45 - fHsOffset;
             function fitN(name, base, minSz) {
                 var sz = base;
                 ctx.font = '800 ' + sz + 'px ' + FF_HEAD;
@@ -2097,11 +2150,23 @@
                 return sz;
             }
 
+            // Player 1 headshot + name (left side)
             var p1NS = fitN(data.player1Name.toUpperCase(), nameSize, Math.round(28 * S));
+            var p1NameX = pad + fHsOffset;
+            if (p1Img) {
+                var p1cx = pad + fHsR;
+                var p1cy = nameY - p1NS * 0.35;
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(p1cx, p1cy, fHsR, 0, Math.PI * 2);
+                ctx.clip();
+                ctx.drawImage(p1Img, p1cx - fHsR, p1cy - fHsR, fHsD, fHsD);
+                ctx.restore();
+            }
             ctx.font = '800 ' + p1NS + 'px ' + FF_HEAD;
             ctx.fillStyle = '#111111';
             ctx.textAlign = 'left';
-            ctx.fillText(data.player1Name.toUpperCase(), pad, nameY);
+            ctx.fillText(data.player1Name.toUpperCase(), p1NameX, nameY);
 
             // Scores — 160*S, auto-shrink to 80*S
             var scoreSize = Math.round(160 * S);
@@ -2122,11 +2187,23 @@
             ctx.textAlign = 'left';
             ctx.fillText(String(data.player1Score), pad, scoreY + p1ScoreSize * 0.35);
 
+            // Player 2 headshot + name (right side)
             var p2NS = fitN(data.player2Name.toUpperCase(), nameSize, Math.round(28 * S));
+            var p2NameX = width - pad - fHsOffset;
+            if (p2Img) {
+                var p2cx = width - pad - fHsR;
+                var p2cy = nameY - p2NS * 0.35;
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(p2cx, p2cy, fHsR, 0, Math.PI * 2);
+                ctx.clip();
+                ctx.drawImage(p2Img, p2cx - fHsR, p2cy - fHsR, fHsD, fHsD);
+                ctx.restore();
+            }
             ctx.font = '800 ' + p2NS + 'px ' + FF_HEAD;
             ctx.fillStyle = '#111111';
             ctx.textAlign = 'right';
-            ctx.fillText(data.player2Name.toUpperCase(), width - pad, nameY);
+            ctx.fillText(data.player2Name.toUpperCase(), p2NameX, nameY);
 
             var p2ScoreSize = fitScore(data.player2Score, scoreSize);
             ctx.font = '900 ' + p2ScoreSize + 'px ' + FF_HEAD;
@@ -2416,6 +2493,29 @@
                     return;
                 }
 
+                updateProgress(15, 'Loading headshots...');
+
+                // Preload player headshots with 3-second timeout
+                var p1Img = null, p2Img = null;
+                var p1Url = getHeadshotUrl(player1);
+                var p2Url = getHeadshotUrl(player2);
+                function loadImg(url) {
+                    if (!url) return Promise.resolve(null);
+                    return Promise.race([
+                        new Promise(function(resolve) {
+                            var img = new Image();
+                            img.crossOrigin = 'anonymous';
+                            img.onload = function() { resolve(img); };
+                            img.onerror = function() { resolve(null); };
+                            img.src = url;
+                        }),
+                        new Promise(function(resolve) { setTimeout(function() { resolve(null); }, 3000); })
+                    ]);
+                }
+                var hsResults = await Promise.allSettled([loadImg(p1Url), loadImg(p2Url)]);
+                p1Img = hsResults[0].status === 'fulfilled' ? hsResults[0].value : null;
+                p2Img = hsResults[1].status === 'fulfilled' ? hsResults[1].value : null;
+
                 updateProgress(20, 'Building content layout...');
 
                 var contentLayout = buildContentLayout(comparisonData, dims.width, dims.height);
@@ -2564,14 +2664,14 @@
                     if (frame < contentEndFrame + pauseFrames) {
                         // CONTENT + PAUSE PHASE
                         var scores = countRevealedScores(frame);
-                        drawHeader(offCtx, comparisonData, dims.width, scores.p1, scores.p2);
+                        drawHeader(offCtx, comparisonData, dims.width, scores.p1, scores.p2, p1Img, p2Img);
                         drawScrollingContent(offCtx, contentLayout, dims.width, dims.height, currentScrollY, itemRevealSchedule, frame);
 
                     } else {
                         // OUTRO/FINAL SCREEN PHASE
                         var outroFrame = frame - contentEndFrame - pauseFrames;
                         var outroProgress = outroFrame / outroFrames;
-                        drawFinalScreen(offCtx, comparisonData, dims.width, dims.height, outroProgress);
+                        drawFinalScreen(offCtx, comparisonData, dims.width, dims.height, outroProgress, p1Img, p2Img);
                     }
 
                     // Mirror offscreen canvas to the visible preview canvas
