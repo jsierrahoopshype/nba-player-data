@@ -2142,27 +2142,31 @@
             // Player names — 52*S, auto-shrink to 28*S, with trophy for winner
             var nameSize = Math.round(52 * S);
             var minNameSize = Math.round(28 * S);
-            var emojiGap = Math.round(8 * S);
             var maxNameW = width * 0.45;
+            var trophyStr = '\uD83C\uDFC6 '; // trophy + space for measurement
 
             function fitNameWithTrophy(name, isWinner) {
                 var sz = nameSize;
                 ctx.font = '800 ' + sz + 'px ' + FF_HEAD;
-                var extra = isWinner ? ctx.measureText('\uD83C\uDFC6').width + emojiGap : 0;
+                var extra = isWinner ? ctx.measureText(trophyStr).width : 0;
                 while (extra + ctx.measureText(name).width > maxNameW && sz > minNameSize) {
                     sz--;
                     ctx.font = '800 ' + sz + 'px ' + FF_HEAD;
-                    extra = isWinner ? ctx.measureText('\uD83C\uDFC6').width + emojiGap : 0;
+                    extra = isWinner ? ctx.measureText(trophyStr).width : 0;
                 }
                 return sz;
             }
 
+            // Column center points (accounting for headshots)
+            var p1ColLeft = pad + (p1Img ? fHsD + fHsGap : 0);
+            var p1ColCenter = (p1ColLeft + midX) / 2;
+            var p2ColRight = width - pad - (p2Img ? fHsD + fHsGap : 0);
+            var p2ColCenter = (midX + p2ColRight) / 2;
+
             // Player 1: headshot + trophy/name (left side)
             var p1IsWinner = p1Won;
             var p1NS = fitNameWithTrophy(data.player1Name.toUpperCase(), p1IsWinner);
-            var p1NameX = pad;
             if (p1Img) {
-                p1NameX = pad + fHsD + fHsGap;
                 var p1cx = pad + fHsR;
                 var p1cy = nameY - p1NS * 0.35;
                 ctx.save();
@@ -2176,11 +2180,15 @@
             ctx.fillStyle = '#111111';
             ctx.textAlign = 'left';
             if (p1IsWinner) {
-                ctx.fillText('\uD83C\uDFC6', p1NameX, nameY);
-                var trophyW = ctx.measureText('\uD83C\uDFC6').width + emojiGap;
-                ctx.fillText(data.player1Name.toUpperCase(), p1NameX + trophyW, nameY);
+                var p1EmojiW = ctx.measureText(trophyStr).width;
+                var p1NameW = ctx.measureText(data.player1Name.toUpperCase()).width;
+                var p1TotalW = p1EmojiW + p1NameW;
+                var p1StartX = p1ColCenter - p1TotalW / 2;
+                ctx.fillText('\uD83C\uDFC6', p1StartX, nameY);
+                ctx.fillText(data.player1Name.toUpperCase(), p1StartX + p1EmojiW, nameY);
             } else {
-                ctx.fillText(data.player1Name.toUpperCase(), p1NameX, nameY);
+                var p1NameW = ctx.measureText(data.player1Name.toUpperCase()).width;
+                ctx.fillText(data.player1Name.toUpperCase(), p1ColCenter - p1NameW / 2, nameY);
             }
 
             // Scores — 160*S, auto-shrink to 80*S
@@ -2199,15 +2207,13 @@
             var p1ScoreSize = fitScore(p1FinalScore, scoreSize);
             ctx.font = '900 ' + p1ScoreSize + 'px ' + FF_HEAD;
             ctx.fillStyle = p1Won ? '#22a861' : '#111111';
-            ctx.textAlign = 'left';
-            ctx.fillText(String(p1FinalScore), pad, scoreY + p1ScoreSize * 0.35);
+            ctx.textAlign = 'center';
+            ctx.fillText(String(p1FinalScore), p1ColCenter, scoreY + p1ScoreSize * 0.35);
 
             // Player 2: headshot + trophy/name (right side)
             var p2IsWinner = p2Won;
             var p2NS = fitNameWithTrophy(data.player2Name.toUpperCase(), p2IsWinner);
-            var p2NameX = width - pad;
             if (p2Img) {
-                p2NameX = width - pad - fHsD - fHsGap;
                 var p2cx = width - pad - fHsR;
                 var p2cy = nameY - p2NS * 0.35;
                 ctx.save();
@@ -2219,19 +2225,24 @@
             }
             ctx.font = '800 ' + p2NS + 'px ' + FF_HEAD;
             ctx.fillStyle = '#111111';
-            ctx.textAlign = 'right';
+            ctx.textAlign = 'left';
             if (p2IsWinner) {
-                ctx.fillText(data.player2Name.toUpperCase(), p2NameX - ctx.measureText('\uD83C\uDFC6').width - emojiGap, nameY);
-                ctx.fillText('\uD83C\uDFC6', p2NameX - ctx.measureText('\uD83C\uDFC6').width, nameY);
+                var p2EmojiW = ctx.measureText(trophyStr).width;
+                var p2NameW = ctx.measureText(data.player2Name.toUpperCase()).width;
+                var p2TotalW = p2EmojiW + p2NameW;
+                var p2StartX = p2ColCenter - p2TotalW / 2;
+                ctx.fillText('\uD83C\uDFC6', p2StartX, nameY);
+                ctx.fillText(data.player2Name.toUpperCase(), p2StartX + p2EmojiW, nameY);
             } else {
-                ctx.fillText(data.player2Name.toUpperCase(), p2NameX, nameY);
+                var p2NameW = ctx.measureText(data.player2Name.toUpperCase()).width;
+                ctx.fillText(data.player2Name.toUpperCase(), p2ColCenter - p2NameW / 2, nameY);
             }
 
             var p2ScoreSize = fitScore(p2FinalScore, scoreSize);
             ctx.font = '900 ' + p2ScoreSize + 'px ' + FF_HEAD;
             ctx.fillStyle = p2Won ? '#22a861' : '#111111';
-            ctx.textAlign = 'right';
-            ctx.fillText(String(p2FinalScore), width - pad, scoreY + p2ScoreSize * 0.35);
+            ctx.textAlign = 'center';
+            ctx.fillText(String(p2FinalScore), p2ColCenter, scoreY + p2ScoreSize * 0.35);
 
             // Divider
             ctx.fillStyle = '#e8e8e8';
