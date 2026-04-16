@@ -1325,7 +1325,7 @@
             var currentSection = null;
             var currentSectionObj = null;
 
-            var alwaysAwardSections = ['ACCOLADES', 'BEST AWARDS RANKING', 'BEST VOTE RANKING', 'YEARS RECEIVING VOTES', 'SIGNATURE SHOES', 'PLAYOFF SUCCESS'];
+            var alwaysAwardSections = ['ACCOLADES', 'BEST AWARDS RANKING', 'YEARS RECEIVING VOTES', 'SIGNATURE SHOES', 'PLAYOFF SUCCESS'];
             var requireBothDataSections = ['SALARIES', 'NBA 2K'];
             var excludeFromOverall = ['DRAFT COMBINE'];
 
@@ -1337,6 +1337,10 @@
                 // Section header
                 if (!winCondition && !dataSource) {
                     currentSection = category;
+                    if (currentSection === 'BEST VOTE RANKING') {
+                        currentSectionObj = null;
+                        return;
+                    }
                     currentSectionObj = { name: category, items: [], sectionP1: 0, sectionP2: 0 };
                     sections.push(currentSectionObj);
                     return;
