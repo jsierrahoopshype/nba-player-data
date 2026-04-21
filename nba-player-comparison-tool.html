@@ -524,7 +524,7 @@
 
         <div id="loadingMessage" class="loading">
             <div class="spinner"></div>
-            <div>Loading player database...</div>
+            <div>Loading player database…</div>
         </div>
 
         <div id="mainContent" style="display: none;">
@@ -776,7 +776,8 @@
                 showLoading(false);
                 document.getElementById('mainContent').style.display = 'block';
             } catch (error) {
-                showError('Failed to load player data. Error: ' + error.message);
+                console.error('[ComparePlayers]', error);
+                showError("Couldn't load the player database. Try refreshing — if this keeps happening, the data might be updating right now.");
                 showLoading(false);
             }
         });
@@ -1001,7 +1002,7 @@
 
         function comparePlayer(player1Name, player2Name) {
             const resultsDiv = document.getElementById('results');
-            resultsDiv.innerHTML = '<div class="loading"><div class="spinner"></div><div>Comparing players...</div></div>';
+            resultsDiv.innerHTML = '<div class="loading"><div class="spinner"></div><div>Comparing players…</div></div>';
             
             // Update URL with player names
             const url = new URL(window.location);
