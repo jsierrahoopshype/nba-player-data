@@ -37,6 +37,11 @@ SKIP_PREFIXES = ('CH', 'ST', 'TOTAL')
 # Existing data is complete through this year; see dedup logic in build_new_records.
 EXISTING_THROUGH_YEAR = 2025
 
+# Only import salary records for these upcoming season(s). The Future Salaries
+# tab projects several years out, but we intentionally ingest just the next
+# season to avoid committing the more speculative out-year figures.
+IMPORT_YEARS = {'2026'}
+
 
 def fetch_google_sheet_csv(sheet_id, gid):
     """Fetch data from published Google Sheet as CSV."""
@@ -156,6 +161,12 @@ def main():
     print(f"Parsed {len(sheet_records)} salary cells from the sheet")
     if not sheet_records:
         raise RuntimeError("No salary records parsed from sheet; refusing to modify salaries.json")
+
+    # Only ingest the configured upcoming season(s).
+    sheet_records = [r for r in sheet_records if r['YEAR'] in IMPORT_YEARS]
+    print(f"{len(sheet_records)} salary cells after restricting to years {sorted(IMPORT_YEARS)}")
+    if not sheet_records:
+        raise RuntimeError(f"No records for years {sorted(IMPORT_YEARS)}; refusing to modify salaries.json")
 
     with open(OUTPUT_PATH, encoding='utf-8') as f:
         existing = json.load(f)
