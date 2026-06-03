@@ -110,6 +110,11 @@
     "Wheres the data?": "Awards.csv"
   },
   {
+    "Comparison points": "Hustle Award",
+    "Who wins?": "Most",
+    "Wheres the data?": "Awards.csv"
+  },
+  {
     "Comparison points": "Player of the Week",
     "Who wins?": "Most",
     "Wheres the data?": "Awards.csv"
@@ -651,9 +656,19 @@
     "Wheres the data?": "Award-Votes.csv"
   },
   {
+    "Comparison points": "Clutch Player of the Year",
+    "Who wins?": "Least",
+    "Wheres the data?": "Award-Votes.csv"
+  },
+  {
     "Comparison points": "YEARS RECEIVING VOTES",
     "Who wins?": "",
     "Wheres the data?": ""
+  },
+  {
+    "Comparison points": "Hustle Award",
+    "Who wins?": "Least",
+    "Wheres the data?": "Award-Votes.csv"
   },
   {
     "Comparison points": "Years with MVP votes",
@@ -681,9 +696,19 @@
     "Wheres the data?": "Award-Votes.csv"
   },
   {
+    "Comparison points": "Years with Clutch Player votes",
+    "Who wins?": "Most",
+    "Wheres the data?": "Award-Votes.csv"
+  },
+  {
     "Comparison points": "SIGNATURE SHOES",
     "Who wins?": "",
     "Wheres the data?": ""
+  },
+  {
+    "Comparison points": "Years with Hustle Award votes",
+    "Who wins?": "Most",
+    "Wheres the data?": "Award-Votes.csv"
   },
   {
     "Comparison points": "Number of Shoes",
