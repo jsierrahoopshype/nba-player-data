@@ -661,14 +661,14 @@
     "Wheres the data?": "Award-Votes.csv"
   },
   {
-    "Comparison points": "YEARS RECEIVING VOTES",
-    "Who wins?": "",
-    "Wheres the data?": ""
-  },
-  {
     "Comparison points": "Hustle Award",
     "Who wins?": "Least",
     "Wheres the data?": "Award-Votes.csv"
+  },
+  {
+    "Comparison points": "YEARS RECEIVING VOTES",
+    "Who wins?": "",
+    "Wheres the data?": ""
   },
   {
     "Comparison points": "Years with MVP votes",
@@ -697,6 +697,11 @@
   },
   {
     "Comparison points": "Years with Clutch Player votes",
+    "Who wins?": "Most",
+    "Wheres the data?": "Award-Votes.csv"
+  },
+  {
+    "Comparison points": "Years with Hustle Award votes",
     "Who wins?": "Most",
     "Wheres the data?": "Award-Votes.csv"
   },
