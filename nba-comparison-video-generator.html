@@ -2015,7 +2015,19 @@
             orange: '#f59e0b', orangeDim: 'rgba(245, 158, 11, 0.15)'
         };
 
+        // Range comparisons carry a "(Seasons X-Y)" / "(Ages X-Y)" suffix in the
+        // player names (used by the comparison logic). Strip it for on-screen display
+        // so the video stays clean and the final-card trophy doesn't overlap.
+        function stripRangeSuffix(name) {
+            return String(name).replace(/\s*\((Seasons|Ages)[^)]*\)$/, '');
+        }
+
         function drawHeader(ctx, data, width, p1Score, p2Score, p1Img, p2Img) {
+            // Display names without the range suffix (local copy only; does not mutate caller data)
+            data = Object.assign({}, data, {
+                player1Name: stripRangeSuffix(data.player1Name),
+                player2Name: stripRangeSuffix(data.player2Name)
+            });
             var HEADER_H = 140;
             var S = width / 1280;
             // White background behind header card
@@ -2156,7 +2168,7 @@
                         ctx.fillStyle = C.textSec;
                         ctx.textAlign = 'left';
                         ctx.fillText(
-                            item.p1Name + ' ' + item.sectionP1 + '  \u2013  ' + item.p2Name + ' ' + item.sectionP2,
+                            stripRangeSuffix(item.p1Name) + ' ' + item.sectionP1 + '  \u2013  ' + stripRangeSuffix(item.p2Name) + ' ' + item.sectionP2,
                             pad + 4, drawY + 72
                         );
                     }
@@ -2266,7 +2278,7 @@
                     ctx.font = '600 ' + nameColSize + 'px ' + FF_HEAD;
                     ctx.fillStyle = C.textSec;
                     ctx.textAlign = 'center';
-                    ctx.fillText(item.p1Name, col2X + col2W / 2, textY);
+                    ctx.fillText(stripRangeSuffix(item.p1Name), col2X + col2W / 2, textY);
 
                     ctx.font = '400 ' + metricSize + 'px ' + FF_HEAD;
                     ctx.fillStyle = C.textSec;
@@ -2276,7 +2288,7 @@
                     ctx.font = '600 ' + nameColSize + 'px ' + FF_HEAD;
                     ctx.fillStyle = C.textSec;
                     ctx.textAlign = 'center';
-                    ctx.fillText(item.p2Name, col4X + col4W / 2, textY);
+                    ctx.fillText(stripRangeSuffix(item.p2Name), col4X + col4W / 2, textY);
 
                     ctx.font = ((showColors && item.winner === 'player2') ? '700 ' : '600 ') + valSize + 'px ' + FF_HEAD;
                     ctx.fillStyle = showColors ? (item.winner === 'player2' ? C.green : C.text) : C.textSec;
@@ -2388,6 +2400,11 @@
         }
 
         function drawFinalScreen(ctx, data, width, height, fadeProgress, p1Img, p2Img, p1FinalScore, p2FinalScore) {
+            // Display names without the range suffix (local copy only; does not mutate caller data)
+            data = Object.assign({}, data, {
+                player1Name: stripRangeSuffix(data.player1Name),
+                player2Name: stripRangeSuffix(data.player2Name)
+            });
             var S = width / 1280;
             var isSquare = Math.abs(width - height) < 50;
             var maxLines = isSquare ? 12 : 10;
