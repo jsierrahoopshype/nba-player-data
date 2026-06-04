@@ -143,6 +143,31 @@
             font-size: 14px;
         }
 
+        /* Range Comparison settings (additive) */
+        .range-settings-group { margin-top: 12px; display: none; }
+        .range-settings-group.active { display: block; }
+        .range-settings-group > label { font-size: 15px; color: #bbb; font-weight: 600; margin-bottom: 10px; display: block; }
+        .range-inputs { display: flex; gap: 12px; }
+        .range-inputs > div { flex: 1; }
+        .range-inputs label { font-size: 13px; color: #bbb; display: block; margin-bottom: 6px; }
+        .range-settings-group input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            font-size: 14px;
+            background: #1a1a1a;
+            color: white;
+            border: 2px solid #404040;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        .range-settings-group input[type="number"]:focus {
+            outline: none;
+            border-color: #e31837;
+            box-shadow: 0 0 0 3px rgba(227, 24, 55, 0.1);
+        }
+        .range-diff-row { margin-top: 12px; display: flex; align-items: center; gap: 8px; color: #bbb; }
+        .range-diff-row input[type="checkbox"] { width: auto; }
+
         .generate-btn {
             width: 100%;
             padding: 22px;
@@ -429,7 +454,37 @@
                         <select id="comparisonType">
                             <option value="career" selected>Career vs Career</option>
                             <option value="season">Season vs Season</option>
+                            <option value="seasonRange">Season Range (e.g. Seasons 3-8)</option>
+                            <option value="ageRange">Age Range (e.g. Ages 23-28)</option>
                         </select>
+                    </div>
+
+                    <div class="setting-group range-settings-group" id="rangeSettingsGroup" style="grid-column: 1 / -1;">
+                        <label>Range</label>
+                        <div class="range-inputs">
+                            <div>
+                                <label id="rangeFromLabel">From (season #)</label>
+                                <input type="number" id="rangeFrom" min="1" value="1">
+                            </div>
+                            <div>
+                                <label id="rangeToLabel">To (season #)</label>
+                                <input type="number" id="rangeTo" min="1" value="5">
+                            </div>
+                        </div>
+                        <div class="range-diff-row">
+                            <input type="checkbox" id="rangeDiffP2" onchange="onRangeDiffToggle()">
+                            <label for="rangeDiffP2" style="margin:0; display:inline; font-size:13px;">Use different range for Player 2</label>
+                        </div>
+                        <div class="range-inputs" id="rangeP2Fields" style="display:none; margin-top:10px;">
+                            <div>
+                                <label id="rangeFrom2Label">Player 2 From (season #)</label>
+                                <input type="number" id="rangeFrom2" min="1" value="1">
+                            </div>
+                            <div>
+                                <label id="rangeTo2Label">Player 2 To (season #)</label>
+                                <input type="number" id="rangeTo2" min="1" value="5">
+                            </div>
+                        </div>
                     </div>
 
                     <div class="setting-group">
@@ -555,6 +610,14 @@
                 } catch (e) {
                     console.warn('Could not load headshots:', e);
                     playerData.headshots = {};
+                }
+
+                // Load bio data (for Range Comparison mode) — graceful fallback
+                try {
+                    playerData.bio = await fetch(DATA_BASE_URL + 'bio.json' + cb).then(r => r.json());
+                } catch (e) {
+                    console.warn('Could not load bio:', e);
+                    playerData.bio = [];
                 }
 
                 // Extract unique players from regular season stats
@@ -1654,6 +1717,216 @@
         }
 
         // ========================================
+        // RANGE COMPARISON LOGIC (additive)
+        // Mirrors the Range Comparison built into nba-player-comparison-tool.html:
+        // it filters each player's data to a span of seasons (Season Range) or
+        // ages (Age Range), swaps the filtered copies into playerData, and reuses
+        // the unchanged performCareerComparison() engine. Restored in a finally.
+        // ========================================
+
+        // Distinct YEARs (ascending) a player has regular-season rows for.
+        function getPlayerSeasonYears(playerName) {
+            var rawRows = playerData.rsStats.filter(function(row) { return row.PLAYER === playerName; });
+            var dedup = deduplicateSeasonRows(rawRows);
+            var years = [];
+            var seen = {};
+            dedup.forEach(function(r) {
+                var y = parseInt(r.YEAR, 10);
+                if (!isNaN(y) && !seen[y]) { seen[y] = true; years.push(y); }
+            });
+            years.sort(function(a, b) { return a - b; });
+            return years;
+        }
+
+        function parseBioBirthday(str) {
+            if (!str) return null;
+            var parts = String(str).split('/');
+            if (parts.length !== 3) return null;
+            var m = parseInt(parts[0], 10), d = parseInt(parts[1], 10), y = parseInt(parts[2], 10);
+            if (isNaN(m) || isNaN(d) || isNaN(y)) return null;
+            return { month: m, day: d, year: y };
+        }
+
+        // Age on February 1 of the season's ending year.
+        function ageAsOfFeb1(bd, seasonYear) {
+            var age = seasonYear - bd.year;
+            if (bd.month > 2 || (bd.month === 2 && bd.day > 1)) age -= 1;
+            return age;
+        }
+
+        // Calendar years that fall within the requested range for this player.
+        // mode: 'seasonRange' (season 1 = earliest year) | 'ageRange' (age via bio BIRTHDAY).
+        function getRangeYears(playerName, mode, from, to) {
+            var years = getPlayerSeasonYears(playerName);
+            var result = [];
+            if (mode === 'ageRange') {
+                var bio = (playerData.bio || []).find(function(r) { return r.PLAYER === playerName; });
+                var bd = bio ? parseBioBirthday(bio.BIRTHDAY) : null;
+                if (!bd) return result;
+                years.forEach(function(y) {
+                    var age = ageAsOfFeb1(bd, y);
+                    if (age >= from && age <= to) result.push(y);
+                });
+            } else {
+                years.forEach(function(y, idx) {
+                    var seasonNum = idx + 1;
+                    if (seasonNum >= from && seasonNum <= to) result.push(y);
+                });
+            }
+            return result;
+        }
+
+        function rangeLabelText(mode, from, to) {
+            return (mode === 'ageRange' ? 'Ages ' : 'Seasons ') + from + '-' + to;
+        }
+
+        // comparisons list with DRAFT COMBINE, SIGNATURE SHOES and All-Star contest
+        // entries removed (the rest of the section exclusions, e.g. BEST VOTE RANKING,
+        // are already handled inside performCareerComparison).
+        function buildRangeComparisons() {
+            var excludeSections = ['DRAFT COMBINE', 'SIGNATURE SHOES'];
+            var out = [];
+            var skip = false;
+            playerData.comparisons.forEach(function(comp) {
+                var cat = comp['Comparison points'];
+                var isHeader = !comp['Who wins?'] && !comp['Wheres the data?'];
+                if (isHeader) {
+                    skip = excludeSections.indexOf(cat) !== -1;
+                    if (!skip) out.push(comp);
+                } else if (!skip) {
+                    if (comp['Wheres the data?'] === 'All-Star.csv') return;
+                    out.push(comp);
+                }
+            });
+            return out;
+        }
+
+        // Shallow copy of a player's NBA 2K row with out-of-range editions blanked.
+        // 2K editions map to years: 2K16 -> 2016. yearsSet is a {year:true} map.
+        function build2KRangeClone(playerName, yearsSet) {
+            var row = playerData.nba2k.find(function(r) {
+                return r['Full Name'] === playerName ||
+                    (r['First Name'] + ' ' + r['Last Name']) === playerName;
+            });
+            if (!row) return null;
+            var clone = {};
+            for (var k in row) clone[k] = row[k];
+            Object.keys(clone).forEach(function(key) {
+                if (key.indexOf('2K') === 0 || key.indexOf('2k') === 0) {
+                    var yy = parseInt(key.substring(2), 10);
+                    if (isNaN(yy)) return;
+                    if (!yearsSet[2000 + yy]) clone[key] = '';
+                }
+            });
+            return clone;
+        }
+
+        // Validate the range inputs; throws (with a user-facing message) on any problem,
+        // including a player having no seasons in the selected range. Returns the params.
+        function validateRangeInputs(player1, player2) {
+            var mode = document.getElementById('comparisonType').value; // seasonRange | ageRange
+            var useDiff = document.getElementById('rangeDiffP2').checked;
+            var from1 = parseInt(document.getElementById('rangeFrom').value, 10);
+            var to1 = parseInt(document.getElementById('rangeTo').value, 10);
+            var from2 = useDiff ? parseInt(document.getElementById('rangeFrom2').value, 10) : from1;
+            var to2 = useDiff ? parseInt(document.getElementById('rangeTo2').value, 10) : to1;
+
+            if ([from1, to1, from2, to2].some(function(v) { return isNaN(v); })) {
+                throw new Error('Please enter From and To values for the range.');
+            }
+            if (from1 > to1 || from2 > to2) {
+                throw new Error('Range "From" must be less than or equal to "To".');
+            }
+            if (getRangeYears(player1, mode, from1, to1).length === 0) {
+                throw new Error(player1 + ' has no seasons in the selected range (' + rangeLabelText(mode, from1, to1) + ').');
+            }
+            if (getRangeYears(player2, mode, from2, to2).length === 0) {
+                throw new Error(player2 + ' has no seasons in the selected range (' + rangeLabelText(mode, from2, to2) + ').');
+            }
+            return { mode: mode, from1: from1, to1: to1, from2: from2, to2: to2 };
+        }
+
+        function performRangeComparison(p1, p2, mode, from1, to1, from2, to2) {
+            var sectionFilter = document.getElementById('sections').value;
+
+            var set1 = {}, set2 = {};
+            getRangeYears(p1, mode, from1, to1).forEach(function(y) { set1[y] = true; });
+            getRangeYears(p2, mode, from2, to2).forEach(function(y) { set2[y] = true; });
+
+            function yr(v) { return parseInt(v, 10); }
+            function keepRow(player, year) {
+                return (player === p1 && set1[yr(year)]) || (player === p2 && set2[yr(year)]);
+            }
+
+            var filteredRs = playerData.rsStats.filter(function(r) { return keepRow(r.PLAYER, r.YEAR); });
+            var filteredPo = playerData.poStats.filter(function(r) { return keepRow(r.PLAYER, r.YEAR); });
+            var filteredAwards = playerData.awards.filter(function(r) { return keepRow(r['PLAYER / COACH'], r.YEAR); });
+            var filteredVotes = playerData.awardVotes.filter(function(r) { return keepRow(r.PLAYER, r.YEAR); });
+            var filteredSalaries = playerData.salaries.filter(function(r) { return keepRow(r.PLAYER, r.YEAR); });
+            var filtered2K = [];
+            var c1 = build2KRangeClone(p1, set1); if (c1) filtered2K.push(c1);
+            var c2 = build2KRangeClone(p2, set2); if (c2) filtered2K.push(c2);
+            var filteredComparisons = buildRangeComparisons();
+
+            var orig = {
+                rsStats: playerData.rsStats, poStats: playerData.poStats, awards: playerData.awards,
+                awardVotes: playerData.awardVotes, salaries: playerData.salaries, nba2k: playerData.nba2k,
+                comparisons: playerData.comparisons
+            };
+
+            var result;
+            try {
+                playerData.rsStats = filteredRs;
+                playerData.poStats = filteredPo;
+                playerData.awards = filteredAwards;
+                playerData.awardVotes = filteredVotes;
+                playerData.salaries = filteredSalaries;
+                playerData.nba2k = filtered2K;
+                playerData.comparisons = filteredComparisons;
+                result = performCareerComparison(p1, p2, sectionFilter);
+            } finally {
+                playerData.rsStats = orig.rsStats;
+                playerData.poStats = orig.poStats;
+                playerData.awards = orig.awards;
+                playerData.awardVotes = orig.awardVotes;
+                playerData.salaries = orig.salaries;
+                playerData.nba2k = orig.nba2k;
+                playerData.comparisons = orig.comparisons;
+            }
+
+            // Append the range to the names so the header + final card show it
+            // (same pattern as season mode's "(2008-09)" suffix).
+            result.player1Name = p1 + ' (' + rangeLabelText(mode, from1, to1) + ')';
+            result.player2Name = p2 + ' (' + rangeLabelText(mode, from2, to2) + ')';
+            return result;
+        }
+
+        // Show/hide the range settings row and relabel inputs for the active mode.
+        function updateRangeUI() {
+            var type = document.getElementById('comparisonType').value;
+            var isRange = (type === 'seasonRange' || type === 'ageRange');
+            document.getElementById('rangeSettingsGroup').classList.toggle('active', isRange);
+            if (isRange) {
+                var unit = type === 'ageRange' ? 'age' : 'season #';
+                document.getElementById('rangeFromLabel').textContent = 'From (' + unit + ')';
+                document.getElementById('rangeToLabel').textContent = 'To (' + unit + ')';
+                document.getElementById('rangeFrom2Label').textContent = 'Player 2 From (' + unit + ')';
+                document.getElementById('rangeTo2Label').textContent = 'Player 2 To (' + unit + ')';
+            }
+        }
+
+        function onRangeDiffToggle() {
+            var checked = document.getElementById('rangeDiffP2').checked;
+            document.getElementById('rangeP2Fields').style.display = checked ? 'flex' : 'none';
+        }
+
+        // Wire the range-row toggle without touching the existing change handler.
+        window.addEventListener('DOMContentLoaded', function() {
+            var ct = document.getElementById('comparisonType');
+            if (ct) ct.addEventListener('change', updateRangeUI);
+        });
+
+        // ========================================
         // UNIFIED COMPARISON DISPATCHER
         // ========================================
 
@@ -1665,6 +1938,9 @@
                 var season1 = document.getElementById('season1Select').value;
                 var season2 = document.getElementById('season2Select').value;
                 return performSeasonComparison(player1, player2, season1, season2, sectionFilter);
+            } else if (compType === 'seasonRange' || compType === 'ageRange') {
+                var rp = validateRangeInputs(player1, player2); // throws -> caught by generateVideo, aborts before recording
+                return performRangeComparison(player1, player2, rp.mode, rp.from1, rp.to1, rp.from2, rp.to2);
             } else {
                 return performCareerComparison(player1, player2, sectionFilter);
             }
