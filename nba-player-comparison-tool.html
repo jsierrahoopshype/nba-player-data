@@ -910,7 +910,18 @@
                 const urlParams = new URLSearchParams(window.location.search);
                 const urlP1 = urlParams.get('p1');
                 const urlP2 = urlParams.get('p2');
-                
+
+                // Range Comparison URL: the presence of a valid `mode` param routes
+                // to the Range tab instead of the career auto-run. (Additive: career
+                // URLs without a mode param behave exactly as before.)
+                const urlMode = urlParams.get('mode');
+                if (urlMode === 'seasons' || urlMode === 'ages') {
+                    initRangeFromURL(urlParams);
+                    showLoading(false);
+                    document.getElementById('mainContent').style.display = 'block';
+                    return;
+                }
+
                 let p1, p2;
                 
                 if (urlP1 && urlP2 && players.includes(urlP1) && players.includes(urlP2)) {
@@ -1171,6 +1182,8 @@
             const url = new URL(window.location);
             url.searchParams.set('p1', player1Name);
             url.searchParams.set('p2', player2Name);
+            // Keep career URLs clean: drop any Range Comparison params if present
+            ['mode', 'from', 'to', 'from2', 'to2'].forEach(k => url.searchParams.delete(k));
             window.history.pushState({}, '', url);
             
             // Update page title
@@ -2805,6 +2818,72 @@
             return arr[0] + '-' + arr[arr.length - 1];
         }
 
+        // Build the dynamic page title for a range comparison.
+        // Same range for both players  -> "P1 vs P2 — Seasons X-Y Comparison"
+        // Different ranges per player -> "P1 (Seasons X-Y) vs P2 (Seasons Z-W) Comparison"
+        function rangeTitle(p1, p2, mode, from1, to1, from2, to2) {
+            const unit = mode === 'age' ? 'Ages' : 'Seasons';
+            if (from1 !== from2 || to1 !== to2) {
+                return `${p1} (${unit} ${from1}-${to1}) vs ${p2} (${unit} ${from2}-${to2}) Comparison`;
+            }
+            return `${p1} vs ${p2} — ${unit} ${from1}-${to1} Comparison`;
+        }
+
+        // Push the current range comparison into the URL (history.pushState) and title.
+        // mode is the internal value ('season' | 'age'); the URL uses 'seasons' | 'ages'.
+        function updateRangeURL(p1, p2, mode, from1, to1, useDiff, from2, to2) {
+            const url = new URL(window.location);
+            url.searchParams.set('p1', p1);
+            url.searchParams.set('p2', p2);
+            url.searchParams.set('mode', mode === 'age' ? 'ages' : 'seasons');
+            url.searchParams.set('from', from1);
+            url.searchParams.set('to', to1);
+            if (useDiff) {
+                url.searchParams.set('from2', from2);
+                url.searchParams.set('to2', to2);
+            } else {
+                url.searchParams.delete('from2');
+                url.searchParams.delete('to2');
+            }
+            window.history.pushState({}, '', url);
+            document.title = rangeTitle(p1, p2, mode, from1, to1, from2, to2);
+        }
+
+        // Populate the Range tab from URL params and auto-run (called on page load
+        // when a valid `mode` param is present). urlParams is a URLSearchParams.
+        function initRangeFromURL(urlParams) {
+            const mode = urlParams.get('mode') === 'ages' ? 'age' : 'season';
+            const p1 = urlParams.get('p1');
+            const p2 = urlParams.get('p2');
+            const from = urlParams.get('from');
+            const to = urlParams.get('to');
+            const from2 = urlParams.get('from2');
+            const to2 = urlParams.get('to2');
+
+            // Switch to the Range tab (also wires up range autocomplete).
+            switchTab('range');
+
+            if (p1) document.getElementById('range-player1').value = p1;
+            if (p2) document.getElementById('range-player2').value = p2;
+            document.getElementById('range-mode').value = mode;
+            updateRangeLabels();
+            if (from !== null && from !== '') document.getElementById('range-from').value = from;
+            if (to !== null && to !== '') document.getElementById('range-to').value = to;
+
+            const hasDiff = from2 !== null && from2 !== '' && to2 !== null && to2 !== '';
+            document.getElementById('range-diff-p2').checked = hasDiff;
+            toggleDiffRange();
+            if (hasDiff) {
+                document.getElementById('range-from2').value = from2;
+                document.getElementById('range-to2').value = to2;
+            }
+
+            // Auto-run only when we have a complete, resolvable comparison.
+            if (p1 && p2 && from && to && findPlayerName(p1) && findPlayerName(p2)) {
+                setTimeout(() => compareRange(), 500);
+            }
+        }
+
         function compareRange() {
             if (!dataLoaded) return;
 
@@ -2831,6 +2910,9 @@
             if (from1 > to1 || from2 > to2) {
                 alert('"From" must be less than or equal to "To".'); return;
             }
+
+            // Update URL + page title (requirement: shareable range URLs)
+            updateRangeURL(p1, p2, mode, from1, to1, useDiff, from2, to2);
 
             const resultsDiv = document.getElementById('range-results');
             resultsDiv.innerHTML = '<div class="loading"><div class="spinner"></div><div>Comparing ranges…</div></div>';
