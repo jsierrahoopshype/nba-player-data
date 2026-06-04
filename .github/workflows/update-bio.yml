@@ -1,0 +1,33 @@
+name: Update Bio from Google Sheets
+
+on:
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+
+jobs:
+  update-stats:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Fetch and generate bio.json
+        run: python scripts/update-bio.py
+
+      - name: Commit and push if changed
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add bio.json
+          git diff --cached --quiet || git commit -m "Auto-update bio.json from Google Sheets [$(date +'%Y-%m-%d %H:%M')]"
+          git push || echo "Nothing to push"
