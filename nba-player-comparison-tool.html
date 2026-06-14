@@ -620,6 +620,25 @@
         }
         .remove-player-btn:hover { color: var(--red); }
     </style>
+    <style>
+        /* ===== Section/row filtering (hide from view + score) — additive ===== */
+        .cmp-item { display: flex; align-items: center; gap: 8px; margin-bottom: 0.5rem; }
+        .cmp-item .comparison-row { flex: 1 1 auto; margin-bottom: 0; min-width: 0; }
+        .cmp-item .cmp-stub { display: none; }
+        .cmp-item.cmp-hidden .comparison-row { display: none; }
+        .cmp-item.cmp-hidden .cmp-stub {
+            display: block; flex: 1 1 auto;
+            padding: 0.75rem 1rem; border-radius: 8px;
+            background: var(--surface); border: 1px dashed var(--border);
+            color: var(--text-secondary); font-size: 0.8125rem; font-style: italic;
+        }
+        .cmp-stub-note { opacity: 0.7; }
+        .cmp-toggle-label { flex: 0 0 auto; display: inline-flex; align-items: center; cursor: pointer; }
+        .cmp-toggle-label input { cursor: pointer; opacity: 0.5; margin: 0; }
+        .cmp-toggle-label input:hover { opacity: 1; }
+        .category-title .cmp-toggle-label { margin-right: 0.5rem; vertical-align: middle; }
+        .category-section.cmp-section-hidden .category-title { opacity: 0.5; }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -2468,74 +2487,174 @@
             return null;
         }
 
+        // ==========================================
+        // SECTION/ROW FILTERING (display + scoring layer) — additive.
+        // Lets readers hide sections or individual rows; hidden items drop out of
+        // the displayed totals. The original `results` object is never mutated —
+        // the visible view (and scores) is derived from it on every toggle.
+        // ==========================================
+
+        // Recompute visible scores from the immutable result + the hidden sets.
+        // Mirrors the engine's scoring: a winning row adds to its section subtotal,
+        // and to the overall unless its section is excluded (DRAFT COMBINE), so with
+        // nothing hidden the totals equal the originally computed scores.
+        function computeVisibleScores(results, hiddenSections, hiddenRows) {
+            let p1 = 0, p2 = 0;
+            const sectionScores = {};
+            Object.keys(results.categories).forEach(sec => {
+                sectionScores[sec] = { player1: 0, player2: 0 };
+                if (hiddenSections.has(sec)) return;
+                results.categories[sec].forEach((item, idx) => {
+                    if (hiddenRows.has(sec + '#' + idx)) return;
+                    if (item.winner === 'player1') {
+                        sectionScores[sec].player1++;
+                        if (sec !== 'DRAFT COMBINE') p1++;
+                    } else if (item.winner === 'player2') {
+                        sectionScores[sec].player2++;
+                        if (sec !== 'DRAFT COMBINE') p2++;
+                    }
+                });
+            });
+            return { player1Score: p1, player2Score: p2, sectionScores: sectionScores };
+        }
+
+        // Re-attach the score-summary name click behavior (career mode) after a render.
+        function wireScoreNameClicks(scope) {
+            scope.querySelectorAll('.clickable-player-name').forEach(nameEl => {
+                nameEl.addEventListener('click', function() {
+                    const clickedPlayer = this.getAttribute('data-player-name');
+                    const currentP1 = document.getElementById('player1-top').value;
+                    const currentP2 = document.getElementById('player2-top').value;
+                    if (clickedPlayer === currentP1) {
+                        const newP2 = getRandomAllStar();
+                        if (newP2 && newP2 !== clickedPlayer) {
+                            document.getElementById('player2-top').value = newP2;
+                            document.getElementById('player2-bottom').value = newP2;
+                            compareFromInputs();
+                        }
+                    } else if (clickedPlayer === currentP2) {
+                        const newP1 = getRandomAllStar();
+                        if (newP1 && newP1 !== clickedPlayer) {
+                            document.getElementById('player1-top').value = newP1;
+                            document.getElementById('player1-bottom').value = newP1;
+                            compareFromInputs();
+                        }
+                    }
+                });
+            });
+        }
+
+        // Render the score summary + sections (with hide/show toggles) into `wrap`,
+        // keeping a hidden-set in closure so toggling re-derives the view live.
+        function renderFilterableComparison(wrap, results, p1, p2, opts) {
+            opts = opts || {};
+            const clickable = !!opts.clickable;
+            const hiddenSections = new Set();
+            const hiddenRows = new Set();
+
+            const esc = (s) => String(s);
+            const nameDiv = (n) => clickable
+                ? `<div class="player-name-score clickable-player-name" data-player-name="${esc(n)}" style="cursor: pointer; text-decoration: underline;">${esc(n)}</div>`
+                : `<div class="player-name-score">${esc(n)}</div>`;
+            const nameSpan = (n) => clickable
+                ? `<span class="clickable-player-name" data-player-name="${esc(n)}" style="cursor: pointer; text-decoration: underline;">${esc(n)}</span>`
+                : esc(n);
+
+            function render() {
+                const sc = computeVisibleScores(results, hiddenSections, hiddenRows);
+                let html = `
+                    <div class="score-summary">
+                        <div class="player-score">${nameDiv(p1)}<div class="score-value">${sc.player1Score}</div></div>
+                        <div class="score-divider">–</div>
+                        <div class="player-score">${nameDiv(p2)}<div class="score-value">${sc.player2Score}</div></div>
+                    </div>`;
+
+                Object.keys(results.categories).forEach(sec => {
+                    const items = results.categories[sec];
+                    if (items.length === 0) return;
+                    const secHidden = hiddenSections.has(sec);
+                    const ss = sc.sectionScores[sec] || { player1: 0, player2: 0 };
+                    const showScore = !secHidden && (ss.player1 > 0 || ss.player2 > 0);
+                    const subtitle = showScore
+                        ? `<div class="section-score">${nameSpan(p1)} ${ss.player1} – ${nameSpan(p2)} ${ss.player2}</div>`
+                        : '';
+
+                    html += `<div class="category-section${secHidden ? ' cmp-section-hidden' : ''}">
+                        <div class="category-title">
+                            <label class="cmp-toggle-label" title="Show or hide this section"><input type="checkbox" class="cmp-sec-check" data-section="${esc(sec)}" ${secHidden ? '' : 'checked'}></label>
+                            ${esc(sec)}
+                            ${subtitle}
+                        </div>`;
+
+                    if (!secHidden) {
+                        items.forEach((item, idx) => {
+                            const key = sec + '#' + idx;
+                            const rowHidden = hiddenRows.has(key);
+                            const rowClass = item.winner === 'player1' ? 'winner-left' :
+                                            item.winner === 'player2' ? 'winner-right' : 'tie';
+                            const p1Class = item.winner === 'player1' ? 'player-value winner' : 'player-value';
+                            const p2Class = item.winner === 'player2' ? 'player-value winner' : 'player-value';
+                            const p1Display = item.player1Value !== null ? item.player1Value : '<span class="no-data">–</span>';
+                            const p2Display = item.player2Value !== null ? item.player2Value : '<span class="no-data">–</span>';
+
+                            html += `<div class="cmp-item${rowHidden ? ' cmp-hidden' : ''}">
+                                <label class="cmp-toggle-label" title="Show or hide this row"><input type="checkbox" class="cmp-row-check" data-row="${esc(key)}" ${rowHidden ? '' : 'checked'}></label>
+                                <div class="comparison-row ${rowClass}">
+                                    <div class="${p1Class}">${p1Display}</div>
+                                    <div class="player-value player-name-cell" style="font-weight: normal; font-size: 16px;">${esc(p1)}</div>
+                                    <div class="metric-name">${esc(item.metric)}</div>
+                                    <div class="player-value player-name-cell" style="font-weight: normal; font-size: 16px;">${esc(p2)}</div>
+                                    <div class="${p2Class}">${p2Display}</div>
+                                </div>
+                                <div class="cmp-stub">${esc(item.metric)} <span class="cmp-stub-note">(hidden — re-check to include)</span></div>
+                            </div>`;
+                        });
+                    }
+
+                    html += `</div>`;
+                });
+
+                wrap.innerHTML = html;
+
+                wrap.querySelectorAll('.cmp-row-check').forEach(cb => {
+                    cb.addEventListener('change', function() {
+                        const key = this.getAttribute('data-row');
+                        if (this.checked) hiddenRows.delete(key); else hiddenRows.add(key);
+                        render();
+                    });
+                });
+                wrap.querySelectorAll('.cmp-sec-check').forEach(cb => {
+                    cb.addEventListener('change', function() {
+                        const s = this.getAttribute('data-section');
+                        if (this.checked) hiddenSections.delete(s); else hiddenSections.add(s);
+                        render();
+                    });
+                });
+                if (clickable) wireScoreNameClicks(wrap);
+                if (typeof opts.afterRender === 'function') opts.afterRender();
+            }
+
+            render();
+        }
+
         function displayResults(results, player1Name, player2Name) {
             const resultsDiv = document.getElementById('results');
-            
-            let html = `
-                <div class="score-summary">
-                    <div class="player-score">
-                        <div class="player-name-score clickable-player-name" data-player-name="${player1Name}" style="cursor: pointer; text-decoration: underline;">${player1Name}</div>
-                        <div class="score-value">${results.player1Score}</div>
-                    </div>
-                    <div class="score-divider">–</div>
-                    <div class="player-score">
-                        <div class="player-name-score clickable-player-name" data-player-name="${player2Name}" style="cursor: pointer; text-decoration: underline;">${player2Name}</div>
-                        <div class="score-value">${results.player2Score}</div>
-                    </div>
-                </div>
-            `;
-            
-            // Display categories
-            Object.keys(results.categories).forEach(categoryName => {
-                const items = results.categories[categoryName];
-                if (items.length === 0) return;
-                
-                // Get section scores
-                const sectionScore = results.sectionScores[categoryName];
-                // Only show section score if at least one player has points
-                const showScore = sectionScore && (sectionScore.player1 > 0 || sectionScore.player2 > 0);
-                const sectionScoreHTML = showScore ? 
-                    `<div class="section-score">
-                        <span class="clickable-player-name" data-player-name="${player1Name}" style="cursor: pointer; text-decoration: underline;">${player1Name}</span> ${sectionScore.player1} – 
-                        <span class="clickable-player-name" data-player-name="${player2Name}" style="cursor: pointer; text-decoration: underline;">${player2Name}</span> ${sectionScore.player2}
-                    </div>` : '';
-                
-                html += `<div class="category-section">
-                    <div class="category-title">
-                        ${categoryName}
-                        ${sectionScoreHTML}
-                    </div>`;
-                
-                items.forEach(item => {
-                    const rowClass = item.winner === 'player1' ? 'winner-left' : 
-                                    item.winner === 'player2' ? 'winner-right' : 'tie';
-                    
-                    const p1Class = item.winner === 'player1' ? 'player-value winner' : 'player-value';
-                    const p2Class = item.winner === 'player2' ? 'player-value winner' : 'player-value';
-                    
-                    const p1Display = item.player1Value !== null ? item.player1Value : '<span class="no-data">–</span>';
-                    const p2Display = item.player2Value !== null ? item.player2Value : '<span class="no-data">–</span>';
-                    
-                    html += `
-                        <div class="comparison-row ${rowClass}">
-                            <div class="${p1Class}">${p1Display}</div>
-                            <div class="player-value player-name-cell" style="font-weight: normal; font-size: 16px;">${player1Name}</div>
-                            <div class="metric-name">${item.metric}</div>
-                            <div class="player-value player-name-cell" style="font-weight: normal; font-size: 16px;">${player2Name}</div>
-                            <div class="${p2Class}">${p2Display}</div>
-                        </div>
-                    `;
-                });
-                
-                html += `</div>`;
+
+            // Filterable scored region (toggles + live recompute); extras live outside it.
+            resultsDiv.innerHTML = '<div class="filter-cmp-wrap"></div>';
+            const wrap = resultsDiv.querySelector('.filter-cmp-wrap');
+            renderFilterableComparison(wrap, results, player1Name, player2Name, {
+                clickable: true,
+                afterRender: makePlayerNamesClickable
             });
-            
+
+            let extra = '';
+
             // Add same-era suggestion button (only if All-Stars data is available)
             const sameEraP1 = getSameEraAllStar(player1Name);
             const sameEraP2 = getSameEraAllStar(player2Name);
-            
             if (sameEraP1 && sameEraP2) {
-                html += `
+                extra += `
                     <div class="suggestions-section">
                         <h3 style="margin-bottom: 15px; color: #1a1a1a;">✨ Try These Comparisons</h3>
                         <div style="display: flex; gap: 15px; flex-wrap: wrap;">
@@ -2549,44 +2668,16 @@
                     </div>
                 `;
             }
-            
+
             // Add bottom loop button
-            html += `
+            extra += `
                 <div class="loop-controls" style="margin-top: 20px;">
                     <button class="loop-button" id="loopBtnBottom" onclick="toggleLoop()">${loopActive ? 'Stop Comparison Loop' : 'Start Comparison Loop'}</button>
                 </div>
             `;
-            
-            resultsDiv.innerHTML = html;
-            
-            // Attach click handlers to clickable player names in scoreboards
-            resultsDiv.querySelectorAll('.clickable-player-name').forEach(nameEl => {
-                nameEl.addEventListener('click', function() {
-                    const clickedPlayer = this.getAttribute('data-player-name');
-                    const currentP1 = document.getElementById('player1-top').value;
-                    const currentP2 = document.getElementById('player2-top').value;
-                    
-                    // Keep clicked player in position, randomize opponent
-                    if (clickedPlayer === currentP1) {
-                        // Player 1 was clicked, randomize Player 2
-                        const newP2 = getRandomAllStar();
-                        if (newP2 && newP2 !== clickedPlayer) {
-                            document.getElementById('player2-top').value = newP2;
-                            document.getElementById('player2-bottom').value = newP2;
-                            compareFromInputs();
-                        }
-                    } else if (clickedPlayer === currentP2) {
-                        // Player 2 was clicked, randomize Player 1
-                        const newP1 = getRandomAllStar();
-                        if (newP1 && newP1 !== clickedPlayer) {
-                            document.getElementById('player1-top').value = newP1;
-                            document.getElementById('player1-bottom').value = newP1;
-                            compareFromInputs();
-                        }
-                    }
-                });
-            });
-            
+
+            resultsDiv.insertAdjacentHTML('beforeend', extra);
+
             // Attach click handlers to suggestion buttons
             resultsDiv.querySelectorAll('.suggestion-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
@@ -2595,9 +2686,6 @@
                     loadComparison(p1, p2);
                 });
             });
-            
-            // Make player names clickable
-            makePlayerNamesClickable();
         }
         
         // ==========================================
@@ -3311,63 +3399,15 @@
                 `(${yearSpan(results.years1)}) vs ${p2} ${rangeLabel(meta.mode, meta.from2, meta.to2)} ` +
                 `(${yearSpan(results.years2)})`;
 
-            let html = `<div class="range-summary">${summary}</div>`;
+            const renderedAny = Object.keys(results.categories).some(s => results.categories[s].length > 0);
 
-            html += `
-                <div class="score-summary">
-                    <div class="player-score">
-                        <div class="player-name-score">${p1}</div>
-                        <div class="score-value">${results.player1Score}</div>
-                    </div>
-                    <div class="score-divider">–</div>
-                    <div class="player-score">
-                        <div class="player-name-score">${p2}</div>
-                        <div class="score-value">${results.player2Score}</div>
-                    </div>
-                </div>
-            `;
+            resultsDiv.innerHTML = `<div class="range-summary">${summary}</div><div class="filter-cmp-wrap"></div>`;
 
-            let renderedAny = false;
-            Object.keys(results.categories).forEach(categoryName => {
-                const items = results.categories[categoryName];
-                if (items.length === 0) return;
-                renderedAny = true;
-
-                const sectionScore = results.sectionScores[categoryName];
-                const showScore = sectionScore && (sectionScore.player1 > 0 || sectionScore.player2 > 0);
-                const sectionScoreHTML = showScore ?
-                    `<div class="section-score">${p1} ${sectionScore.player1} – ${p2} ${sectionScore.player2}</div>` : '';
-
-                html += `<div class="category-section">
-                    <div class="category-title">${categoryName}${sectionScoreHTML}</div>`;
-
-                items.forEach(item => {
-                    const rowClass = item.winner === 'player1' ? 'winner-left' :
-                                    item.winner === 'player2' ? 'winner-right' : 'tie';
-                    const p1Class = item.winner === 'player1' ? 'player-value winner' : 'player-value';
-                    const p2Class = item.winner === 'player2' ? 'player-value winner' : 'player-value';
-                    const p1Display = item.player1Value !== null ? item.player1Value : '<span class="no-data">–</span>';
-                    const p2Display = item.player2Value !== null ? item.player2Value : '<span class="no-data">–</span>';
-
-                    html += `
-                        <div class="comparison-row ${rowClass}">
-                            <div class="${p1Class}">${p1Display}</div>
-                            <div class="player-value player-name-cell" style="font-weight: normal; font-size: 16px;">${p1}</div>
-                            <div class="metric-name">${item.metric}</div>
-                            <div class="player-value player-name-cell" style="font-weight: normal; font-size: 16px;">${p2}</div>
-                            <div class="${p2Class}">${p2Display}</div>
-                        </div>
-                    `;
-                });
-
-                html += `</div>`;
-            });
-
-            if (!renderedAny) {
-                html += `<div class="range-summary" style="font-weight: 400;">No data found for the selected ranges.</div>`;
+            if (renderedAny) {
+                renderFilterableComparison(resultsDiv.querySelector('.filter-cmp-wrap'), results, p1, p2, { clickable: false });
+            } else {
+                resultsDiv.insertAdjacentHTML('beforeend', '<div class="range-summary" style="font-weight: 400;">No data found for the selected ranges.</div>');
             }
-
-            resultsDiv.innerHTML = html;
         }
     </script>
     <button class="loop-stop-floating" id="loopStopFloat" onclick="toggleLoop()">⏹ Stop Loop</button>
