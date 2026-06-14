@@ -722,6 +722,7 @@
                         <select id="range-mode" class="range-select" onchange="updateRangeLabels()">
                             <option value="season">Season Range</option>
                             <option value="age">Age Range</option>
+                            <option value="calendar">Calendar Range (e.g. 2018-2026)</option>
                         </select>
                     </div>
                     <div class="range-control-group">
@@ -915,7 +916,7 @@
                 // to the Range tab instead of the career auto-run. (Additive: career
                 // URLs without a mode param behave exactly as before.)
                 const urlMode = urlParams.get('mode');
-                if (urlMode === 'seasons' || urlMode === 'ages') {
+                if (urlMode === 'seasons' || urlMode === 'ages' || urlMode === 'calendar') {
                     initRangeFromURL(urlParams);
                     showLoading(false);
                     document.getElementById('mainContent').style.display = 'block';
@@ -2598,7 +2599,7 @@
 
         function updateRangeLabels() {
             const mode = document.getElementById('range-mode').value;
-            const unit = mode === 'age' ? 'age' : 'season #';
+            const unit = mode === 'age' ? 'age' : (mode === 'calendar' ? 'year' : 'season #');
             document.getElementById('range-from-label').textContent = 'From (' + unit + ')';
             document.getElementById('range-to-label').textContent = 'To (' + unit + ')';
             document.getElementById('range-from2-label').textContent = 'Player 2 From (' + unit + ')';
@@ -2680,6 +2681,14 @@
         // season/age range for this player, derived from their RS seasons.
         function computeInRangeYears(playerName, fromVal, toVal, mode) {
             const inRange = new Set();
+
+            // Calendar Range: the year itself is the filter — return every year
+            // from..to inclusive (no season-number or age math, player-independent).
+            if (mode === 'calendar') {
+                for (let y = fromVal; y <= toVal; y++) inRange.add(y);
+                return inRange;
+            }
+
             const rawRows = playerData.rsStats.filter(r => r.PLAYER === playerName);
             if (rawRows.length === 0) return inRange;
 
@@ -2809,6 +2818,9 @@
         }
 
         function rangeLabel(mode, fromVal, toVal) {
+            // Calendar mode: no prefix — the (year-span) shown next to it is the range itself,
+            // so the summary reads "[Player] (2018-2026)".
+            if (mode === 'calendar') return '';
             return (mode === 'age' ? 'Ages ' : 'Seasons ') + fromVal + '-' + toVal;
         }
 
@@ -2822,6 +2834,12 @@
         // Same range for both players  -> "P1 vs P2 — Seasons X-Y Comparison"
         // Different ranges per player -> "P1 (Seasons X-Y) vs P2 (Seasons Z-W) Comparison"
         function rangeTitle(p1, p2, mode, from1, to1, from2, to2) {
+            if (mode === 'calendar') {
+                if (from1 !== from2 || to1 !== to2) {
+                    return `${p1} (${from1}-${to1}) vs ${p2} (${from2}-${to2}) Comparison`;
+                }
+                return `${p1} vs ${p2} — ${from1}-${to1} Comparison`;
+            }
             const unit = mode === 'age' ? 'Ages' : 'Seasons';
             if (from1 !== from2 || to1 !== to2) {
                 return `${p1} (${unit} ${from1}-${to1}) vs ${p2} (${unit} ${from2}-${to2}) Comparison`;
@@ -2835,7 +2853,7 @@
             const url = new URL(window.location);
             url.searchParams.set('p1', p1);
             url.searchParams.set('p2', p2);
-            url.searchParams.set('mode', mode === 'age' ? 'ages' : 'seasons');
+            url.searchParams.set('mode', mode === 'age' ? 'ages' : (mode === 'calendar' ? 'calendar' : 'seasons'));
             url.searchParams.set('from', from1);
             url.searchParams.set('to', to1);
             if (useDiff) {
@@ -2852,7 +2870,8 @@
         // Populate the Range tab from URL params and auto-run (called on page load
         // when a valid `mode` param is present). urlParams is a URLSearchParams.
         function initRangeFromURL(urlParams) {
-            const mode = urlParams.get('mode') === 'ages' ? 'age' : 'season';
+            const urlMode = urlParams.get('mode');
+            const mode = urlMode === 'ages' ? 'age' : (urlMode === 'calendar' ? 'calendar' : 'season');
             const p1 = urlParams.get('p1');
             const p2 = urlParams.get('p2');
             const from = urlParams.get('from');
