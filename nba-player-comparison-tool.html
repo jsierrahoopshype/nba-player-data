@@ -757,10 +757,12 @@
                     <div class="range-control-group">
                         <label id="range-from-label">From (season #)</label>
                         <input type="number" id="range-from" class="range-number" min="1" value="1">
+                        <select id="range-from-cal" class="range-select" style="display: none;" onchange="onCalSelectChange()"></select>
                     </div>
                     <div class="range-control-group">
                         <label id="range-to-label">To (season #)</label>
                         <input type="number" id="range-to" class="range-number" min="1" value="5">
+                        <select id="range-to-cal" class="range-select" style="display: none;" onchange="onCalSelectChange()"></select>
                     </div>
                 </div>
 
@@ -772,10 +774,12 @@
                     <div class="range-control-group">
                         <label id="range-from2-label">Player 2 From (season #)</label>
                         <input type="number" id="range-from2" class="range-number" min="1" value="1">
+                        <select id="range-from2-cal" class="range-select" style="display: none;" onchange="onCalSelectChange()"></select>
                     </div>
                     <div class="range-control-group">
                         <label id="range-to2-label">Player 2 To (season #)</label>
                         <input type="number" id="range-to2" class="range-number" min="1" value="5">
+                        <select id="range-to2-cal" class="range-select" style="display: none;" onchange="onCalSelectChange()"></select>
                     </div>
                 </div>
 
@@ -1331,9 +1335,9 @@
             const name1 = prep(side1);
             const name2 = prep(side2);
 
-            // Combine excludes Draft Combine, Signature Shoes and All-Star contests — the
-            // same section set the Range Comparison already filters to.
-            const combineComparisons = buildRangeComparisons();
+            // Combine excludes Draft Combine, Signature Shoes and All-Star contests (the
+            // Range section set) AND, for groups only, NBA CAREER AVERAGES.
+            const combineComparisons = buildCombineComparisons();
 
             const orig = {
                 rsStats: playerData.rsStats, poStats: playerData.poStats,
@@ -2865,6 +2869,73 @@
             document.getElementById('range-to-label').textContent = 'To (' + unit + ')';
             document.getElementById('range-from2-label').textContent = 'Player 2 From (' + unit + ')';
             document.getElementById('range-to2-label').textContent = 'Player 2 To (' + unit + ')';
+
+            // Calendar mode uses year dropdowns (populated from the players); other modes
+            // keep their free number inputs. Only the input UI swaps — compareRange still
+            // reads the same range-from/range-to (kept mirrored from the selects).
+            const isCal = mode === 'calendar';
+            [['range-from', 'range-from-cal'], ['range-to', 'range-to-cal'],
+             ['range-from2', 'range-from2-cal'], ['range-to2', 'range-to2-cal']].forEach(pair => {
+                const ie = document.getElementById(pair[0]);
+                const se = document.getElementById(pair[1]);
+                if (ie) ie.style.display = isCal ? 'none' : '';
+                if (se) se.style.display = isCal ? '' : 'none';
+            });
+            if (isCal) populateCalendarYears();
+        }
+
+        // Format an NBA ending-year as a full season label, e.g. 2018 -> "2017-18".
+        function formatSeasonLabel(y) {
+            const yr = parseInt(y, 10);
+            if (isNaN(yr)) return String(y);
+            return (yr - 1) + '-' + String(yr).slice(-2);
+        }
+
+        // Distinct rsStats YEARs (ascending, as strings) across the given players.
+        function getUnionYears(names) {
+            const set = new Set();
+            names.forEach(n => {
+                playerData.rsStats.forEach(r => {
+                    if (r.PLAYER === n && r.YEAR != null && r.YEAR !== '') set.add(String(r.YEAR));
+                });
+            });
+            return [...set].sort((a, b) => parseInt(a, 10) - parseInt(b, 10));
+        }
+
+        // Fill one year <select>, preserving the paired number input's value if still valid
+        // (else default to min/max), then mirror the choice back into the number input.
+        function populateOneYearSelect(selId, inpId, years, defaultLast) {
+            const sel = document.getElementById(selId);
+            const inp = document.getElementById(inpId);
+            if (!sel || !inp) return;
+            if (!years.length) { sel.innerHTML = ''; sel.disabled = true; return; }
+            sel.disabled = false;
+            sel.innerHTML = years.map(y => `<option value="${y}">${formatSeasonLabel(y)}</option>`).join('');
+            const cur = String(inp.value);
+            sel.value = years.indexOf(cur) !== -1 ? cur : (defaultLast ? years[years.length - 1] : years[0]);
+            inp.value = sel.value;
+        }
+
+        // Populate the four calendar year dropdowns from the selected players' careers.
+        function populateCalendarYears() {
+            const p1 = findPlayerName((document.getElementById('range-player1').value || '').trim());
+            const p2 = findPlayerName((document.getElementById('range-player2').value || '').trim());
+            const union = getUnionYears([p1, p2].filter(Boolean));
+            const p2years = p2 ? getUnionYears([p2]) : union;
+            populateOneYearSelect('range-from-cal', 'range-from', union, false);
+            populateOneYearSelect('range-to-cal', 'range-to', union, true);
+            populateOneYearSelect('range-from2-cal', 'range-from2', p2years, false);
+            populateOneYearSelect('range-to2-cal', 'range-to2', p2years, true);
+        }
+
+        // Mirror the calendar dropdown selections into the number inputs that compareRange reads.
+        function onCalSelectChange() {
+            [['range-from-cal', 'range-from'], ['range-to-cal', 'range-to'],
+             ['range-from2-cal', 'range-from2'], ['range-to2-cal', 'range-to2']].forEach(pair => {
+                const se = document.getElementById(pair[0]);
+                const ie = document.getElementById(pair[1]);
+                if (se && ie && se.value) ie.value = se.value;
+            });
         }
 
         function toggleDiffRange() {
@@ -2902,8 +2973,15 @@
                         el.addEventListener('click', function() {
                             inputEl.value = this.getAttribute('data-player');
                             suggestionsEl.style.display = 'none';
+                            // Refresh calendar year dropdowns when a player is picked.
+                            if (document.getElementById('range-mode').value === 'calendar') populateCalendarYears();
                         });
                     });
+                });
+
+                // Typed (not picked) player changes also refresh the calendar dropdowns.
+                inputEl.addEventListener('change', function() {
+                    if (document.getElementById('range-mode').value === 'calendar') populateCalendarYears();
                 });
 
                 document.addEventListener('click', function(e) {
@@ -3000,6 +3078,24 @@
                     if (include) out.push(comp);
                 } else if (include) {
                     if (comp['Wheres the data?'] === 'All-Star.csv') return; // excluded contests
+                    out.push(comp);
+                }
+            });
+            return out;
+        }
+
+        // Combine-mode comparisons: the Range section set, minus NBA CAREER AVERAGES
+        // (pooled group averages can mislead, so they're hidden for combined groups only).
+        function buildCombineComparisons() {
+            const out = [];
+            let skip = false;
+            buildRangeComparisons().forEach(comp => {
+                const cat = comp['Comparison points'];
+                const isHeader = !comp['Who wins?'] && !comp['Wheres the data?'];
+                if (isHeader) {
+                    skip = (cat === 'NBA CAREER AVERAGES');
+                    if (!skip) out.push(comp);
+                } else if (!skip) {
                     out.push(comp);
                 }
             });
@@ -3157,6 +3253,9 @@
                 document.getElementById('range-from2').value = from2;
                 document.getElementById('range-to2').value = to2;
             }
+
+            // For a calendar URL, sync the dropdowns to the now-set year values.
+            if (mode === 'calendar') populateCalendarYears();
 
             // Auto-run only when we have a complete, resolvable comparison.
             if (p1 && p2 && from && to && findPlayerName(p1) && findPlayerName(p2)) {
