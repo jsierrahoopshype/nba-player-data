@@ -165,6 +165,21 @@
             border-color: #e31837;
             box-shadow: 0 0 0 3px rgba(227, 24, 55, 0.1);
         }
+        .range-settings-group select.range-cal-select {
+            width: 100%;
+            padding: 12px;
+            font-size: 14px;
+            background: #1a1a1a;
+            color: white;
+            border: 2px solid #404040;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        .range-settings-group select.range-cal-select:focus {
+            outline: none;
+            border-color: #e31837;
+            box-shadow: 0 0 0 3px rgba(227, 24, 55, 0.1);
+        }
         .range-diff-row { margin-top: 12px; display: flex; align-items: center; gap: 8px; color: #bbb; }
         .range-diff-row input[type="checkbox"] { width: auto; }
 
@@ -479,10 +494,12 @@
                             <div>
                                 <label id="rangeFromLabel">From (season #)</label>
                                 <input type="number" id="rangeFrom" min="1" value="1">
+                                <select id="rangeFromCal" class="range-cal-select" style="display:none;" onchange="onCalSelectChange()"></select>
                             </div>
                             <div>
                                 <label id="rangeToLabel">To (season #)</label>
                                 <input type="number" id="rangeTo" min="1" value="5">
+                                <select id="rangeToCal" class="range-cal-select" style="display:none;" onchange="onCalSelectChange()"></select>
                             </div>
                         </div>
                         <div class="range-diff-row">
@@ -493,10 +510,12 @@
                             <div>
                                 <label id="rangeFrom2Label">Player 2 From (season #)</label>
                                 <input type="number" id="rangeFrom2" min="1" value="1">
+                                <select id="rangeFrom2Cal" class="range-cal-select" style="display:none;" onchange="onCalSelectChange()"></select>
                             </div>
                             <div>
                                 <label id="rangeTo2Label">Player 2 To (season #)</label>
                                 <input type="number" id="rangeTo2" min="1" value="5">
+                                <select id="rangeTo2Cal" class="range-cal-select" style="display:none;" onchange="onCalSelectChange()"></select>
                             </div>
                         </div>
                     </div>
@@ -713,6 +732,8 @@
                             // Populate season dropdown for this player
                             const playerNum = inputId === 'player1' ? '1' : '2';
                             populateSeasonDropdown(this.dataset.player, playerNum);
+                            // Refresh calendar year dropdowns when a player is picked
+                            if (document.getElementById('comparisonType').value === 'calendarRange') populateCalendarYears();
                         });
                     });
                 } else {
@@ -1939,6 +1960,73 @@
                 document.getElementById('rangeFrom2Label').textContent = 'Player 2 From (' + unit + ')';
                 document.getElementById('rangeTo2Label').textContent = 'Player 2 To (' + unit + ')';
             }
+
+            // Calendar mode uses year dropdowns (populated from the players); other modes
+            // keep their free number inputs. Only the input UI swaps — validateRangeInputs
+            // still reads the same rangeFrom/rangeTo (kept mirrored from the selects).
+            var isCal = type === 'calendarRange';
+            [['rangeFrom', 'rangeFromCal'], ['rangeTo', 'rangeToCal'],
+             ['rangeFrom2', 'rangeFrom2Cal'], ['rangeTo2', 'rangeTo2Cal']].forEach(function(pair) {
+                var ie = document.getElementById(pair[0]);
+                var se = document.getElementById(pair[1]);
+                if (ie) ie.style.display = isCal ? 'none' : '';
+                if (se) se.style.display = isCal ? '' : 'none';
+            });
+            if (isCal) populateCalendarYears();
+        }
+
+        // Format an NBA ending-year as a full season label, e.g. 2018 -> "2017-18".
+        function formatSeasonLabel(y) {
+            var yr = parseInt(y, 10);
+            if (isNaN(yr)) return String(y);
+            return (yr - 1) + '-' + String(yr).slice(-2);
+        }
+
+        // Distinct rsStats YEARs (ascending, as strings) across the given players.
+        function getUnionYears(names) {
+            var set = {};
+            names.forEach(function(n) {
+                getPlayerSeasonYears(n).forEach(function(y) { set[y] = true; });
+            });
+            return Object.keys(set).sort(function(a, b) { return parseInt(a, 10) - parseInt(b, 10); });
+        }
+
+        // Fill one year <select>, preserving the paired number input's value if still valid
+        // (else default to min/max), then mirror the choice back into the number input.
+        function populateOneYearSelect(selId, inpId, years, defaultLast) {
+            var sel = document.getElementById(selId);
+            var inp = document.getElementById(inpId);
+            if (!sel || !inp) return;
+            if (!years.length) { sel.innerHTML = ''; sel.disabled = true; return; }
+            sel.disabled = false;
+            sel.innerHTML = years.map(function(y) {
+                return '<option value="' + y + '">' + formatSeasonLabel(y) + '</option>';
+            }).join('');
+            var cur = String(inp.value);
+            sel.value = years.indexOf(cur) !== -1 ? cur : (defaultLast ? years[years.length - 1] : years[0]);
+            inp.value = sel.value;
+        }
+
+        // Populate the four calendar year dropdowns from the selected players' careers.
+        function populateCalendarYears() {
+            var p1 = document.getElementById('player1').value.trim();
+            var p2 = document.getElementById('player2').value.trim();
+            var union = getUnionYears([p1, p2].filter(Boolean));
+            var p2years = p2 ? getUnionYears([p2]) : union;
+            populateOneYearSelect('rangeFromCal', 'rangeFrom', union, false);
+            populateOneYearSelect('rangeToCal', 'rangeTo', union, true);
+            populateOneYearSelect('rangeFrom2Cal', 'rangeFrom2', p2years, false);
+            populateOneYearSelect('rangeTo2Cal', 'rangeTo2', p2years, true);
+        }
+
+        // Mirror the calendar dropdown selections into the number inputs validateRangeInputs reads.
+        function onCalSelectChange() {
+            [['rangeFromCal', 'rangeFrom'], ['rangeToCal', 'rangeTo'],
+             ['rangeFrom2Cal', 'rangeFrom2'], ['rangeTo2Cal', 'rangeTo2']].forEach(function(pair) {
+                var se = document.getElementById(pair[0]);
+                var ie = document.getElementById(pair[1]);
+                if (se && ie && se.value) ie.value = se.value;
+            });
         }
 
         function onRangeDiffToggle() {
