@@ -1823,7 +1823,8 @@
         }
 
         function rangeLabelText(mode, from, to) {
-            if (mode === 'calendarRange') return from + '-' + to;
+            // Calendar: show the start year of the first season (from - 1) through the end year.
+            if (mode === 'calendarRange') return (from - 1) + '-' + to;
             return (mode === 'ageRange' ? 'Ages ' : 'Seasons ') + from + '-' + to;
         }
 
@@ -2133,15 +2134,11 @@
         // player names (used by the comparison logic). Strip it for on-screen display
         // so the video stays clean and the final-card trophy doesn't overlap.
         function stripRangeSuffix(name) {
-            return String(name).replace(/\s*\((Seasons|Ages)[^)]*\)$/, '');
+            return String(name).replace(/\s*\((Seasons|Ages)[^)]*\)$/, '').replace(/\s*\(\d{4}-\d{4}\)$/, '');
         }
 
         function drawHeader(ctx, data, width, p1Score, p2Score, p1Img, p2Img) {
-            // Display names without the range suffix (local copy only; does not mutate caller data)
-            data = Object.assign({}, data, {
-                player1Name: stripRangeSuffix(data.player1Name),
-                player2Name: stripRangeSuffix(data.player2Name)
-            });
+            // Header scoreboard keeps the range suffix on player names (stripped elsewhere).
             var HEADER_H = 140;
             var S = width / 1280;
             // White background behind header card
