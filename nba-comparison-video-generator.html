@@ -409,6 +409,19 @@
             background: #505050;
         }
     </style>
+    <style>
+        /* ===== Section include/exclude filter (additive) ===== */
+        .section-load-btn {
+            background: #2a2a2a; color: #fff; border: 2px solid #404040;
+            border-radius: 8px; padding: 10px 16px; font-size: 14px; cursor: pointer;
+            transition: all 0.3s;
+        }
+        .section-load-btn:hover { border-color: #e31837; }
+        .section-filter-hint { font-size: 13px; color: #888; margin: 12px 0 4px; }
+        .section-filter-list { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 10px 22px; }
+        .section-filter-list label { display: flex; align-items: center; gap: 8px; font-size: 14px; color: #ddd; cursor: pointer; }
+        .section-filter-list input[type="checkbox"] { width: auto; cursor: pointer; }
+    </style>
     <script src="https://cdn.jsdelivr.net/npm/mp4-muxer@latest/build/mp4-muxer.js"></script>
 </head>
 <body>
@@ -524,6 +537,12 @@
                         </select>
                     </div>
                 </div>
+            </div>
+
+            <div class="settings-section" id="sectionFilterSection">
+                <h3>Sections to Include <span style="font-weight:400;font-size:13px;color:#888;">(optional)</span></h3>
+                <button type="button" class="section-load-btn" id="loadSectionsBtn" onclick="loadSectionFilterList()">Load sections for these players</button>
+                <div id="sectionFilterList" class="section-filter-list"></div>
             </div>
 
             <button class="generate-btn" id="generateBtn" disabled>
@@ -2702,6 +2721,74 @@
             return new Promise(resolve => setTimeout(resolve, ms));
         }
 
+        // ===== Section include/exclude filter (additive) =====
+        // Populate the checklist by running the (unchanged) comparison once to see
+        // which sections exist for the chosen players/mode.
+        function loadSectionFilterList() {
+            const listEl = document.getElementById('sectionFilterList');
+            const player1 = document.getElementById('player1').value.trim();
+            const player2 = document.getElementById('player2').value.trim();
+            if (!player1 || !player2 || !allPlayers.includes(player1) || !allPlayers.includes(player2)) {
+                showStatus('Select two valid players first (use the autocomplete).', 'error');
+                return;
+            }
+            if (player1 === player2) { showStatus('Please select two different players', 'error'); return; }
+
+            let data;
+            try {
+                data = performComparison(player1, player2);
+            } catch (e) {
+                showStatus(e && e.message ? e.message : 'Could not load sections.', 'error');
+                return;
+            }
+            if (!data || !data.sections || data.sections.length === 0) {
+                listEl.innerHTML = '<div class="section-filter-hint">No sections available for this comparison (check players/seasons).</div>';
+                return;
+            }
+
+            let html = '<div class="section-filter-hint">Uncheck any section to exclude it from the video and the score.</div>';
+            data.sections.forEach(function(s) {
+                const val = String(s.name).replace(/"/g, '&quot;');
+                html += '<label><input type="checkbox" class="section-filter-check" value="' + val + '" checked> ' + s.name + '</label>';
+            });
+            listEl.innerHTML = html;
+        }
+
+        // Derive a filtered copy of comparisonData (original untouched): drop unchecked
+        // sections and recompute totals from the remaining sections' row wins. A section
+        // is excluded only if it was offered in the checklist AND is unchecked, so a
+        // stale checklist (different players) safely leaves all sections included.
+        function filterComparisonSections(comparisonData) {
+            const checks = document.querySelectorAll('#sectionFilterList .section-filter-check');
+            if (!checks.length) return comparisonData;
+
+            const offered = {}, checked = {};
+            checks.forEach(function(cb) {
+                offered[cb.value] = true;
+                if (cb.checked) checked[cb.value] = true;
+            });
+
+            const sections = comparisonData.sections.filter(function(s) {
+                return !offered[s.name] || checked[s.name];
+            });
+            if (sections.length === comparisonData.sections.length) return comparisonData;
+
+            let p1 = 0, p2 = 0;
+            sections.forEach(function(s) {
+                s.items.forEach(function(it) {
+                    if (it.winner === 'player1') p1++;
+                    else if (it.winner === 'player2') p2++;
+                });
+            });
+
+            const copy = {};
+            for (const k in comparisonData) copy[k] = comparisonData[k];
+            copy.sections = sections;
+            copy.player1Score = p1;
+            copy.player2Score = p2;
+            return copy;
+        }
+
         async function generateVideo() {
             var player1 = document.getElementById('player1').value.trim();
             var player2 = document.getElementById('player2').value.trim();
@@ -2765,6 +2852,8 @@
 
                 // Get comparison data
                 var comparisonData = performComparison(player1, player2);
+                // Drop any sections the user unchecked (and recompute totals) before rendering.
+                comparisonData = filterComparisonSections(comparisonData);
                 lastComparisonData = comparisonData;
 
                 if (comparisonData.sections.length === 0) {
