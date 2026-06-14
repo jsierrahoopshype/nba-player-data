@@ -621,18 +621,7 @@
         .remove-player-btn:hover { color: var(--red); }
     </style>
     <style>
-        /* ===== Section/row filtering (hide from view + score) — additive ===== */
-        .cmp-item { display: flex; align-items: center; gap: 8px; margin-bottom: 0.5rem; }
-        .cmp-item .comparison-row { flex: 1 1 auto; margin-bottom: 0; min-width: 0; }
-        .cmp-item .cmp-stub { display: none; }
-        .cmp-item.cmp-hidden .comparison-row { display: none; }
-        .cmp-item.cmp-hidden .cmp-stub {
-            display: block; flex: 1 1 auto;
-            padding: 0.75rem 1rem; border-radius: 8px;
-            background: var(--surface); border: 1px dashed var(--border);
-            color: var(--text-secondary); font-size: 0.8125rem; font-style: italic;
-        }
-        .cmp-stub-note { opacity: 0.7; }
+        /* ===== Section filtering (hide section from view + score) — additive ===== */
         .cmp-toggle-label { flex: 0 0 auto; display: inline-flex; align-items: center; cursor: pointer; }
         .cmp-toggle-label input { cursor: pointer; opacity: 0.5; margin: 0; }
         .cmp-toggle-label input:hover { opacity: 1; }
@@ -2498,14 +2487,13 @@
         // Mirrors the engine's scoring: a winning row adds to its section subtotal,
         // and to the overall unless its section is excluded (DRAFT COMBINE), so with
         // nothing hidden the totals equal the originally computed scores.
-        function computeVisibleScores(results, hiddenSections, hiddenRows) {
+        function computeVisibleScores(results, hiddenSections) {
             let p1 = 0, p2 = 0;
             const sectionScores = {};
             Object.keys(results.categories).forEach(sec => {
                 sectionScores[sec] = { player1: 0, player2: 0 };
                 if (hiddenSections.has(sec)) return;
-                results.categories[sec].forEach((item, idx) => {
-                    if (hiddenRows.has(sec + '#' + idx)) return;
+                results.categories[sec].forEach(item => {
                     if (item.winner === 'player1') {
                         sectionScores[sec].player1++;
                         if (sec !== 'DRAFT COMBINE') p1++;
@@ -2550,7 +2538,6 @@
             opts = opts || {};
             const clickable = !!opts.clickable;
             const hiddenSections = new Set();
-            const hiddenRows = new Set();
 
             const esc = (s) => String(s);
             const nameDiv = (n) => clickable
@@ -2561,7 +2548,7 @@
                 : esc(n);
 
             function render() {
-                const sc = computeVisibleScores(results, hiddenSections, hiddenRows);
+                const sc = computeVisibleScores(results, hiddenSections);
                 let html = `
                     <div class="score-summary">
                         <div class="player-score">${nameDiv(p1)}<div class="score-value">${sc.player1Score}</div></div>
@@ -2587,9 +2574,7 @@
                         </div>`;
 
                     if (!secHidden) {
-                        items.forEach((item, idx) => {
-                            const key = sec + '#' + idx;
-                            const rowHidden = hiddenRows.has(key);
+                        items.forEach(item => {
                             const rowClass = item.winner === 'player1' ? 'winner-left' :
                                             item.winner === 'player2' ? 'winner-right' : 'tie';
                             const p1Class = item.winner === 'player1' ? 'player-value winner' : 'player-value';
@@ -2597,17 +2582,14 @@
                             const p1Display = item.player1Value !== null ? item.player1Value : '<span class="no-data">–</span>';
                             const p2Display = item.player2Value !== null ? item.player2Value : '<span class="no-data">–</span>';
 
-                            html += `<div class="cmp-item${rowHidden ? ' cmp-hidden' : ''}">
-                                <label class="cmp-toggle-label" title="Show or hide this row"><input type="checkbox" class="cmp-row-check" data-row="${esc(key)}" ${rowHidden ? '' : 'checked'}></label>
+                            html += `
                                 <div class="comparison-row ${rowClass}">
                                     <div class="${p1Class}">${p1Display}</div>
                                     <div class="player-value player-name-cell" style="font-weight: normal; font-size: 16px;">${esc(p1)}</div>
                                     <div class="metric-name">${esc(item.metric)}</div>
                                     <div class="player-value player-name-cell" style="font-weight: normal; font-size: 16px;">${esc(p2)}</div>
                                     <div class="${p2Class}">${p2Display}</div>
-                                </div>
-                                <div class="cmp-stub">${esc(item.metric)} <span class="cmp-stub-note">(hidden — re-check to include)</span></div>
-                            </div>`;
+                                </div>`;
                         });
                     }
 
@@ -2616,13 +2598,6 @@
 
                 wrap.innerHTML = html;
 
-                wrap.querySelectorAll('.cmp-row-check').forEach(cb => {
-                    cb.addEventListener('change', function() {
-                        const key = this.getAttribute('data-row');
-                        if (this.checked) hiddenRows.delete(key); else hiddenRows.add(key);
-                        render();
-                    });
-                });
                 wrap.querySelectorAll('.cmp-sec-check').forEach(cb => {
                     cb.addEventListener('change', function() {
                         const s = this.getAttribute('data-section');
