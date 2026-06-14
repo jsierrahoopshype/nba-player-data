@@ -469,6 +469,7 @@
                             <option value="season">Season vs Season</option>
                             <option value="seasonRange">Season Range (e.g. Seasons 3-8)</option>
                             <option value="ageRange">Age Range (e.g. Ages 23-28)</option>
+                            <option value="calendarRange">Calendar Range (e.g. 2018-2026)</option>
                         </select>
                     </div>
 
@@ -1778,6 +1779,11 @@
         function getRangeYears(playerName, mode, from, to) {
             var years = getPlayerSeasonYears(playerName);
             var result = [];
+            if (mode === 'calendarRange') {
+                // Calendar Range: the year itself is the filter — every year from..to inclusive.
+                for (var cy = from; cy <= to; cy++) result.push(cy);
+                return result;
+            }
             if (mode === 'ageRange') {
                 var bio = (playerData.bio || []).find(function(r) { return r.PLAYER === playerName; });
                 var bd = bio ? parseBioBirthday(bio.BIRTHDAY) : null;
@@ -1796,6 +1802,7 @@
         }
 
         function rangeLabelText(mode, from, to) {
+            if (mode === 'calendarRange') return from + '-' + to;
             return (mode === 'ageRange' ? 'Ages ' : 'Seasons ') + from + '-' + to;
         }
 
@@ -1923,10 +1930,10 @@
         // Show/hide the range settings row and relabel inputs for the active mode.
         function updateRangeUI() {
             var type = document.getElementById('comparisonType').value;
-            var isRange = (type === 'seasonRange' || type === 'ageRange');
+            var isRange = (type === 'seasonRange' || type === 'ageRange' || type === 'calendarRange');
             document.getElementById('rangeSettingsGroup').classList.toggle('active', isRange);
             if (isRange) {
-                var unit = type === 'ageRange' ? 'age' : 'season #';
+                var unit = type === 'ageRange' ? 'age' : (type === 'calendarRange' ? 'year' : 'season #');
                 document.getElementById('rangeFromLabel').textContent = 'From (' + unit + ')';
                 document.getElementById('rangeToLabel').textContent = 'To (' + unit + ')';
                 document.getElementById('rangeFrom2Label').textContent = 'Player 2 From (' + unit + ')';
@@ -1957,7 +1964,7 @@
                 var season1 = document.getElementById('season1Select').value;
                 var season2 = document.getElementById('season2Select').value;
                 return performSeasonComparison(player1, player2, season1, season2, sectionFilter);
-            } else if (compType === 'seasonRange' || compType === 'ageRange') {
+            } else if (compType === 'seasonRange' || compType === 'ageRange' || compType === 'calendarRange') {
                 var rp = validateRangeInputs(player1, player2); // throws -> caught by generateVideo, aborts before recording
                 return performRangeComparison(player1, player2, rp.mode, rp.from1, rp.to1, rp.from2, rp.to2);
             } else {
