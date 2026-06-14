@@ -595,6 +595,31 @@
             .range-controls { gap: 0.5rem; }
         }
     </style>
+    <style>
+        /* ===== Combine mode (multi-player groups) — additive ===== */
+        .add-player-link {
+            display: inline-block;
+            margin-top: 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--accent);
+            cursor: pointer;
+            user-select: none;
+        }
+        .add-player-link:hover { text-decoration: underline; }
+        .extra-player-row { position: relative; margin-top: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
+        .extra-player-row .player-autocomplete { flex: 1; }
+        .remove-player-btn {
+            flex: 0 0 auto;
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            line-height: 1;
+            padding: 0 0.25rem;
+            user-select: none;
+        }
+        .remove-player-btn:hover { color: var(--red); }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -625,6 +650,8 @@
                             <input type="text" id="player1-top" class="player-autocomplete" placeholder="Type player name...">
                             <div id="suggestions1-top" class="autocomplete-suggestions"></div>
                         </div>
+                        <div id="extra-players-1" class="extra-players"></div>
+                        <span class="add-player-link" onclick="addPlayerInput(1)">+ Add player (combine)</span>
                     </div>
                 </div>
                 <div class="vs-text">VS</div>
@@ -636,11 +663,13 @@
                             <input type="text" id="player2-top" class="player-autocomplete" placeholder="Type player name...">
                             <div id="suggestions2-top" class="autocomplete-suggestions"></div>
                         </div>
+                        <div id="extra-players-2" class="extra-players"></div>
+                        <span class="add-player-link" onclick="addPlayerInput(2)">+ Add player (combine)</span>
                     </div>
                 </div>
             </div>
 
-            <button class="compare-button" onclick="compareFromInputs()" id="compareBtn">
+            <button class="compare-button" onclick="runComparison()" id="compareBtn">
                 Compare Players
             </button>
 
@@ -685,7 +714,7 @@
                 </div>
             </div>
 
-            <button class="compare-button" onclick="compareFromInputs()" style="margin-top: 20px;">
+            <button class="compare-button" onclick="runComparison()" style="margin-top: 20px;">
                 Compare Players
             </button>
             </div><!-- /careerPanel -->
@@ -1133,6 +1162,238 @@
             }
             
             return null;
+        }
+
+        // ==========================================
+        // COMBINE MODE (compare a single player vs a GROUP of players) — additive.
+        // Builds a synthetic combined "player" by aggregating the group's rows, then
+        // reuses the unchanged performComparison() engine via the data-swap pattern.
+        // Combine applies to full careers only (no season/age/calendar ranges).
+        // ==========================================
+
+        // Wire autocomplete onto a dynamically added input (same matching as setupAutocomplete).
+        function attachAutocomplete(inputEl, suggestionsEl) {
+            inputEl.addEventListener('input', function() {
+                const value = this.value.toLowerCase();
+                if (value.length < 2) { suggestionsEl.style.display = 'none'; return; }
+                const normalizedValue = normalizePlayerName(value);
+                const matches = players.filter(p =>
+                    p.toLowerCase().includes(value) ||
+                    normalizePlayerName(p).includes(normalizedValue)
+                ).slice(0, 10);
+                if (matches.length === 0) { suggestionsEl.style.display = 'none'; return; }
+                suggestionsEl.innerHTML = matches.map(player =>
+                    `<div class="autocomplete-suggestion" data-player="${player}">${player}</div>`
+                ).join('');
+                suggestionsEl.style.display = 'block';
+                suggestionsEl.querySelectorAll('.autocomplete-suggestion').forEach(el => {
+                    el.addEventListener('click', function() {
+                        inputEl.value = this.getAttribute('data-player');
+                        suggestionsEl.style.display = 'none';
+                    });
+                });
+            });
+            document.addEventListener('click', function(e) {
+                if (!inputEl.contains(e.target) && !suggestionsEl.contains(e.target)) {
+                    suggestionsEl.style.display = 'none';
+                }
+            });
+        }
+
+        // Add another autocomplete input under a side (1 or 2) so it becomes a combined group.
+        function addPlayerInput(side) {
+            const container = document.getElementById('extra-players-' + side);
+            if (!container) return;
+            const wrap = document.createElement('div');
+            wrap.className = 'extra-player-row';
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.className = 'player-autocomplete extra-player-input';
+            input.placeholder = 'Add player to combine...';
+            const sug = document.createElement('div');
+            sug.className = 'autocomplete-suggestions';
+            const removeBtn = document.createElement('span');
+            removeBtn.className = 'remove-player-btn';
+            removeBtn.textContent = '×';
+            removeBtn.title = 'Remove';
+            removeBtn.addEventListener('click', function() { wrap.remove(); });
+            const wrapper = document.createElement('div');
+            wrapper.className = 'player-select-wrapper';
+            wrapper.style.flex = '1';
+            wrapper.appendChild(input);
+            wrapper.appendChild(sug);
+            wrap.appendChild(wrapper);
+            wrap.appendChild(removeBtn);
+            container.appendChild(wrap);
+            attachAutocomplete(input, sug);
+            input.focus();
+        }
+
+        // Collect the resolved, de-duplicated player names on one side (primary + extras).
+        function collectSidePlayers(side) {
+            const raw = [];
+            const primary = document.getElementById('player' + side + '-top');
+            if (primary && primary.value.trim()) raw.push(primary.value.trim());
+            document.querySelectorAll('#extra-players-' + side + ' .extra-player-input').forEach(inp => {
+                if (inp.value.trim()) raw.push(inp.value.trim());
+            });
+            const resolved = [];
+            raw.forEach(n => {
+                const r = findPlayerName(n);
+                if (r && resolved.indexOf(r) === -1) resolved.push(r);
+            });
+            return resolved;
+        }
+
+        // Build synthetic combined rows for a group, all keyed under one synthetic name.
+        // rsStats/poStats/salaries get a per-member YEAR suffix so deduplicateSeasonRows
+        // keeps each member's season distinct (correct totals, pooled averages, best peak).
+        function buildCombinedPlayerData(playerNames) {
+            const name = playerNames.join(' + ');
+            const rsStats = [];
+            const poStats = [];
+            const salaries = [];
+            const awards = [];
+            const awardVotes = [];
+
+            playerNames.forEach((pn, i) => {
+                playerData.rsStats.forEach(r => {
+                    if (r.PLAYER === pn) {
+                        const c = Object.assign({}, r);
+                        c.PLAYER = name;
+                        c.YEAR = (r.YEAR != null ? r.YEAR : '') + '#' + i;
+                        rsStats.push(c);
+                    }
+                });
+                playerData.poStats.forEach(r => {
+                    if (r.PLAYER === pn) {
+                        const c = Object.assign({}, r);
+                        c.PLAYER = name;
+                        c.YEAR = (r.YEAR != null ? r.YEAR : '') + '#' + i;
+                        poStats.push(c);
+                    }
+                });
+                playerData.salaries.forEach(r => {
+                    if (r.PLAYER === pn) {
+                        const c = Object.assign({}, r);
+                        c.PLAYER = name;
+                        c.YEAR = (r.YEAR != null ? r.YEAR : '') + '#' + i;
+                        salaries.push(c);
+                    }
+                });
+                playerData.awards.forEach(r => {
+                    if (r['PLAYER / COACH'] === pn) {
+                        const c = Object.assign({}, r);
+                        c['PLAYER / COACH'] = name;
+                        awards.push(c);
+                    }
+                });
+                playerData.awardVotes.forEach(r => {
+                    if (r.PLAYER === pn) {
+                        const c = Object.assign({}, r);
+                        c.PLAYER = name;
+                        awardVotes.push(c);
+                    }
+                });
+            });
+
+            // One synthetic NBA 2K row merging every member's editions under unique keys,
+            // so get2KRating's high/avg/low becomes the group's high/avg/low.
+            const k2 = { 'Full Name': name, 'First Name': name, 'Last Name': '' };
+            let any2k = false;
+            playerNames.forEach((pn, i) => {
+                const row = playerData.nba2k.find(r =>
+                    r['Full Name'] === pn || (r['First Name'] + ' ' + r['Last Name']) === pn);
+                if (!row) return;
+                Object.keys(row).forEach(key => {
+                    if (key.startsWith('2K') || key.startsWith('2k')) {
+                        k2[key + '#' + i] = row[key];
+                        any2k = true;
+                    }
+                });
+            });
+            const nba2k = any2k ? [k2] : [];
+
+            return { name, rsStats, poStats, salaries, awards, awardVotes, nba2k };
+        }
+
+        // Run the standard comparison engine with one or both sides aggregated into a group.
+        // side1/side2 are arrays of resolved player names (length >= 1).
+        function performCombinedComparison(side1, side2) {
+            const addRs = [], addPo = [], addSal = [], addAwards = [], addVotes = [], add2k = [];
+            const prep = (names) => {
+                if (names.length === 1) return names[0]; // single side: real name + real data
+                const c = buildCombinedPlayerData(names);
+                addRs.push(...c.rsStats); addPo.push(...c.poStats); addSal.push(...c.salaries);
+                addAwards.push(...c.awards); addVotes.push(...c.awardVotes); add2k.push(...c.nba2k);
+                return c.name;
+            };
+            const name1 = prep(side1);
+            const name2 = prep(side2);
+
+            // Combine excludes Draft Combine, Signature Shoes and All-Star contests — the
+            // same section set the Range Comparison already filters to.
+            const combineComparisons = buildRangeComparisons();
+
+            const orig = {
+                rsStats: playerData.rsStats, poStats: playerData.poStats,
+                awards: playerData.awards, awardVotes: playerData.awardVotes,
+                salaries: playerData.salaries, nba2k: playerData.nba2k,
+                comparisons: playerData.comparisons
+            };
+
+            let results;
+            try {
+                playerData.rsStats = orig.rsStats.concat(addRs);
+                playerData.poStats = orig.poStats.concat(addPo);
+                playerData.awards = orig.awards.concat(addAwards);
+                playerData.awardVotes = orig.awardVotes.concat(addVotes);
+                playerData.salaries = orig.salaries.concat(addSal);
+                playerData.nba2k = orig.nba2k.concat(add2k);
+                playerData.comparisons = combineComparisons;
+                results = performComparison(name1, name2);
+            } finally {
+                Object.assign(playerData, orig);
+            }
+            return { results, name1, name2 };
+        }
+
+        // Entry point for the Compare button: routes to combine when a side has 2+ players,
+        // otherwise delegates to the unchanged single-player flow (compareFromInputs).
+        function runComparison() {
+            if (!dataLoaded) { compareFromInputs(); return; }
+            const side1 = collectSidePlayers(1);
+            const side2 = collectSidePlayers(2);
+
+            // Both sides single (or empty): behave exactly as today.
+            if (side1.length <= 1 && side2.length <= 1) {
+                if (side1.length === 1) document.getElementById('player1-top').value = side1[0];
+                if (side2.length === 1) document.getElementById('player2-top').value = side2[0];
+                compareFromInputs();
+                return;
+            }
+
+            if (side1.length === 0 || side2.length === 0) {
+                alert('Please select at least one player on each side.');
+                return;
+            }
+            const overlap = side1.filter(n => side2.indexOf(n) !== -1);
+            if (overlap.length) {
+                alert('A player cannot appear on both sides: ' + overlap.join(', '));
+                return;
+            }
+
+            const name1 = side1.length > 1 ? side1.join(' + ') : side1[0];
+            const name2 = side2.length > 1 ? side2.join(' + ') : side2[0];
+
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<div class="loading"><div class="spinner"></div><div>Comparing…</div></div>';
+            document.title = `${name1} vs ${name2} - NBA Comparison`;
+
+            setTimeout(() => {
+                const out = performCombinedComparison(side1, side2);
+                displayResults(out.results, out.name1, out.name2);
+            }, 100);
         }
 
         function compareFromInputs() {
