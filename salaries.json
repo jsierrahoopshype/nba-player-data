@@ -109732,5 +109732,11 @@
     "YEAR": "2026",
     "PLAYER": "Joe Ingles",
     "SALARY": "$3,634,153"
+  },
+  {
+    "TEAM": "Atlanta",
+    "YEAR": "2026",
+    "PLAYER": "Aaron Wiggins",
+    "SALARY": "$9,887,850"
   }
 ]
