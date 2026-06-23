@@ -109738,5 +109738,59 @@
     "YEAR": "2026",
     "PLAYER": "Aaron Wiggins",
     "SALARY": "$9,887,850"
+  },
+  {
+    "TEAM": "Brooklyn",
+    "YEAR": "2026",
+    "PLAYER": "Julius Randle",
+    "SALARY": "$30,864,198"
+  },
+  {
+    "TEAM": "Chicago",
+    "YEAR": "2026",
+    "PLAYER": "Nicolas Claxton",
+    "SALARY": "$25,541,760"
+  },
+  {
+    "TEAM": "Miami",
+    "YEAR": "2026",
+    "PLAYER": "Giannis Antetokounmpo",
+    "SALARY": "$54,126,450"
+  },
+  {
+    "TEAM": "Miami",
+    "YEAR": "2026",
+    "PLAYER": "Bobby Portis",
+    "SALARY": "$13,445,754"
+  },
+  {
+    "TEAM": "Milwaukee",
+    "YEAR": "2026",
+    "PLAYER": "Tyler Herro",
+    "SALARY": "$31,000,000"
+  },
+  {
+    "TEAM": "Milwaukee",
+    "YEAR": "2026",
+    "PLAYER": "Kel'el Ware",
+    "SALARY": "$4,443,360"
+  },
+  {
+    "TEAM": "Milwaukee",
+    "YEAR": "2026",
+    "PLAYER": "Jaime Jaquez",
+    "SALARY": "$3,861,600"
+  },
+  {
+    "TEAM": "Milwaukee",
+    "YEAR": "2026",
+    "PLAYER": "Kasparas Jakucionis",
+    "SALARY": "$3,658,800"
+  },
+  {
+    "TEAM": "Minnesota",
+    "YEAR": "2026",
+    "PLAYER": "Mouhamadou Gueye",
+    "SALARY": "$47,092"
   }
 ]
