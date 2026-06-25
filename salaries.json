@@ -109792,5 +109792,23 @@
     "YEAR": "2026",
     "PLAYER": "Mouhamadou Gueye",
     "SALARY": "$47,092"
+  },
+  {
+    "TEAM": "Chicago",
+    "YEAR": "2026",
+    "PLAYER": "Kam Jones",
+    "SALARY": "$1,272,870"
+  },
+  {
+    "TEAM": "Memphis",
+    "YEAR": "2026",
+    "PLAYER": "Isaiah Stewart",
+    "SALARY": "$15,000,000"
+  },
+  {
+    "TEAM": "",
+    "YEAR": "2026",
+    "PLAYER": "Xavier Tillman",
+    "SALARY": "$2,546,675"
   }
 ]
