@@ -109810,5 +109810,23 @@
     "YEAR": "2026",
     "PLAYER": "Xavier Tillman",
     "SALARY": "$2,546,675"
+  },
+  {
+    "TEAM": "Charlotte",
+    "YEAR": "2026",
+    "PLAYER": "Naz Reid",
+    "SALARY": "$21,551,724"
+  },
+  {
+    "TEAM": "Minnesota",
+    "YEAR": "2026",
+    "PLAYER": "LaMelo Ball",
+    "SALARY": "$37,958,760"
+  },
+  {
+    "TEAM": "Minnesota",
+    "YEAR": "2026",
+    "PLAYER": "Josh Green",
+    "SALARY": "$13,666,667"
   }
 ]
