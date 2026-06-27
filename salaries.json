@@ -109828,5 +109828,11 @@
     "YEAR": "2026",
     "PLAYER": "Josh Green",
     "SALARY": "$13,666,667"
+  },
+  {
+    "TEAM": "Detroit",
+    "YEAR": "2026",
+    "PLAYER": "Isaiah Joe",
+    "SALARY": "$12,362,338"
   }
 ]
