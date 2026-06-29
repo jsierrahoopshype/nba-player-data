@@ -109840,5 +109840,23 @@
     "YEAR": "2026",
     "PLAYER": "Alex Antetokounmpo",
     "SALARY": "$636,435"
+  },
+  {
+    "TEAM": "Charlotte",
+    "YEAR": "2026",
+    "PLAYER": "Grayson Allen",
+    "SALARY": "$16,875,000"
+  },
+  {
+    "TEAM": "Charlotte",
+    "YEAR": "2026",
+    "PLAYER": "Royce O'Neale",
+    "SALARY": "$10,125,000"
+  },
+  {
+    "TEAM": "Phoenix",
+    "YEAR": "2026",
+    "PLAYER": "Miles Bridges",
+    "SALARY": "$25,000,000"
   }
 ]
