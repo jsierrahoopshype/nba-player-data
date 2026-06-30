@@ -109858,5 +109858,29 @@
     "YEAR": "2026",
     "PLAYER": "Miles Bridges",
     "SALARY": "$25,000,000"
+  },
+  {
+    "TEAM": "Atlanta",
+    "YEAR": "2026",
+    "PLAYER": "Devin Carter",
+    "SALARY": "$4,923,720"
+  },
+  {
+    "TEAM": "Memphis",
+    "YEAR": "2026",
+    "PLAYER": "Jerami Grant",
+    "SALARY": "$32,000,001"
+  },
+  {
+    "TEAM": "Memphis",
+    "YEAR": "2026",
+    "PLAYER": "Kris Murray",
+    "SALARY": "$3,132,000"
+  },
+  {
+    "TEAM": "Portland",
+    "YEAR": "2026",
+    "PLAYER": "Ja Morant",
+    "SALARY": "$39,446,090"
   }
 ]
