@@ -109882,5 +109882,59 @@
     "YEAR": "2026",
     "PLAYER": "Ja Morant",
     "SALARY": "$39,446,090"
+  },
+  {
+    "TEAM": "Brooklyn",
+    "YEAR": "2026",
+    "PLAYER": "Keon Ellis",
+    "SALARY": "$2,301,587"
+  },
+  {
+    "TEAM": "Philadelphia",
+    "YEAR": "2026",
+    "PLAYER": "Dean Wade",
+    "SALARY": "$6,623,456"
+  },
+  {
+    "TEAM": "LA Clippers",
+    "YEAR": "2026",
+    "PLAYER": "Brandon Ingram",
+    "SALARY": "$38,095,238"
+  },
+  {
+    "TEAM": "LA Clippers",
+    "YEAR": "2026",
+    "PLAYER": "Gradey Dick",
+    "SALARY": "$4,990,560"
+  },
+  {
+    "TEAM": "Houston",
+    "YEAR": "2026",
+    "PLAYER": "Bogdan Bogdanovic",
+    "SALARY": "$16,020,000"
+  },
+  {
+    "TEAM": "Phoenix",
+    "YEAR": "2026",
+    "PLAYER": "Luke Kennard",
+    "SALARY": "$11,000,000"
+  },
+  {
+    "TEAM": "Miami",
+    "YEAR": "2026",
+    "PLAYER": "Tim Hardaway Jr",
+    "SALARY": "$3,634,153"
+  },
+  {
+    "TEAM": "Portland",
+    "YEAR": "2026",
+    "PLAYER": "Branden Carlson",
+    "SALARY": "$636,435"
+  },
+  {
+    "TEAM": "Toronto",
+    "YEAR": "2026",
+    "PLAYER": "Kawhi Leonard",
+    "SALARY": "$50,000,000"
   }
 ]
