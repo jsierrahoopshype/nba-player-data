@@ -109936,5 +109936,137 @@
     "YEAR": "2026",
     "PLAYER": "Kawhi Leonard",
     "SALARY": "$50,000,000"
+  },
+  {
+    "TEAM": "Boston",
+    "YEAR": "2026",
+    "PLAYER": "Paul George",
+    "SALARY": "$51,666,090"
+  },
+  {
+    "TEAM": "Boston",
+    "YEAR": "2026",
+    "PLAYER": "Mitchell Robinson",
+    "SALARY": "$12,954,546"
+  },
+  {
+    "TEAM": "Boston",
+    "YEAR": "2026",
+    "PLAYER": "Mike Conley",
+    "SALARY": "$1,148,727"
+  },
+  {
+    "TEAM": "Brooklyn",
+    "YEAR": "2026",
+    "PLAYER": "Moritz Wagner",
+    "SALARY": "$5,000,000"
+  },
+  {
+    "TEAM": "Chicago",
+    "YEAR": "2026",
+    "PLAYER": "Norman Powell",
+    "SALARY": "$20,482,758"
+  },
+  {
+    "TEAM": "Dallas",
+    "YEAR": "2026",
+    "PLAYER": "Santiago Aldama",
+    "SALARY": "$18,485,916"
+  },
+  {
+    "TEAM": "Denver",
+    "YEAR": "2026",
+    "PLAYER": "Marvin Bagley",
+    "SALARY": "$3,080,921"
+  },
+  {
+    "TEAM": "Detroit",
+    "YEAR": "2026",
+    "PLAYER": "John Collins",
+    "SALARY": "$26,580,000"
+  },
+  {
+    "TEAM": "Houston",
+    "YEAR": "2026",
+    "PLAYER": "Marcus Smart",
+    "SALARY": "$5,134,000"
+  },
+  {
+    "TEAM": "Indiana",
+    "YEAR": "2026",
+    "PLAYER": "Kelly Oubre",
+    "SALARY": "$8,382,150"
+  },
+  {
+    "TEAM": "LA Lakers",
+    "YEAR": "2026",
+    "PLAYER": "Walker Kessler",
+    "SALARY": "$4,878,938"
+  },
+  {
+    "TEAM": "LA Lakers",
+    "YEAR": "2026",
+    "PLAYER": "Quentin Grimes",
+    "SALARY": "$8,741,210"
+  },
+  {
+    "TEAM": "LA Lakers",
+    "YEAR": "2026",
+    "PLAYER": "Sandro Mamukelashvili",
+    "SALARY": "$2,461,463"
+  },
+  {
+    "TEAM": "LA Lakers",
+    "YEAR": "2026",
+    "PLAYER": "Collin Sexton",
+    "SALARY": "$19,175,000"
+  },
+  {
+    "TEAM": "Memphis",
+    "YEAR": "2026",
+    "PLAYER": "AJ Johnson",
+    "SALARY": "$3,090,480"
+  },
+  {
+    "TEAM": "Orlando",
+    "YEAR": "2026",
+    "PLAYER": "Nikola Vucevic",
+    "SALARY": "$21,481,481"
+  },
+  {
+    "TEAM": "Orlando",
+    "YEAR": "2026",
+    "PLAYER": "Izaiyah Nelson",
+    "SALARY": "$636,435"
+  },
+  {
+    "TEAM": "Philadelphia",
+    "YEAR": "2026",
+    "PLAYER": "Jaylen Brown",
+    "SALARY": "$53,142,264"
+  },
+  {
+    "TEAM": "Philadelphia",
+    "YEAR": "2026",
+    "PLAYER": "Ariel Hukporti",
+    "SALARY": "$1,955,377"
+  },
+  {
+    "TEAM": "Sacramento",
+    "YEAR": "2026",
+    "PLAYER": "Jonathan Mogbo",
+    "SALARY": "$1,955,377"
+  },
+  {
+    "TEAM": "San Antonio",
+    "YEAR": "2026",
+    "PLAYER": "Tobias Harris",
+    "SALARY": "$26,634,146"
+  },
+  {
+    "TEAM": "Utah",
+    "YEAR": "2026",
+    "PLAYER": "Jaxson Hayes",
+    "SALARY": "$3,449,323"
   }
 ]
