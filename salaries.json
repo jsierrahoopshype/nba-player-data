@@ -110068,5 +110068,41 @@
     "YEAR": "2026",
     "PLAYER": "Jaxson Hayes",
     "SALARY": "$3,449,323"
+  },
+  {
+    "TEAM": "Brooklyn",
+    "YEAR": "2026",
+    "PLAYER": "Tyler Bilodeau",
+    "SALARY": "$1,131,970"
+  },
+  {
+    "TEAM": "Detroit",
+    "YEAR": "2026",
+    "PLAYER": "Ugonna Onyenso",
+    "SALARY": "$141,554"
+  },
+  {
+    "TEAM": "Philadelphia",
+    "YEAR": "2026",
+    "PLAYER": "Anfernee Simons",
+    "SALARY": "$27,678,571"
+  },
+  {
+    "TEAM": "Phoenix",
+    "YEAR": "2026",
+    "PLAYER": "Pat Spencer",
+    "SALARY": "$857,804"
+  },
+  {
+    "TEAM": "Toronto",
+    "YEAR": "2026",
+    "PLAYER": "Kyle Anderson",
+    "SALARY": "$898,095"
+  },
+  {
+    "TEAM": "",
+    "YEAR": "2026",
+    "PLAYER": "Kyle Lowry",
+    "SALARY": "$3,634,153"
   }
 ]
