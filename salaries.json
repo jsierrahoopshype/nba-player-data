@@ -110104,5 +110104,89 @@
     "YEAR": "2026",
     "PLAYER": "Kyle Lowry",
     "SALARY": "$3,634,153"
+  },
+  {
+    "TEAM": "Charlotte",
+    "YEAR": "2026",
+    "PLAYER": "Dorian Finney-Smith",
+    "SALARY": "$12,700,000"
+  },
+  {
+    "TEAM": "Dallas",
+    "YEAR": "2026",
+    "PLAYER": "Tobi Lawal",
+    "SALARY": "$141,554"
+  },
+  {
+    "TEAM": "LA Lakers",
+    "YEAR": "2026",
+    "PLAYER": "Jaden Hardy",
+    "SALARY": "$6,000,000"
+  },
+  {
+    "TEAM": "Miami",
+    "YEAR": "2026",
+    "PLAYER": "Tre Donaldson",
+    "SALARY": "$1,131,970"
+  },
+  {
+    "TEAM": "Minnesota",
+    "YEAR": "2026",
+    "PLAYER": "Trey Lyles",
+    "SALARY": "$3,571,495"
+  },
+  {
+    "TEAM": "New York",
+    "YEAR": "2026",
+    "PLAYER": "Andre Drummond",
+    "SALARY": "$5,000,000"
+  },
+  {
+    "TEAM": "Oklahoma City",
+    "YEAR": "2026",
+    "PLAYER": "Otega Oweh",
+    "SALARY": "$141,554"
+  },
+  {
+    "TEAM": "Oklahoma City",
+    "YEAR": "2026",
+    "PLAYER": "Josh Dix",
+    "SALARY": "$141,554"
+  },
+  {
+    "TEAM": "Philadelphia",
+    "YEAR": "2026",
+    "PLAYER": "Caleb Love",
+    "SALARY": "$636,435"
+  },
+  {
+    "TEAM": "Philadelphia",
+    "YEAR": "2026",
+    "PLAYER": "Rayan Rupert",
+    "SALARY": "$128,686"
+  },
+  {
+    "TEAM": "San Antonio",
+    "YEAR": "2026",
+    "PLAYER": "Ja'Kobi Gillespie",
+    "SALARY": "$157,640"
+  },
+  {
+    "TEAM": "San Antonio",
+    "YEAR": "2026",
+    "PLAYER": "Maliq Brown",
+    "SALARY": "$157,640"
+  },
+  {
+    "TEAM": "Utah",
+    "YEAR": "2026",
+    "PLAYER": "Josh Okogie",
+    "SALARY": "$3,080,921"
+  },
+  {
+    "TEAM": "Washington",
+    "YEAR": "2026",
+    "PLAYER": "Deandre Ayton",
+    "SALARY": "$8,104,000"
   }
 ]
