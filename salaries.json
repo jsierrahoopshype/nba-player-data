@@ -110188,5 +110188,41 @@
     "YEAR": "2026",
     "PLAYER": "Deandre Ayton",
     "SALARY": "$8,104,000"
+  },
+  {
+    "TEAM": "LA Lakers",
+    "YEAR": "2026",
+    "PLAYER": "Peter Suder",
+    "SALARY": "$636,435"
+  },
+  {
+    "TEAM": "LA Lakers",
+    "YEAR": "2026",
+    "PLAYER": "AK Okereke",
+    "SALARY": "$636,435"
+  },
+  {
+    "TEAM": "Milwaukee",
+    "YEAR": "2026",
+    "PLAYER": "Kam Jones",
+    "SALARY": "$1,272,870"
+  },
+  {
+    "TEAM": "Toronto",
+    "YEAR": "2026",
+    "PLAYER": "Jaden Bradley",
+    "SALARY": "$157,640"
+  },
+  {
+    "TEAM": "Utah",
+    "YEAR": "2026",
+    "PLAYER": "Trey Alexander",
+    "SALARY": "$636,435"
+  },
+  {
+    "TEAM": "",
+    "YEAR": "2026",
+    "PLAYER": "Garrett Temple",
+    "SALARY": "$3,634,153"
   }
 ]
