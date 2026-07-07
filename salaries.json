@@ -110224,5 +110224,29 @@
     "YEAR": "2026",
     "PLAYER": "Garrett Temple",
     "SALARY": "$3,634,153"
+  },
+  {
+    "TEAM": "Charlotte",
+    "YEAR": "2026",
+    "PLAYER": "Michael Ajayi",
+    "SALARY": "$157,640"
+  },
+  {
+    "TEAM": "Charlotte",
+    "YEAR": "2026",
+    "PLAYER": "Kylan Boswell",
+    "SALARY": "$157,640"
+  },
+  {
+    "TEAM": "LA Clippers",
+    "YEAR": "2026",
+    "PLAYER": "Rui Hachimura",
+    "SALARY": "$18,259,259"
+  },
+  {
+    "TEAM": "LA Clippers",
+    "YEAR": "2026",
+    "PLAYER": "Nick Martinelli",
+    "SALARY": "$157,640"
   }
 ]
