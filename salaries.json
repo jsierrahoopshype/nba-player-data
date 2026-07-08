@@ -110248,5 +110248,65 @@
     "YEAR": "2026",
     "PLAYER": "Nick Martinelli",
     "SALARY": "$157,640"
+  },
+  {
+    "TEAM": "Dallas",
+    "YEAR": "2026",
+    "PLAYER": "Marcus Sasser",
+    "SALARY": "$2,886,720"
+  },
+  {
+    "TEAM": "Detroit",
+    "YEAR": "2026",
+    "PLAYER": "Taurean Prince",
+    "SALARY": "$3,303,774"
+  },
+  {
+    "TEAM": "Detroit",
+    "YEAR": "2026",
+    "PLAYER": "Gary Harris",
+    "SALARY": "$3,634,153"
+  },
+  {
+    "TEAM": "Memphis",
+    "YEAR": "2026",
+    "PLAYER": "Quinten Post",
+    "SALARY": "$1,955,377"
+  },
+  {
+    "TEAM": "LA Lakers",
+    "YEAR": "2026",
+    "PLAYER": "Kevon Looney",
+    "SALARY": "$8,000,000"
+  },
+  {
+    "TEAM": "Memphis",
+    "YEAR": "2026",
+    "PLAYER": "D'Angelo Russell",
+    "SALARY": "$5,685,000"
+  },
+  {
+    "TEAM": "Milwaukee",
+    "YEAR": "2026",
+    "PLAYER": "Caris LeVert",
+    "SALARY": "$14,104,000"
+  },
+  {
+    "TEAM": "Washington",
+    "YEAR": "2026",
+    "PLAYER": "Khris Middleton",
+    "SALARY": "$35,086,419"
+  },
+  {
+    "TEAM": "Washington",
+    "YEAR": "2026",
+    "PLAYER": "Felix Okpara",
+    "SALARY": "$1,131,970"
+  },
+  {
+    "TEAM": "",
+    "YEAR": "2026",
+    "PLAYER": "Guerschon Yabusele",
+    "SALARY": "$5,500,000"
   }
 ]
