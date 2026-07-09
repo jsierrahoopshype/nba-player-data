@@ -110308,5 +110308,17 @@
     "YEAR": "2026",
     "PLAYER": "Guerschon Yabusele",
     "SALARY": "$5,500,000"
+  },
+  {
+    "TEAM": "Houston",
+    "YEAR": "2026",
+    "PLAYER": "Quadir Copeland",
+    "SALARY": "$157,640"
+  },
+  {
+    "TEAM": "Indiana",
+    "YEAR": "2026",
+    "PLAYER": "Larry Nance Jr",
+    "SALARY": "$3,634,153"
   }
 ]
