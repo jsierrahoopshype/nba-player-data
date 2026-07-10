@@ -110320,5 +110320,17 @@
     "YEAR": "2026",
     "PLAYER": "Larry Nance Jr",
     "SALARY": "$3,634,153"
+  },
+  {
+    "TEAM": "Detroit",
+    "YEAR": "2026",
+    "PLAYER": "Elijah Harkless",
+    "SALARY": "$636,435"
+  },
+  {
+    "TEAM": "",
+    "YEAR": "2026",
+    "PLAYER": "Amir Coffey",
+    "SALARY": "$2,874,436"
   }
 ]
