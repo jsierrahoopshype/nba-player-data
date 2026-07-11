@@ -110332,5 +110332,23 @@
     "YEAR": "2026",
     "PLAYER": "Amir Coffey",
     "SALARY": "$2,874,436"
+  },
+  {
+    "TEAM": "Charlotte",
+    "YEAR": "2026",
+    "PLAYER": "Mouhamadou Gueye",
+    "SALARY": "$47,092"
+  },
+  {
+    "TEAM": "Dallas",
+    "YEAR": "2026",
+    "PLAYER": "Tarik Biberovic",
+    "SALARY": "$2,857,143"
+  },
+  {
+    "TEAM": "Portland",
+    "YEAR": "2026",
+    "PLAYER": "Micah Potter",
+    "SALARY": "$1,527,805"
   }
 ]
