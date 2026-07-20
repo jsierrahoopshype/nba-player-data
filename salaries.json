@@ -110374,5 +110374,23 @@
     "YEAR": "2026",
     "PLAYER": "Patrick Baldwin",
     "SALARY": "$160,857"
+  },
+  {
+    "TEAM": "Atlanta",
+    "YEAR": "2026",
+    "PLAYER": "Luguentz Dort",
+    "SALARY": "$17,222,222"
+  },
+  {
+    "TEAM": "Atlanta",
+    "YEAR": "2026",
+    "PLAYER": "Ryan Nembhard",
+    "SALARY": "$321,875"
+  },
+  {
+    "TEAM": "Dallas",
+    "YEAR": "2026",
+    "PLAYER": "Zaccharie Risacher",
+    "SALARY": "$13,197,720"
   }
 ]
