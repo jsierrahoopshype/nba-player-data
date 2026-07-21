@@ -110392,5 +110392,29 @@
     "YEAR": "2026",
     "PLAYER": "Zaccharie Risacher",
     "SALARY": "$13,197,720"
+  },
+  {
+    "TEAM": "Atlanta",
+    "YEAR": "2026",
+    "PLAYER": "Jalen Wilson",
+    "SALARY": "$2,221,677"
+  },
+  {
+    "TEAM": "Dallas",
+    "YEAR": "2026",
+    "PLAYER": "Jett Howard",
+    "SALARY": "$5,529,720"
+  },
+  {
+    "TEAM": "LA Lakers",
+    "YEAR": "2026",
+    "PLAYER": "Matisse Thybulle",
+    "SALARY": "$11,550,000"
+  },
+  {
+    "TEAM": "LA Lakers",
+    "YEAR": "2026",
+    "PLAYER": "Arthur Kaluma",
+    "SALARY": "$141,554"
   }
 ]
