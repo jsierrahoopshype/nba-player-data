@@ -110416,5 +110416,17 @@
     "YEAR": "2026",
     "PLAYER": "Arthur Kaluma",
     "SALARY": "$141,554"
+  },
+  {
+    "TEAM": "LA Clippers",
+    "YEAR": "2026",
+    "PLAYER": "Jamarion Sharp",
+    "SALARY": "$170,508"
+  },
+  {
+    "TEAM": "",
+    "YEAR": "2026",
+    "PLAYER": "Peter Suder",
+    "SALARY": "$636,435"
   }
 ]
