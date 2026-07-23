@@ -110428,5 +110428,11 @@
     "YEAR": "2026",
     "PLAYER": "Peter Suder",
     "SALARY": "$636,435"
+  },
+  {
+    "TEAM": "New Orleans",
+    "YEAR": "2026",
+    "PLAYER": "Jaron Pierre",
+    "SALARY": "$636,435"
   }
 ]
