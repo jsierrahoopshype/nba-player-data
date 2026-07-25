@@ -110440,5 +110440,35 @@
     "YEAR": "2026",
     "PLAYER": "Mouhamadou Gueye",
     "SALARY": "$47,092"
+  },
+  {
+    "TEAM": "Houston",
+    "YEAR": "2026",
+    "PLAYER": "Oscar Tshiebwe",
+    "SALARY": "$636,435"
+  },
+  {
+    "TEAM": "Philadelphia",
+    "YEAR": "2026",
+    "PLAYER": "LeBron James",
+    "SALARY": "$52,627,153"
+  },
+  {
+    "TEAM": "Portland",
+    "YEAR": "2026",
+    "PLAYER": "John Tonje",
+    "SALARY": "$138,337"
+  },
+  {
+    "TEAM": "",
+    "YEAR": "2026",
+    "PLAYER": "Tyrese Martin",
+    "SALARY": "$170,508"
+  },
+  {
+    "TEAM": "",
+    "YEAR": "2026",
+    "PLAYER": "David Roddy",
+    "SALARY": "$128,686"
   }
 ]
