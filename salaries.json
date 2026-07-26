@@ -110470,5 +110470,23 @@
     "YEAR": "2026",
     "PLAYER": "David Roddy",
     "SALARY": "$128,686"
+  },
+  {
+    "TEAM": "Houston",
+    "YEAR": "2026",
+    "PLAYER": "Julian Phillips",
+    "SALARY": "$2,221,677"
+  },
+  {
+    "TEAM": "Philadelphia",
+    "YEAR": "2026",
+    "PLAYER": "Kentavious Caldwell-Pope",
+    "SALARY": "$21,621,500"
+  },
+  {
+    "TEAM": "Utah",
+    "YEAR": "2026",
+    "PLAYER": "Harrison Ingram",
+    "SALARY": "$636,435"
   }
 ]
