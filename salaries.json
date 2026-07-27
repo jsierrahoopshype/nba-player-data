@@ -110488,5 +110488,11 @@
     "YEAR": "2026",
     "PLAYER": "Harrison Ingram",
     "SALARY": "$636,435"
+  },
+  {
+    "TEAM": "Cleveland",
+    "YEAR": "2026",
+    "PLAYER": "Mario Hezonja",
+    "SALARY": "$113,171"
   }
 ]
