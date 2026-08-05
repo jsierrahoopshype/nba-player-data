@@ -110536,5 +110536,17 @@
     "YEAR": "2026",
     "PLAYER": "Jeremy Sochan",
     "SALARY": "$806,628"
+  },
+  {
+    "TEAM": "Toronto",
+    "YEAR": "2026",
+    "PLAYER": "Andre Jackson",
+    "SALARY": "$2,221,677"
+  },
+  {
+    "TEAM": "Toronto",
+    "YEAR": "2026",
+    "PLAYER": "Trey Jemison",
+    "SALARY": "$636,435"
   }
 ]
