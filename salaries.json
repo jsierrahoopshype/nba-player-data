@@ -110548,5 +110548,17 @@
     "YEAR": "2026",
     "PLAYER": "Trey Jemison",
     "SALARY": "$636,435"
+  },
+  {
+    "TEAM": "Boston",
+    "YEAR": "2026",
+    "PLAYER": "Dillon Mitchell",
+    "SALARY": "$490,128"
+  },
+  {
+    "TEAM": "LA Clippers",
+    "YEAR": "2026",
+    "PLAYER": "Jalen Pickett",
+    "SALARY": "$2,221,677"
   }
 ]
