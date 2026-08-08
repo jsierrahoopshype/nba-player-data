@@ -110566,5 +110566,17 @@
     "YEAR": "2026",
     "PLAYER": "Mac McClung",
     "SALARY": "$215,548"
+  },
+  {
+    "TEAM": "Charlotte",
+    "YEAR": "2026",
+    "PLAYER": "Kobe Stewart",
+    "SALARY": "$636,435"
+  },
+  {
+    "TEAM": "San Antonio",
+    "YEAR": "2026",
+    "PLAYER": "Taelon Peter",
+    "SALARY": "$636,435"
   }
 ]
