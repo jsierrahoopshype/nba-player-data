@@ -110620,5 +110620,17 @@
     "YEAR": "2026",
     "PLAYER": "Ethan Thompson",
     "SALARY": "$431,096"
+  },
+  {
+    "TEAM": "Charlotte",
+    "YEAR": "2026",
+    "PLAYER": "Dennis Schroeder",
+    "SALARY": "$14,104,000"
+  },
+  {
+    "TEAM": "Cleveland",
+    "YEAR": "2026",
+    "PLAYER": "Tre Mann",
+    "SALARY": "$8,000,000"
   }
 ]
