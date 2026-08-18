@@ -110638,5 +110638,29 @@
     "YEAR": "2026",
     "PLAYER": "Olivier Sarr",
     "SALARY": "$131,903"
+  },
+  {
+    "TEAM": "Houston",
+    "YEAR": "2026",
+    "PLAYER": "Sean Pedulla",
+    "SALARY": "$170,508"
+  },
+  {
+    "TEAM": "Indiana",
+    "YEAR": "2026",
+    "PLAYER": "Braden Smith",
+    "SALARY": "$1,131,970"
+  },
+  {
+    "TEAM": "New Orleans",
+    "YEAR": "2026",
+    "PLAYER": "Trendon Watford",
+    "SALARY": "$2,461,463"
+  },
+  {
+    "TEAM": "Toronto",
+    "YEAR": "2026",
+    "PLAYER": "Malachi Smith",
+    "SALARY": "$65,838"
   }
 ]
