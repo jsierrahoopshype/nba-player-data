@@ -110662,5 +110662,29 @@
     "YEAR": "2026",
     "PLAYER": "Malachi Smith",
     "SALARY": "$65,838"
+  },
+  {
+    "TEAM": "New Orleans",
+    "YEAR": "2026",
+    "PLAYER": "Malik Dia",
+    "SALARY": "$636,435"
+  },
+  {
+    "TEAM": "Retired",
+    "YEAR": "2026",
+    "PLAYER": "Russell Westbrook",
+    "SALARY": "$3,634,153"
+  },
+  {
+    "TEAM": "Retired",
+    "YEAR": "2026",
+    "PLAYER": "Garrett Temple",
+    "SALARY": "$3,634,153"
+  },
+  {
+    "TEAM": "Retired",
+    "YEAR": "2026",
+    "PLAYER": "Kyle Lowry",
+    "SALARY": "$3,634,153"
   }
 ]
