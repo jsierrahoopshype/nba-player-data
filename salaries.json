@@ -110686,5 +110686,35 @@
     "YEAR": "2026",
     "PLAYER": "Kyle Lowry",
     "SALARY": "$3,634,153"
+  },
+  {
+    "TEAM": "Cleveland",
+    "YEAR": "2026",
+    "PLAYER": "Peyton Watson",
+    "SALARY": "$4,356,476"
+  },
+  {
+    "TEAM": "Cleveland",
+    "YEAR": "2026",
+    "PLAYER": "Cam Whitmore",
+    "SALARY": "$3,539,760"
+  },
+  {
+    "TEAM": "LA Clippers",
+    "YEAR": "2026",
+    "PLAYER": "Max Strus",
+    "SALARY": "$15,936,452"
+  },
+  {
+    "TEAM": "Washington",
+    "YEAR": "2026",
+    "PLAYER": "Tre Mann",
+    "SALARY": "$8,000,000"
+  },
+  {
+    "TEAM": "",
+    "YEAR": "2026",
+    "PLAYER": "Aaron Holiday",
+    "SALARY": "$3,080,921"
   }
 ]
