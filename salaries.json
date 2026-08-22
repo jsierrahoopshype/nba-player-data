@@ -110716,5 +110716,17 @@
     "YEAR": "2026",
     "PLAYER": "Aaron Holiday",
     "SALARY": "$3,080,921"
+  },
+  {
+    "TEAM": "Denver",
+    "YEAR": "2026",
+    "PLAYER": "DeMar DeRozan",
+    "SALARY": "$24,570,000"
+  },
+  {
+    "TEAM": "Miami",
+    "YEAR": "2026",
+    "PLAYER": "Klay Thompson",
+    "SALARY": "$16,666,667"
   }
 ]
