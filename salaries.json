@@ -110740,5 +110740,17 @@
     "YEAR": "2026",
     "PLAYER": "TyTy Washington",
     "SALARY": "$344,234"
+  },
+  {
+    "TEAM": "Golden State",
+    "YEAR": "2026",
+    "PLAYER": "Georges Niang",
+    "SALARY": "$814,552"
+  },
+  {
+    "TEAM": "Golden State",
+    "YEAR": "2026",
+    "PLAYER": "Brandon Williams",
+    "SALARY": "$2,270,735"
   }
 ]
