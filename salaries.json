@@ -110752,5 +110752,35 @@
     "YEAR": "2026",
     "PLAYER": "Brandon Williams",
     "SALARY": "$2,270,735"
+  },
+  {
+    "TEAM": "Denver",
+    "YEAR": "2026",
+    "PLAYER": "Bryce Hopkins",
+    "SALARY": "$636,435"
+  },
+  {
+    "TEAM": "Houston",
+    "YEAR": "2026",
+    "PLAYER": "Rafael Castro",
+    "SALARY": "$157,640"
+  },
+  {
+    "TEAM": "Minnesota",
+    "YEAR": "2026",
+    "PLAYER": "Jonathan Kuminga",
+    "SALARY": "$23,799,569"
+  },
+  {
+    "TEAM": "New Orleans",
+    "YEAR": "2026",
+    "PLAYER": "Bennedict Mathurin",
+    "SALARY": "$9,187,573"
+  },
+  {
+    "TEAM": "",
+    "YEAR": "2026",
+    "PLAYER": "Isaiah Livers",
+    "SALARY": "$636,435"
   }
 ]
