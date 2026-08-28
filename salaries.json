@@ -110782,5 +110782,17 @@
     "YEAR": "2026",
     "PLAYER": "Isaiah Livers",
     "SALARY": "$636,435"
+  },
+  {
+    "TEAM": "Golden State",
+    "YEAR": "2026",
+    "PLAYER": "Dalen Terry",
+    "SALARY": "$125,931"
+  },
+  {
+    "TEAM": "Miami",
+    "YEAR": "2026",
+    "PLAYER": "Nick Richards",
+    "SALARY": "$5,000,000"
   }
 ]
