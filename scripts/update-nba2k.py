@@ -1,18 +1,19 @@
 #!/usr/bin/env python3
 """
-Fetches the NBA 2K player ratings sheet from Google Sheets and regenerates
-nba2k.json.
+Fetches the NBA 2K ratings sheet and regenerates nba2k.json.
 
-Source: NBA 2K ratings Google Sheet (gid 1425851076).
-Output: nba2k.json -- one record per player with keys:
-    "Full Name", "First Name", "Last Name", then one key per 2K edition
-    from "2K00" through "2K26" (all uppercase K), every record carrying the
-    full set of edition keys ("" when a player has no rating that year).
+v2 changes:
+  - Points at the current tab (gid 1324366970), which carries 2K00 through 2k27.
+  - Editions extended through 2K27 (was capped at 2K26, which silently dropped
+    any newer column).
+  - Header cells are stripped, so trailing spaces like "2K00 " still match.
+  - Uses /export?format=csv instead of the gviz endpoint. gviz infers headers
+    and, because A1 on this tab is blank, it was swallowing the first two data
+    rows (Alaa Abdelnaby and Mahmoud Abdul-Rauf) into the header. The export
+    endpoint returns raw rows, so nothing is lost even if A1 stays empty.
+  - If the first header cell is blank, column 0 is treated as Full Name.
 
-Edition column headers in the sheet are matched flexibly (e.g. "2K16",
-"2k24", "NBA 2K24", "2024") and normalized to the canonical uppercase
-"2Knn" form. Players appearing more than once are deduplicated by Full Name,
-keeping the row with the most non-empty rating values.
+Regenerates the file completely each run: the sheet is the source of truth.
 """
 
 import csv
@@ -22,173 +23,135 @@ from io import StringIO
 
 import requests
 
-# Google Sheet configuration (NBA 2K ratings tab)
 SHEET_ID = '1giIJWPabo6vgiY8R1rapcWl3h8VgqOlS4zTTiR-bdpo'
-GID = '1425851076'
-
+GID = '1324366970'
 OUTPUT_PATH = 'nba2k.json'
 
-# Canonical edition keys, all uppercase K: 2K00, 2K01, ... 2K26.
-EDITIONS = [f"2K{n:02d}" for n in range(0, 27)]
-
-# Header matching for the name columns (compared case-insensitively).
-FULL_NAME_HEADERS = ('full name', 'player', 'player name', 'name')
-FIRST_NAME_HEADERS = ('first name', 'first')
-LAST_NAME_HEADERS = ('last name', 'last')
-
-# Edition header patterns: "2K16" / "2k 24" / "NBA 2K24" ... and bare years "2016".
-_EDITION_2K = re.compile(r'2[kK]\s*0*(\d{1,2})')
-_EDITION_YEAR = re.compile(r'^\s*(?:19|20)(\d{2})\s*$')
+# Canonical edition keys, all uppercase K: 2K00, 2K01, ... 2K27.
+EDITIONS = ['2K%02d' % n for n in range(0, 28)]
+EDITION_RE = re.compile(r'^2K(\d{2})$', re.IGNORECASE)
 
 
-def fetch_google_sheet_csv(sheet_id, gid):
-    """Fetch data from published Google Sheet as CSV."""
-    url = f'https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=csv&gid={gid}'
-    response = requests.get(url, timeout=60, headers={'User-Agent': 'Mozilla/5.0'})
-    response.raise_for_status()
-    return response.text
+def fetch_sheet_csv(sheet_id, gid):
+    url = ('https://docs.google.com/spreadsheets/d/%s/export?format=csv&gid=%s'
+           % (sheet_id, gid))
+    res = requests.get(url, timeout=90, headers={'User-Agent': 'Mozilla/5.0'})
+    res.raise_for_status()
+    return res.text
 
 
-def edition_key(header):
-    """Return the canonical '2Knn' key for an edition column header, else None."""
-    h = str(header or '')
-    m = _EDITION_2K.search(h)
-    if m:
-        return f"2K{int(m.group(1)):02d}"
-    m = _EDITION_YEAR.match(h)
-    if m:
-        return f"2K{int(m.group(1)):02d}"
-    return None
+def canon_edition(header_cell):
+    """'2k27 ' -> '2K27'.  Returns None if the cell is not an edition column."""
+    m = EDITION_RE.match(str(header_cell).strip())
+    if not m:
+        return None
+    return '2K' + m.group(1)
 
 
-def find_header_row(rows):
-    """Index of the header row: contains a name column and >= 1 edition column."""
-    for i, row in enumerate(rows):
-        lower = [str(c).strip().lower() for c in row]
-        has_name = any(any(h in cell for cell in lower) for h in FULL_NAME_HEADERS) \
-            or (any(h in lower for h in FIRST_NAME_HEADERS) and any(h in lower for h in LAST_NAME_HEADERS))
-        has_edition = any(edition_key(c) for c in row)
-        if has_name and has_edition:
-            return i
-    return 0
-
-
-def _find_col(lower_headers, candidates):
-    """Index of the first header exactly matching one of candidates, else None."""
-    for cand in candidates:
-        if cand in lower_headers:
-            return lower_headers.index(cand)
-    return None
-
-
-def split_full_name(full):
-    """Split a full name into (first, last): first token vs. the remainder."""
-    parts = full.split()
-    if not parts:
-        return '', ''
-    if len(parts) == 1:
-        return parts[0], ''
-    return parts[0], ' '.join(parts[1:])
-
-
-def parse_sheet_records(csv_text):
-    """Parse the wide 2K ratings CSV into uniform records with all edition keys."""
+def parse_records(csv_text):
     rows = list(csv.reader(StringIO(csv_text)))
     if not rows:
         return []
 
-    header_idx = find_header_row(rows)
-    headers = [str(h).strip() for h in rows[header_idx]]
-    lower = [h.lower() for h in headers]
+    header = [str(c).strip() for c in rows[0]]
+    upper = [h.upper() for h in header]
 
-    full_idx = _find_col(lower, FULL_NAME_HEADERS)
-    first_idx = _find_col(lower, FIRST_NAME_HEADERS)
-    last_idx = _find_col(lower, LAST_NAME_HEADERS)
+    def find(label, default=None):
+        try:
+            return upper.index(label)
+        except ValueError:
+            return default
 
-    # Map each edition column to its canonical key (first column wins per key).
-    edition_cols = []  # list of (col_idx, canonical_key)
-    for idx, h in enumerate(headers):
-        key = edition_key(h)
-        if key in EDITIONS:
-            edition_cols.append((idx, key))
+    # A1 is blank on this tab, so fall back to column 0 for the full name.
+    i_full = find('FULL NAME', 0)
+    i_first = find('FIRST NAME', 1)
+    i_last = find('LAST NAME', 2)
+
+    edition_cols = {}
+    for idx, cell in enumerate(header):
+        key = canon_edition(cell)
+        if key and key in EDITIONS:
+            edition_cols[idx] = key
+
+    print('  header row: %d columns, %d edition columns (%s .. %s)'
+          % (len(header), len(edition_cols),
+             min(edition_cols.values()) if edition_cols else '-',
+             max(edition_cols.values()) if edition_cols else '-'))
+
+    if not edition_cols:
+        raise RuntimeError('No 2K edition columns found; header was: %s' % header[:8])
+
+    def cell(row, i):
+        return row[i].strip() if i is not None and i < len(row) else ''
 
     records = []
-    for row in rows[header_idx + 1:]:
-        def cell(i):
-            return row[i].strip() if (i is not None and i < len(row)) else ''
-
-        full = cell(full_idx)
-        first = cell(first_idx)
-        last = cell(last_idx)
-
-        if not full and (first or last):
-            full = f"{first} {last}".strip()
-        if full and not first and not last:
-            first, last = split_full_name(full)
-
+    for row in rows[1:]:
+        full = cell(row, i_full)
         if not full:
-            continue  # skip rows without a usable player name
-
-        # Collect ratings into canonical edition keys (first non-empty wins).
-        vals = {}
-        for col_idx, key in edition_cols:
-            if col_idx < len(row):
-                v = row[col_idx].strip()
-                if v and not vals.get(key):
-                    vals[key] = v
-
-        record = {'Full Name': full, 'First Name': first, 'Last Name': last}
+            continue
+        rec = {
+            'Full Name': full,
+            'First Name': cell(row, i_first),
+            'Last Name': cell(row, i_last),
+        }
         for key in EDITIONS:
-            record[key] = vals.get(key, '')
-        records.append(record)
-
+            rec[key] = ''
+        for idx, key in edition_cols.items():
+            rec[key] = cell(row, idx)
+        records.append(rec)
     return records
 
 
-def non_empty_ratings(record):
-    """Count of populated edition values in a record."""
-    return sum(1 for k in EDITIONS if record.get(k, '') != '')
+def rating_count(rec):
+    return sum(1 for k in EDITIONS if rec.get(k, '') != '')
 
 
-def deduplicate_by_full_name(records):
-    """Keep one record per Full Name: the one with the most non-empty ratings.
-
-    First-appearance order is preserved; ties keep the earlier record.
-    """
+def dedupe(records):
+    """One record per player; keep whichever row carries the most ratings."""
     best = {}
-    order = []
     for rec in records:
-        name = rec['Full Name']
-        if name not in best:
-            best[name] = rec
-            order.append(name)
-        elif non_empty_ratings(rec) > non_empty_ratings(best[name]):
-            best[name] = rec
-    return [best[name] for name in order]
+        key = rec['Full Name'].strip().lower()
+        if key not in best or rating_count(rec) > rating_count(best[key]):
+            best[key] = rec
+    return list(best.values())
 
 
 def main():
-    print(f"Fetching NBA 2K ratings from Google Sheet {SHEET_ID} (gid={GID})...")
-    csv_text = fetch_google_sheet_csv(SHEET_ID, GID)
-    print(f"Fetched {len(csv_text)} bytes")
+    print('Fetching NBA 2K ratings (sheet %s, gid %s) ...' % (SHEET_ID, GID))
+    csv_text = fetch_sheet_csv(SHEET_ID, GID)
+    print('  fetched %d bytes' % len(csv_text))
 
-    parsed = parse_sheet_records(csv_text)
-    print(f"Parsed {len(parsed)} player rows")
+    records = parse_records(csv_text)
+    print('  parsed %d rows' % len(records))
 
-    records = deduplicate_by_full_name(parsed)
-    print(f"After dedup by Full Name: {len(records)} players")
+    records = dedupe(records)
+    print('  %d players after dedupe' % len(records))
 
     if not records:
-        raise RuntimeError("0 records parsed; refusing to overwrite nba2k.json")
+        raise RuntimeError('No records parsed; refusing to overwrite nba2k.json')
 
-    # Compact format matching the existing nba2k.json (default separators, UTF-8).
+    with_ratings = sum(1 for r in records if rating_count(r) > 0)
+    print('  %d players have at least one rating' % with_ratings)
+    if with_ratings == 0:
+        raise RuntimeError('Every record is empty; refusing to overwrite nba2k.json')
+
+    for key in ('2K25', '2K26', '2K27'):
+        n = sum(1 for r in records if r.get(key, '') != '')
+        print('  %s: %d ratings' % (key, n))
+
+    records.sort(key=lambda r: r['Full Name'].lower())
+
     with open(OUTPUT_PATH, 'w', encoding='utf-8') as f:
         json.dump(records, f, ensure_ascii=False)
 
-    print(f"Successfully wrote {OUTPUT_PATH} with {len(records)} records")
-    sample = records[0]
-    latest = next((k for k in reversed(EDITIONS) if sample.get(k)), None)
-    print(f"Sample: {sample['Full Name']} (latest rated edition in row: {latest}={sample.get(latest, '')})")
+    print('Wrote %s with %d records' % (OUTPUT_PATH, len(records)))
+    for probe in ('Nikola Jokic', 'Shai Gilgeous-Alexander', 'Alaa Abdelnaby'):
+        hit = next((r for r in records if r['Full Name'] == probe), None)
+        if hit:
+            print('  %-24s 2K26=%s  2K27=%s'
+                  % (probe, hit.get('2K26', ''), hit.get('2K27', '')))
+        else:
+            print('  %-24s (not found)' % probe)
 
 
 if __name__ == '__main__':
