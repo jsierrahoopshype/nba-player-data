@@ -110794,5 +110794,23 @@
     "YEAR": "2026",
     "PLAYER": "Nick Richards",
     "SALARY": "$5,000,000"
+  },
+  {
+    "TEAM": "Minnesota",
+    "YEAR": "2026",
+    "PLAYER": "John Konchar",
+    "SALARY": "$6,165,000"
+  },
+  {
+    "TEAM": "Minnesota",
+    "YEAR": "2026",
+    "PLAYER": "Cody Williams",
+    "SALARY": "$5,742,480"
+  },
+  {
+    "TEAM": "Utah",
+    "YEAR": "2026",
+    "PLAYER": "Josh Green",
+    "SALARY": "$13,666,667"
   }
 ]
