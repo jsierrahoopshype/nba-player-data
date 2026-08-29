@@ -37,6 +37,7 @@ def fetch_sheet_csv(sheet_id, gid):
            % (sheet_id, gid))
     res = requests.get(url, timeout=90, headers={'User-Agent': 'Mozilla/5.0'})
     res.raise_for_status()
+    res.encoding = 'utf-8'
     return res.text
 
 
