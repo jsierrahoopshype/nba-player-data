@@ -41,4 +41,4 @@ jobs:
           git config --local user.name "github-actions[bot]"
           git add rsStats.json
           git commit -m "Auto-update rsStats.json from Google Sheets [$(date +'%Y-%m-%d %H:%M')]"
-          git push
+          git pull --rebase origin main && git push || (sleep $((RANDOM % 20 + 5)) && git pull --rebase origin main && git push)

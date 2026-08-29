@@ -3,7 +3,7 @@ name: Update PO Stats from Google Sheets
 on:
   schedule:
     # Runs every day at 6 AM UTC (adjust as needed)
-    - cron: '0 6 * * *'
+    - cron: '5 6 * * *'
   workflow_dispatch:  # Allows manual trigger from GitHub UI
 
 jobs:
@@ -41,4 +41,4 @@ jobs:
           git config --local user.name "github-actions[bot]"
           git add poStats.json
           git commit -m "Auto-update poStats.json from Google Sheets [$(date +'%Y-%m-%d %H:%M')]"
-          git push
+          git pull --rebase origin main && git push || (sleep $((RANDOM % 20 + 5)) && git pull --rebase origin main && git push)

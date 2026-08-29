@@ -2,7 +2,7 @@ name: Update Awards from Google Sheets
 
 on:
   schedule:
-    - cron: '0 6 * * *'
+    - cron: '10 6 * * *'
   workflow_dispatch:
 
 jobs:
@@ -40,4 +40,4 @@ jobs:
           git config --local user.name "github-actions[bot]"
           git add awards.json
           git commit -m "Auto-update awards.json from Google Sheets [$(date +'%Y-%m-%d %H:%M')]"
-          git push
+          git pull --rebase origin main && git push || (sleep $((RANDOM % 20 + 5)) && git pull --rebase origin main && git push)

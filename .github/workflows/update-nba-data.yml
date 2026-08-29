@@ -3,7 +3,7 @@ name: Update NBA 2025-26 Data
 on:
   schedule:
     # Run at 6:00 AM ET (11:00 UTC) every day
-    - cron: '0 11 * * *'
+    - cron: '35 11 * * *'
   
   # Allow manual trigger from GitHub Actions tab
   workflow_dispatch:
@@ -30,4 +30,4 @@ jobs:
           git config --local user.name "github-actions[bot]"
           git add nba-2025-26-data.json
           git diff --staged --quiet || git commit -m "Update NBA 2025-26 data - $(date -u '+%Y-%m-%d %H:%M UTC')"
-          git push || echo "Nothing to push"
+          git pull --rebase origin main && git push || (sleep $((RANDOM % 20 + 5)) && git pull --rebase origin main && git push)

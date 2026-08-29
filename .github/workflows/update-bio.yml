@@ -2,7 +2,7 @@ name: Update Bio from Google Sheets
 
 on:
   schedule:
-    - cron: '0 6 * * *'
+    - cron: '20 6 * * *'
   workflow_dispatch:
 
 jobs:
@@ -30,4 +30,4 @@ jobs:
           git config --local user.name "github-actions[bot]"
           git add bio.json
           git diff --cached --quiet || git commit -m "Auto-update bio.json from Google Sheets [$(date +'%Y-%m-%d %H:%M')]"
-          git push || echo "Nothing to push"
+          git pull --rebase origin main && git push || (sleep $((RANDOM % 20 + 5)) && git pull --rebase origin main && git push)
