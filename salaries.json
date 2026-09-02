@@ -110818,5 +110818,17 @@
     "YEAR": "2026",
     "PLAYER": "Josiah Allick",
     "SALARY": "$636,435"
+  },
+  {
+    "TEAM": "Charlotte",
+    "YEAR": "2026",
+    "PLAYER": "Trey Townsend",
+    "SALARY": "$636,435"
+  },
+  {
+    "TEAM": "",
+    "YEAR": "2026",
+    "PLAYER": "Thanasis Antetokounmpo",
+    "SALARY": "$2,874,436"
   }
 ]
