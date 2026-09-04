@@ -110836,5 +110836,17 @@
     "YEAR": "2026",
     "PLAYER": "Kyle Mangas",
     "SALARY": "$636,435"
+  },
+  {
+    "TEAM": "Charlotte",
+    "YEAR": "2026",
+    "PLAYER": "Jarkel Joiner",
+    "SALARY": "$636,435"
+  },
+  {
+    "TEAM": "Orlando",
+    "YEAR": "2026",
+    "PLAYER": "JD Davison",
+    "SALARY": "$82,030"
   }
 ]
