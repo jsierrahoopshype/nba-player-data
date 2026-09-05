@@ -110848,5 +110848,29 @@
     "YEAR": "2026",
     "PLAYER": "JD Davison",
     "SALARY": "$82,030"
+  },
+  {
+    "TEAM": "Brooklyn",
+    "YEAR": "2026",
+    "PLAYER": "Grant Nelson",
+    "SALARY": "$636,435"
+  },
+  {
+    "TEAM": "Milwaukee",
+    "YEAR": "2026",
+    "PLAYER": "John Butler",
+    "SALARY": "$312,062"
+  },
+  {
+    "TEAM": "Sacramento",
+    "YEAR": "2026",
+    "PLAYER": "Ben Simmons",
+    "SALARY": "$636,435"
+  },
+  {
+    "TEAM": "",
+    "YEAR": "2026",
+    "PLAYER": "Jarkel Joiner",
+    "SALARY": "$636,435"
   }
 ]
