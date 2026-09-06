@@ -1406,9 +1406,10 @@
             return names.join(' + ');
         }
 
-        // "LeBron James vs. Tracy McGrady + Bill Walton — NBA Career Comparison"
+        // "LeBron James vs Tracy McGrady + Bill Walton - NBA Career Comparison"
+        // (same "vs" + hyphen convention as the single-player title in comparePlayer)
         function combineTitle(side1, side2) {
-            return `${sideLabel(side1)} vs. ${sideLabel(side2)} — NBA Career Comparison`;
+            return `${sideLabel(side1)} vs ${sideLabel(side2)} - NBA Career Comparison`;
         }
 
         // Push the current combine comparison into the URL (history.pushState) and
