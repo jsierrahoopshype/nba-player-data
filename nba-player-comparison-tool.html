@@ -953,6 +953,17 @@
                 const urlP1 = urlParams.get('p1');
                 const urlP2 = urlParams.get('p2');
 
+                // Combine Mode URL: a comma inside p1/p2 means that side holds 2+
+                // players. Checked BEFORE `mode` because combine is career-only —
+                // if a URL somehow carries both, the range params are ignored.
+                if ((urlP1 && urlP1.indexOf(',') !== -1) || (urlP2 && urlP2.indexOf(',') !== -1)) {
+                    if (initCombineFromURL(urlP1, urlP2)) {
+                        showLoading(false);
+                        document.getElementById('mainContent').style.display = 'block';
+                        return;
+                    }
+                }
+
                 // Range Comparison URL: the presence of a valid `mode` param routes
                 // to the Range tab instead of the career auto-run. (Additive: career
                 // URLs without a mode param behave exactly as before.)
@@ -1370,6 +1381,80 @@
             return { results, name1, name2 };
         }
 
+        // ===== Combine Mode URL support (additive) =====
+        // Multiple players on one side are comma-separated inside p1/p2:
+        //   ?p1=LeBron James&p2=Tracy McGrady,Bill Walton
+        // No NBA name contains a comma, so the split is unambiguous, and a side
+        // holding a single name keeps the exact URL shape it has always had.
+
+        // Split one side's URL param into resolved, de-duplicated player names.
+        function parseSideParam(raw) {
+            if (!raw) return [];
+            const out = [];
+            raw.split(',').forEach(part => {
+                const n = part.trim();
+                if (!n) return;
+                const r = findPlayerName(n);
+                if (r && out.indexOf(r) === -1) out.push(r);
+            });
+            return out;
+        }
+
+        // Display label for one side: "A" or "A + B + C" (matches the synthetic
+        // name buildCombinedPlayerData() builds for a group).
+        function sideLabel(names) {
+            return names.join(' + ');
+        }
+
+        // "LeBron James vs. Tracy McGrady + Bill Walton — NBA Career Comparison"
+        function combineTitle(side1, side2) {
+            return `${sideLabel(side1)} vs. ${sideLabel(side2)} — NBA Career Comparison`;
+        }
+
+        // Push the current combine comparison into the URL (history.pushState) and
+        // title. Combine is career-only, so any Range params are dropped — same as
+        // the single-player path in comparePlayer().
+        function updateCombineURL(side1, side2) {
+            const url = new URL(window.location);
+            url.searchParams.set('p1', side1.join(','));
+            url.searchParams.set('p2', side2.join(','));
+            ['mode', 'from', 'to', 'from2', 'to2'].forEach(k => url.searchParams.delete(k));
+            window.history.pushState({}, '', url);
+            document.title = combineTitle(side1, side2);
+        }
+
+        // Fill one side's inputs from a name list: the first name goes in the primary
+        // input, the rest into freshly created "+ Add player (combine)" rows.
+        function fillSideInputs(side, names) {
+            const primary = document.getElementById('player' + side + '-top');
+            if (primary) primary.value = names[0] || '';
+            const container = document.getElementById('extra-players-' + side);
+            if (!container) return;
+            container.innerHTML = '';
+            for (let i = 1; i < names.length; i++) {
+                addPlayerInput(side);
+                const inputs = container.querySelectorAll('.extra-player-input');
+                const last = inputs[inputs.length - 1];
+                if (last) { last.value = names[i]; last.blur(); }
+            }
+        }
+
+        // Populate the Career tab from a comma-form URL and auto-run the comparison.
+        // Returns false when the URL can't produce a comparison, so the caller falls
+        // back to the existing single-player / random load behaviour.
+        function initCombineFromURL(rawP1, rawP2) {
+            const side1 = parseSideParam(rawP1);
+            const side2 = parseSideParam(rawP2);
+            if (side1.length === 0 || side2.length === 0) return false;
+            fillSideInputs(1, side1);
+            fillSideInputs(2, side2);
+            updateStickyPlayerOptions();
+            // runComparison() re-collects from the inputs, so it applies the same
+            // validation (and the same single-vs-single fallback) as a UI click.
+            setTimeout(() => runComparison(), 500);
+            return true;
+        }
+
         // Entry point for the Compare button: routes to combine when a side has 2+ players,
         // otherwise delegates to the unchanged single-player flow (compareFromInputs).
         function runComparison() {
@@ -1395,12 +1480,15 @@
                 return;
             }
 
-            const name1 = side1.length > 1 ? side1.join(' + ') : side1[0];
-            const name2 = side2.length > 1 ? side2.join(' + ') : side2[0];
+            const name1 = sideLabel(side1);
+            const name2 = sideLabel(side2);
+
+            // Make the combine comparison shareable/reloadable (comma form) and set
+            // the dynamic page title.
+            updateCombineURL(side1, side2);
 
             const resultsDiv = document.getElementById('results');
             resultsDiv.innerHTML = '<div class="loading"><div class="spinner"></div><div>Comparing…</div></div>';
-            document.title = `${name1} vs ${name2} - NBA Comparison`;
 
             setTimeout(() => {
                 const out = performCombinedComparison(side1, side2);
