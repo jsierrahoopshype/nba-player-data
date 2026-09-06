@@ -109722,16 +109722,352 @@
     "SALARY": "$141,554"
   },
   {
+    "TEAM": "",
+    "YEAR": "2026",
+    "PLAYER": "EJ Liddell",
+    "SALARY": "$636,435"
+  },
+  {
+    "TEAM": "",
+    "YEAR": "2026",
+    "PLAYER": "Joe Ingles",
+    "SALARY": "$3,634,153"
+  },
+  {
     "TEAM": "Atlanta",
     "YEAR": "2026",
     "PLAYER": "Aaron Wiggins",
     "SALARY": "$9,887,850"
   },
   {
+    "TEAM": "Brooklyn",
+    "YEAR": "2026",
+    "PLAYER": "Julius Randle",
+    "SALARY": "$30,864,198"
+  },
+  {
+    "TEAM": "Chicago",
+    "YEAR": "2026",
+    "PLAYER": "Nicolas Claxton",
+    "SALARY": "$25,541,760"
+  },
+  {
+    "TEAM": "Miami",
+    "YEAR": "2026",
+    "PLAYER": "Giannis Antetokounmpo",
+    "SALARY": "$54,126,450"
+  },
+  {
+    "TEAM": "Miami",
+    "YEAR": "2026",
+    "PLAYER": "Bobby Portis",
+    "SALARY": "$13,445,754"
+  },
+  {
+    "TEAM": "Milwaukee",
+    "YEAR": "2026",
+    "PLAYER": "Tyler Herro",
+    "SALARY": "$31,000,000"
+  },
+  {
+    "TEAM": "Milwaukee",
+    "YEAR": "2026",
+    "PLAYER": "Kel'el Ware",
+    "SALARY": "$4,443,360"
+  },
+  {
+    "TEAM": "Milwaukee",
+    "YEAR": "2026",
+    "PLAYER": "Jaime Jaquez",
+    "SALARY": "$3,861,600"
+  },
+  {
+    "TEAM": "Milwaukee",
+    "YEAR": "2026",
+    "PLAYER": "Kasparas Jakucionis",
+    "SALARY": "$3,658,800"
+  },
+  {
+    "TEAM": "Minnesota",
+    "YEAR": "2026",
+    "PLAYER": "Mouhamadou Gueye",
+    "SALARY": "$47,092"
+  },
+  {
+    "TEAM": "Chicago",
+    "YEAR": "2026",
+    "PLAYER": "Kam Jones",
+    "SALARY": "$1,272,870"
+  },
+  {
+    "TEAM": "Memphis",
+    "YEAR": "2026",
+    "PLAYER": "Isaiah Stewart",
+    "SALARY": "$15,000,000"
+  },
+  {
+    "TEAM": "",
+    "YEAR": "2026",
+    "PLAYER": "Xavier Tillman",
+    "SALARY": "$2,546,675"
+  },
+  {
+    "TEAM": "Charlotte",
+    "YEAR": "2026",
+    "PLAYER": "Naz Reid",
+    "SALARY": "$21,551,724"
+  },
+  {
+    "TEAM": "Minnesota",
+    "YEAR": "2026",
+    "PLAYER": "LaMelo Ball",
+    "SALARY": "$37,958,760"
+  },
+  {
+    "TEAM": "Minnesota",
+    "YEAR": "2026",
+    "PLAYER": "Josh Green",
+    "SALARY": "$13,666,667"
+  },
+  {
+    "TEAM": "Detroit",
+    "YEAR": "2026",
+    "PLAYER": "Isaiah Joe",
+    "SALARY": "$12,362,338"
+  },
+  {
+    "TEAM": "",
+    "YEAR": "2026",
+    "PLAYER": "Alex Antetokounmpo",
+    "SALARY": "$636,435"
+  },
+  {
+    "TEAM": "Charlotte",
+    "YEAR": "2026",
+    "PLAYER": "Grayson Allen",
+    "SALARY": "$16,875,000"
+  },
+  {
+    "TEAM": "Charlotte",
+    "YEAR": "2026",
+    "PLAYER": "Royce O'Neale",
+    "SALARY": "$10,125,000"
+  },
+  {
+    "TEAM": "Phoenix",
+    "YEAR": "2026",
+    "PLAYER": "Miles Bridges",
+    "SALARY": "$25,000,000"
+  },
+  {
+    "TEAM": "Atlanta",
+    "YEAR": "2026",
+    "PLAYER": "Devin Carter",
+    "SALARY": "$4,923,720"
+  },
+  {
+    "TEAM": "Memphis",
+    "YEAR": "2026",
+    "PLAYER": "Jerami Grant",
+    "SALARY": "$32,000,001"
+  },
+  {
+    "TEAM": "Memphis",
+    "YEAR": "2026",
+    "PLAYER": "Kris Murray",
+    "SALARY": "$3,132,000"
+  },
+  {
+    "TEAM": "Portland",
+    "YEAR": "2026",
+    "PLAYER": "Ja Morant",
+    "SALARY": "$39,446,090"
+  },
+  {
+    "TEAM": "Brooklyn",
+    "YEAR": "2026",
+    "PLAYER": "Keon Ellis",
+    "SALARY": "$2,301,587"
+  },
+  {
+    "TEAM": "Philadelphia",
+    "YEAR": "2026",
+    "PLAYER": "Dean Wade",
+    "SALARY": "$6,623,456"
+  },
+  {
+    "TEAM": "LA Clippers",
+    "YEAR": "2026",
+    "PLAYER": "Brandon Ingram",
+    "SALARY": "$38,095,238"
+  },
+  {
+    "TEAM": "LA Clippers",
+    "YEAR": "2026",
+    "PLAYER": "Gradey Dick",
+    "SALARY": "$4,990,560"
+  },
+  {
+    "TEAM": "Houston",
+    "YEAR": "2026",
+    "PLAYER": "Bogdan Bogdanovic",
+    "SALARY": "$16,020,000"
+  },
+  {
+    "TEAM": "Phoenix",
+    "YEAR": "2026",
+    "PLAYER": "Luke Kennard",
+    "SALARY": "$11,000,000"
+  },
+  {
+    "TEAM": "Miami",
+    "YEAR": "2026",
+    "PLAYER": "Tim Hardaway Jr",
+    "SALARY": "$3,634,153"
+  },
+  {
+    "TEAM": "Portland",
+    "YEAR": "2026",
+    "PLAYER": "Branden Carlson",
+    "SALARY": "$636,435"
+  },
+  {
+    "TEAM": "Toronto",
+    "YEAR": "2026",
+    "PLAYER": "Kawhi Leonard",
+    "SALARY": "$50,000,000"
+  },
+  {
+    "TEAM": "Boston",
+    "YEAR": "2026",
+    "PLAYER": "Paul George",
+    "SALARY": "$51,666,090"
+  },
+  {
+    "TEAM": "Boston",
+    "YEAR": "2026",
+    "PLAYER": "Mitchell Robinson",
+    "SALARY": "$12,954,546"
+  },
+  {
+    "TEAM": "Boston",
+    "YEAR": "2026",
+    "PLAYER": "Mike Conley",
+    "SALARY": "$1,148,727"
+  },
+  {
+    "TEAM": "Brooklyn",
+    "YEAR": "2026",
+    "PLAYER": "Moritz Wagner",
+    "SALARY": "$5,000,000"
+  },
+  {
+    "TEAM": "Chicago",
+    "YEAR": "2026",
+    "PLAYER": "Norman Powell",
+    "SALARY": "$20,482,758"
+  },
+  {
+    "TEAM": "Dallas",
+    "YEAR": "2026",
+    "PLAYER": "Santiago Aldama",
+    "SALARY": "$18,485,916"
+  },
+  {
+    "TEAM": "Denver",
+    "YEAR": "2026",
+    "PLAYER": "Marvin Bagley",
+    "SALARY": "$3,080,921"
+  },
+  {
+    "TEAM": "Detroit",
+    "YEAR": "2026",
+    "PLAYER": "John Collins",
+    "SALARY": "$26,580,000"
+  },
+  {
+    "TEAM": "Houston",
+    "YEAR": "2026",
+    "PLAYER": "Marcus Smart",
+    "SALARY": "$5,134,000"
+  },
+  {
+    "TEAM": "Indiana",
+    "YEAR": "2026",
+    "PLAYER": "Kelly Oubre",
+    "SALARY": "$8,382,150"
+  },
+  {
+    "TEAM": "LA Lakers",
+    "YEAR": "2026",
+    "PLAYER": "Walker Kessler",
+    "SALARY": "$4,878,938"
+  },
+  {
+    "TEAM": "LA Lakers",
+    "YEAR": "2026",
+    "PLAYER": "Quentin Grimes",
+    "SALARY": "$8,741,210"
+  },
+  {
+    "TEAM": "LA Lakers",
+    "YEAR": "2026",
+    "PLAYER": "Sandro Mamukelashvili",
+    "SALARY": "$2,461,463"
+  },
+  {
+    "TEAM": "LA Lakers",
+    "YEAR": "2026",
+    "PLAYER": "Collin Sexton",
+    "SALARY": "$19,175,000"
+  },
+  {
+    "TEAM": "Memphis",
+    "YEAR": "2026",
+    "PLAYER": "AJ Johnson",
+    "SALARY": "$3,090,480"
+  },
+  {
+    "TEAM": "Orlando",
+    "YEAR": "2026",
+    "PLAYER": "Nikola Vucevic",
+    "SALARY": "$21,481,481"
+  },
+  {
     "TEAM": "Orlando",
     "YEAR": "2026",
     "PLAYER": "Izaiyah Nelson",
     "SALARY": "$636,435"
+  },
+  {
+    "TEAM": "Philadelphia",
+    "YEAR": "2026",
+    "PLAYER": "Jaylen Brown",
+    "SALARY": "$53,142,264"
+  },
+  {
+    "TEAM": "Philadelphia",
+    "YEAR": "2026",
+    "PLAYER": "Ariel Hukporti",
+    "SALARY": "$1,955,377"
+  },
+  {
+    "TEAM": "Sacramento",
+    "YEAR": "2026",
+    "PLAYER": "Jonathan Mogbo",
+    "SALARY": "$1,955,377"
+  },
+  {
+    "TEAM": "San Antonio",
+    "YEAR": "2026",
+    "PLAYER": "Tobias Harris",
+    "SALARY": "$26,634,146"
+  },
+  {
+    "TEAM": "Utah",
+    "YEAR": "2026",
+    "PLAYER": "Jaxson Hayes",
+    "SALARY": "$3,449,323"
   },
   {
     "TEAM": "Brooklyn",
@@ -109746,10 +110082,46 @@
     "SALARY": "$141,554"
   },
   {
+    "TEAM": "Philadelphia",
+    "YEAR": "2026",
+    "PLAYER": "Anfernee Simons",
+    "SALARY": "$27,678,571"
+  },
+  {
+    "TEAM": "Phoenix",
+    "YEAR": "2026",
+    "PLAYER": "Pat Spencer",
+    "SALARY": "$857,804"
+  },
+  {
+    "TEAM": "Toronto",
+    "YEAR": "2026",
+    "PLAYER": "Kyle Anderson",
+    "SALARY": "$898,095"
+  },
+  {
+    "TEAM": "",
+    "YEAR": "2026",
+    "PLAYER": "Kyle Lowry",
+    "SALARY": "$3,634,153"
+  },
+  {
+    "TEAM": "Charlotte",
+    "YEAR": "2026",
+    "PLAYER": "Dorian Finney-Smith",
+    "SALARY": "$12,700,000"
+  },
+  {
     "TEAM": "Dallas",
     "YEAR": "2026",
     "PLAYER": "Tobi Lawal",
     "SALARY": "$141,554"
+  },
+  {
+    "TEAM": "LA Lakers",
+    "YEAR": "2026",
+    "PLAYER": "Jaden Hardy",
+    "SALARY": "$6,000,000"
   },
   {
     "TEAM": "Miami",
@@ -109764,6 +110136,12 @@
     "SALARY": "$3,571,495"
   },
   {
+    "TEAM": "New York",
+    "YEAR": "2026",
+    "PLAYER": "Andre Drummond",
+    "SALARY": "$5,000,000"
+  },
+  {
     "TEAM": "Oklahoma City",
     "YEAR": "2026",
     "PLAYER": "Otega Oweh",
@@ -109774,6 +110152,18 @@
     "YEAR": "2026",
     "PLAYER": "Josh Dix",
     "SALARY": "$141,554"
+  },
+  {
+    "TEAM": "Philadelphia",
+    "YEAR": "2026",
+    "PLAYER": "Caleb Love",
+    "SALARY": "$636,435"
+  },
+  {
+    "TEAM": "Philadelphia",
+    "YEAR": "2026",
+    "PLAYER": "Rayan Rupert",
+    "SALARY": "$128,686"
   },
   {
     "TEAM": "San Antonio",
@@ -109788,6 +110178,18 @@
     "SALARY": "$157,640"
   },
   {
+    "TEAM": "Utah",
+    "YEAR": "2026",
+    "PLAYER": "Josh Okogie",
+    "SALARY": "$3,080,921"
+  },
+  {
+    "TEAM": "Washington",
+    "YEAR": "2026",
+    "PLAYER": "Deandre Ayton",
+    "SALARY": "$8,104,000"
+  },
+  {
     "TEAM": "LA Lakers",
     "YEAR": "2026",
     "PLAYER": "Peter Suder",
@@ -109800,10 +110202,28 @@
     "SALARY": "$636,435"
   },
   {
+    "TEAM": "Milwaukee",
+    "YEAR": "2026",
+    "PLAYER": "Kam Jones",
+    "SALARY": "$1,272,870"
+  },
+  {
     "TEAM": "Toronto",
     "YEAR": "2026",
     "PLAYER": "Jaden Bradley",
     "SALARY": "$157,640"
+  },
+  {
+    "TEAM": "Utah",
+    "YEAR": "2026",
+    "PLAYER": "Trey Alexander",
+    "SALARY": "$636,435"
+  },
+  {
+    "TEAM": "",
+    "YEAR": "2026",
+    "PLAYER": "Garrett Temple",
+    "SALARY": "$3,634,153"
   },
   {
     "TEAM": "Charlotte",
@@ -109820,8 +110240,62 @@
   {
     "TEAM": "LA Clippers",
     "YEAR": "2026",
+    "PLAYER": "Rui Hachimura",
+    "SALARY": "$18,259,259"
+  },
+  {
+    "TEAM": "LA Clippers",
+    "YEAR": "2026",
     "PLAYER": "Nick Martinelli",
     "SALARY": "$157,640"
+  },
+  {
+    "TEAM": "Dallas",
+    "YEAR": "2026",
+    "PLAYER": "Marcus Sasser",
+    "SALARY": "$2,886,720"
+  },
+  {
+    "TEAM": "Detroit",
+    "YEAR": "2026",
+    "PLAYER": "Taurean Prince",
+    "SALARY": "$3,303,774"
+  },
+  {
+    "TEAM": "Detroit",
+    "YEAR": "2026",
+    "PLAYER": "Gary Harris",
+    "SALARY": "$3,634,153"
+  },
+  {
+    "TEAM": "Memphis",
+    "YEAR": "2026",
+    "PLAYER": "Quinten Post",
+    "SALARY": "$1,955,377"
+  },
+  {
+    "TEAM": "LA Lakers",
+    "YEAR": "2026",
+    "PLAYER": "Kevon Looney",
+    "SALARY": "$8,000,000"
+  },
+  {
+    "TEAM": "Memphis",
+    "YEAR": "2026",
+    "PLAYER": "D'Angelo Russell",
+    "SALARY": "$5,685,000"
+  },
+  {
+    "TEAM": "Milwaukee",
+    "YEAR": "2026",
+    "PLAYER": "Caris LeVert",
+    "SALARY": "$14,104,000"
+  },
+  {
+    "TEAM": "Washington",
+    "YEAR": "2026",
+    "PLAYER": "Khris Middleton",
+    "SALARY": "$35,086,419"
   },
   {
     "TEAM": "Washington",
@@ -109830,10 +110304,40 @@
     "SALARY": "$1,131,970"
   },
   {
+    "TEAM": "",
+    "YEAR": "2026",
+    "PLAYER": "Guerschon Yabusele",
+    "SALARY": "$5,500,000"
+  },
+  {
     "TEAM": "Houston",
     "YEAR": "2026",
     "PLAYER": "Quadir Copeland",
     "SALARY": "$157,640"
+  },
+  {
+    "TEAM": "Indiana",
+    "YEAR": "2026",
+    "PLAYER": "Larry Nance Jr",
+    "SALARY": "$3,634,153"
+  },
+  {
+    "TEAM": "Detroit",
+    "YEAR": "2026",
+    "PLAYER": "Elijah Harkless",
+    "SALARY": "$636,435"
+  },
+  {
+    "TEAM": "",
+    "YEAR": "2026",
+    "PLAYER": "Amir Coffey",
+    "SALARY": "$2,874,436"
+  },
+  {
+    "TEAM": "Charlotte",
+    "YEAR": "2026",
+    "PLAYER": "Mouhamadou Gueye",
+    "SALARY": "$47,092"
   },
   {
     "TEAM": "Dallas",
@@ -109842,10 +110346,70 @@
     "SALARY": "$2,857,143"
   },
   {
+    "TEAM": "Portland",
+    "YEAR": "2026",
+    "PLAYER": "Micah Potter",
+    "SALARY": "$1,527,805"
+  },
+  {
+    "TEAM": "LA Lakers",
+    "YEAR": "2026",
+    "PLAYER": "Ziaire Williams",
+    "SALARY": "$6,250,000"
+  },
+  {
+    "TEAM": "",
+    "YEAR": "2026",
+    "PLAYER": "Jonas Valanciunas",
+    "SALARY": "$10,395,000"
+  },
+  {
+    "TEAM": "",
+    "YEAR": "2026",
+    "PLAYER": "Tyson Etienne",
+    "SALARY": "$636,435"
+  },
+  {
+    "TEAM": "",
+    "YEAR": "2026",
+    "PLAYER": "Patrick Baldwin",
+    "SALARY": "$160,857"
+  },
+  {
     "TEAM": "Atlanta",
     "YEAR": "2026",
     "PLAYER": "Luguentz Dort",
     "SALARY": "$17,222,222"
+  },
+  {
+    "TEAM": "Atlanta",
+    "YEAR": "2026",
+    "PLAYER": "Ryan Nembhard",
+    "SALARY": "$321,875"
+  },
+  {
+    "TEAM": "Dallas",
+    "YEAR": "2026",
+    "PLAYER": "Zaccharie Risacher",
+    "SALARY": "$13,197,720"
+  },
+  {
+    "TEAM": "Atlanta",
+    "YEAR": "2026",
+    "PLAYER": "Jalen Wilson",
+    "SALARY": "$2,221,677"
+  },
+  {
+    "TEAM": "Dallas",
+    "YEAR": "2026",
+    "PLAYER": "Jett Howard",
+    "SALARY": "$5,529,720"
+  },
+  {
+    "TEAM": "LA Lakers",
+    "YEAR": "2026",
+    "PLAYER": "Matisse Thybulle",
+    "SALARY": "$11,550,000"
   },
   {
     "TEAM": "LA Lakers",
@@ -109860,9 +110424,69 @@
     "SALARY": "$170,508"
   },
   {
+    "TEAM": "",
+    "YEAR": "2026",
+    "PLAYER": "Peter Suder",
+    "SALARY": "$636,435"
+  },
+  {
     "TEAM": "New Orleans",
     "YEAR": "2026",
     "PLAYER": "Jaron Pierre",
+    "SALARY": "$636,435"
+  },
+  {
+    "TEAM": "",
+    "YEAR": "2026",
+    "PLAYER": "Mouhamadou Gueye",
+    "SALARY": "$47,092"
+  },
+  {
+    "TEAM": "Houston",
+    "YEAR": "2026",
+    "PLAYER": "Oscar Tshiebwe",
+    "SALARY": "$636,435"
+  },
+  {
+    "TEAM": "Philadelphia",
+    "YEAR": "2026",
+    "PLAYER": "LeBron James",
+    "SALARY": "$52,627,153"
+  },
+  {
+    "TEAM": "Portland",
+    "YEAR": "2026",
+    "PLAYER": "John Tonje",
+    "SALARY": "$138,337"
+  },
+  {
+    "TEAM": "",
+    "YEAR": "2026",
+    "PLAYER": "Tyrese Martin",
+    "SALARY": "$170,508"
+  },
+  {
+    "TEAM": "",
+    "YEAR": "2026",
+    "PLAYER": "David Roddy",
+    "SALARY": "$128,686"
+  },
+  {
+    "TEAM": "Houston",
+    "YEAR": "2026",
+    "PLAYER": "Julian Phillips",
+    "SALARY": "$2,221,677"
+  },
+  {
+    "TEAM": "Philadelphia",
+    "YEAR": "2026",
+    "PLAYER": "Kentavious Caldwell-Pope",
+    "SALARY": "$21,621,500"
+  },
+  {
+    "TEAM": "Utah",
+    "YEAR": "2026",
+    "PLAYER": "Harrison Ingram",
     "SALARY": "$636,435"
   },
   {
@@ -109872,16 +110496,154 @@
     "SALARY": "$113,171"
   },
   {
+    "TEAM": "",
+    "YEAR": "2026",
+    "PLAYER": "Josh Oduro",
+    "SALARY": "$128,686"
+  },
+  {
+    "TEAM": "",
+    "YEAR": "2026",
+    "PLAYER": "AJ Lawson",
+    "SALARY": "$27,343"
+  },
+  {
+    "TEAM": "",
+    "YEAR": "2026",
+    "PLAYER": "Tosan Evbuomwan",
+    "SALARY": "$212,331"
+  },
+  {
+    "TEAM": "LA Clippers",
+    "YEAR": "2026",
+    "PLAYER": "Johni Broome",
+    "SALARY": "$1,272,870"
+  },
+  {
+    "TEAM": "New Orleans",
+    "YEAR": "2026",
+    "PLAYER": "Christian Koloko",
+    "SALARY": "$279,891"
+  },
+  {
+    "TEAM": "",
+    "YEAR": "2026",
+    "PLAYER": "Wendell Moore",
+    "SALARY": "$495,439"
+  },
+  {
+    "TEAM": "Portland",
+    "YEAR": "2026",
+    "PLAYER": "Jeremy Sochan",
+    "SALARY": "$806,628"
+  },
+  {
+    "TEAM": "Toronto",
+    "YEAR": "2026",
+    "PLAYER": "Andre Jackson",
+    "SALARY": "$2,221,677"
+  },
+  {
+    "TEAM": "Toronto",
+    "YEAR": "2026",
+    "PLAYER": "Trey Jemison",
+    "SALARY": "$636,435"
+  },
+  {
     "TEAM": "Boston",
     "YEAR": "2026",
     "PLAYER": "Dillon Mitchell",
     "SALARY": "$490,128"
   },
   {
+    "TEAM": "LA Clippers",
+    "YEAR": "2026",
+    "PLAYER": "Jalen Pickett",
+    "SALARY": "$2,221,677"
+  },
+  {
+    "TEAM": "",
+    "YEAR": "2026",
+    "PLAYER": "Mac McClung",
+    "SALARY": "$215,548"
+  },
+  {
     "TEAM": "Charlotte",
     "YEAR": "2026",
     "PLAYER": "Kobe Stewart",
     "SALARY": "$636,435"
+  },
+  {
+    "TEAM": "San Antonio",
+    "YEAR": "2026",
+    "PLAYER": "Taelon Peter",
+    "SALARY": "$636,435"
+  },
+  {
+    "TEAM": "LA Clippers",
+    "YEAR": "2026",
+    "PLAYER": "Yuki Kawamura",
+    "SALARY": "$312,062"
+  },
+  {
+    "TEAM": "",
+    "YEAR": "2026",
+    "PLAYER": "Keaton Wallace",
+    "SALARY": "$2,296,274"
+  },
+  {
+    "TEAM": "",
+    "YEAR": "2026",
+    "PLAYER": "Lachlan Olbrich",
+    "SALARY": "$636,435"
+  },
+  {
+    "TEAM": "",
+    "YEAR": "2026",
+    "PLAYER": "Jeenathan Williams",
+    "SALARY": "$176,943"
+  },
+  {
+    "TEAM": "",
+    "YEAR": "2026",
+    "PLAYER": "Russell Westbrook",
+    "SALARY": "$3,634,153"
+  },
+  {
+    "TEAM": "",
+    "YEAR": "2026",
+    "PLAYER": "MarJon Beauchamp",
+    "SALARY": "$347,451"
+  },
+  {
+    "TEAM": "",
+    "YEAR": "2026",
+    "PLAYER": "Ethan Thompson",
+    "SALARY": "$431,096"
+  },
+  {
+    "TEAM": "Charlotte",
+    "YEAR": "2026",
+    "PLAYER": "Dennis Schroeder",
+    "SALARY": "$14,104,000"
+  },
+  {
+    "TEAM": "Cleveland",
+    "YEAR": "2026",
+    "PLAYER": "Tre Mann",
+    "SALARY": "$8,000,000"
+  },
+  {
+    "TEAM": "",
+    "YEAR": "2026",
+    "PLAYER": "Olivier Sarr",
+    "SALARY": "$131,903"
+  },
+  {
+    "TEAM": "Houston",
+    "YEAR": "2026",
+    "PLAYER": "Sean Pedulla",
+    "SALARY": "$170,508"
   },
   {
     "TEAM": "Indiana",
@@ -109892,14 +110654,104 @@
   {
     "TEAM": "New Orleans",
     "YEAR": "2026",
+    "PLAYER": "Trendon Watford",
+    "SALARY": "$2,461,463"
+  },
+  {
+    "TEAM": "Toronto",
+    "YEAR": "2026",
+    "PLAYER": "Malachi Smith",
+    "SALARY": "$65,838"
+  },
+  {
+    "TEAM": "New Orleans",
+    "YEAR": "2026",
     "PLAYER": "Malik Dia",
     "SALARY": "$636,435"
+  },
+  {
+    "TEAM": "Retired",
+    "YEAR": "2026",
+    "PLAYER": "Russell Westbrook",
+    "SALARY": "$3,634,153"
+  },
+  {
+    "TEAM": "Retired",
+    "YEAR": "2026",
+    "PLAYER": "Garrett Temple",
+    "SALARY": "$3,634,153"
+  },
+  {
+    "TEAM": "Retired",
+    "YEAR": "2026",
+    "PLAYER": "Kyle Lowry",
+    "SALARY": "$3,634,153"
+  },
+  {
+    "TEAM": "Cleveland",
+    "YEAR": "2026",
+    "PLAYER": "Peyton Watson",
+    "SALARY": "$4,356,476"
+  },
+  {
+    "TEAM": "Cleveland",
+    "YEAR": "2026",
+    "PLAYER": "Cam Whitmore",
+    "SALARY": "$3,539,760"
+  },
+  {
+    "TEAM": "LA Clippers",
+    "YEAR": "2026",
+    "PLAYER": "Max Strus",
+    "SALARY": "$15,936,452"
+  },
+  {
+    "TEAM": "Washington",
+    "YEAR": "2026",
+    "PLAYER": "Tre Mann",
+    "SALARY": "$8,000,000"
+  },
+  {
+    "TEAM": "",
+    "YEAR": "2026",
+    "PLAYER": "Aaron Holiday",
+    "SALARY": "$3,080,921"
+  },
+  {
+    "TEAM": "Denver",
+    "YEAR": "2026",
+    "PLAYER": "DeMar DeRozan",
+    "SALARY": "$24,570,000"
+  },
+  {
+    "TEAM": "Miami",
+    "YEAR": "2026",
+    "PLAYER": "Klay Thompson",
+    "SALARY": "$16,666,667"
+  },
+  {
+    "TEAM": "",
+    "YEAR": "2026",
+    "PLAYER": "Sharife Cooper",
+    "SALARY": "$636,435"
+  },
+  {
+    "TEAM": "",
+    "YEAR": "2026",
+    "PLAYER": "TyTy Washington",
+    "SALARY": "$344,234"
   },
   {
     "TEAM": "Golden State",
     "YEAR": "2026",
     "PLAYER": "Georges Niang",
     "SALARY": "$814,552"
+  },
+  {
+    "TEAM": "Golden State",
+    "YEAR": "2026",
+    "PLAYER": "Brandon Williams",
+    "SALARY": "$2,270,735"
   },
   {
     "TEAM": "Denver",
@@ -109914,6 +110766,54 @@
     "SALARY": "$157,640"
   },
   {
+    "TEAM": "Minnesota",
+    "YEAR": "2026",
+    "PLAYER": "Jonathan Kuminga",
+    "SALARY": "$23,799,569"
+  },
+  {
+    "TEAM": "New Orleans",
+    "YEAR": "2026",
+    "PLAYER": "Bennedict Mathurin",
+    "SALARY": "$9,187,573"
+  },
+  {
+    "TEAM": "",
+    "YEAR": "2026",
+    "PLAYER": "Isaiah Livers",
+    "SALARY": "$636,435"
+  },
+  {
+    "TEAM": "Golden State",
+    "YEAR": "2026",
+    "PLAYER": "Dalen Terry",
+    "SALARY": "$125,931"
+  },
+  {
+    "TEAM": "Miami",
+    "YEAR": "2026",
+    "PLAYER": "Nick Richards",
+    "SALARY": "$5,000,000"
+  },
+  {
+    "TEAM": "Minnesota",
+    "YEAR": "2026",
+    "PLAYER": "John Konchar",
+    "SALARY": "$6,165,000"
+  },
+  {
+    "TEAM": "Minnesota",
+    "YEAR": "2026",
+    "PLAYER": "Cody Williams",
+    "SALARY": "$5,742,480"
+  },
+  {
+    "TEAM": "Utah",
+    "YEAR": "2026",
+    "PLAYER": "Josh Green",
+    "SALARY": "$13,666,667"
+  },
+  {
     "TEAM": "Charlotte",
     "YEAR": "2026",
     "PLAYER": "Josiah Allick",
@@ -109926,6 +110826,12 @@
     "SALARY": "$636,435"
   },
   {
+    "TEAM": "",
+    "YEAR": "2026",
+    "PLAYER": "Thanasis Antetokounmpo",
+    "SALARY": "$2,874,436"
+  },
+  {
     "TEAM": "Charlotte",
     "YEAR": "2026",
     "PLAYER": "Kyle Mangas",
@@ -109936,6 +110842,12 @@
     "YEAR": "2026",
     "PLAYER": "Jarkel Joiner",
     "SALARY": "$636,435"
+  },
+  {
+    "TEAM": "Orlando",
+    "YEAR": "2026",
+    "PLAYER": "JD Davison",
+    "SALARY": "$82,030"
   },
   {
     "TEAM": "Brooklyn",
@@ -109953,6 +110865,12 @@
     "TEAM": "Sacramento",
     "YEAR": "2026",
     "PLAYER": "Ben Simmons",
+    "SALARY": "$636,435"
+  },
+  {
+    "TEAM": "",
+    "YEAR": "2026",
+    "PLAYER": "Jarkel Joiner",
     "SALARY": "$636,435"
   }
 ]
