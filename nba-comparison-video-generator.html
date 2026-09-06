@@ -437,6 +437,38 @@
         .section-filter-list label { display: flex; align-items: center; gap: 8px; font-size: 14px; color: #ddd; cursor: pointer; }
         .section-filter-list input[type="checkbox"] { width: auto; cursor: pointer; }
     </style>
+    <style>
+        /* ===== Combine mode (multi-player groups) - additive ===== */
+        .add-player-link {
+            display: inline-block;
+            margin-top: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #e31837;
+            cursor: pointer;
+            user-select: none;
+        }
+        .add-player-link:hover { text-decoration: underline; }
+        .extra-players { margin-top: 0; }
+        .extra-player-row {
+            position: relative;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .extra-input-wrap { position: relative; flex: 1; }
+        .remove-player-btn {
+            flex: 0 0 auto;
+            cursor: pointer;
+            color: #888;
+            font-size: 22px;
+            line-height: 1;
+            padding: 0 6px;
+            user-select: none;
+        }
+        .remove-player-btn:hover { color: #e31837; }
+    </style>
     <script src="https://cdn.jsdelivr.net/npm/mp4-muxer@latest/build/mp4-muxer.js"></script>
 </head>
 <body>
@@ -459,6 +491,8 @@
                                 <option value="">-- Choose Season --</option>
                             </select>
                         </div>
+                        <div id="extra-players-1" class="extra-players"></div>
+                        <span class="add-player-link" onclick="addPlayerInput(1)">+ Add player (combine)</span>
                     </div>
                     <div class="vs-divider">VS</div>
                     <div class="player-select-wrapper">
@@ -470,6 +504,8 @@
                                 <option value="">-- Choose Season --</option>
                             </select>
                         </div>
+                        <div id="extra-players-2" class="extra-players"></div>
+                        <span class="add-player-link" onclick="addPlayerInput(2)">+ Add player (combine)</span>
                     </div>
                 </div>
             </div>
@@ -2041,6 +2077,267 @@
             if (ct) ct.addEventListener('change', updateRangeUI);
         });
 
+
+        // ========================================
+        // COMBINE MODE (one player vs a GROUP of players) - additive
+        // Ported from nba-player-comparison-tool.html so both tools agree:
+        // buildCombinedPlayerData() builds synthetic rows keyed under one joined name,
+        // performCombinedComparison() swaps them into playerData, calls the unchanged
+        // performCareerComparison(), and restores in a finally.
+        // Combine is career-only (no season / age / calendar range).
+        // ========================================
+
+        // Resolve a typed name to an exact entry in allPlayers (case-insensitive fallback).
+        function resolvePlayerName(raw) {
+            if (!raw) return null;
+            var n = String(raw).trim();
+            if (!n) return null;
+            if (allPlayers.indexOf(n) !== -1) return n;
+            var lower = n.toLowerCase();
+            var hit = allPlayers.find(function(p) { return p.toLowerCase() === lower; });
+            return hit || null;
+        }
+
+        // Wire autocomplete onto a dynamically created input (same matching as setupAutocomplete).
+        function attachAutocomplete(inputEl, suggestionsEl) {
+            inputEl.addEventListener('input', function() {
+                var value = this.value.toLowerCase();
+                if (value.length < 2) { suggestionsEl.classList.remove('active'); return; }
+                var matches = allPlayers.filter(function(p) {
+                    return p.toLowerCase().indexOf(value) !== -1;
+                }).slice(0, 15);
+                if (matches.length === 0) { suggestionsEl.classList.remove('active'); return; }
+                suggestionsEl.innerHTML = matches.map(function(player) {
+                    return '<div class="suggestion-item" data-player="' + player + '">' + player + '</div>';
+                }).join('');
+                suggestionsEl.classList.add('active');
+                suggestionsEl.querySelectorAll('.suggestion-item').forEach(function(item) {
+                    item.addEventListener('click', function() {
+                        inputEl.value = this.dataset.player;
+                        suggestionsEl.classList.remove('active');
+                    });
+                });
+            });
+            document.addEventListener('click', function(e) {
+                if (!inputEl.contains(e.target) && !suggestionsEl.contains(e.target)) {
+                    suggestionsEl.classList.remove('active');
+                }
+            });
+        }
+
+        // Append another autocomplete input to a side (1 or 2) so it becomes a combined group.
+        function addPlayerInput(side) {
+            var container = document.getElementById('extra-players-' + side);
+            if (!container) return;
+            var row = document.createElement('div');
+            row.className = 'extra-player-row';
+
+            var wrap = document.createElement('div');
+            wrap.className = 'extra-input-wrap';
+            var input = document.createElement('input');
+            input.type = 'text';
+            input.className = 'extra-player-input';
+            input.setAttribute('autocomplete', 'off');
+            input.placeholder = 'Add player to combine...';
+            var sug = document.createElement('div');
+            sug.className = 'autocomplete-suggestions';
+            wrap.appendChild(input);
+            wrap.appendChild(sug);
+
+            var removeBtn = document.createElement('span');
+            removeBtn.className = 'remove-player-btn';
+            removeBtn.textContent = '×';
+            removeBtn.title = 'Remove';
+            removeBtn.addEventListener('click', function() { row.remove(); });
+
+            row.appendChild(wrap);
+            row.appendChild(removeBtn);
+            container.appendChild(row);
+            attachAutocomplete(input, sug);
+            input.focus();
+        }
+
+        // Resolved, de-duplicated player names on one side (primary input + extras).
+        // Empty added inputs are ignored.
+        function collectSidePlayers(side) {
+            var raw = [];
+            var primary = document.getElementById('player' + side);
+            if (primary && primary.value.trim()) raw.push(primary.value.trim());
+            document.querySelectorAll('#extra-players-' + side + ' .extra-player-input').forEach(function(inp) {
+                if (inp.value.trim()) raw.push(inp.value.trim());
+            });
+            var resolved = [];
+            raw.forEach(function(n) {
+                var r = resolvePlayerName(n);
+                if (r && resolved.indexOf(r) === -1) resolved.push(r);
+            });
+            return resolved;
+        }
+
+        // Display label for one side: "A" or "A + B + C".
+        function sideLabel(names) {
+            return names.join(' + ');
+        }
+
+        // Combine-mode comparisons: the Range section set (DRAFT COMBINE, SIGNATURE SHOES
+        // and All-Star contest rows already dropped) minus NBA CAREER AVERAGES and
+        // NBA SEASON PEAK, whose pooled group values would mislead.
+        function buildCombineComparisons() {
+            var COMBINE_EXCLUDED = ['NBA CAREER AVERAGES', 'NBA SEASON PEAK'];
+            var out = [];
+            var skip = false;
+            buildRangeComparisons().forEach(function(comp) {
+                var cat = comp['Comparison points'];
+                var isHeader = !comp['Who wins?'] && !comp['Wheres the data?'];
+                if (isHeader) {
+                    skip = COMBINE_EXCLUDED.indexOf(cat) !== -1;
+                    if (!skip) out.push(comp);
+                } else if (!skip) {
+                    out.push(comp);
+                }
+            });
+            return out;
+        }
+
+        // Build synthetic combined rows for a group, all keyed under one synthetic name.
+        // rsStats/poStats/salaries get a per-member YEAR suffix so deduplicateSeasonRows
+        // keeps each member's season distinct (correct sums, no cross-member merging).
+        function buildCombinedPlayerData(playerNames) {
+            var name = sideLabel(playerNames);
+            var rsStats = [];
+            var poStats = [];
+            var salaries = [];
+            var awards = [];
+            var awardVotes = [];
+
+            playerNames.forEach(function(pn, i) {
+                playerData.rsStats.forEach(function(r) {
+                    if (r.PLAYER === pn) {
+                        var c = Object.assign({}, r);
+                        c.PLAYER = name;
+                        c.YEAR = (r.YEAR != null ? r.YEAR : '') + '#' + i;
+                        rsStats.push(c);
+                    }
+                });
+                playerData.poStats.forEach(function(r) {
+                    if (r.PLAYER === pn) {
+                        var c = Object.assign({}, r);
+                        c.PLAYER = name;
+                        c.YEAR = (r.YEAR != null ? r.YEAR : '') + '#' + i;
+                        poStats.push(c);
+                    }
+                });
+                playerData.salaries.forEach(function(r) {
+                    if (r.PLAYER === pn) {
+                        var c = Object.assign({}, r);
+                        c.PLAYER = name;
+                        c.YEAR = (r.YEAR != null ? r.YEAR : '') + '#' + i;
+                        salaries.push(c);
+                    }
+                });
+                playerData.awards.forEach(function(r) {
+                    if (r['PLAYER / COACH'] === pn) {
+                        var c = Object.assign({}, r);
+                        c['PLAYER / COACH'] = name;
+                        awards.push(c);
+                    }
+                });
+                playerData.awardVotes.forEach(function(r) {
+                    if (r.PLAYER === pn) {
+                        var c = Object.assign({}, r);
+                        c.PLAYER = name;
+                        awardVotes.push(c);
+                    }
+                });
+            });
+
+            // One synthetic NBA 2K row merging every member's editions under unique keys,
+            // so get2KRating's high/avg/low becomes the group's high/avg/low.
+            var k2 = { 'Full Name': name, 'First Name': name, 'Last Name': '' };
+            var any2k = false;
+            playerNames.forEach(function(pn, i) {
+                var row = playerData.nba2k.find(function(r) {
+                    return r['Full Name'] === pn || (r['First Name'] + ' ' + r['Last Name']) === pn;
+                });
+                if (!row) return;
+                Object.keys(row).forEach(function(key) {
+                    if (key.indexOf('2K') === 0 || key.indexOf('2k') === 0) {
+                        k2[key + '#' + i] = row[key];
+                        any2k = true;
+                    }
+                });
+            });
+            var nba2k = any2k ? [k2] : [];
+
+            return { name: name, rsStats: rsStats, poStats: poStats, salaries: salaries,
+                     awards: awards, awardVotes: awardVotes, nba2k: nba2k };
+        }
+
+        // Run the standard career engine with one or both sides aggregated into a group.
+        // side1/side2 are arrays of resolved player names (length >= 1).
+        function performCombinedComparison(side1, side2) {
+            var sectionFilter = document.getElementById('sections').value;
+            var addRs = [], addPo = [], addSal = [], addAwards = [], addVotes = [], add2k = [];
+
+            function prep(names) {
+                if (names.length === 1) return names[0]; // single side: real name + real data
+                var c = buildCombinedPlayerData(names);
+                addRs = addRs.concat(c.rsStats);
+                addPo = addPo.concat(c.poStats);
+                addSal = addSal.concat(c.salaries);
+                addAwards = addAwards.concat(c.awards);
+                addVotes = addVotes.concat(c.awardVotes);
+                add2k = add2k.concat(c.nba2k);
+                return c.name;
+            }
+
+            var name1 = prep(side1);
+            var name2 = prep(side2);
+            var combineComparisons = buildCombineComparisons();
+
+            var orig = {
+                rsStats: playerData.rsStats, poStats: playerData.poStats, awards: playerData.awards,
+                awardVotes: playerData.awardVotes, salaries: playerData.salaries, nba2k: playerData.nba2k,
+                comparisons: playerData.comparisons
+            };
+
+            var result;
+            try {
+                playerData.rsStats = orig.rsStats.concat(addRs);
+                playerData.poStats = orig.poStats.concat(addPo);
+                playerData.awards = orig.awards.concat(addAwards);
+                playerData.awardVotes = orig.awardVotes.concat(addVotes);
+                playerData.salaries = orig.salaries.concat(addSal);
+                playerData.nba2k = orig.nba2k.concat(add2k);
+                playerData.comparisons = combineComparisons;
+                result = performCareerComparison(name1, name2, sectionFilter);
+            } finally {
+                playerData.rsStats = orig.rsStats;
+                playerData.poStats = orig.poStats;
+                playerData.awards = orig.awards;
+                playerData.awardVotes = orig.awardVotes;
+                playerData.salaries = orig.salaries;
+                playerData.nba2k = orig.nba2k;
+                playerData.comparisons = orig.comparisons;
+            }
+            return result;
+        }
+
+        // Validate a combine request. Returns an error string, or null when it is good to go.
+        function validateCombineSides(side1, side2, compType) {
+            if (compType !== 'career') {
+                return 'Combining players works with Career vs Career only. Switch the comparison type to Career.';
+            }
+            if (side1.length === 0 || side2.length === 0) {
+                return 'Please select at least one valid player on each side.';
+            }
+            var overlap = side1.filter(function(n) { return side2.indexOf(n) !== -1; });
+            if (overlap.length) {
+                return 'A player cannot appear on both sides: ' + overlap.join(', ');
+            }
+            return null;
+        }
+
         // ========================================
         // UNIFIED COMPARISON DISPATCHER
         // ========================================
@@ -2137,6 +2434,64 @@
             return String(name).replace(/\s*\((Seasons|Ages)[^)]*\)$/, '').replace(/\s*\(\d{4}-\d{4}\)$/, '');
         }
 
+        // A combined side is labelled "A + B [+ C]". No single player's name contains
+        // " + ", so this identifies exactly the sides that need extra shrink headroom.
+        function isCombinedName(name) {
+            return / \+ /.test(String(name));
+        }
+
+        // ===== Headshot slots (additive) =====
+        // A side may now carry several faces (combine mode). These helpers accept either
+        // a single Image (legacy), an array of Images, or null/empty, so a single face
+        // keeps rendering byte-for-byte as before.
+        var MAX_FACES = 3;
+
+        function normalizeFaces(imgs) {
+            if (!imgs) return [];
+            if (Array.isArray(imgs)) {
+                return imgs.filter(function(im) { return !!im; }).slice(0, MAX_FACES);
+            }
+            return [imgs];
+        }
+
+        function hasFaces(imgs) {
+            return normalizeFaces(imgs).length > 0;
+        }
+
+        // Draw 1..3 circular faces inside the horizontal span one headshot occupies:
+        // centered at (cx, cy) with diameter D. One face uses the full D (unchanged);
+        // more faces shrink and sit side by side inside that same span.
+        function drawFaces(ctx, imgs, cx, cy, D) {
+            var list = normalizeFaces(imgs);
+            if (list.length === 0) return;
+
+            if (list.length === 1) {
+                var r = D / 2;
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(cx, cy, r, 0, Math.PI * 2);
+                ctx.clip();
+                ctx.drawImage(list[0], cx - r, cy - r, D, D);
+                ctx.restore();
+                return;
+            }
+
+            var n = list.length;
+            var gap = Math.max(2, Math.round(D * 0.05));
+            var d = (D - gap * (n - 1)) / n;
+            var fr = d / 2;
+            var firstCx = cx - D / 2 + fr;
+            for (var i = 0; i < n; i++) {
+                var fcx = firstCx + i * (d + gap);
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(fcx, cy, fr, 0, Math.PI * 2);
+                ctx.clip();
+                ctx.drawImage(list[i], fcx - fr, cy - fr, d, d);
+                ctx.restore();
+            }
+        }
+
         function drawHeader(ctx, data, width, p1Score, p2Score, p1Img, p2Img) {
             // Header scoreboard keeps the range suffix on player names (stripped elsewhere).
             var HEADER_H = 140;
@@ -2169,38 +2524,52 @@
             var midX = width / 2;
             var centerY = cardY + cardH / 2;
 
-            // Player 1 headshot (circle-clipped, left side)
+            // Player 1 headshot(s) (circle-clipped, left side) - a combined side draws up
+            // to 3 faces inside the same slot; a single face renders exactly as before.
             var hsD = Math.round(70 * S);
             var hsR = hsD / 2;
-            if (p1Img) {
+            if (hasFaces(p1Img)) {
                 var p1cx = cardX + Math.round(20 * S) + hsR;
                 var p1cy = centerY;
-                ctx.save();
-                ctx.beginPath();
-                ctx.arc(p1cx, p1cy, hsR, 0, Math.PI * 2);
-                ctx.clip();
-                ctx.drawImage(p1Img, p1cx - hsR, p1cy - hsR, hsD, hsD);
-                ctx.restore();
+                drawFaces(ctx, p1Img, p1cx, p1cy, hsD);
             }
 
-            // Player 2 headshot (circle-clipped, right side)
-            if (p2Img) {
+            // Player 2 headshot(s) (circle-clipped, right side)
+            if (hasFaces(p2Img)) {
                 var p2cx = cardX + cardW - Math.round(20 * S) - hsR;
                 var p2cy = centerY;
-                ctx.save();
-                ctx.beginPath();
-                ctx.arc(p2cx, p2cy, hsR, 0, Math.PI * 2);
-                ctx.clip();
-                ctx.drawImage(p2Img, p2cx - hsR, p2cy - hsR, hsD, hsD);
-                ctx.restore();
+                drawFaces(ctx, p2Img, p2cx, p2cy, hsD);
             }
 
             // Player 1 name (left)
             var nameSize = Math.round(Math.min(24, width * 0.019) * FS);
-            ctx.font = '700 ' + nameSize + 'px ' + FF_HEAD;
+
+            // A combined label ("A + B + C") is far longer than any single name, so shrink
+            // it into the space between its headshot slot and the centre divider. Single
+            // names never enter this branch and keep the fixed size they have always used.
+            function fitHeaderName(name, nameCenterX, towardCenterRight) {
+                if (!isCombinedName(name)) return nameSize;
+                var slotEdge = Math.round(20 * S) + hsD + Math.round(10 * S);
+                var outerLimit = towardCenterRight ? (cardX + slotEdge) : (cardX + cardW - slotEdge);
+                var innerLimit = midX + (towardCenterRight ? -1 : 1) * Math.round(10 * S);
+                var half = Math.min(Math.abs(nameCenterX - outerLimit), Math.abs(innerLimit - nameCenterX));
+                var maxW = Math.max(half * 2, 1);
+                var floor = Math.max(8, Math.round(nameSize * 0.5));
+                var sz = nameSize;
+                ctx.font = '700 ' + sz + 'px ' + FF_HEAD;
+                while (ctx.measureText(name).width > maxW && sz > floor) {
+                    sz--;
+                    ctx.font = '700 ' + sz + 'px ' + FF_HEAD;
+                }
+                return sz;
+            }
+
+            var p1NameX = midX - cardW * 0.25;
+            var p2NameX = midX + cardW * 0.25;
+            ctx.font = '700 ' + fitHeaderName(data.player1Name, p1NameX, true) + 'px ' + FF_HEAD;
             ctx.fillStyle = C.text;
             ctx.textAlign = 'center';
-            ctx.fillText(data.player1Name, midX - cardW * 0.25, centerY - 16);
+            ctx.fillText(data.player1Name, p1NameX, centerY - 16);
 
             // Player 1 score
             var scoreSize = Math.round(Math.min(48, width * 0.037) * FS);
@@ -2217,9 +2586,9 @@
             ctx.fillText('\u2013', midX, centerY + 8);
 
             // Player 2 name (right)
-            ctx.font = '700 ' + nameSize + 'px ' + FF_HEAD;
+            ctx.font = '700 ' + fitHeaderName(data.player2Name, p2NameX, false) + 'px ' + FF_HEAD;
             ctx.fillStyle = C.text;
-            ctx.fillText(data.player2Name, midX + cardW * 0.25, centerY - 16);
+            ctx.fillText(data.player2Name, p2NameX, centerY - 16);
 
             // Player 2 score
             ctx.font = '900 ' + scoreSize + 'px ' + FF_HEAD;
@@ -2549,11 +2918,28 @@
             var maxNameW = width * 0.45;
             var trophyStr = '\uD83C\uDFC6 '; // trophy + space for measurement
 
-            function fitNameWithTrophy(name, isWinner) {
+            // Column center points (accounting for headshots)
+            var p1ColLeft = pad + (hasFaces(p1Img) ? fHsD + fHsGap : 0);
+            var p1ColCenter = (p1ColLeft + midX) / 2;
+            var p2ColRight = width - pad - (hasFaces(p2Img) ? fHsD + fHsGap : 0);
+            var p2ColCenter = (midX + p2ColRight) / 2;
+
+            // A combined label ("A + B [+ C]") is roughly twice as long as a single name,
+            // so it gets a lower shrink floor and is clamped to the column it is centred
+            // in, rather than the looser 45%-of-width budget. Single names never enter
+            // either branch and keep the original limits untouched.
+            var minCombinedNameSize = Math.round(14 * S);
+            var p1ColW = (midX - p1ColLeft) * 0.96;
+            var p2ColW = (p2ColRight - midX) * 0.96;
+
+            function fitNameWithTrophy(name, isWinner, colW) {
+                var combined = isCombinedName(name);
+                var floor = combined ? minCombinedNameSize : minNameSize;
+                var limit = (combined && colW) ? Math.min(maxNameW, colW) : maxNameW;
                 var sz = nameSize;
                 ctx.font = '800 ' + sz + 'px ' + FF_HEAD;
                 var extra = isWinner ? ctx.measureText(trophyStr).width : 0;
-                while (extra + ctx.measureText(name).width > maxNameW && sz > minNameSize) {
+                while (extra + ctx.measureText(name).width > limit && sz > floor) {
                     sz--;
                     ctx.font = '800 ' + sz + 'px ' + FF_HEAD;
                     extra = isWinner ? ctx.measureText(trophyStr).width : 0;
@@ -2561,24 +2947,13 @@
                 return sz;
             }
 
-            // Column center points (accounting for headshots)
-            var p1ColLeft = pad + (p1Img ? fHsD + fHsGap : 0);
-            var p1ColCenter = (p1ColLeft + midX) / 2;
-            var p2ColRight = width - pad - (p2Img ? fHsD + fHsGap : 0);
-            var p2ColCenter = (midX + p2ColRight) / 2;
-
             // Player 1: headshot + trophy/name (left side)
             var p1IsWinner = p1Won;
-            var p1NS = fitNameWithTrophy(data.player1Name.toUpperCase(), p1IsWinner);
-            if (p1Img) {
+            var p1NS = fitNameWithTrophy(data.player1Name.toUpperCase(), p1IsWinner, p1ColW);
+            if (hasFaces(p1Img)) {
                 var p1cx = pad + fHsR;
                 var p1cy = nameY - p1NS * 0.35;
-                ctx.save();
-                ctx.beginPath();
-                ctx.arc(p1cx, p1cy, fHsR, 0, Math.PI * 2);
-                ctx.clip();
-                ctx.drawImage(p1Img, p1cx - fHsR, p1cy - fHsR, fHsD, fHsD);
-                ctx.restore();
+                drawFaces(ctx, p1Img, p1cx, p1cy, fHsD);
             }
             ctx.font = '800 ' + p1NS + 'px ' + FF_HEAD;
             ctx.fillStyle = '#111111';
@@ -2616,16 +2991,11 @@
 
             // Player 2: headshot + trophy/name (right side)
             var p2IsWinner = p2Won;
-            var p2NS = fitNameWithTrophy(data.player2Name.toUpperCase(), p2IsWinner);
-            if (p2Img) {
+            var p2NS = fitNameWithTrophy(data.player2Name.toUpperCase(), p2IsWinner, p2ColW);
+            if (hasFaces(p2Img)) {
                 var p2cx = width - pad - fHsR;
                 var p2cy = nameY - p2NS * 0.35;
-                ctx.save();
-                ctx.beginPath();
-                ctx.arc(p2cx, p2cy, fHsR, 0, Math.PI * 2);
-                ctx.clip();
-                ctx.drawImage(p2Img, p2cx - fHsR, p2cy - fHsR, fHsD, fHsD);
-                ctx.restore();
+                drawFaces(ctx, p2Img, p2cx, p2cy, fHsD);
             }
             ctx.font = '800 ' + p2NS + 'px ' + FF_HEAD;
             ctx.fillStyle = '#111111';
@@ -2820,15 +3190,29 @@
             const listEl = document.getElementById('sectionFilterList');
             const player1 = document.getElementById('player1').value.trim();
             const player2 = document.getElementById('player2').value.trim();
-            if (!player1 || !player2 || !allPlayers.includes(player1) || !allPlayers.includes(player2)) {
-                showStatus('Select two valid players first (use the autocomplete).', 'error');
-                return;
+
+            // Combine mode (additive): mirror generateVideo's routing so the checklist
+            // shows the sections a combined comparison will actually produce.
+            const sfSide1 = collectSidePlayers(1);
+            const sfSide2 = collectSidePlayers(2);
+            const sfCombine = (sfSide1.length > 1 || sfSide2.length > 1);
+
+            if (sfCombine) {
+                const sfErr = validateCombineSides(sfSide1, sfSide2, document.getElementById('comparisonType').value);
+                if (sfErr) { showStatus(sfErr, 'error'); return; }
+            } else {
+                if (!player1 || !player2 || !allPlayers.includes(player1) || !allPlayers.includes(player2)) {
+                    showStatus('Select two valid players first (use the autocomplete).', 'error');
+                    return;
+                }
+                if (player1 === player2) { showStatus('Please select two different players', 'error'); return; }
             }
-            if (player1 === player2) { showStatus('Please select two different players', 'error'); return; }
 
             let data;
             try {
-                data = performComparison(player1, player2);
+                data = sfCombine
+                    ? performCombinedComparison(sfSide1, sfSide2)
+                    : performComparison(player1, player2);
             } catch (e) {
                 showStatus(e && e.message ? e.message : 'Could not load sections.', 'error');
                 return;
@@ -2889,20 +3273,34 @@
             var framerate = parseInt(document.getElementById('framerate').value, 10);
             console.log('[VideoGen] framerate=' + framerate + 'fps');
 
+            // Combine mode (additive): a side holding 2+ players compares as one group.
+            // With one player per side this stays false and everything below is unchanged.
+            var side1 = collectSidePlayers(1);
+            var side2 = collectSidePlayers(2);
+            var isCombine = (side1.length > 1 || side2.length > 1);
+
             // Validation
-            if (!player1 || !player2) {
-                showStatus('Please select both players', 'error');
-                return;
-            }
+            if (isCombine) {
+                var combineErr = validateCombineSides(side1, side2, compType);
+                if (combineErr) {
+                    showStatus(combineErr, 'error');
+                    return;
+                }
+            } else {
+                if (!player1 || !player2) {
+                    showStatus('Please select both players', 'error');
+                    return;
+                }
 
-            if (!allPlayers.includes(player1) || !allPlayers.includes(player2)) {
-                showStatus('Invalid player names. Please select from autocomplete.', 'error');
-                return;
-            }
+                if (!allPlayers.includes(player1) || !allPlayers.includes(player2)) {
+                    showStatus('Invalid player names. Please select from autocomplete.', 'error');
+                    return;
+                }
 
-            if (player1 === player2) {
-                showStatus('Please select two different players', 'error');
-                return;
+                if (player1 === player2) {
+                    showStatus('Please select two different players', 'error');
+                    return;
+                }
             }
 
             if (compType === 'season') {
@@ -2943,7 +3341,9 @@
                 updateProgress(10, 'Calculating comparison...');
 
                 // Get comparison data
-                var comparisonData = performComparison(player1, player2);
+                var comparisonData = isCombine
+                    ? performCombinedComparison(side1, side2)
+                    : performComparison(player1, player2);
                 // Drop any sections the user unchecked (and recompute totals) before rendering.
                 comparisonData = filterComparisonSections(comparisonData);
                 lastComparisonData = comparisonData;
@@ -2958,10 +3358,14 @@
 
                 updateProgress(15, 'Loading headshots...');
 
-                // Preload player headshots with 3-second timeout
+                // Preload player headshots with 3-second timeout.
+                // Each side resolves a LIST of faces (capped at 3) so a combined side can
+                // draw its members side by side; a single side yields a one-element list.
                 var p1Img = null, p2Img = null;
-                var p1Url = getHeadshotUrl(player1);
-                var p2Url = getHeadshotUrl(player2);
+                var p1Names = (isCombine ? side1 : [player1]).slice(0, MAX_FACES);
+                var p2Names = (isCombine ? side2 : [player2]).slice(0, MAX_FACES);
+                var p1Urls = p1Names.map(getHeadshotUrl);
+                var p2Urls = p2Names.map(getHeadshotUrl);
                 function loadImg(url) {
                     if (!url) return Promise.resolve(null);
                     return Promise.race([
@@ -2975,9 +3379,15 @@
                         new Promise(function(resolve) { setTimeout(function() { resolve(null); }, 3000); })
                     ]);
                 }
-                var hsResults = await Promise.allSettled([loadImg(p1Url), loadImg(p2Url)]);
-                p1Img = hsResults[0].status === 'fulfilled' ? hsResults[0].value : null;
-                p2Img = hsResults[1].status === 'fulfilled' ? hsResults[1].value : null;
+                var hsResults = await Promise.allSettled(
+                    p1Urls.concat(p2Urls).map(function(u) { return loadImg(u); })
+                );
+                var hsImgs = hsResults.map(function(r) {
+                    return r.status === 'fulfilled' ? r.value : null;
+                });
+                // Names without a headshot drop out, so the existing no-image fallback stands.
+                p1Img = hsImgs.slice(0, p1Urls.length).filter(Boolean);
+                p2Img = hsImgs.slice(p1Urls.length).filter(Boolean);
 
                 updateProgress(20, 'Building content layout...');
 
@@ -3231,6 +3641,11 @@
             document.getElementById('statusMessage').classList.remove('active');
             document.getElementById('player1').value = '';
             document.getElementById('player2').value = '';
+            // Clear any combine rows added to either side.
+            ['1', '2'].forEach(function(side) {
+                var extras = document.getElementById('extra-players-' + side);
+                if (extras) extras.innerHTML = '';
+            });
             document.getElementById('season1Select').innerHTML = '<option value="">-- Choose Season --</option>';
             document.getElementById('season2Select').innerHTML = '<option value="">-- Choose Season --</option>';
             document.getElementById('season1Select').disabled = true;
