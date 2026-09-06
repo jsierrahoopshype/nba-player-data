@@ -2492,6 +2492,25 @@
         // clip and the face itself sits slightly larger in the circle.
         var FACE_OVERSCAN = 1.2;
 
+        // Draw a row of circle-clipped faces left to right from startX, each `d` across
+        // with `gap` between them, all centred on cy. The single place that owns the
+        // clip + overscan geometry, shared by the final card's clusters and the header's
+        // score-flanking faces.
+        function drawFaceRow(ctx, imgs, startX, cy, d, gap) {
+            var list = normalizeFaces(imgs);
+            var r = d / 2;
+            for (var i = 0; i < list.length; i++) {
+                var cx = startX + r + i * (d + gap);
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(cx, cy, r, 0, Math.PI * 2);
+                ctx.clip();
+                ctx.drawImage(list[i], cx - (FACE_OVERSCAN / 2) * d, cy - d / 2,
+                              FACE_OVERSCAN * d, FACE_OVERSCAN * d);
+                ctx.restore();
+            }
+        }
+
         function drawFaces(ctx, imgs, cx, cy, D) {
             var list = normalizeFaces(imgs);
             if (list.length === 0) return;
@@ -2557,18 +2576,24 @@
             var midX = width / 2;
             var centerY = cardY + cardH / 2;
 
-            // Player 1 headshot(s) (circle-clipped, left side) - a combined side draws up
-            // to 3 faces inside the same slot; a single face renders exactly as before.
+            // A combined side draws its member faces on the score line instead of in the
+            // edge slot (see drawCombinedFlank), so its edge slot stays empty and its name
+            // gets the freed width. A single-name side is untouched.
+            var p1Combined = isCombinedName(data.player1Name);
+            var p2Combined = isCombinedName(data.player2Name);
+            var edgeInset = Math.round(16 * S);
+
+            // Player 1 headshot (circle-clipped, left side)
             var hsD = Math.round(70 * S);
             var hsR = hsD / 2;
-            if (hasFaces(p1Img)) {
+            if (hasFaces(p1Img) && !p1Combined) {
                 var p1cx = cardX + Math.round(20 * S) + hsR;
                 var p1cy = centerY;
                 drawFaces(ctx, p1Img, p1cx, p1cy, hsD);
             }
 
-            // Player 2 headshot(s) (circle-clipped, right side)
-            if (hasFaces(p2Img)) {
+            // Player 2 headshot (circle-clipped, right side)
+            if (hasFaces(p2Img) && !p2Combined) {
                 var p2cx = cardX + cardW - Math.round(20 * S) - hsR;
                 var p2cy = centerY;
                 drawFaces(ctx, p2Img, p2cx, p2cy, hsD);
@@ -2578,12 +2603,12 @@
             var nameSize = Math.round(Math.min(24, width * 0.019) * FS);
 
             // A combined label ("A + B + C") is far longer than any single name, so shrink
-            // it into the space between its headshot slot and the centre divider. Single
-            // names never enter this branch and keep the fixed size they have always used.
+            // it into the space between the card edge and the centre divider. Its edge
+            // headshot slot is empty, so the name may use that width. Single names never
+            // enter this branch and keep the fixed size they have always used.
             function fitHeaderName(name, nameCenterX, towardCenterRight) {
                 if (!isCombinedName(name)) return { size: nameSize, text: name };
-                var slotEdge = Math.round(20 * S) + hsD + Math.round(10 * S);
-                var outerLimit = towardCenterRight ? (cardX + slotEdge) : (cardX + cardW - slotEdge);
+                var outerLimit = towardCenterRight ? (cardX + edgeInset) : (cardX + cardW - edgeInset);
                 var innerLimit = midX + (towardCenterRight ? -1 : 1) * Math.round(10 * S);
                 var half = Math.min(Math.abs(nameCenterX - outerLimit), Math.abs(innerLimit - nameCenterX));
                 var maxW = Math.max(half * 2, 1);
@@ -2611,10 +2636,43 @@
 
             // Player 1 score
             var scoreSize = Math.round(Math.min(48, width * 0.037) * FS);
+            var scoreBaseY = centerY + 30;
             var p1Won = p1Score > p2Score;
             var p2Won = p2Score > p1Score;
+
+            // Faces flanking a combined side's score: ceil(n/2) left of it, the rest right,
+            // with the score staying exactly where it has always been drawn. Shrinks the
+            // faces if the group would cross the card edge or the centre divider.
+            function drawCombinedFlank(imgs, scoreStr, scoreX, loLimit, hiLimit) {
+                var list = normalizeFaces(imgs);
+                if (list.length === 0) return;
+                var scoreW = ctx.measureText(scoreStr).width; // caller has set the score font
+                var gF = Math.round(6 * S), gS = Math.round(10 * S);
+                var nL = Math.ceil(list.length / 2), nR = list.length - nL;
+                var d = Math.round(36 * S), dFloor = Math.round(24 * S);
+                var leftW, rightW, leftStart, rightStart;
+                while (true) {
+                    leftW = nL > 0 ? nL * d + (nL - 1) * gF : 0;
+                    rightW = nR > 0 ? nR * d + (nR - 1) * gF : 0;
+                    leftStart = scoreX - scoreW / 2 - gS - leftW;
+                    rightStart = scoreX + scoreW / 2 + gS;
+                    var lo = nL > 0 ? leftStart : scoreX - scoreW / 2;
+                    var hi = nR > 0 ? rightStart + rightW : scoreX + scoreW / 2;
+                    if (d <= dFloor || (lo >= loLimit && hi <= hiLimit)) break;
+                    d--;
+                }
+                var faceCY = scoreBaseY - scoreSize * 0.35; // visual middle of the score text
+                if (nL > 0) drawFaceRow(ctx, list.slice(0, nL), leftStart, faceCY, d, gF);
+                if (nR > 0) drawFaceRow(ctx, list.slice(nL), rightStart, faceCY, d, gF);
+            }
+
             ctx.font = '900 ' + scoreSize + 'px ' + FF_HEAD;
             ctx.fillStyle = p1Won ? C.green : C.accent;
+            if (p1Combined) {
+                drawCombinedFlank(p1Img, String(Math.round(p1Score)), p1NameX, cardX + edgeInset, midX);
+                ctx.font = '900 ' + scoreSize + 'px ' + FF_HEAD;
+                ctx.fillStyle = p1Won ? C.green : C.accent;
+            }
             ctx.fillText(String(Math.round(p1Score)), midX - cardW * 0.25, centerY + 30);
 
             // Divider
@@ -2632,6 +2690,11 @@
             // Player 2 score
             ctx.font = '900 ' + scoreSize + 'px ' + FF_HEAD;
             ctx.fillStyle = p2Won ? C.green : C.accent;
+            if (p2Combined) {
+                drawCombinedFlank(p2Img, String(Math.round(p2Score)), p2NameX, midX, cardX + cardW - edgeInset);
+                ctx.font = '900 ' + scoreSize + 'px ' + FF_HEAD;
+                ctx.fillStyle = p2Won ? C.green : C.accent;
+            }
             ctx.fillText(String(Math.round(p2Score)), midX + cardW * 0.25, centerY + 30);
         }
 
@@ -3002,18 +3065,7 @@
 
             // Draw the faces left to right from startX, circle-clipped, centred on cy.
             function drawFaceCluster(ctx, imgs, startX, cy) {
-                var list = normalizeFaces(imgs);
-                var r = fClusterD / 2;
-                for (var i = 0; i < list.length; i++) {
-                    var cx = startX + r + i * (fClusterD + fClusterGap);
-                    ctx.save();
-                    ctx.beginPath();
-                    ctx.arc(cx, cy, r, 0, Math.PI * 2);
-                    ctx.clip();
-                    ctx.drawImage(list[i], cx - (FACE_OVERSCAN / 2) * fClusterD, cy - fClusterD / 2,
-                                  FACE_OVERSCAN * fClusterD, FACE_OVERSCAN * fClusterD);
-                    ctx.restore();
-                }
+                drawFaceRow(ctx, imgs, startX, cy, fClusterD, fClusterGap);
             }
 
             var p1ClusterW = faceClusterW(p1Img);
