@@ -3348,13 +3348,13 @@
                 if (from1 !== from2 || to1 !== to2) {
                     return `${p1} (${from1}-${to1}) vs ${p2} (${from2}-${to2}) Comparison`;
                 }
-                return `${p1} vs ${p2} — ${from1}-${to1} Comparison`;
+                return `${p1} vs ${p2} - ${from1}-${to1} Comparison`;
             }
             const unit = mode === 'age' ? 'Ages' : 'Seasons';
             if (from1 !== from2 || to1 !== to2) {
                 return `${p1} (${unit} ${from1}-${to1}) vs ${p2} (${unit} ${from2}-${to2}) Comparison`;
             }
-            return `${p1} vs ${p2} — ${unit} ${from1}-${to1} Comparison`;
+            return `${p1} vs ${p2} - ${unit} ${from1}-${to1} Comparison`;
         }
 
         // Push the current range comparison into the URL (history.pushState) and title.

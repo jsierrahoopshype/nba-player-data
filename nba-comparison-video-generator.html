@@ -790,7 +790,7 @@
 
         function getHeadshotUrl(playerName) {
             if (playerData.headshots && playerData.headshots[playerName]) {
-                return 'https://jsierrahoopshype.github.io/nba-headshots/players/headshots/face2/' + playerData.headshots[playerName] + '.png';
+                return 'https://jsierrahoopshype.github.io/nba-headshots/players/headshots/face2-160/' + playerData.headshots[playerName] + '.webp';
             }
             return null;
         }
@@ -2440,6 +2440,30 @@
             return / \+ /.test(String(name));
         }
 
+        // Longest prefix of `text` that still fits `maxW` once an ellipsis is appended.
+        // Measures with whatever font the caller has already set.
+        function truncateToWidth(ctx, text, maxW) {
+            var ell = '\u2026';
+            var str = String(text);
+            if (ctx.measureText(ell).width > maxW) return '';
+            while (str.length > 0 && ctx.measureText(str + ell).width > maxW) str = str.slice(0, -1);
+            return str.length ? str + ell : ell;
+        }
+
+        // Shrink `text` from `startSize` down to `floor` until it fits `maxW`, then
+        // truncate if it still overflows. Returns {size, text}; the caller sets the
+        // font from .size before drawing .text.
+        function fitTextToWidth(ctx, text, startSize, floor, maxW, weight, family) {
+            var sz = startSize;
+            ctx.font = weight + ' ' + sz + 'px ' + family;
+            while (ctx.measureText(text).width > maxW && sz > floor) {
+                sz--;
+                ctx.font = weight + ' ' + sz + 'px ' + family;
+            }
+            if (ctx.measureText(text).width <= maxW) return { size: sz, text: text };
+            return { size: sz, text: truncateToWidth(ctx, text, maxW) };
+        }
+
         // ===== Headshot slots (additive) =====
         // A side may now carry several faces (combine mode). These helpers accept either
         // a single Image (legacy), an array of Images, or null/empty, so a single face
@@ -2548,7 +2572,7 @@
             // it into the space between its headshot slot and the centre divider. Single
             // names never enter this branch and keep the fixed size they have always used.
             function fitHeaderName(name, nameCenterX, towardCenterRight) {
-                if (!isCombinedName(name)) return nameSize;
+                if (!isCombinedName(name)) return { size: nameSize, text: name };
                 var slotEdge = Math.round(20 * S) + hsD + Math.round(10 * S);
                 var outerLimit = towardCenterRight ? (cardX + slotEdge) : (cardX + cardW - slotEdge);
                 var innerLimit = midX + (towardCenterRight ? -1 : 1) * Math.round(10 * S);
@@ -2561,15 +2585,20 @@
                     sz--;
                     ctx.font = '700 ' + sz + 'px ' + FF_HEAD;
                 }
-                return sz;
+                // Still over at the floor: truncate rather than spill past the divider.
+                if (ctx.measureText(name).width > maxW) {
+                    return { size: sz, text: truncateToWidth(ctx, name, maxW) };
+                }
+                return { size: sz, text: name };
             }
 
             var p1NameX = midX - cardW * 0.25;
             var p2NameX = midX + cardW * 0.25;
-            ctx.font = '700 ' + fitHeaderName(data.player1Name, p1NameX, true) + 'px ' + FF_HEAD;
+            var p1HdrFit = fitHeaderName(data.player1Name, p1NameX, true);
+            ctx.font = '700 ' + p1HdrFit.size + 'px ' + FF_HEAD;
             ctx.fillStyle = C.text;
             ctx.textAlign = 'center';
-            ctx.fillText(data.player1Name, p1NameX, centerY - 16);
+            ctx.fillText(p1HdrFit.text, p1NameX, centerY - 16);
 
             // Player 1 score
             var scoreSize = Math.round(Math.min(48, width * 0.037) * FS);
@@ -2586,9 +2615,10 @@
             ctx.fillText('\u2013', midX, centerY + 8);
 
             // Player 2 name (right)
-            ctx.font = '700 ' + fitHeaderName(data.player2Name, p2NameX, false) + 'px ' + FF_HEAD;
+            var p2HdrFit = fitHeaderName(data.player2Name, p2NameX, false);
+            ctx.font = '700 ' + p2HdrFit.size + 'px ' + FF_HEAD;
             ctx.fillStyle = C.text;
-            ctx.fillText(data.player2Name, p2NameX, centerY - 16);
+            ctx.fillText(p2HdrFit.text, p2NameX, centerY - 16);
 
             // Player 2 score
             ctx.font = '900 ' + scoreSize + 'px ' + FF_HEAD;
@@ -2612,16 +2642,20 @@
             var pad = Math.round(width * 0.04);
             var rowW = width - pad * 2;
             var fr = rowW / 11;
-            var col1W = fr * 2;
-            var col2W = fr * 3;
-            var col3W = fr * 1;
-            var col4W = fr * 3;
-            var col5W = fr * 2;
-            var col1X = pad;
-            var col2X = pad + col1W;
-            var col3X = pad + col1W + col2W;
-            var col4X = pad + col1W + col2W + col3W;
-            var col5X = pad + col1W + col2W + col3W + col4W;
+
+            // Single-name rows: value 2fr / name 3fr / metric 1fr / name 3fr / value 2fr.
+            var sglW = [fr * 2, fr * 3, fr * 1, fr * 3, fr * 2];
+            // Combined rows: the metric column doubles (labels like "Years with Clutch
+            // Player votes" do not fit 1fr) and the value columns shrink, since they only
+            // ever hold short numbers.
+            var cmbW = [fr * 1.5, fr * 3, fr * 2, fr * 3, fr * 1.5];
+
+            function colXs(w) {
+                return [pad, pad + w[0], pad + w[0] + w[1], pad + w[0] + w[1] + w[2],
+                        pad + w[0] + w[1] + w[2] + w[3]];
+            }
+            var sglX = colXs(sglW);
+            var cmbX = colXs(cmbW);
 
             for (var idx = 0; idx < contentLayout.items.length; idx++) {
                 var item = contentLayout.items[idx];
@@ -2657,6 +2691,13 @@
                     var ROW_H = 52;
                     var RAD = 8;
 
+                    // Pick this row's grid. Single-name rows keep the original columns.
+                    var rowCombined = isCombinedName(item.p1Name) || isCombinedName(item.p2Name);
+                    var colW = rowCombined ? cmbW : sglW;
+                    var colX = rowCombined ? cmbX : sglX;
+                    var col1W = colW[0], col2W = colW[1], col3W = colW[2], col4W = colW[3], col5W = colW[4];
+                    var col1X = colX[0], col2X = colX[1], col3X = colX[2], col4X = colX[3], col5X = colX[4];
+
                     // Schedule-based reveal (-2 = always settled tie, -1 = non-item, >= 0 = reveal frame)
                     var schedFrame = itemRevealSchedule[idx];
                     var age = (schedFrame === -2) ? 999 : ((schedFrame === -1 || currentFrame < schedFrame) ? -1 : (currentFrame - schedFrame));
@@ -2672,9 +2713,11 @@
                     ctx.fillStyle = C.surface;
                     ctx.fill();
 
-                    // Tint boundaries
-                    var tintLeftEnd = width * 0.42;
-                    var tintRightStart = width * 0.58;
+                    // Tint boundaries: the metric column's edges, so each tint covers
+                    // exactly the value + name columns on its side instead of cutting
+                    // through a wide label.
+                    var tintLeftEnd = col3X;
+                    var tintRightStart = col3X + col3W;
                     var tintLeftW = tintLeftEnd - pad;
                     var tintRightW = pad + rowW - tintRightStart;
 
@@ -2755,20 +2798,36 @@
                     ctx.textAlign = 'center';
                     ctx.fillText(item.p1Value, col1X + col1W / 2, textY);
 
-                    ctx.font = '600 ' + nameColSize + 'px ' + FF_HEAD;
-                    ctx.fillStyle = C.textSec;
-                    ctx.textAlign = 'center';
-                    ctx.fillText(stripRangeSuffix(item.p1Name), col2X + col2W / 2, textY);
+                    // Combined rows carry wide names and long metric labels, so the three
+                    // centre cells shrink to their column and truncate as a last resort.
+                    // Single-name rows draw at the fixed sizes they always have.
+                    var p1NameTxt = stripRangeSuffix(item.p1Name);
+                    var p2NameTxt = stripRangeSuffix(item.p2Name);
+                    var metricTxt = item.metric;
+                    var p1NameSz = nameColSize, p2NameSz = nameColSize, metricSz = metricSize;
+                    if (rowCombined) {
+                        var f1 = fitTextToWidth(ctx, p1NameTxt, nameColSize, 9, col2W * 0.94, '600', FF_HEAD);
+                        p1NameSz = f1.size; p1NameTxt = f1.text;
+                        var fm = fitTextToWidth(ctx, metricTxt, metricSize, 9, col3W * 0.94, '400', FF_HEAD);
+                        metricSz = fm.size; metricTxt = fm.text;
+                        var f2 = fitTextToWidth(ctx, p2NameTxt, nameColSize, 9, col4W * 0.94, '600', FF_HEAD);
+                        p2NameSz = f2.size; p2NameTxt = f2.text;
+                    }
 
-                    ctx.font = '400 ' + metricSize + 'px ' + FF_HEAD;
+                    ctx.font = '600 ' + p1NameSz + 'px ' + FF_HEAD;
                     ctx.fillStyle = C.textSec;
                     ctx.textAlign = 'center';
-                    ctx.fillText(item.metric, col3X + col3W / 2, textY);
+                    ctx.fillText(p1NameTxt, col2X + col2W / 2, textY);
 
-                    ctx.font = '600 ' + nameColSize + 'px ' + FF_HEAD;
+                    ctx.font = '400 ' + metricSz + 'px ' + FF_HEAD;
                     ctx.fillStyle = C.textSec;
                     ctx.textAlign = 'center';
-                    ctx.fillText(stripRangeSuffix(item.p2Name), col4X + col4W / 2, textY);
+                    ctx.fillText(metricTxt, col3X + col3W / 2, textY);
+
+                    ctx.font = '600 ' + p2NameSz + 'px ' + FF_HEAD;
+                    ctx.fillStyle = C.textSec;
+                    ctx.textAlign = 'center';
+                    ctx.fillText(p2NameTxt, col4X + col4W / 2, textY);
 
                     ctx.font = ((showColors && item.winner === 'player2') ? '700 ' : '600 ') + valSize + 'px ' + FF_HEAD;
                     ctx.fillStyle = showColors ? (item.winner === 'player2' ? C.green : C.text) : C.textSec;
@@ -2918,10 +2977,41 @@
             var maxNameW = width * 0.45;
             var trophyStr = '\uD83C\uDFC6 '; // trophy + space for measurement
 
-            // Column center points (accounting for headshots)
-            var p1ColLeft = pad + (hasFaces(p1Img) ? fHsD + fHsGap : 0);
+            // A combined side with 2+ faces draws them as a cluster at their own size
+            // rather than splitting the single 90*S slot, which left each face tiny.
+            // A side with one face keeps the original slot geometry byte-identical.
+            var fClusterD = Math.round(60 * S);
+            var fClusterGap = Math.round(8 * S);
+            var fClusterCY = nameY - Math.round(18 * S);
+
+            function faceClusterW(imgs) {
+                var n = normalizeFaces(imgs).length;
+                return n < 2 ? 0 : n * fClusterD + (n - 1) * fClusterGap;
+            }
+
+            // Draw the faces left to right from startX, circle-clipped, centred on cy.
+            function drawFaceCluster(ctx, imgs, startX, cy) {
+                var list = normalizeFaces(imgs);
+                var r = fClusterD / 2;
+                for (var i = 0; i < list.length; i++) {
+                    var cx = startX + r + i * (fClusterD + fClusterGap);
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.arc(cx, cy, r, 0, Math.PI * 2);
+                    ctx.clip();
+                    ctx.drawImage(list[i], cx - r, cy - r, fClusterD, fClusterD);
+                    ctx.restore();
+                }
+            }
+
+            var p1ClusterW = faceClusterW(p1Img);
+            var p2ClusterW = faceClusterW(p2Img);
+
+            // Column center points (accounting for headshots). A cluster reserves its own
+            // full width so the name budget below shrinks to match.
+            var p1ColLeft = pad + (hasFaces(p1Img) ? (p1ClusterW || fHsD) + fHsGap : 0);
             var p1ColCenter = (p1ColLeft + midX) / 2;
-            var p2ColRight = width - pad - (hasFaces(p2Img) ? fHsD + fHsGap : 0);
+            var p2ColRight = width - pad - (hasFaces(p2Img) ? (p2ClusterW || fHsD) + fHsGap : 0);
             var p2ColCenter = (midX + p2ColRight) / 2;
 
             // A combined label ("A + B [+ C]") is roughly twice as long as a single name,
@@ -2944,30 +3034,41 @@
                     ctx.font = '800 ' + sz + 'px ' + FF_HEAD;
                     extra = isWinner ? ctx.measureText(trophyStr).width : 0;
                 }
-                return sz;
+                // Still over at the combined floor: truncate rather than run into the
+                // other column. Single names are returned unchanged, as before.
+                if (combined && extra + ctx.measureText(name).width > limit) {
+                    return { size: sz, text: truncateToWidth(ctx, name, Math.max(limit - extra, 1)) };
+                }
+                return { size: sz, text: name };
             }
 
             // Player 1: headshot + trophy/name (left side)
             var p1IsWinner = p1Won;
-            var p1NS = fitNameWithTrophy(data.player1Name.toUpperCase(), p1IsWinner, p1ColW);
+            var p1Fit = fitNameWithTrophy(data.player1Name.toUpperCase(), p1IsWinner, p1ColW);
+            var p1NS = p1Fit.size;
+            var p1NameTxt = p1Fit.text;
             if (hasFaces(p1Img)) {
-                var p1cx = pad + fHsR;
-                var p1cy = nameY - p1NS * 0.35;
-                drawFaces(ctx, p1Img, p1cx, p1cy, fHsD);
+                if (p1ClusterW) {
+                    drawFaceCluster(ctx, p1Img, pad, fClusterCY);
+                } else {
+                    var p1cx = pad + fHsR;
+                    var p1cy = nameY - p1NS * 0.35;
+                    drawFaces(ctx, p1Img, p1cx, p1cy, fHsD);
+                }
             }
             ctx.font = '800 ' + p1NS + 'px ' + FF_HEAD;
             ctx.fillStyle = '#111111';
             ctx.textAlign = 'left';
             if (p1IsWinner) {
                 var p1EmojiW = ctx.measureText(trophyStr).width;
-                var p1NameW = ctx.measureText(data.player1Name.toUpperCase()).width;
+                var p1NameW = ctx.measureText(p1NameTxt).width;
                 var p1TotalW = p1EmojiW + p1NameW;
                 var p1StartX = p1ColCenter - p1TotalW / 2;
                 ctx.fillText('\uD83C\uDFC6', p1StartX, nameY);
-                ctx.fillText(data.player1Name.toUpperCase(), p1StartX + p1EmojiW, nameY);
+                ctx.fillText(p1NameTxt, p1StartX + p1EmojiW, nameY);
             } else {
-                var p1NameW = ctx.measureText(data.player1Name.toUpperCase()).width;
-                ctx.fillText(data.player1Name.toUpperCase(), p1ColCenter - p1NameW / 2, nameY);
+                var p1NameW = ctx.measureText(p1NameTxt).width;
+                ctx.fillText(p1NameTxt, p1ColCenter - p1NameW / 2, nameY);
             }
 
             // Scores — 160*S, auto-shrink to 80*S
@@ -2991,25 +3092,31 @@
 
             // Player 2: headshot + trophy/name (right side)
             var p2IsWinner = p2Won;
-            var p2NS = fitNameWithTrophy(data.player2Name.toUpperCase(), p2IsWinner, p2ColW);
+            var p2Fit = fitNameWithTrophy(data.player2Name.toUpperCase(), p2IsWinner, p2ColW);
+            var p2NS = p2Fit.size;
+            var p2NameTxt = p2Fit.text;
             if (hasFaces(p2Img)) {
-                var p2cx = width - pad - fHsR;
-                var p2cy = nameY - p2NS * 0.35;
-                drawFaces(ctx, p2Img, p2cx, p2cy, fHsD);
+                if (p2ClusterW) {
+                    drawFaceCluster(ctx, p2Img, width - pad - p2ClusterW, fClusterCY);
+                } else {
+                    var p2cx = width - pad - fHsR;
+                    var p2cy = nameY - p2NS * 0.35;
+                    drawFaces(ctx, p2Img, p2cx, p2cy, fHsD);
+                }
             }
             ctx.font = '800 ' + p2NS + 'px ' + FF_HEAD;
             ctx.fillStyle = '#111111';
             ctx.textAlign = 'left';
             if (p2IsWinner) {
                 var p2EmojiW = ctx.measureText(trophyStr).width;
-                var p2NameW = ctx.measureText(data.player2Name.toUpperCase()).width;
+                var p2NameW = ctx.measureText(p2NameTxt).width;
                 var p2TotalW = p2EmojiW + p2NameW;
                 var p2StartX = p2ColCenter - p2TotalW / 2;
                 ctx.fillText('\uD83C\uDFC6', p2StartX, nameY);
-                ctx.fillText(data.player2Name.toUpperCase(), p2StartX + p2EmojiW, nameY);
+                ctx.fillText(p2NameTxt, p2StartX + p2EmojiW, nameY);
             } else {
-                var p2NameW = ctx.measureText(data.player2Name.toUpperCase()).width;
-                ctx.fillText(data.player2Name.toUpperCase(), p2ColCenter - p2NameW / 2, nameY);
+                var p2NameW = ctx.measureText(p2NameTxt).width;
+                ctx.fillText(p2NameTxt, p2ColCenter - p2NameW / 2, nameY);
             }
 
             var p2ScoreSize = fitScore(p2FinalScore, scoreSize);
@@ -3033,19 +3140,47 @@
             var hdrNameSize = Math.round(22 * S);
             var hdrScoreSize = Math.round(18 * S);
 
+            // Fit "<NAME> BIGGEST WINS" into the room left of the running score on its
+            // half. Only shrinks when it actually overflows, so a header that already
+            // fits (every single-name card) renders exactly as before.
+            function fitWinsHeader(name, scoreStr, leftX, scoreRightX) {
+                var suffix = ' BIGGEST WINS';
+                ctx.font = '400 ' + hdrScoreSize + 'px ' + FF_HEAD;
+                var scoreW = ctx.measureText(scoreStr).width;
+                var avail = (scoreRightX - scoreW - Math.round(12 * S)) - leftX;
+                var floor = Math.round(12 * S);
+                var sz = hdrNameSize;
+                ctx.font = '700 ' + sz + 'px ' + FF_HEAD;
+                while (ctx.measureText(name + suffix).width > avail && sz > floor) {
+                    sz--;
+                    ctx.font = '700 ' + sz + 'px ' + FF_HEAD;
+                }
+                if (ctx.measureText(name + suffix).width <= avail) {
+                    return { size: sz, text: name + suffix };
+                }
+                // Still over at the floor: shorten the name, keep " BIGGEST WINS" intact.
+                var suffixW = ctx.measureText(suffix).width;
+                return { size: sz, text: truncateToWidth(ctx, name, Math.max(avail - suffixW, 1)) + suffix };
+            }
+
+            var p1ScoreStr = p1FinalScore + ' \u2013 ' + p2FinalScore;
+            var p2ScoreStr = p2FinalScore + ' \u2013 ' + p1FinalScore;
+            var p1HdrWins = fitWinsHeader(data.player1Name.toUpperCase(), p1ScoreStr, pad, midX - pad);
+            var p2HdrWins = fitWinsHeader(data.player2Name.toUpperCase(), p2ScoreStr, midX + pad, width - pad);
+
             // Left column header: "[Player] BIGGEST WINS"
             ctx.save();
             ctx.beginPath();
             ctx.rect(0, hdrTop, midX, hdrH);
             ctx.clip();
-            ctx.font = '700 ' + hdrNameSize + 'px ' + FF_HEAD;
+            ctx.font = '700 ' + p1HdrWins.size + 'px ' + FF_HEAD;
             ctx.fillStyle = '#999999';
             ctx.textAlign = 'left';
-            ctx.fillText(data.player1Name.toUpperCase() + ' BIGGEST WINS', pad, hdrTop + hdrH * 0.62);
+            ctx.fillText(p1HdrWins.text, pad, hdrTop + hdrH * 0.62);
             ctx.font = '400 ' + hdrScoreSize + 'px ' + FF_HEAD;
             ctx.fillStyle = '#bbbbbb';
             ctx.textAlign = 'right';
-            ctx.fillText(p1FinalScore + ' \u2013 ' + p2FinalScore, midX - pad, hdrTop + hdrH * 0.62);
+            ctx.fillText(p1ScoreStr, midX - pad, hdrTop + hdrH * 0.62);
             ctx.restore();
 
             // Right column header
@@ -3053,14 +3188,14 @@
             ctx.beginPath();
             ctx.rect(midX, hdrTop, midX, hdrH);
             ctx.clip();
-            ctx.font = '700 ' + hdrNameSize + 'px ' + FF_HEAD;
+            ctx.font = '700 ' + p2HdrWins.size + 'px ' + FF_HEAD;
             ctx.fillStyle = '#999999';
             ctx.textAlign = 'left';
-            ctx.fillText(data.player2Name.toUpperCase() + ' BIGGEST WINS', midX + pad, hdrTop + hdrH * 0.62);
+            ctx.fillText(p2HdrWins.text, midX + pad, hdrTop + hdrH * 0.62);
             ctx.font = '400 ' + hdrScoreSize + 'px ' + FF_HEAD;
             ctx.fillStyle = '#bbbbbb';
             ctx.textAlign = 'right';
-            ctx.fillText(p2FinalScore + ' \u2013 ' + p1FinalScore, width - pad, hdrTop + hdrH * 0.62);
+            ctx.fillText(p2ScoreStr, width - pad, hdrTop + hdrH * 0.62);
             ctx.restore();
 
             // Header bottom border
@@ -3368,14 +3503,26 @@
                 var p2Urls = p2Names.map(getHeadshotUrl);
                 function loadImg(url) {
                     if (!url) return Promise.resolve(null);
-                    return Promise.race([
-                        new Promise(function(resolve) {
+                    // Try the small face2-160 .webp first (~2 KB). If it is missing or the
+                    // browser cannot decode it, retry once against the full-size face2
+                    // .png before giving up. The 3s budget covers both attempts.
+                    var pngFallback = url.indexOf('/face2-160/') !== -1
+                        ? url.replace('/face2-160/', '/face2/').replace('.webp', '.png')
+                        : null;
+                    function attempt(u, fallback) {
+                        return new Promise(function(resolve) {
                             var img = new Image();
                             img.crossOrigin = 'anonymous';
                             img.onload = function() { resolve(img); };
-                            img.onerror = function() { resolve(null); };
-                            img.src = url;
-                        }),
+                            img.onerror = function() {
+                                if (fallback) attempt(fallback, null).then(resolve);
+                                else resolve(null);
+                            };
+                            img.src = u;
+                        });
+                    }
+                    return Promise.race([
+                        attempt(url, pngFallback),
                         new Promise(function(resolve) { setTimeout(function() { resolve(null); }, 3000); })
                     ]);
                 }
