@@ -109966,5 +109966,17 @@
     "YEAR": "2026",
     "PLAYER": "Alex Toohey",
     "SALARY": "$212,331"
+  },
+  {
+    "TEAM": "Golden State",
+    "YEAR": "2026",
+    "PLAYER": "Graham Ike",
+    "SALARY": "$405,359"
+  },
+  {
+    "TEAM": "Indiana",
+    "YEAR": "2026",
+    "PLAYER": "James Johnson",
+    "SALARY": "$2,667,947"
   }
 ]
