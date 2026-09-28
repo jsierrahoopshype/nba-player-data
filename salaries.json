@@ -109984,5 +109984,17 @@
     "YEAR": "2026",
     "PLAYER": "KJ Martin",
     "SALARY": "$321,714"
+  },
+  {
+    "TEAM": "Miami",
+    "YEAR": "2026",
+    "PLAYER": "Dennis Smith",
+    "SALARY": "$321,714"
+  },
+  {
+    "TEAM": "New York",
+    "YEAR": "2026",
+    "PLAYER": "Tyler Nickel",
+    "SALARY": "$636,435"
   }
 ]
