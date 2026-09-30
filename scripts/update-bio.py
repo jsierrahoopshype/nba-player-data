@@ -12,6 +12,7 @@ import requests
 SHEET_ID = '1ZrDfzqiC31Hu3YCtxT4aZbZF4QVCVyGe6wBytR2LF30'
 GID = '1488063724'
 OUTPUT_PATH = 'bio.json'
+OVERRIDES_PATH = 'data/bio_birthdate_overrides.json'
 FIELDS = ['PLAYER', 'BIRTHDAY', 'POS', 'HEIGHT', 'WEIGHT', 'NATIONALITY', 'DRAFT']
 
 
@@ -69,6 +70,44 @@ def parse_sheet_records(csv_text):
     return records
 
 
+def apply_birthdate_overrides(records, path=OVERRIDES_PATH):
+    """Replace BIRTHDAY with correct_value only while the sheet still holds wrong_value.
+
+    If the sheet value differs (fixed or edited by hand), the sheet wins.
+    A missing or unreadable overrides file never blocks the bio update.
+    """
+    try:
+        with open(path, encoding='utf-8') as f:
+            overrides = json.load(f)
+    except FileNotFoundError:
+        print(f"No overrides file at {path}; skipping birth-date overrides")
+        return
+    except (OSError, ValueError) as e:
+        print(f"Warning: could not read {path} ({e}); skipping birth-date overrides")
+        return
+
+    by_name = {r['PLAYER']: r for r in records}
+    applied = skipped = unchanged = 0
+    for o in overrides:
+        name, wrong, correct = o.get('name'), o.get('wrong_value'), o.get('correct_value')
+        rec = by_name.get(name)
+        if rec is None:
+            skipped += 1
+            print(f"  skip {name}: not in sheet")
+        elif rec['BIRTHDAY'] != wrong:
+            skipped += 1
+            print(f"  skip {name}: sheet has {rec['BIRTHDAY']!r}, expected {wrong!r}")
+        elif rec['BIRTHDAY'] == correct:
+            # Pinned entry (wrong_value == correct_value): nothing to change
+            unchanged += 1
+        else:
+            rec['BIRTHDAY'] = correct
+            applied += 1
+    print(f"Birth-date overrides: applied {applied}, skipped {skipped}")
+    if unchanged:
+        print(f"Birth-date overrides: {unchanged} already at correct_value (no change)")
+
+
 def main():
     print(f"Fetching bio data from Google Sheet {SHEET_ID} (gid={GID})...")
     csv_text = fetch_google_sheet_csv(SHEET_ID, GID)
@@ -79,6 +118,8 @@ def main():
 
     if not records:
         raise RuntimeError("No records parsed; refusing to write bio.json")
+
+    apply_birthdate_overrides(records)
 
     with open(OUTPUT_PATH, 'w', encoding='utf-8') as f:
         json.dump(records, f, ensure_ascii=False, separators=(',', ':'))
