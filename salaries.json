@@ -109996,5 +109996,23 @@
     "YEAR": "2026",
     "PLAYER": "Tyler Nickel",
     "SALARY": "$636,435"
+  },
+  {
+    "TEAM": "Chicago",
+    "YEAR": "2026",
+    "PLAYER": "Jalen Bridges",
+    "SALARY": "$636,435"
+  },
+  {
+    "TEAM": "New York",
+    "YEAR": "2026",
+    "PLAYER": "Jaden Akins",
+    "SALARY": "$1,131,970"
+  },
+  {
+    "TEAM": "Portland",
+    "YEAR": "2026",
+    "PLAYER": "Jaylen Martin",
+    "SALARY": "$636,435"
   }
 ]
