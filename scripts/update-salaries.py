@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Fetches the "Future Salaries" tab from Google Sheets and appends new salary
-records to salaries.json.
+Fetches the "Future Salaries" tab from Google Sheets and refreshes the current
+season's salary records in salaries.json.
 
 Source: All-Time Database Google Sheet, "Future Salaries" tab.
 Output: salaries.json (one record per player-team-year salary).
@@ -14,6 +14,33 @@ unpivoted into one record per year column that holds a dollar value.
 Records use the same shape and key order as the existing salaries.json:
 
     {"TEAM": team, "YEAR": year, "PLAYER": name, "SALARY": "$..."}
+
+HOW EACH RUN WORKS (rolling target year):
+
+The sheet drops the finished season's column when a new season starts (the
+2026 column disappeared in Oct 2026, which made the old hard-coded
+IMPORT_YEARS = {'2026'} fail every day). So the year is no longer hard-coded:
+
+  1. The TARGET YEAR is the earliest year column present in the sheet, i.e.
+     the current season. It must fall within current UTC year -1..+1, and must
+     not be older than the latest year already in salaries.json.
+  2. Every salaries.json record for the target year is REPLACED with what the
+     sheet has now, paired with the sheet's TEAM column. For the current
+     season that pairing is correct, and it lets trades, signings and changed
+     salaries update daily.
+  3. Every other year in salaries.json is left exactly as it is. A season
+     freezes automatically the day the sheet drops its column: the target
+     moves on to the next year and nothing touches the old one again.
+  4. Years later than the target (projections) are never imported.
+  5. Safety: 0 sheet cells for the target year, or a new row count more than
+     20% below the count already in the file for that year, exits with code 1
+     without writing.
+  6. Offseason: from July 1 of the target year until the sheet drops that
+     column, the season is over but the TEAM column already shows next
+     season's teams (see HISTORY). The run leaves salaries.json unchanged and
+     exits 0, so the season freezes with its in-season teams.
+
+HISTORY (why the TEAM pairing is only trusted for the target year):
 
 WHAT THE TEAM COLUMN ACTUALLY MEANS, and why this script used to corrupt the
 file every time it ran after an offseason:
@@ -41,10 +68,13 @@ $1.36bn in total - Giannis by $54.1m, LeBron by $52.6m. The Doomscroll payroll
 cards discarded any player whose team was ambiguous, which emptied more than
 half of some rosters.
 
-THE FIX is one rule, in build_new_records: never append a (PLAYER, YEAR) the
-file already has. Where the file already knows a season, it knows it from a
-source that had the right team; the sheet's current-team column cannot improve
-on that and can only contradict it.
+THE FIX (Sep 2026) was one rule, in the old build_new_records: never append a
+(PLAYER, YEAR) the file already has. The rolling target year above replaces
+that function, and keeps the same principle: the sheet's current-team column is
+only trusted for the season in progress. A finished season is never rewritten,
+which is also why the script stops refreshing the target year once its season
+has ended (July 1 of the target year), even if the sheet still shows that
+column through the offseason with players' NEW teams next to it.
 
 Note what is deliberately NOT changed: deduplicate() still keys on
 (PLAYER, YEAR, TEAM). A genuine mid-season trade is two rows for one
@@ -55,6 +85,8 @@ lose half a season's salary.
 import csv
 import json
 import re
+import sys
+from datetime import datetime, timezone
 from io import StringIO
 
 import requests
@@ -67,12 +99,18 @@ OUTPUT_PATH = 'salaries.json'
 # Column-name prefixes to skip (helper / aggregate columns), case-insensitive.
 SKIP_PREFIXES = ('CH', 'ST', 'TOTAL')
 
-# Only import salary records for these upcoming season(s). The Future Salaries
-# tab projects several years out, but we intentionally ingest just the next
-# season to avoid committing the more speculative out-year figures.
-#
-# The column header is the season's ENDING year, so '2026' is 2025-26.
-IMPORT_YEARS = {'2026'}
+# The target year is no longer hard-coded: each run uses the EARLIEST year
+# column in the sheet (the current season). Later, more speculative out-year
+# columns are never imported. Column headers are the season's ENDING year, so
+# '2027' is 2026-27.
+
+# A season ending in year Y is over from this (month, day) of Y. From then on
+# the target year is frozen even if the sheet still shows its column.
+SEASON_OVER_MONTH_DAY = (7, 1)
+
+# Refuse to write if the target year's row count drops by more than this
+# fraction versus what salaries.json already holds for that year.
+MAX_ROW_DROP = 0.20
 
 
 def fetch_google_sheet_csv(sheet_id, gid):
@@ -146,38 +184,45 @@ def parse_sheet_records(csv_text):
     return records
 
 
-def build_new_records(sheet_records, existing):
-    """Filter sheet records to those the file does not already have.
+def sheet_year_columns(csv_text):
+    """Return the sheet's year column headers (e.g. ['2027', '2028', ...]).
 
-    ONE RULE: a (PLAYER, YEAR) already in salaries.json is never appended
-    again.
-
-    This is what changed. The old version read:
-
-        if year_after_existing(rec['YEAR']) or key not in existing_player_year:
-
-    with EXISTING_THROUGH_YEAR = 2025, so the left side was True for every
-    record in IMPORT_YEARS and the duplicate check on the right never ran. Each
-    run after an offseason therefore wrote a second row for every player who
-    had moved, pairing his new team with his old salary.
-
-    The sheet cannot improve on a season the file already holds: its TEAM
-    column says where the player is today, not who paid him that year. It can
-    only contradict it. Where the file has nothing, the sheet is the only
-    source and is used as-is.
-
-    The local `have` set grows as records are accepted, so two sheet rows for
-    one player-year cannot slip through either.
+    Read from the header row, so a year column counts as present even if no
+    player has a value in it yet (main() then fails on 0 cells rather than
+    silently moving on to the next year).
     """
-    have = {(r.get('PLAYER'), r.get('YEAR')) for r in existing}
-    new_records = []
+    rows = list(csv.reader(StringIO(csv_text)))
+    if not rows:
+        return []
+    headers = [h.strip() for h in rows[find_header_row(rows)]]
+    return [h for h in headers if is_year_column(h)]
+
+
+def build_target_year_records(sheet_records, target_year):
+    """Sheet records for the target year only, one per (PLAYER, YEAR).
+
+    The sheet has one row per player, so a repeated (PLAYER, YEAR) is a sheet
+    error; the first occurrence wins (the same rule the old append logic
+    applied) and the rest are reported so they don't double-count silently.
+    """
+    have = set()
+    out = []
+    dropped = []
     for rec in sheet_records:
+        if rec['YEAR'] != target_year:
+            continue
         key = (rec['PLAYER'], rec['YEAR'])
         if key in have:
+            dropped.append(rec)
             continue
-        new_records.append(rec)
         have.add(key)
-    return new_records
+        out.append(rec)
+    if dropped:
+        print(f"  WARNING: {len(dropped)} repeated player row(s) in the sheet for {target_year}; "
+              f"kept the first of each.")
+        for r in dropped[:5]:
+            print(f"    {r['PLAYER']} ({r['TEAM']}) {r['SALARY']}")
+    return out
 
 
 def deduplicate(records):
@@ -223,6 +268,20 @@ def report_player_year_collisions(records):
     return bad
 
 
+def fail(msg):
+    """Print why and exit 1 without touching salaries.json."""
+    print(f"ERROR: {msg}")
+    print(f"Refusing to modify {OUTPUT_PATH}.")
+    sys.exit(1)
+
+
+def count_by_year(records):
+    counts = {}
+    for r in records:
+        counts[r.get('YEAR')] = counts.get(r.get('YEAR'), 0) + 1
+    return counts
+
+
 def main():
     print(f"Fetching Future Salaries from Google Sheet {SHEET_ID} (gid={GID})...")
     csv_text = fetch_google_sheet_csv(SHEET_ID, GID)
@@ -231,26 +290,63 @@ def main():
     sheet_records = parse_sheet_records(csv_text)
     print(f"Parsed {len(sheet_records)} salary cells from the sheet")
     if not sheet_records:
-        raise RuntimeError("No salary records parsed from sheet; refusing to modify salaries.json")
+        fail("No salary records parsed from sheet")
 
-    # Only ingest the configured upcoming season(s).
-    sheet_records = [r for r in sheet_records if r['YEAR'] in IMPORT_YEARS]
-    print(f"{len(sheet_records)} salary cells after restricting to years {sorted(IMPORT_YEARS)}")
-    if not sheet_records:
-        raise RuntimeError(f"No records for years {sorted(IMPORT_YEARS)}; refusing to modify salaries.json")
+    # Target year = earliest year column in the sheet (the current season).
+    year_cols = sheet_year_columns(csv_text)
+    print(f"Year columns in sheet: {year_cols}")
+    if not year_cols:
+        fail("No year columns found in the sheet header")
+    target_year = min(year_cols, key=int)
+    print(f"Target year: {target_year} (= {int(target_year) - 1}-{target_year[2:]} season)")
+
+    # Sanity check: the current season ends within a year of today's UTC year.
+    utc_year = datetime.now(timezone.utc).year
+    if not (utc_year - 1 <= int(target_year) <= utc_year + 1):
+        fail(f"Target year {target_year} is outside {utc_year - 1}-{utc_year + 1} "
+             f"(current UTC year {utc_year} -1/+1)")
+
+    # Offseason: the target season has ended but the sheet hasn't dropped its
+    # column yet, and its TEAM column now shows where players go NEXT season.
+    now = datetime.now(timezone.utc)
+    season_over = datetime(int(target_year), *SEASON_OVER_MONTH_DAY, tzinfo=timezone.utc)
+    if now >= season_over:
+        print(f"Season {target_year} ended ({season_over:%Y-%m-%d}); the sheet's TEAM column "
+              f"now reflects next season, so {target_year} stays frozen.")
+        print(f"Leaving {OUTPUT_PATH} unchanged until the sheet drops the {target_year} column.")
+        return
 
     with open(OUTPUT_PATH, encoding='utf-8') as f:
         existing = json.load(f)
     print(f"Loaded {len(existing)} existing records from {OUTPUT_PATH}")
 
-    new_records = build_new_records(sheet_records, existing)
-    skipped = len(sheet_records) - len(new_records)
-    print(f"{len(new_records)} candidate records to append "
-          f"({skipped} skipped: the file already has that player-season)")
+    # Never step backwards: if the sheet ever re-adds a finished season's
+    # column, it must not overwrite that frozen season with current teams.
+    existing_years = [int(r['YEAR']) for r in existing
+                      if re.fullmatch(r'\d{4}', str(r.get('YEAR', '')))]
+    if existing_years and int(target_year) < max(existing_years):
+        fail(f"Target year {target_year} is older than the latest year already in "
+             f"{OUTPUT_PATH} ({max(existing_years)}); that season is frozen")
 
-    combined = deduplicate(existing + new_records)
-    added = len(combined) - len(existing)
-    print(f"After dedup by (PLAYER, YEAR, TEAM): {len(combined)} total ({added} net new)")
+    new_target = deduplicate(build_target_year_records(sheet_records, target_year))
+    old_target_count = sum(1 for r in existing if r.get('YEAR') == target_year)
+    print(f"{target_year}: {len(new_target)} records from the sheet, "
+          f"{old_target_count} currently in {OUTPUT_PATH}")
+
+    if not new_target:
+        fail(f"Sheet has 0 salary cells for target year {target_year}")
+    if old_target_count and len(new_target) < old_target_count * (1 - MAX_ROW_DROP):
+        fail(f"{target_year} would drop from {old_target_count} to {len(new_target)} records, "
+             f"more than {int(MAX_ROW_DROP * 100)}% fewer")
+
+    # Every other year is kept verbatim and in its original order; the target
+    # year is replaced wholesale and appended at the end, as new seasons always
+    # have been.
+    kept = [r for r in existing if r.get('YEAR') != target_year]
+    combined = kept + new_target
+    print(f"Kept {len(kept)} records for other years untouched; "
+          f"replaced {old_target_count} {target_year} records with {len(new_target)}")
+    print(f"Total: {len(existing)} -> {len(combined)}")
 
     report_player_year_collisions(combined)
 
@@ -258,9 +354,8 @@ def main():
         json.dump(combined, f, ensure_ascii=False, indent=2)
     print(f"Successfully wrote {OUTPUT_PATH}")
 
-    if new_records:
-        sample = new_records[0]
-        print(f"Sample new record: {sample['PLAYER']} {sample['YEAR']} {sample['SALARY']} ({sample['TEAM']})")
+    sample = new_target[0]
+    print(f"Sample {target_year} record: {sample['PLAYER']} {sample['SALARY']} ({sample['TEAM']})")
 
 
 if __name__ == '__main__':
