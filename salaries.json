@@ -110720,12 +110720,6 @@
   {
     "TEAM": "Dallas",
     "YEAR": "2027",
-    "PLAYER": "Dwight Powell",
-    "SALARY": "$3,876,529"
-  },
-  {
-    "TEAM": "Dallas",
-    "YEAR": "2027",
     "PLAYER": "Sergio De Larrea",
     "SALARY": "$3,182,280"
   },
@@ -111152,18 +111146,6 @@
   {
     "TEAM": "Houston",
     "YEAR": "2027",
-    "PLAYER": "Oscar Tshiebwe",
-    "SALARY": "$2,537,526"
-  },
-  {
-    "TEAM": "Houston",
-    "YEAR": "2027",
-    "PLAYER": "Julian Phillips",
-    "SALARY": "$2,537,526"
-  },
-  {
-    "TEAM": "Houston",
-    "YEAR": "2027",
     "PLAYER": "Isaiah Crawford",
     "SALARY": "$2,449,421"
   },
@@ -111176,7 +111158,13 @@
   {
     "TEAM": "Houston",
     "YEAR": "2027",
-    "PLAYER": "Sean Pedulla",
+    "PLAYER": "Oscar Tshiebwe",
+    "SALARY": "$678,882"
+  },
+  {
+    "TEAM": "Houston",
+    "YEAR": "2027",
+    "PLAYER": "Julian Phillips",
     "SALARY": "$678,882"
   },
   {
@@ -111452,12 +111440,6 @@
   {
     "TEAM": "LA Lakers",
     "YEAR": "2027",
-    "PLAYER": "Dalton Knecht",
-    "SALARY": "$4,201,080"
-  },
-  {
-    "TEAM": "LA Lakers",
-    "YEAR": "2027",
     "PLAYER": "Kevon Looney",
     "SALARY": "$3,876,529"
   },
@@ -111566,12 +111548,6 @@
   {
     "TEAM": "Memphis",
     "YEAR": "2027",
-    "PLAYER": "Walter Clayton",
-    "SALARY": "$4,190,520"
-  },
-  {
-    "TEAM": "Memphis",
-    "YEAR": "2027",
     "PLAYER": "Karim Lopez",
     "SALARY": "$3,746,760"
   },
@@ -111604,12 +111580,6 @@
     "YEAR": "2027",
     "PLAYER": "Jaylen Wells",
     "SALARY": "$2,296,271"
-  },
-  {
-    "TEAM": "Memphis",
-    "YEAR": "2027",
-    "PLAYER": "Micah Peavy",
-    "SALARY": "$2,150,917"
   },
   {
     "TEAM": "Memphis",
@@ -111794,12 +111764,6 @@
   {
     "TEAM": "Milwaukee",
     "YEAR": "2027",
-    "PLAYER": "Kevin Porter",
-    "SALARY": "$5,390,700"
-  },
-  {
-    "TEAM": "Milwaukee",
-    "YEAR": "2027",
     "PLAYER": "Kel'el Ware",
     "SALARY": "$4,654,920"
   },
@@ -111826,6 +111790,12 @@
     "YEAR": "2027",
     "PLAYER": "Bogoljub Markovic",
     "SALARY": "$1,357,763"
+  },
+  {
+    "TEAM": "Milwaukee",
+    "YEAR": "2027",
+    "PLAYER": "Pete Nance",
+    "SALARY": "$678,882"
   },
   {
     "TEAM": "Milwaukee",
@@ -112526,8 +112496,8 @@
   {
     "TEAM": "Phoenix",
     "YEAR": "2027",
-    "PLAYER": "Duop Reath",
-    "SALARY": "$2,537,526"
+    "PLAYER": "Drew Timme",
+    "SALARY": "$2,449,421"
   },
   {
     "TEAM": "Phoenix",
@@ -112550,13 +112520,7 @@
   {
     "TEAM": "Phoenix",
     "YEAR": "2027",
-    "PLAYER": "Koby Brea",
-    "SALARY": "$678,882"
-  },
-  {
-    "TEAM": "Phoenix",
-    "YEAR": "2027",
-    "PLAYER": "CJ Huntley",
+    "PLAYER": "Duop Reath",
     "SALARY": "$678,882"
   },
   {
@@ -112755,12 +112719,6 @@
     "TEAM": "Sacramento",
     "YEAR": "2027",
     "PLAYER": "Leaky Black",
-    "SALARY": "$678,882"
-  },
-  {
-    "TEAM": "Sacramento",
-    "YEAR": "2027",
-    "PLAYER": "Adam Flagler",
     "SALARY": "$678,882"
   },
   {
@@ -113176,5 +113134,11 @@
     "YEAR": "2027",
     "PLAYER": "Felix Okpara",
     "SALARY": "$678,882"
+  },
+  {
+    "TEAM": "",
+    "YEAR": "2027",
+    "PLAYER": "Walter Clayton",
+    "SALARY": "$4,190,520"
   }
 ]
