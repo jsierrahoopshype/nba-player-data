@@ -110738,6 +110738,12 @@
   {
     "TEAM": "Dallas",
     "YEAR": "2027",
+    "PLAYER": "Walter Clayton",
+    "SALARY": "$678,882"
+  },
+  {
+    "TEAM": "Dallas",
+    "YEAR": "2027",
     "PLAYER": "Jett Howard",
     "SALARY": "$678,882"
   },
@@ -113012,12 +113018,6 @@
   {
     "TEAM": "Utah",
     "YEAR": "2027",
-    "PLAYER": "Blake Hinson",
-    "SALARY": "$678,882"
-  },
-  {
-    "TEAM": "Utah",
-    "YEAR": "2027",
     "PLAYER": "Trey Alexander",
     "SALARY": "$678,882"
   },
@@ -113134,11 +113134,5 @@
     "YEAR": "2027",
     "PLAYER": "Felix Okpara",
     "SALARY": "$678,882"
-  },
-  {
-    "TEAM": "",
-    "YEAR": "2027",
-    "PLAYER": "Walter Clayton",
-    "SALARY": "$4,190,520"
   }
 ]
