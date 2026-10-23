@@ -110936,12 +110936,6 @@
   {
     "TEAM": "Detroit",
     "YEAR": "2027",
-    "PLAYER": "Gary Harris",
-    "SALARY": "$3,815,861"
-  },
-  {
-    "TEAM": "Detroit",
-    "YEAR": "2027",
     "PLAYER": "Tolu Smith",
     "SALARY": "$2,411,090"
   },
@@ -111062,13 +111056,13 @@
   {
     "TEAM": "Golden State",
     "YEAR": "2027",
-    "PLAYER": "Malevy Leons",
+    "PLAYER": "LJ Cryer",
     "SALARY": "$678,882"
   },
   {
     "TEAM": "Golden State",
     "YEAR": "2027",
-    "PLAYER": "LJ Cryer",
+    "PLAYER": "Malevy Leons",
     "SALARY": "$678,882"
   },
   {
@@ -111806,13 +111800,13 @@
   {
     "TEAM": "Milwaukee",
     "YEAR": "2027",
-    "PLAYER": "Kam Jones",
+    "PLAYER": "Cormac Ryan",
     "SALARY": "$678,882"
   },
   {
     "TEAM": "Milwaukee",
     "YEAR": "2027",
-    "PLAYER": "Cormac Ryan",
+    "PLAYER": "Kam Jones",
     "SALARY": "$678,882"
   },
   {
@@ -112622,13 +112616,13 @@
   {
     "TEAM": "Portland",
     "YEAR": "2027",
-    "PLAYER": "Jayson Kent",
+    "PLAYER": "John Tonje",
     "SALARY": "$678,882"
   },
   {
     "TEAM": "Portland",
     "YEAR": "2027",
-    "PLAYER": "John Tonje",
+    "PLAYER": "Jayson Kent",
     "SALARY": "$678,882"
   },
   {
@@ -112820,13 +112814,13 @@
   {
     "TEAM": "San Antonio",
     "YEAR": "2027",
-    "PLAYER": "Maliq Brown",
+    "PLAYER": "Ja'Kobi Gillespie",
     "SALARY": "$678,882"
   },
   {
     "TEAM": "San Antonio",
     "YEAR": "2027",
-    "PLAYER": "Ja'Kobi Gillespie",
+    "PLAYER": "Maliq Brown",
     "SALARY": "$678,882"
   },
   {
