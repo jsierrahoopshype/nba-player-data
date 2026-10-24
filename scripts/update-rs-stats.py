@@ -16,7 +16,8 @@ GID = '0'  # RS Stats tab
 def fetch_google_sheet_csv(sheet_id, gid):
     """Fetch data from published Google Sheet as CSV."""
     url = f'https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=csv&gid={gid}'
-    response = requests.get(url, timeout=60)
+    # The RS tab exports ~5 MB and Google took 52-161 s for it on Oct 24 2026; 60 s timed out daily from Oct 22.
+    response = requests.get(url, timeout=300)
     response.raise_for_status()
     response.encoding = 'utf-8'
     return response.text
