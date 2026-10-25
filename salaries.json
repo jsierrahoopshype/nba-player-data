@@ -110828,13 +110828,13 @@
   {
     "TEAM": "Denver",
     "YEAR": "2027",
-    "PLAYER": "Trevon Brazile",
+    "PLAYER": "Alpha Diallo",
     "SALARY": "$1,357,763"
   },
   {
     "TEAM": "Denver",
     "YEAR": "2027",
-    "PLAYER": "Alpha Diallo",
+    "PLAYER": "Trevon Brazile",
     "SALARY": "$1,357,763"
   },
   {
@@ -111800,13 +111800,13 @@
   {
     "TEAM": "Milwaukee",
     "YEAR": "2027",
-    "PLAYER": "Cormac Ryan",
+    "PLAYER": "Kam Jones",
     "SALARY": "$678,882"
   },
   {
     "TEAM": "Milwaukee",
     "YEAR": "2027",
-    "PLAYER": "Kam Jones",
+    "PLAYER": "Cormac Ryan",
     "SALARY": "$678,882"
   },
   {
@@ -112100,12 +112100,6 @@
   {
     "TEAM": "New York",
     "YEAR": "2027",
-    "PLAYER": "Kevin McCullar",
-    "SALARY": "$678,882"
-  },
-  {
-    "TEAM": "New York",
-    "YEAR": "2027",
     "PLAYER": "Tyler Nickel",
     "SALARY": "$678,882"
   },
@@ -112114,6 +112108,12 @@
     "YEAR": "2027",
     "PLAYER": "Jaden Akins",
     "SALARY": "$678,882"
+  },
+  {
+    "TEAM": "New York",
+    "YEAR": "2027",
+    "PLAYER": "Dalton Knecht",
+    "SALARY": "$667,177"
   },
   {
     "TEAM": "Oklahoma City",
@@ -112208,14 +112208,14 @@
   {
     "TEAM": "Oklahoma City",
     "YEAR": "2027",
-    "PLAYER": "Otega Oweh",
+    "PLAYER": "Josh Dix",
     "SALARY": "$678,882"
   },
   {
     "TEAM": "Oklahoma City",
     "YEAR": "2027",
-    "PLAYER": "Josh Dix",
-    "SALARY": "$678,882"
+    "PLAYER": "Micah Peavy",
+    "SALARY": "$663,276"
   },
   {
     "TEAM": "Orlando",
@@ -112722,6 +112722,12 @@
     "SALARY": "$678,882"
   },
   {
+    "TEAM": "Sacramento",
+    "YEAR": "2027",
+    "PLAYER": "Sean Pedulla",
+    "SALARY": "$667,177"
+  },
+  {
     "TEAM": "San Antonio",
     "YEAR": "2027",
     "PLAYER": "De'Aaron Fox",
@@ -113022,6 +113028,12 @@
     "SALARY": "$678,882"
   },
   {
+    "TEAM": "Utah",
+    "YEAR": "2027",
+    "PLAYER": "Kobe Bufkin",
+    "SALARY": "$663,276"
+  },
+  {
     "TEAM": "Washington",
     "YEAR": "2027",
     "PLAYER": "Anthony Davis",
@@ -113120,13 +113132,13 @@
   {
     "TEAM": "Washington",
     "YEAR": "2027",
-    "PLAYER": "Reece Beekman",
+    "PLAYER": "Felix Okpara",
     "SALARY": "$678,882"
   },
   {
     "TEAM": "Washington",
     "YEAR": "2027",
-    "PLAYER": "Felix Okpara",
+    "PLAYER": "Reece Beekman",
     "SALARY": "$678,882"
   }
 ]
