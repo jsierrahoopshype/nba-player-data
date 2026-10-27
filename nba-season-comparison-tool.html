@@ -646,7 +646,19 @@
 
     <script>
         // ===== CONFIGURATION =====
-        // Google Sheet for 2025-26 data
+        // Current season, worked out from today's UTC date: Oct 1 or later -> season starting this year.
+        // Same rule as scripts/fetch_nba_data.py, so it rolls over by itself every October.
+        // Stored as the season's end year ('2027' = 2026-27), the same format as YEAR in the historical data.
+        // loadAllData() switches it to the season the live data reports, if that differs (e.g. early October
+        // before the sheet rolls over), so one season's numbers are never shown under another's label.
+        function seasonEndYearFromDate(d = new Date()) {
+            return String(d.getUTCMonth() >= 9 ? d.getUTCFullYear() + 1 : d.getUTCFullYear());
+        }
+        let CURRENT_SEASON_YEAR = seasonEndYearFromDate();
+        let PREV_SEASON_YEAR = String(parseInt(CURRENT_SEASON_YEAR) - 1);
+        let sheetSeasonYear = null; // season reported in the sheet's "Season: YYYY-YY" header, if any
+        
+        // Google Sheet for current season data (same sheet every year; it rolls over to the new season itself)
         const GSHEET_ID = '1JH2FUBIyQ1zEHzZBxgP8vHBZ7d8EtP5-fSVG3zMgCgg';
         
         // Google Sheet tab GIDs
@@ -672,6 +684,11 @@
         // Fallback JSON URL (in case Google Sheets is unavailable)
         const JSON_URL = 'https://jsierrahoopshype.github.io/nba-player-data/nba-current-season-data.json';
         
+        // Previous season's frozen file (e.g. nba-2025-26-data.json): its final advanced/scoring/etc. numbers
+        function seasonJsonURL(seasonYear) {
+            return `https://jsierrahoopshype.github.io/nba-player-data/nba-${formatSeasonYear(seasonYear)}-data.json`;
+        }
+        
         // Fetch and parse Google Sheet CSV
         async function fetchGoogleSheet(gid, sheetName) {
             const url = getGSheetURL(gid);
@@ -683,6 +700,10 @@
                 }
                 const csvText = await response.text();
                 const lines = csvText.split('\n');
+                
+                // Remember which season the sheet says it holds ("Season: 2026-27 | ..." -> '2027')
+                const seasonLabel = csvText.slice(0, 300).match(/Season:\s*(\d{4})-\d{2}/);
+                if (seasonLabel) sheetSeasonYear = String(parseInt(seasonLabel[1]) + 1);
                 
                 // Skip rows until we find one that looks like column headers
                 let headerRowIndex = 0;
@@ -715,7 +736,7 @@
             }
         }
         
-        // Load all 2025-26 data from Google Sheets
+        // Load all current season data from Google Sheets
         async function loadGoogleSheetsData() {
             const data = {
                 rsStats: null,
@@ -755,8 +776,8 @@
         const HISTORICAL_ADV1_URL = 'https://jsierrahoopshype.github.io/nba-player-data/nba-historical-adv1.json';
         const HISTORICAL_ADV2_URL = 'https://jsierrahoopshype.github.io/nba-player-data/nba-historical-adv2.json';
 
-        // 2025-26 Stars for random matchups
-        const STARS_2526 = [
+        // Stars for random matchups in the current season (anyone without a current-season row is filtered out)
+        const CURRENT_STARS = [
             'Shai Gilgeous-Alexander', 'Victor Wembanyama', 'Luka Doncic', 'Giannis Antetokounmpo',
             'Nikola Jokic', 'Jayson Tatum', 'Anthony Edwards', 'Kevin Durant', 'LeBron James',
             'Stephen Curry', 'Donovan Mitchell', 'Tyrese Haliburton', 'Ja Morant', 'Trae Young',
@@ -770,14 +791,16 @@
             rsStats: [],
             poStats: [],
             teamStats: [],
-            current: {}, // 2025-26 from JSON
+            current: {}, // current season from Google Sheets or JSON
             historical: {}
         };
         let players = [];
         let playerSeasons = {};
         let playerPOSeasons = {};
-        let current2526Players = {}; // Index by player name for fast lookup
-        let current2526PlayersNormalized = {}; // Index by normalized name
+        let currentSeasonPlayers = {}; // Index by player name for fast lookup
+        let currentSeasonPlayersNormalized = {}; // Index by normalized name
+        let prevSeasonPlayers = {}; // Previous season (frozen JSON), index by player name
+        let prevSeasonPlayersNormalized = {}; // Previous season, index by normalized name
         let dataLastUpdated = null;
         let dataSource = 'JSON'; // 'Google Sheets' or 'JSON'
         let historicalDataLoaded = false;
@@ -832,6 +855,9 @@
 
         // Fix column swaps in data
         // 2025-26 RS: STL/BLK/TOV columns are rotated (STL has TOV values, BLK has STL, TOV has BLK)
+        // This is a defect in the static nba-historical-rs.json rows for YEAR '2026' (2025-26) only, so it stays
+        // tied to '2026'. Current-season rows come from the live sheet, whose STL/BLK/TOV columns are correct
+        // (checked for 2026-27), and never pass through data.rsStats.
         // Historical PO: STL and TOV columns are swapped
         function fixColumnSwaps() {
             let rsFixed = 0, poFixed = 0;
@@ -912,8 +938,8 @@
                 console.time('Total Load');
                 updateProgress(5, 'Loading data...');
                 
-                // Try to load 2025-26 data from Google Sheets first
-                updateProgress(10, 'Loading 2025-26 data from Google Sheets...');
+                // Try to load current season data from Google Sheets first
+                updateProgress(10, `Loading ${formatSeasonYear(CURRENT_SEASON_YEAR)} data from Google Sheets...`);
                 let currentData = await loadGoogleSheetsData();
                 
                 // Check if we got any data from Google Sheets
@@ -921,24 +947,35 @@
                 
                 if (hasGSheetData) {
                     dataSource = 'Google Sheets';
-                    console.log('2025-26 data loaded from Google Sheets');
+                    console.log('Current season data loaded from Google Sheets');
                 } else {
                     // Fallback to JSON if Google Sheets failed
                     dataSource = 'JSON';
                     console.log('Google Sheets unavailable, falling back to JSON...');
-                    updateProgress(15, 'Loading 2025-26 data from JSON fallback...');
+                    updateProgress(15, `Loading ${formatSeasonYear(CURRENT_SEASON_YEAR)} data from JSON fallback...`);
                     currentData = await fetchJSON(JSON_URL);
                 }
+                
+                // Trust the season the data reports over the date (e.g. early October before the sheet rolls over)
+                const reportedSeason = dataSource === 'Google Sheets'
+                    ? sheetSeasonYear
+                    : (currentData && currentData.season ? String(parseInt(currentData.season) + 1) : null);
+                if (reportedSeason && reportedSeason !== CURRENT_SEASON_YEAR) {
+                    console.log(`Data reports season ${formatSeasonYear(reportedSeason)}; using it as the current season`);
+                    CURRENT_SEASON_YEAR = reportedSeason;
+                }
+                PREV_SEASON_YEAR = String(parseInt(CURRENT_SEASON_YEAR) - 1);
                 
                 console.log('Starting historical data load...');
                 updateProgress(20, 'Loading historical data...');
                 
-                // Load historical JSON files in parallel
-                const [rsData, poData, adv1Data, adv2Data] = await Promise.all([
+                // Load historical JSON files in parallel (plus last season's frozen file)
+                const [rsData, poData, adv1Data, adv2Data, prevData] = await Promise.all([
                     fetchJSON(HISTORICAL_RS_URL).then(d => { console.log('RS data fetched'); return d; }),
                     fetchJSON(HISTORICAL_PO_URL).then(d => { console.log('PO data fetched'); return d; }),
                     fetchJSON(HISTORICAL_ADV1_URL).then(d => { console.log('ADV1 data fetched'); return d; }),
-                    fetchJSON(HISTORICAL_ADV2_URL).then(d => { console.log('ADV2 data fetched'); return d; })
+                    fetchJSON(HISTORICAL_ADV2_URL).then(d => { console.log('ADV2 data fetched'); return d; }),
+                    fetchJSON(seasonJsonURL(PREV_SEASON_YEAR)).then(d => { console.log('Previous season data fetched'); return d; })
                 ]);
                 
                 console.log('All historical data fetched');
@@ -997,7 +1034,7 @@
                 // Fix column swaps in data
                 fixColumnSwaps();
                 
-                // Process 2025-26 current season data (from Google Sheets or JSON)
+                // Process current season data (from Google Sheets or JSON)
                 if (currentData) {
                     dataLastUpdated = currentData.lastUpdated;
                     data.current = {
@@ -1016,7 +1053,7 @@
                         hustle: currentData.hustle || []
                     };
                     
-                    // Build index of 2025-26 players from all data sources
+                    // Build index of current season players from all data sources
                     // Helper to find player name from various possible column names
                     function getPlayerNameFromRow(row) {
                         // Try exact matches first
@@ -1048,15 +1085,15 @@
                             data.current[key].forEach(row => {
                                 const name = getPlayerNameFromRow(row);
                                 if (name) {
-                                    if (!current2526Players[name]) current2526Players[name] = {};
-                                    current2526Players[name][key] = row;
+                                    if (!currentSeasonPlayers[name]) currentSeasonPlayers[name] = {};
+                                    currentSeasonPlayers[name][key] = row;
                                     
                                     const normalizedName = normalizeName(name);
-                                    if (!current2526PlayersNormalized[normalizedName]) {
-                                        current2526PlayersNormalized[normalizedName] = {};
+                                    if (!currentSeasonPlayersNormalized[normalizedName]) {
+                                        currentSeasonPlayersNormalized[normalizedName] = {};
                                     }
-                                    current2526PlayersNormalized[normalizedName][key] = row;
-                                    current2526PlayersNormalized[normalizedName]._originalName = name;
+                                    currentSeasonPlayersNormalized[normalizedName][key] = row;
+                                    currentSeasonPlayersNormalized[normalizedName]._originalName = name;
                                     count++;
                                 }
                             });
@@ -1064,43 +1101,64 @@
                         }
                     });
                     
-                    // Index RS stats for 2025-26
+                    // Index RS stats for current season
                     if (data.current.rsStats) {
                         data.current.rsStats.forEach(row => {
                             const name = getPlayerNameFromRow(row);
                             if (name) {
-                                if (!current2526Players[name]) current2526Players[name] = {};
-                                current2526Players[name].rsStats = row;
+                                if (!currentSeasonPlayers[name]) currentSeasonPlayers[name] = {};
+                                currentSeasonPlayers[name].rsStats = row;
                                 
                                 const normalizedName = normalizeName(name);
-                                if (!current2526PlayersNormalized[normalizedName]) {
-                                    current2526PlayersNormalized[normalizedName] = {};
+                                if (!currentSeasonPlayersNormalized[normalizedName]) {
+                                    currentSeasonPlayersNormalized[normalizedName] = {};
                                 }
-                                current2526PlayersNormalized[normalizedName].rsStats = row;
-                                current2526PlayersNormalized[normalizedName]._originalName = name;
+                                currentSeasonPlayersNormalized[normalizedName].rsStats = row;
+                                currentSeasonPlayersNormalized[normalizedName]._originalName = name;
                             }
                         });
                     }
                     
-                    // Index PO stats for 2025-26
+                    // Index PO stats for current season
                     if (data.current.poStats) {
                         data.current.poStats.forEach(row => {
                             const name = getPlayerNameFromRow(row);
                             if (name) {
-                                if (!current2526Players[name]) current2526Players[name] = {};
-                                current2526Players[name].poStats = row;
+                                if (!currentSeasonPlayers[name]) currentSeasonPlayers[name] = {};
+                                currentSeasonPlayers[name].poStats = row;
                                 
                                 const normalizedName = normalizeName(name);
-                                if (!current2526PlayersNormalized[normalizedName]) {
-                                    current2526PlayersNormalized[normalizedName] = {};
+                                if (!currentSeasonPlayersNormalized[normalizedName]) {
+                                    currentSeasonPlayersNormalized[normalizedName] = {};
                                 }
-                                current2526PlayersNormalized[normalizedName].poStats = row;
-                                current2526PlayersNormalized[normalizedName]._originalName = name;
+                                currentSeasonPlayersNormalized[normalizedName].poStats = row;
+                                currentSeasonPlayersNormalized[normalizedName]._originalName = name;
                             }
                         });
                     }
                     
-                    console.log('2025-26 data loaded:', Object.keys(current2526Players).length, 'players');
+                    console.log(`${formatSeasonYear(CURRENT_SEASON_YEAR)} data loaded:`, Object.keys(currentSeasonPlayers).length, 'players');
+                }
+                
+                // Previous season: final advanced/scoring/etc. numbers from its frozen JSON
+                // (the historical files don't have them; RS totals still come from nba-historical-rs.json)
+                if (prevData && prevData.season === formatSeasonYear(PREV_SEASON_YEAR)) {
+                    ['advanced', 'scoring', 'shotLocation', 'defense', 'usage', 'clutch', 'hustle'].forEach(key => {
+                        (prevData[key] || []).forEach(row => {
+                            const name = row.PLAYER_NAME;
+                            if (!name) return;
+                            if (!prevSeasonPlayers[name]) prevSeasonPlayers[name] = {};
+                            prevSeasonPlayers[name][key] = row;
+                            
+                            const normalizedName = normalizeName(name);
+                            if (!prevSeasonPlayersNormalized[normalizedName]) {
+                                prevSeasonPlayersNormalized[normalizedName] = {};
+                            }
+                            prevSeasonPlayersNormalized[normalizedName][key] = row;
+                            prevSeasonPlayersNormalized[normalizedName]._originalName = name;
+                        });
+                    });
+                    console.log(`${formatSeasonYear(PREV_SEASON_YEAR)} data loaded:`, Object.keys(prevSeasonPlayers).length, 'players');
                 }
 
                 updateProgress(80, 'Building player database...');
@@ -1144,6 +1202,9 @@
                 }
             });
 
+            // The historical files stop before the current season: add it from the live data
+            addCurrentSeasonEntries(playersMap);
+
             players = Array.from(playersMap.keys()).sort();
             playersMap.forEach((seasons, name) => {
                 playerSeasons[name] = seasons.sort((a, b) => parseInt(b.year) - parseInt(a.year));
@@ -1153,6 +1214,37 @@
             });
 
             console.log('Built player list:', players.length, 'players');
+        }
+
+        // Attach a current-season entry to each matching historical player, or add the player (rookies)
+        function addCurrentSeasonEntries(playersMap) {
+            const stripSuffix = n => n.replace(/\./g, '').replace(/\s+(jr|sr|ii|iii|iv)$/i, '');
+            const exactNames = {}, strippedNames = {};
+            playersMap.forEach((seasons, name) => {
+                const normalized = normalizeName(name);
+                exactNames[normalized] = name;
+                // Suffix-less match only for recently active players, so a retired "X" never picks up "X II"
+                if (seasons.some(s => parseInt(s.year) >= parseInt(CURRENT_SEASON_YEAR) - 2)) {
+                    strippedNames[stripSuffix(normalized)] = name;
+                }
+            });
+            
+            let added = 0, newPlayers = 0;
+            Object.keys(currentSeasonPlayers).forEach(sheetName => {
+                const playerObj = currentSeasonPlayers[sheetName];
+                const row = playerObj.rsStats || playerObj.advanced;
+                if (!row) return;
+                const normalized = normalizeName(sheetName);
+                const alias = SHEET_NAME_ALIASES[sheetName];
+                const name = (alias && playersMap.has(alias) ? alias : null)
+                    || exactNames[normalized] || strippedNames[stripSuffix(normalized)] || sheetName;
+                if (!playersMap.has(name)) { playersMap.set(name, []); newPlayers++; }
+                const seasons = playersMap.get(name);
+                if (seasons.some(s => s.year === CURRENT_SEASON_YEAR)) return;
+                seasons.push({ year: CURRENT_SEASON_YEAR, team: row.TEAM_ABBREVIATION || row.TEAM || '', data: playerObj.rsStats || null });
+                added++;
+            });
+            console.log(`Added ${formatSeasonYear(CURRENT_SEASON_YEAR)} for ${added} players (${newPlayers} new)`);
         }
 
         // ===== COMPARISON CONFIGURATION =====
@@ -1355,7 +1447,7 @@
             });
         }
 
-        function populateSeasonSelect(selectEl, playerName, autoSelect2526 = false) {
+        function populateSeasonSelect(selectEl, playerName, autoSelectCurrent = false) {
             selectEl.innerHTML = '<option value="">-- Choose Season --</option>';
             if (!playerName || !playerSeasons[playerName]) { selectEl.disabled = true; return; }
             
@@ -1368,10 +1460,10 @@
             });
             selectEl.disabled = false;
             
-            if (autoSelect2526) {
-                const has2526 = seasons.some(s => s.year === '2026');
-                if (has2526) {
-                    selectEl.value = '2026';
+            if (autoSelectCurrent) {
+                const hasCurrent = seasons.some(s => s.year === CURRENT_SEASON_YEAR);
+                if (hasCurrent) {
+                    selectEl.value = CURRENT_SEASON_YEAR;
                 } else if (seasons.length > 0) {
                     selectEl.value = seasons[0].year;
                 }
@@ -1429,9 +1521,9 @@
         }
 
         function loadRandomStars() {
-            const availableStars = STARS_2526.filter(name => {
+            const availableStars = CURRENT_STARS.filter(name => {
                 const seasons = playerSeasons[name];
-                return seasons && seasons.some(s => s.year === '2026');
+                return seasons && seasons.some(s => s.year === CURRENT_SEASON_YEAR);
             });
             
             if (availableStars.length < 2) {
@@ -1470,11 +1562,11 @@
             // Get top scorers from the same season
             let topScorers = [];
             
-            if (keepSeason === '2026') {
-                // Use 2025-26 stars list for current season
-                topScorers = STARS_2526.filter(name => {
+            if (keepSeason === CURRENT_SEASON_YEAR) {
+                // Use stars list for current season
+                topScorers = CURRENT_STARS.filter(name => {
                     const seasons = playerSeasons[name];
-                    return seasons && seasons.some(s => s.year === '2026');
+                    return seasons && seasons.some(s => s.year === CURRENT_SEASON_YEAR);
                 });
             } else {
                 // Find top 70 scorers from that historical season
@@ -1521,31 +1613,48 @@
         }
 
         // ===== COMPARISON LOGIC =====
-        // Helper to find player in current2526Players with flexible name matching
-        function findCurrent2526Player(playerName) {
+        // Live-sheet name -> name in the historical files, where the two spell a player differently
+        const SHEET_NAME_ALIASES = {
+            'Herbert Jones': 'Herb Jones',
+            'Dennis Schröder': 'Dennis Schroeder',
+            'Svi Mykhailiuk': 'Sviatoslav Mykhailiuk',
+            'Bub Carrington': 'Carlton Carrington',
+            'Ronald Holland II': 'Ron Holland',
+            'David Jones Garcia': 'David Jones'
+        };
+        const HISTORICAL_TO_SHEET_NAME = Object.fromEntries(Object.entries(SHEET_NAME_ALIASES).map(([k, v]) => [v, k]));
+
+        // Helper to find player in a season index (current or previous) with flexible name matching
+        function findSeasonPlayer(playerName, byName, byNormalized) {
             // Try exact match first
-            if (current2526Players[playerName]) {
-                return current2526Players[playerName];
+            if (byName[playerName]) {
+                return byName[playerName];
+            }
+            
+            // Try the sheet's spelling of a historical name
+            const sheetName = HISTORICAL_TO_SHEET_NAME[playerName];
+            if (sheetName && byName[sheetName]) {
+                return byName[sheetName];
             }
             
             // Try normalized name
             const normalizedSearch = normalizeName(playerName);
-            if (current2526PlayersNormalized[normalizedSearch]) {
-                return current2526PlayersNormalized[normalizedSearch];
+            if (byNormalized[normalizedSearch]) {
+                return byNormalized[normalizedSearch];
             }
             
             // Try adding/removing suffixes (Jr., Sr., III, II, IV)
             const suffixes = [' Jr.', ' Sr.', ' III', ' II', ' IV', ' Jr', ' Sr'];
             for (const suffix of suffixes) {
                 // Try adding suffix
-                if (current2526Players[playerName + suffix]) {
-                    return current2526Players[playerName + suffix];
+                if (byName[playerName + suffix]) {
+                    return byName[playerName + suffix];
                 }
                 // Try removing suffix
                 if (playerName.endsWith(suffix)) {
                     const baseName = playerName.slice(0, -suffix.length);
-                    if (current2526Players[baseName]) {
-                        return current2526Players[baseName];
+                    if (byName[baseName]) {
+                        return byName[baseName];
                     }
                 }
             }
@@ -1553,13 +1662,17 @@
             return null;
         }
 
+        function findCurrentSeasonPlayer(playerName) {
+            return findSeasonPlayer(playerName, currentSeasonPlayers, currentSeasonPlayersNormalized);
+        }
+
         function getPlayerData(playerName, season, source) {
-            const isCurrent = (season === '2026');
+            const isCurrent = (season === CURRENT_SEASON_YEAR);
             
             if (source === 'rs') {
-                // For 2025-26, check JSON data first
+                // For current season, check live data first
                 if (isCurrent) {
-                    const playerObj = findCurrent2526Player(playerName);
+                    const playerObj = findCurrentSeasonPlayer(playerName);
                     if (playerObj) {
                         // Return rsStats for totals - DO NOT merge with rsStatsPerGame
                         // The getStatValue function will handle column alternatives
@@ -1573,19 +1686,19 @@
                 return match ? match.data : null;
             }
             
-            // Special handling for per-game stats in 2025-26
+            // Special handling for per-game stats in current season
             if (source === 'rsPerGame') {
                 if (isCurrent) {
-                    const playerObj = findCurrent2526Player(playerName);
+                    const playerObj = findCurrentSeasonPlayer(playerName);
                     if (playerObj?.rsStatsPerGame) return playerObj.rsStatsPerGame;
                 }
                 return null;
             }
             
             if (source === 'po') {
-                // For 2025-26, check JSON data first
+                // For current season, check live data first
                 if (isCurrent) {
-                    const playerObj = findCurrent2526Player(playerName);
+                    const playerObj = findCurrentSeasonPlayer(playerName);
                     if (playerObj?.poStats) return playerObj.poStats;
                 }
                 // Fall back to all-time database
@@ -1613,7 +1726,7 @@
             const dataKey = sourceMap[source] || source;
             
             if (isCurrent) {
-                const playerObj = findCurrent2526Player(playerName);
+                const playerObj = findCurrentSeasonPlayer(playerName);
                 // For plusMinus in current season, use rsStats (column PLUS_MINUS in gid=1169156479)
                 if (source === 'plusMinus') {
                     if (playerObj && playerObj['rsStats']) {
@@ -1626,6 +1739,12 @@
                 }
                 return null;
             } else {
+                // Previous season: its frozen JSON has the final numbers the historical files lack
+                if (season === PREV_SEASON_YEAR) {
+                    const prevObj = findSeasonPlayer(playerName, prevSeasonPlayers, prevSeasonPlayersNormalized);
+                    if (prevObj && prevObj[dataKey]) return prevObj[dataKey];
+                }
+                
                 const dataSource = data.historical[dataKey];
                 if (!dataSource || dataSource.length === 0) return null;
                 
@@ -2102,9 +2221,9 @@
             const matchups = [];
             const usedPairs = new Set([`${currentP1}-${currentP2}`, `${currentP2}-${currentP1}`]);
             
-            const availableStars = STARS_2526.filter(name => {
+            const availableStars = CURRENT_STARS.filter(name => {
                 const seasons = playerSeasons[name];
-                return seasons && seasons.some(s => s.year === '2026');
+                return seasons && seasons.some(s => s.year === CURRENT_SEASON_YEAR);
             });
             
             // Generate matchups - mix of current players vs new opponents and completely random
@@ -2115,7 +2234,7 @@
                 const opponent = availableStars[Math.floor(Math.random() * availableStars.length)];
                 const pairKey = `${currentP1}-${opponent}`;
                 if (opponent !== currentP1 && opponent !== currentP2 && !usedPairs.has(pairKey)) {
-                    matchups.push({ p1: currentP1, p2: opponent, s1: '2026', s2: '2026' });
+                    matchups.push({ p1: currentP1, p2: opponent, s1: CURRENT_SEASON_YEAR, s2: CURRENT_SEASON_YEAR });
                     usedPairs.add(pairKey);
                     usedPairs.add(`${opponent}-${currentP1}`);
                 }
@@ -2126,7 +2245,7 @@
                 const opponent = availableStars[Math.floor(Math.random() * availableStars.length)];
                 const pairKey = `${currentP2}-${opponent}`;
                 if (opponent !== currentP1 && opponent !== currentP2 && !usedPairs.has(pairKey)) {
-                    matchups.push({ p1: currentP2, p2: opponent, s1: '2026', s2: '2026' });
+                    matchups.push({ p1: currentP2, p2: opponent, s1: CURRENT_SEASON_YEAR, s2: CURRENT_SEASON_YEAR });
                     usedPairs.add(pairKey);
                     usedPairs.add(`${opponent}-${currentP2}`);
                 }
@@ -2138,7 +2257,7 @@
                 const p2 = availableStars[Math.floor(Math.random() * availableStars.length)];
                 const pairKey = `${p1}-${p2}`;
                 if (p1 !== p2 && !usedPairs.has(pairKey)) {
-                    matchups.push({ p1, p2, s1: '2026', s2: '2026' });
+                    matchups.push({ p1, p2, s1: CURRENT_SEASON_YEAR, s2: CURRENT_SEASON_YEAR });
                     usedPairs.add(pairKey);
                     usedPairs.add(`${p2}-${p1}`);
                 }
@@ -2187,11 +2306,11 @@
         }
 
         function getTopPlayersForSeason(season) {
-            if (season === '2026') {
+            if (season === CURRENT_SEASON_YEAR) {
                 // Use current season stars
-                return STARS_2526.filter(name => {
+                return CURRENT_STARS.filter(name => {
                     const seasons = playerSeasons[name];
-                    return seasons && seasons.some(s => s.year === '2026');
+                    return seasons && seasons.some(s => s.year === CURRENT_SEASON_YEAR);
                 });
             } else {
                 // Get top 70 scorers from that historical season
@@ -2391,10 +2510,10 @@
                 if (dataLastUpdated) {
                     const date = new Date(dataLastUpdated);
                     document.getElementById('dataTimestamp').textContent = 
-                        `2025-26 data (${dataSource}): ${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+                        `${formatSeasonYear(CURRENT_SEASON_YEAR)} data (${dataSource}): ${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
                 } else if (dataSource === 'Google Sheets') {
                     document.getElementById('dataTimestamp').textContent = 
-                        `2025-26 data: Live from Google Sheets`;
+                        `${formatSeasonYear(CURRENT_SEASON_YEAR)} data: Live from Google Sheets`;
                 }
                 
                 setupAutocomplete();
