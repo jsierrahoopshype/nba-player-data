@@ -854,37 +854,11 @@
         }
 
         // Fix column swaps in data
-        // 2025-26 RS: STL/BLK/TOV columns are rotated (STL has TOV values, BLK has STL, TOV has BLK)
-        // This is a defect in the static nba-historical-rs.json rows for YEAR '2026' (2025-26) only, so it stays
-        // tied to '2026'. Current-season rows come from the live sheet, whose STL/BLK/TOV columns are correct
-        // (checked for 2026-27), and never pass through data.rsStats.
+        // (2025-26 RS rows in nba-historical-rs.json were rebuilt from final totals with correct STL/BLK/TOV,
+        // so they no longer need the 3-way rotation that used to live here)
         // Historical PO: STL and TOV columns are swapped
         function fixColumnSwaps() {
-            let rsFixed = 0, poFixed = 0;
-            
-            // Fix 2025-26 RS data: 3-way rotation
-            data.rsStats.forEach(row => {
-                if (row.YEAR === '2026') {
-                    // Per-game: actual STL = old BLK, actual BLK = old TOV, actual TOV = old STL
-                    const oldSTLG = row['STL / G'];
-                    const oldBLKG = row['BLK / G'];
-                    const oldTOVG = row['TOV / G'];
-                    row['STL / G'] = oldBLKG;
-                    row['BLK / G'] = oldTOVG;
-                    row['TOV / G'] = oldSTLG;
-                    
-                    // Totals (if they exist)
-                    if (row['STL'] !== undefined || row['BLK'] !== undefined || row['TOV'] !== undefined) {
-                        const oldSTL = row['STL'];
-                        const oldBLK = row['BLK'];
-                        const oldTOV = row['TOV'];
-                        row['STL'] = oldBLK;
-                        row['BLK'] = oldTOV;
-                        row['TOV'] = oldSTL;
-                    }
-                    rsFixed++;
-                }
-            });
+            let poFixed = 0;
             
             // Fix all historical PO data: STL ↔ TOV swap
             data.poStats.forEach(row => {
@@ -902,7 +876,7 @@
                 poFixed++;
             });
             
-            console.log('Fixed column swaps: ' + rsFixed + ' RS rows (2025-26), ' + poFixed + ' PO rows');
+            console.log('Fixed column swaps: ' + poFixed + ' PO rows');
         }
 
         // ===== DATA LOADING =====
