@@ -1,4 +1,4 @@
-name: Update NBA 2025-26 Data
+name: Update NBA Current Season Data
 
 on:
   schedule:
@@ -21,13 +21,16 @@ jobs:
         with:
           python-version: '3.11'
       
+      # Writes nba-<season>-data.json + nba-current-season-data.json (season from today's UTC date).
+      # Writes nothing if the current season has no players yet.
       - name: Fetch NBA data from Google Sheets
         run: python scripts/fetch_nba_data.py
       
       - name: Commit and push if changed
         run: |
+          SEASON=$(python -c "import sys; sys.path.insert(0, 'scripts'); from fetch_nba_data import get_current_season; print(get_current_season())")
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add nba-2025-26-data.json
-          git diff --staged --quiet || git commit -m "Update NBA 2025-26 data - $(date -u '+%Y-%m-%d %H:%M UTC')"
+          git add "nba-${SEASON}-data.json" nba-current-season-data.json 2>/dev/null || true
+          git diff --staged --quiet || git commit -m "Update NBA ${SEASON} data - $(date -u '+%Y-%m-%d %H:%M') UTC"
           git pull --rebase origin main && git push || (sleep $((RANDOM % 20 + 5)) && git pull --rebase origin main && git push)
