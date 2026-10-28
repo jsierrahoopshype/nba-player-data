@@ -27,7 +27,7 @@ GID = '1591736011'  # PO Stats tab
 def fetch_google_sheet_csv(sheet_id, gid):
     """Fetch data from published Google Sheet as CSV."""
     url = f'https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=csv&gid={gid}'
-    response = requests.get(url, timeout=60, headers={'User-Agent': 'Mozilla/5.0'})
+    response = requests.get(url, timeout=sheet_guard.READ_TIMEOUT, headers={'User-Agent': 'Mozilla/5.0'})
     response.raise_for_status()
     response.encoding = 'utf-8'
     return response.text
