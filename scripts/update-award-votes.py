@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """
 Fetches the award votes tab from Google Sheets and updates awardVotes.json.
-Source: All-Time Database, gid 578998874.
+Source: the light HoopsMatic spreadsheet (1Wxqb2qD...), Award Votes tab, gid
+1639181622. It was the All-Time Database's Award Votes tab (gid 578998874) until
+Oct 2026, when that spreadsheet got too big to export.
 """
 
 import csv
@@ -11,8 +13,8 @@ import requests
 
 import sheet_guard  # fail clearly and keep the committed file (scripts/sheet_guard.py)
 
-SHEET_ID = '1ZrDfzqiC31Hu3YCtxT4aZbZF4QVCVyGe6wBytR2LF30'
-GID = '578998874'
+SHEET_ID = '1Wxqb2qD848ZEb0jVpVkJfN4-XzKy5qhOmdWMeFTe1ow'
+GID = '1639181622'  # Award Votes
 OUTPUT_PATH = 'awardVotes.json'
 REQUIRED_HEADERS = ('PLAYER', 'YEAR', 'AWARD', 'RNK')
 

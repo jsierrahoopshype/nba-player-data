@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """
 Fetches the bio tab from Google Sheets and generates bio.json.
-Source: All-Time Database, gid 1488063724.
+Source: the light HoopsMatic spreadsheet (1Wxqb2qD...), Bio Data tab, gid
+1048341184. It was the All-Time Database's Bio Data tab (gid 1488063724) until
+Oct 2026, when that spreadsheet got too big to export.
 """
 
 import csv
@@ -11,8 +13,8 @@ import requests
 
 import sheet_guard  # fail clearly and keep the committed file (scripts/sheet_guard.py)
 
-SHEET_ID = '1ZrDfzqiC31Hu3YCtxT4aZbZF4QVCVyGe6wBytR2LF30'
-GID = '1488063724'
+SHEET_ID = '1Wxqb2qD848ZEb0jVpVkJfN4-XzKy5qhOmdWMeFTe1ow'
+GID = '1048341184'  # Bio Data
 OUTPUT_PATH = 'bio.json'
 OVERRIDES_PATH = 'data/bio_birthdate_overrides.json'
 FIELDS = ['PLAYER', 'BIRTHDAY', 'POS', 'HEIGHT', 'WEIGHT', 'NATIONALITY', 'DRAFT']

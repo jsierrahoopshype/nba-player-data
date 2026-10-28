@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """
 Fetches the awards tab from Google Sheets and regenerates awards.json.
-Source: All-Time Database, gid 1456513900.
+Source: the light HoopsMatic spreadsheet (1Wxqb2qD...), Awards tab, gid 0. It was
+the All-Time Database's Awards tab (gid 1456513900) until Oct 2026, when that
+spreadsheet got too big to export.
 The sheet is the source of truth — awards.json is fully regenerated each run.
 """
 
@@ -12,8 +14,8 @@ import requests
 
 import sheet_guard  # fail clearly and keep the committed file (scripts/sheet_guard.py)
 
-SHEET_ID = '1ZrDfzqiC31Hu3YCtxT4aZbZF4QVCVyGe6wBytR2LF30'
-GID = '1456513900'
+SHEET_ID = '1Wxqb2qD848ZEb0jVpVkJfN4-XzKy5qhOmdWMeFTe1ow'
+GID = '0'  # Awards
 OUTPUT_PATH = 'awards.json'
 REQUIRED_HEADERS = ('PLAYER / COACH', 'AWARD', 'YEAR', 'TEAM')
 
