@@ -9,6 +9,8 @@ import json
 from io import StringIO
 import requests
 
+import sheet_guard  # fail clearly and keep the committed file (scripts/sheet_guard.py)
+
 SHEET_ID = '1ZrDfzqiC31Hu3YCtxT4aZbZF4QVCVyGe6wBytR2LF30'
 GID = '1488063724'
 OUTPUT_PATH = 'bio.json'
@@ -110,7 +112,7 @@ def apply_birthdate_overrides(records, path=OVERRIDES_PATH):
 
 def main():
     print(f"Fetching bio data from Google Sheet {SHEET_ID} (gid={GID})...")
-    csv_text = fetch_google_sheet_csv(SHEET_ID, GID)
+    csv_text = sheet_guard.fetch_checked('Bio tab', 'bio.json', fetch_google_sheet_csv, SHEET_ID, GID)
     print(f"Fetched {len(csv_text)} bytes")
 
     records = parse_sheet_records(csv_text)

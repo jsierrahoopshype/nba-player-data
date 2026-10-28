@@ -9,6 +9,8 @@ import json
 from io import StringIO
 import requests
 
+import sheet_guard  # fail clearly and keep the committed file (scripts/sheet_guard.py)
+
 SHEET_ID = '1ZrDfzqiC31Hu3YCtxT4aZbZF4QVCVyGe6wBytR2LF30'
 GID = '578998874'
 OUTPUT_PATH = 'awardVotes.json'
@@ -72,7 +74,7 @@ def deduplicate(records):
 
 def main():
     print(f"Fetching award votes from Google Sheet {SHEET_ID} (gid={GID})...")
-    csv_text = fetch_google_sheet_csv(SHEET_ID, GID)
+    csv_text = sheet_guard.fetch_checked('Award Votes tab', 'awardVotes.json', fetch_google_sheet_csv, SHEET_ID, GID)
     print(f"Fetched {len(csv_text)} bytes")
     new_records = parse_sheet_records(csv_text)
     print(f"Parsed {len(new_records)} records from the sheet")
