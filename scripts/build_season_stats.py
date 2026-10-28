@@ -23,14 +23,14 @@ Every rebuilt row matches the tab's layout and formats (checked against 2025-26)
   - one row per player per season; TEAM is the team of his latest game; CODE is
     "PLAYER TEAM YEAR", RG CODE is empty, NB CODE is NBA's own spelling of his name
   - PLAYER is the HoopsHype spelling: the light sheet's "HM Codes" table, then
-    "Jr." -> "Jr" (and HARD_NAMES until HM Codes has those rows)
+    "Jr." -> "Jr"
   - MIN to one decimal (half up, no ".0"); FG%/3P%/FT% as percents to one decimal;
     per-game columns and the second FG%/3P%/FT% to two decimals (half up)
   - RS only: the tab's columns headed TOV / G, STL / G, BLK / G hold steals, blocks
     and turnovers per game, in that order. The tab has them that way; so does this.
   - AGE (Feb 1) is the age on Feb 8 of the YEAR, which is what the tab computes, from
-    the light sheet's Bio Data birthdays, which is what the tab used (bio.json's
-    corrected birthdays would move a few ages; existing numbers must not shift)
+    bio.json's birthdays (the Bio Data tab with data/bio_birthdate_overrides.json's
+    corrections applied; since Oct 2026, accepting the few ages the corrections move)
   - RAT (RS) is left empty: its formula is unknown and no reader uses it
   - PO RESULT: First Round / Conf Semis / Conf Finalist / Finalist / Champion from
     the series results; empty while the team is still playing
@@ -67,12 +67,8 @@ BOX_URL = BUCKET + '/liveData/boxscore/boxscore_{}.json'
 # The light HoopsMatic spreadsheet's "HM Codes" tab: NBA name -> HoopsHype name.
 HM_CODES_URL = ('https://docs.google.com/spreadsheets/d/1Wxqb2qD848ZEb0jVpVkJfN4-XzKy5qhOmdWMeFTe1ow'
                 '/export?format=csv&gid=1892686525')
-# The light sheet's "Bio Data" tab: birthdays for AGE (Feb 1), as the old tab used them.
-BIO_DATA_URL = ('https://docs.google.com/spreadsheets/d/1Wxqb2qD848ZEb0jVpVkJfN4-XzKy5qhOmdWMeFTe1ow'
-                '/export?format=csv&gid=1048341184')
-# Names HM Codes does not carry yet. HM Codes wins as soon as it has the row; then
-# the entry here can be deleted.
-HARD_NAMES = {'Jabari Smith Jr.': 'Jabari Smith'}
+# Birthdays for AGE (Feb 1): update-bio.py's output, corrections applied.
+BIO_PATH = 'bio.json'
 
 STATS_DIR = 'data/stats'
 RS_FROZEN = f'{STATS_DIR}/rs-frozen.csv'
@@ -208,15 +204,15 @@ def load_hm_codes():
 
 
 def hh_name(nba_name, hm):
-    name = hm.get(nba_name) or HARD_NAMES.get(nba_name) or nba_name
+    name = hm.get(nba_name) or nba_name
     return re.sub(r' (Jr|Sr)\.$', r' \1', name)
 
 
 def load_birthdays():
-    text = get(BIO_DATA_URL).decode('utf-8')
-    rows = list(csv.DictReader(io.StringIO(text)))
-    if len(rows) < 1000 or 'BIRTHDAY' not in rows[0]:
-        fail('the Bio Data tab did not come back as its CSV')
+    with open(BIO_PATH, encoding='utf-8') as f:
+        rows = json.load(f)
+    if len(rows) < 1000:
+        fail(f'{BIO_PATH} has only {len(rows)} players')
     out = {}
     for r in rows:
         out.setdefault((r.get('PLAYER') or '').strip(), (r.get('BIRTHDAY') or '').strip())

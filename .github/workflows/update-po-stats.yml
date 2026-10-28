@@ -1,4 +1,4 @@
-name: Update PO Stats from Google Sheets
+name: Update PO Stats
 
 on:
   schedule:
@@ -46,5 +46,5 @@ jobs:
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           git add poStats.json
-          git commit -m "Auto-update poStats.json from Google Sheets [$(date +'%Y-%m-%d %H:%M')]"
+          git commit -m "Auto-update poStats.json from data/stats/po-stats.csv [$(date +'%Y-%m-%d %H:%M')]"
           git pull --rebase origin main && git push || (sleep $((RANDOM % 20 + 5)) && git pull --rebase origin main && git push)
