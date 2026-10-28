@@ -17,7 +17,6 @@ from datetime import datetime, timezone
 
 # Google Sheets Configuration
 SHEETS = {
-    'allTime': '1ZrDfzqiC31Hu3YCtxT4aZbZF4QVCVyGe6wBytR2LF30',
     # Current-season sheet (same sheet every year; it rolls over to the new season itself)
     'currentSeason': '1JH2FUBIyQ1zEHzZBxgP8vHBZ7d8EtP5-fSVG3zMgCgg',
     'historical': '1nPSI-VVKHkGYW9IY2KDP-v_xW6qi9_L9WpCnUFKRi8A'
@@ -25,11 +24,6 @@ SHEETS = {
 
 # Tab GIDs
 TABS = {
-    # All-Time Database tabs
-    'rsStats': 576369994,
-    'poStats': 1591736011,
-    'teamStats': 1735540905,
-    
     # Current Season tabs
     'current_advanced': 339737563,
     'current_scoring': 52077302,
@@ -172,26 +166,10 @@ def main():
         'hustle': []
     }
     
-    # Fetch Regular Season Stats (filtered to current season)
-    print("Fetching RS Stats...")
-    url = get_sheet_url(SHEETS['allTime'], TABS['rsStats'])
-    all_rs = fetch_csv(url, known_headers=['PLAYER', 'YEAR', 'TEAM', 'GP'])
-    nba_data['rsStats'] = [process_row(r) for r in filter_season(all_rs, season)]
-    print(f"  Found {len(nba_data['rsStats'])} players for {season}")
-    
-    # Fetch Playoff Stats (filtered to current season)
-    print("Fetching PO Stats...")
-    url = get_sheet_url(SHEETS['allTime'], TABS['poStats'])
-    all_po = fetch_csv(url, known_headers=['PLAYER', 'YEAR', 'TEAM', 'GP'])
-    nba_data['poStats'] = [process_row(r) for r in filter_season(all_po, season)]
-    print(f"  Found {len(nba_data['poStats'])} players for {season}")
-    
-    # Fetch Team Stats (filtered to current season)
-    print("Fetching Team Stats...")
-    url = get_sheet_url(SHEETS['allTime'], TABS['teamStats'])
-    all_teams = fetch_csv(url, known_headers=['TEAM', 'YEAR', 'W', 'L'])
-    nba_data['teamStats'] = [process_row(r) for r in filter_season(all_teams, season)]
-    print(f"  Found {len(nba_data['teamStats'])} teams for {season}")
+    # rsStats, poStats and teamStats stay empty lists. They used to come from the
+    # All-Time Database (gviz reads of the INDEX, PO Stats and 2027Stats tabs), but
+    # those reads returned 0 rows for the season every day, 2025-26 included, and
+    # only made Google open that very large spreadsheet. Removed Oct 2026.
     
     # Fetch current season Advanced Stats
     print("Fetching Advanced Stats...")
