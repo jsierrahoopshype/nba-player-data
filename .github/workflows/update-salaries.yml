@@ -25,6 +25,12 @@ jobs:
       - name: Fetch and update salaries.json
         run: python scripts/update-salaries.py
 
+      # A failed or bad fetch must never replace the committed file: the update
+      # script exits 1 on a fetch error or error page, and this refuses an empty
+      # file or one with fewer than 90% of the committed records.
+      - name: Refuse a worse salaries.json
+        run: python scripts/check_data_file.py salaries.json
+
       - name: Check for changes
         id: changes
         run: |

@@ -91,6 +91,8 @@ from io import StringIO
 
 import requests
 
+import sheet_guard  # fail clearly and keep the committed file (scripts/sheet_guard.py)
+
 # Google Sheet configuration (All-Time Database, Future Salaries tab)
 SHEET_ID = '1ZrDfzqiC31Hu3YCtxT4aZbZF4QVCVyGe6wBytR2LF30'
 GID = '1555460703'  # Future Salaries tab
@@ -284,7 +286,7 @@ def count_by_year(records):
 
 def main():
     print(f"Fetching Future Salaries from Google Sheet {SHEET_ID} (gid={GID})...")
-    csv_text = fetch_google_sheet_csv(SHEET_ID, GID)
+    csv_text = sheet_guard.fetch_checked('Future Salaries tab', 'salaries.json', fetch_google_sheet_csv, SHEET_ID, GID)
     print(f"Fetched {len(csv_text)} bytes")
 
     sheet_records = parse_sheet_records(csv_text)

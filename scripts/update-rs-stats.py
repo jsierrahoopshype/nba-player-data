@@ -7,6 +7,8 @@ Used by GitHub Actions to keep stats up-to-date automatically.
 import json
 import pandas as pd
 import requests
+
+import sheet_guard  # fail clearly and keep the committed file (scripts/sheet_guard.py)
 from io import StringIO
 
 # Google Sheet configuration
@@ -154,7 +156,7 @@ def main():
     print(f"Fetching data from Google Sheet {SHEET_ID}...")
     
     try:
-        csv_data = fetch_google_sheet_csv(SHEET_ID, GID)
+        csv_data = sheet_guard.fetch_checked('RS Stats tab', 'rsStats.json', fetch_google_sheet_csv, SHEET_ID, GID)
         print(f"Fetched {len(csv_data)} bytes")
         
         df = pd.read_csv(StringIO(csv_data))

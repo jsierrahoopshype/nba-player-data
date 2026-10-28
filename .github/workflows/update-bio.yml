@@ -24,6 +24,12 @@ jobs:
       - name: Fetch and generate bio.json
         run: python scripts/update-bio.py
 
+      # A failed or bad fetch must never replace the committed file: the update
+      # script exits 1 on a fetch error or error page, and this refuses an empty
+      # file or one with fewer than 90% of the committed records.
+      - name: Refuse a worse bio.json
+        run: python scripts/check_data_file.py bio.json
+
       - name: Commit and push if changed
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
