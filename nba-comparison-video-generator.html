@@ -790,7 +790,7 @@
 
         function getHeadshotUrl(playerName) {
             if (playerData.headshots && playerData.headshots[playerName]) {
-                return 'https://jsierrahoopshype.github.io/nba-headshots/players/headshots/face2-160/' + playerData.headshots[playerName] + '.webp';
+                return 'https://jsierrahoopshype.github.io/nba-headshots/players/headshots/face-fill-320/' + playerData.headshots[playerName] + '.webp';
             }
             return null;
         }
@@ -2485,29 +2485,55 @@
         // Draw 1..3 circular faces inside the horizontal span one headshot occupies:
         // centered at (cx, cy) with diameter D. One face uses the full D (unchanged);
         // more faces shrink and sit side by side inside that same span.
-        // Some face2 crops carry a flat padding band across the bottom, which reads as a
-        // hard horizontal cut inside a circle clip. Every circular face is therefore drawn
-        // at 1.2x its circle, horizontally centred and anchored to the top of the circle's
-        // bounding box, so the bottom ~17% (padding bands, jersey edges) falls outside the
-        // clip and the face itself sits slightly larger in the circle.
-        var FACE_OVERSCAN = 1.2;
+        // face-fill images are square, transparent crops where the face already fills
+        // the circle, so each one is drawn exactly into its circle over a light grey disc.
+        var FACE_BG = '#e8e8ed';
+
+        function drawFaceCircle(ctx, img, cx, cy, d) {
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(cx, cy, d / 2, 0, Math.PI * 2);
+            ctx.clip();
+            ctx.fillStyle = FACE_BG;
+            ctx.fillRect(cx - d / 2, cy - d / 2, d, d);
+            ctx.drawImage(img, cx - d / 2, cy - d / 2, d, d);
+            ctx.restore();
+        }
+
+        // A player with no face-fill file (or one that fails to load) gets his initials
+        // in bold grey on a transparent square, drawn through drawFaceCircle like a photo.
+        function nameInitials(name) {
+            var words = stripRangeSuffix(name).replace(/[.,]/g, ' ').split(/\s+/).filter(function(w) {
+                return w && !/^(jr|sr|ii|iii|iv|v)$/i.test(w);
+            });
+            if (words.length === 0) return '?';
+            var first = words[0].charAt(0);
+            var last = words.length > 1 ? words[words.length - 1].charAt(0) : '';
+            return (first + last).toUpperCase();
+        }
+
+        function makeInitialsFace(name) {
+            var size = 320;
+            var c = document.createElement('canvas');
+            c.width = size; c.height = size;
+            var g = c.getContext('2d');
+            g.fillStyle = '#6e6e73';
+            g.font = '800 ' + Math.round(size * 0.38) + 'px ' + FF_HEAD;
+            g.textAlign = 'center';
+            g.textBaseline = 'middle';
+            g.fillText(nameInitials(name), size / 2, size / 2 + size * 0.02);
+            return c;
+        }
 
         // Draw a row of circle-clipped faces left to right from startX, each `d` across
-        // with `gap` between them, all centred on cy. The single place that owns the
-        // clip + overscan geometry, shared by the final card's clusters and the header's
-        // score-flanking faces.
+        // with `gap` between them, all centred on cy. Shared by the final card's clusters
+        // and the header's score-flanking faces.
         function drawFaceRow(ctx, imgs, startX, cy, d, gap) {
             var list = normalizeFaces(imgs);
             var r = d / 2;
             for (var i = 0; i < list.length; i++) {
                 var cx = startX + r + i * (d + gap);
-                ctx.save();
-                ctx.beginPath();
-                ctx.arc(cx, cy, r, 0, Math.PI * 2);
-                ctx.clip();
-                ctx.drawImage(list[i], cx - (FACE_OVERSCAN / 2) * d, cy - d / 2,
-                              FACE_OVERSCAN * d, FACE_OVERSCAN * d);
-                ctx.restore();
+                drawFaceCircle(ctx, list[i], cx, cy, d);
             }
         }
 
@@ -2516,14 +2542,7 @@
             if (list.length === 0) return;
 
             if (list.length === 1) {
-                var r = D / 2;
-                ctx.save();
-                ctx.beginPath();
-                ctx.arc(cx, cy, r, 0, Math.PI * 2);
-                ctx.clip();
-                ctx.drawImage(list[0], cx - (FACE_OVERSCAN / 2) * D, cy - D / 2,
-                              FACE_OVERSCAN * D, FACE_OVERSCAN * D);
-                ctx.restore();
+                drawFaceCircle(ctx, list[0], cx, cy, D);
                 return;
             }
 
@@ -2534,13 +2553,7 @@
             var firstCx = cx - D / 2 + fr;
             for (var i = 0; i < n; i++) {
                 var fcx = firstCx + i * (d + gap);
-                ctx.save();
-                ctx.beginPath();
-                ctx.arc(fcx, cy, fr, 0, Math.PI * 2);
-                ctx.clip();
-                ctx.drawImage(list[i], fcx - (FACE_OVERSCAN / 2) * d, cy - d / 2,
-                              FACE_OVERSCAN * d, FACE_OVERSCAN * d);
-                ctx.restore();
+                drawFaceCircle(ctx, list[i], fcx, cy, d);
             }
         }
 
@@ -3567,26 +3580,19 @@
                 var p2Urls = p2Names.map(getHeadshotUrl);
                 function loadImg(url) {
                     if (!url) return Promise.resolve(null);
-                    // Try the small face2-160 .webp first (~2 KB). If it is missing or the
-                    // browser cannot decode it, retry once against the full-size face2
-                    // .png before giving up. The 3s budget covers both attempts.
-                    var pngFallback = url.indexOf('/face2-160/') !== -1
-                        ? url.replace('/face2-160/', '/face2/').replace('.webp', '.png')
-                        : null;
-                    function attempt(u, fallback) {
+                    // Load the face-fill-320 .webp. If it is missing, cannot be decoded or
+                    // takes over 3s, resolve null and the player gets his initials instead.
+                    function attempt(u) {
                         return new Promise(function(resolve) {
                             var img = new Image();
                             img.crossOrigin = 'anonymous';
                             img.onload = function() { resolve(img); };
-                            img.onerror = function() {
-                                if (fallback) attempt(fallback, null).then(resolve);
-                                else resolve(null);
-                            };
+                            img.onerror = function() { resolve(null); };
                             img.src = u;
                         });
                     }
                     return Promise.race([
-                        attempt(url, pngFallback),
+                        attempt(url),
                         new Promise(function(resolve) { setTimeout(function() { resolve(null); }, 3000); })
                     ]);
                 }
@@ -3596,9 +3602,11 @@
                 var hsImgs = hsResults.map(function(r) {
                     return r.status === 'fulfilled' ? r.value : null;
                 });
-                // Names without a headshot drop out, so the existing no-image fallback stands.
-                p1Img = hsImgs.slice(0, p1Urls.length).filter(Boolean);
-                p2Img = hsImgs.slice(p1Urls.length).filter(Boolean);
+                // Names without a loaded face-fill image get an initials face instead.
+                var allNames = p1Names.concat(p2Names);
+                hsImgs = hsImgs.map(function(im, i) { return im || makeInitialsFace(allNames[i]); });
+                p1Img = hsImgs.slice(0, p1Urls.length);
+                p2Img = hsImgs.slice(p1Urls.length);
 
                 updateProgress(20, 'Building content layout...');
 
