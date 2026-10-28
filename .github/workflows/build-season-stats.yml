@@ -1,0 +1,48 @@
+name: Build RS and PO stats from NBA box scores
+
+# The "RS Stats" and "PO Stats" tables without the All-Time Database (see
+# scripts/build_season_stats.py): past seasons are frozen, the season in progress
+# is rebuilt from NBA's public box scores. Runs before the jobs that read the
+# result: Update RS Stats (06:00) and Update PO Stats (06:05).
+on:
+  schedule:
+    - cron: '35 5 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: build-season-stats
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      # Exits 1 without touching data/stats/ when a box score is missing, a past
+      # season would change, a player's games played would go down, or either
+      # table would lose rows.
+      - name: Rebuild the current season
+        run: python scripts/build_season_stats.py
+
+      - name: Commit and push if changed
+        run: |
+          git add data/stats/
+          if git diff --cached --quiet; then
+            echo "No change in data/stats/"
+            exit 0
+          fi
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git commit -m "Rebuild RS and PO stats from NBA box scores [$(date +'%Y-%m-%d %H:%M')]"
+          git pull --rebase origin main && git push || (sleep $((RANDOM % 20 + 5)) && git pull --rebase origin main && git push)
