@@ -1,29 +1,27 @@
 #!/usr/bin/env python3
 """
-Fetches RS Stats from Google Sheets and converts to rsStats.json format.
+Reads the RS Stats table and converts it to rsStats.json format.
 Used by GitHub Actions to keep stats up-to-date automatically.
+
+Source: data/stats/rs-stats.csv, the "RS Stats" tab rebuilt without the
+spreadsheet by scripts/build_season_stats.py (past seasons frozen, the current
+season from NBA box scores; same layout as the tab). Until Oct 2026 this read
+the All-Time Database's RS Stats tab, which grew too big for Google to export.
 """
 
 import json
 import pandas as pd
-import requests
-
 import sheet_guard  # fail clearly and keep the committed file (scripts/sheet_guard.py)
 from io import StringIO
 
-# Google Sheet configuration
-SHEET_ID = '1ZrDfzqiC31Hu3YCtxT4aZbZF4QVCVyGe6wBytR2LF30'
-GID = '0'  # RS Stats tab
+SOURCE_PATH = 'data/stats/rs-stats.csv'
 
-def fetch_google_sheet_csv(sheet_id, gid):
-    """Fetch data from published Google Sheet as CSV."""
-    url = f'https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=csv&gid={gid}'
-    # The RS tab exports ~5 MB and Google took 52-161 s for it on Oct 24 2026; 60 s timed out daily from Oct 22.
-    # Timeout and retries are shared with the other sheet jobs (scripts/sheet_guard.py).
-    response = requests.get(url, timeout=sheet_guard.READ_TIMEOUT)
-    response.raise_for_status()
-    response.encoding = 'utf-8'
-    return response.text
+def read_source_csv(path):
+    """The RS Stats table as CSV text, checked like the sheet export was."""
+    with open(path, encoding='utf-8', newline='') as f:
+        text = f.read()
+    sheet_guard.check_csv_text(text, 'RS Stats table', 'rsStats.json')
+    return text
 
 def safe_float(val, default=''):
     """Safely convert to float, return default if invalid."""
@@ -154,11 +152,11 @@ def convert_to_rs_stats_format(df):
     return records
 
 def main():
-    print(f"Fetching data from Google Sheet {SHEET_ID}...")
+    print(f"Reading {SOURCE_PATH}...")
     
     try:
-        csv_data = sheet_guard.fetch_checked('RS Stats tab', 'rsStats.json', fetch_google_sheet_csv, SHEET_ID, GID)
-        print(f"Fetched {len(csv_data)} bytes")
+        csv_data = read_source_csv(SOURCE_PATH)
+        print(f"Read {len(csv_data)} bytes")
         
         df = pd.read_csv(StringIO(csv_data))
         print(f"Parsed {len(df)} rows, columns: {list(df.columns)[:10]}...")

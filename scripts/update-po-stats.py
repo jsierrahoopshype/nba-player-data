@@ -4,7 +4,10 @@ Fetches PO (Playoff) Stats from Google Sheets and converts to poStats.json forma
 Playoff analog of update-rs-stats.py. Used by GitHub Actions to keep playoff
 stats up-to-date automatically.
 
-Source: All-Time Database Google Sheet, "PO Stats" tab.
+Source: data/stats/po-stats.csv, the "PO Stats" tab rebuilt without the
+spreadsheet by scripts/build_season_stats.py (past seasons frozen, the current
+season from NBA box scores; same layout as the tab). Until Oct 2026 this read the
+All-Time Database's PO Stats tab, which grew too big for Google to export.
 Output: poStats.json (one record per player-season-team, full history).
 
 Note on the '3P' column: an earlier export of poStats.json stored the
@@ -15,22 +18,17 @@ column as "3P", so this script normalizes it back to "3P".
 
 import json
 import pandas as pd
-import requests
-
 import sheet_guard  # fail clearly and keep the committed file (scripts/sheet_guard.py)
 from io import StringIO
 
-# Google Sheet configuration (All-Time Database, PO Stats tab)
-SHEET_ID = '1ZrDfzqiC31Hu3YCtxT4aZbZF4QVCVyGe6wBytR2LF30'
-GID = '1591736011'  # PO Stats tab
+SOURCE_PATH = 'data/stats/po-stats.csv'
 
-def fetch_google_sheet_csv(sheet_id, gid):
-    """Fetch data from published Google Sheet as CSV."""
-    url = f'https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=csv&gid={gid}'
-    response = requests.get(url, timeout=sheet_guard.READ_TIMEOUT, headers={'User-Agent': 'Mozilla/5.0'})
-    response.raise_for_status()
-    response.encoding = 'utf-8'
-    return response.text
+def read_source_csv(path):
+    """The PO Stats table as CSV text, checked like the sheet export was."""
+    with open(path, encoding='utf-8', newline='') as f:
+        text = f.read()
+    sheet_guard.check_csv_text(text, 'PO Stats table', 'poStats.json')
+    return text
 
 def safe_str(val, default=''):
     """Safely convert to string, stripping trailing .0 from integer-valued floats."""
@@ -161,11 +159,11 @@ def convert_to_po_stats_format(df):
     return records
 
 def main():
-    print(f"Fetching PO data from Google Sheet {SHEET_ID} (gid={GID})...")
+    print(f"Reading {SOURCE_PATH}...")
 
     try:
-        csv_data = sheet_guard.fetch_checked('PO Stats tab', 'poStats.json', fetch_google_sheet_csv, SHEET_ID, GID)
-        print(f"Fetched {len(csv_data)} bytes")
+        csv_data = read_source_csv(SOURCE_PATH)
+        print(f"Read {len(csv_data)} bytes")
 
         df = pd.read_csv(StringIO(csv_data))
         print(f"Parsed {len(df)} rows, columns: {list(df.columns)[:12]}...")
