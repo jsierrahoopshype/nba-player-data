@@ -1,9 +1,14 @@
 #!/usr/bin/env python3
 """
-Fetches the "Future Salaries" tab from Google Sheets and refreshes the current
+Fetches the "Future Salaries" data from Google Sheets and refreshes the current
 season's salary records in salaries.json.
 
-Source: All-Time Database Google Sheet, "Future Salaries" tab.
+Source: the Cyro sheet's "Salary" tab (gid 1402642613), laid out as the All-Time
+Database's "Future Salaries" tab. That tab holds no data of its own: it is
+IMPORTRANGEs of Salary!A (PLAYER), Salary!C (TEAM) and Salary!K:Z (the season
+columns), with C:E empty. Reading it meant waiting minutes for Google to open the
+All-Time Database (Oct 2026); the Cyro sheet answers in seconds, and
+future_salaries_layout() rebuilds the same CSV from it.
 Output: salaries.json (one record per player-team-year salary).
 
 The Future Salaries tab is laid out wide: PLAYER, TEAM, then one column per
@@ -93,9 +98,9 @@ import requests
 
 import sheet_guard  # fail clearly and keep the committed file (scripts/sheet_guard.py)
 
-# Google Sheet configuration (All-Time Database, Future Salaries tab)
-SHEET_ID = '1ZrDfzqiC31Hu3YCtxT4aZbZF4QVCVyGe6wBytR2LF30'
-GID = '1555460703'  # Future Salaries tab
+# Google Sheet configuration (the Cyro sheet's Salary tab; see the docstring)
+SHEET_ID = '14TQPdQ9mDhHMMMQa5vcs0coL98ZloHORtYElDikKoWY'
+GID = '1402642613'  # "Salary" tab, the source of the All-Time Database's Future Salaries
 OUTPUT_PATH = 'salaries.json'
 
 # Column-name prefixes to skip (helper / aggregate columns), case-insensitive.
@@ -122,6 +127,31 @@ def fetch_google_sheet_csv(sheet_id, gid):
     response.raise_for_status()
     response.encoding = 'utf-8'
     return response.text
+
+
+# Salary tab columns in Future Salaries order; None is an empty column.
+FUTURE_SALARIES_LAYOUT = [0, 2, None, None, None] + list(range(10, 26))   # A, C, -, -, -, K..Z
+
+
+def future_salaries_layout(salary_tab_text):
+    """The Salary tab's CSV laid out as the Future Salaries export was: its columns
+    A, C, three empty ones, K:Z; rows padded to the widest, trailing empty rows dropped."""
+    rows = [['' if i is None or i >= len(r) else r[i] for i in FUTURE_SALARIES_LAYOUT]
+            for r in csv.reader(StringIO(salary_tab_text))]
+    while rows and not any(rows[-1]):
+        rows.pop()
+    if not rows:
+        return ''
+    width = max(max((j + 1 for j, c in enumerate(r) if c), default=0) for r in rows)
+    out = StringIO()
+    w = csv.writer(out, lineterminator='\r\n')
+    for r in rows:
+        w.writerow(r[:width])
+    return out.getvalue()[:-2]   # the export ends without a line break
+
+
+def fetch_future_salaries_csv(sheet_id, gid):
+    return future_salaries_layout(fetch_google_sheet_csv(sheet_id, gid))
 
 
 def find_header_row(rows):
@@ -285,8 +315,8 @@ def count_by_year(records):
 
 
 def main():
-    print(f"Fetching Future Salaries from Google Sheet {SHEET_ID} (gid={GID})...")
-    csv_text = sheet_guard.fetch_checked('Future Salaries tab', 'salaries.json', fetch_google_sheet_csv, SHEET_ID, GID)
+    print(f"Fetching Future Salaries from the Salary tab of Google Sheet {SHEET_ID} (gid={GID})...")
+    csv_text = sheet_guard.fetch_checked('Salary tab (Future Salaries)', 'salaries.json', fetch_future_salaries_csv, SHEET_ID, GID)
     print(f"Fetched {len(csv_text)} bytes")
 
     sheet_records = parse_sheet_records(csv_text)
