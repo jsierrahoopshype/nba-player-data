@@ -111488,8 +111488,8 @@
   {
     "TEAM": "LA Lakers",
     "YEAR": "2027",
-    "PLAYER": "AK Okereke",
-    "SALARY": "$678,882"
+    "PLAYER": "Lawson Lovering",
+    "SALARY": "$647,669"
   },
   {
     "TEAM": "Memphis",
@@ -112502,12 +112502,6 @@
   {
     "TEAM": "Phoenix",
     "YEAR": "2027",
-    "PLAYER": "Drew Timme",
-    "SALARY": "$678,882"
-  },
-  {
-    "TEAM": "Phoenix",
-    "YEAR": "2027",
     "PLAYER": "Oso Ighodaro",
     "SALARY": "$2,296,271"
   },
@@ -112521,6 +112515,12 @@
     "TEAM": "Phoenix",
     "YEAR": "2027",
     "PLAYER": "Pat Spencer",
+    "SALARY": "$678,882"
+  },
+  {
+    "TEAM": "Phoenix",
+    "YEAR": "2027",
+    "PLAYER": "Drew Timme",
     "SALARY": "$678,882"
   },
   {
