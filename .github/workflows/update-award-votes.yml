@@ -1,9 +1,15 @@
 name: Update Award Votes from Google Sheets
 
 on:
-  schedule:
-    - cron: '15 6 * * *'
   workflow_dispatch:
+  # Run daily by the "Daily data chain" workflow (daily-chain.yml), in order,
+  # instead of a schedule of its own.
+  workflow_call:
+    inputs:
+      checkout_ref:
+        description: Branch to check out; the chain passes main so each step sees the previous step's push
+        type: string
+        default: ''
 
 jobs:
   update-stats:
@@ -12,6 +18,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.checkout_ref }}
 
       - name: Set up Python
         uses: actions/setup-python@v5

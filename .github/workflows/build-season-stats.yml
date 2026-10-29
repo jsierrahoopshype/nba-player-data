@@ -2,12 +2,19 @@ name: Build RS and PO stats from NBA box scores
 
 # The "RS Stats" and "PO Stats" tables without the All-Time Database (see
 # scripts/build_season_stats.py): past seasons are frozen, the season in progress
-# is rebuilt from NBA's public box scores. Runs before the jobs that read the
-# result: Update RS Stats (06:00) and Update PO Stats (06:05).
+# is rebuilt from NBA's public box scores. The daily chain (daily-chain.yml)
+# runs it first, then the jobs that read the result: Update RS Stats and
+# Update PO Stats.
 on:
-  schedule:
-    - cron: '35 5 * * *'
   workflow_dispatch:
+  # Run daily by the "Daily data chain" workflow (daily-chain.yml), in order,
+  # instead of a schedule of its own.
+  workflow_call:
+    inputs:
+      checkout_ref:
+        description: Branch to check out; the chain passes main so each step sees the previous step's push
+        type: string
+        default: ''
 
 concurrency:
   group: build-season-stats
@@ -23,6 +30,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.checkout_ref }}
 
       - name: Set up Python
         uses: actions/setup-python@v5
