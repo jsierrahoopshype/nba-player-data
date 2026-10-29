@@ -1,0 +1,105 @@
+name: Daily data chain
+
+# One run a day of the data jobs, in order, each step checking out main after
+# the previous step pushed:
+#   Build RS and PO stats -> Update RS Stats -> Update PO Stats -> Awards
+#   -> Award Votes -> Bio -> Salaries
+# Every step is the job's own workflow file (called with workflow_call), so its
+# safety checks run unchanged. A failed step does not stop the later ones; the
+# run as a whole then fails, and the backup schedule tries the chain again.
+#
+# GitHub starts scheduled runs late, often by 4 to 7 hours on this repo, and
+# can drop them. Two schedules cover that: the main one and a backup a few
+# hours later. Scheduled runs skip themselves when a run of this workflow
+# already succeeded today (UTC). A manual run always runs.
+on:
+  schedule:
+    - cron: '35 5 * * *'   # main
+    - cron: '47 9 * * *'   # backup, skipped if today's run already succeeded
+  workflow_dispatch:
+
+# A backup run that fires while the main one is still going waits for it, then
+# its guard sees the success and skips.
+concurrency:
+  group: daily-chain
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    outputs:
+      run: ${{ steps.check.outputs.run }}
+    steps:
+      - name: Skip a scheduled run if today's chain already succeeded
+        id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ "${{ github.event_name }}" != "schedule" ]; then
+            echo "Manual run: always runs."
+            echo "run=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          TODAY=$(date -u +%F)
+          DONE=$(gh api "repos/${{ github.repository }}/actions/workflows/daily-chain.yml/runs?status=success&created=>=${TODAY}&per_page=20" \
+            --jq '[.workflow_runs[] | select(.id != ${{ github.run_id }})] | length')
+          if [ "$DONE" -gt 0 ]; then
+            echo "A run already succeeded today (${TODAY} UTC): skipping."
+            echo "run=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "No successful run yet today (${TODAY} UTC): running the chain."
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          fi
+
+  build-stats:
+    needs: guard
+    if: needs.guard.outputs.run == 'true'
+    uses: ./.github/workflows/build-season-stats.yml
+    with:
+      checkout_ref: main
+
+  rs-stats:
+    needs: [guard, build-stats]
+    if: ${{ !cancelled() && needs.guard.outputs.run == 'true' }}
+    uses: ./.github/workflows/update-stats.yml
+    with:
+      checkout_ref: main
+
+  po-stats:
+    needs: [guard, rs-stats]
+    if: ${{ !cancelled() && needs.guard.outputs.run == 'true' }}
+    uses: ./.github/workflows/update-po-stats.yml
+    with:
+      checkout_ref: main
+
+  awards:
+    needs: [guard, po-stats]
+    if: ${{ !cancelled() && needs.guard.outputs.run == 'true' }}
+    uses: ./.github/workflows/update-awards.yml
+    with:
+      checkout_ref: main
+
+  award-votes:
+    needs: [guard, awards]
+    if: ${{ !cancelled() && needs.guard.outputs.run == 'true' }}
+    uses: ./.github/workflows/update-award-votes.yml
+    with:
+      checkout_ref: main
+
+  bio:
+    needs: [guard, award-votes]
+    if: ${{ !cancelled() && needs.guard.outputs.run == 'true' }}
+    uses: ./.github/workflows/update-bio.yml
+    with:
+      checkout_ref: main
+
+  salaries:
+    needs: [guard, bio]
+    if: ${{ !cancelled() && needs.guard.outputs.run == 'true' }}
+    uses: ./.github/workflows/update-salaries.yml
+    with:
+      checkout_ref: main
