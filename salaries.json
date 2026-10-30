@@ -111384,6 +111384,12 @@
     "SALARY": "$678,882"
   },
   {
+    "TEAM": "LA Clippers",
+    "YEAR": "2027",
+    "PLAYER": "Blake Wesley",
+    "SALARY": "$150,898"
+  },
+  {
     "TEAM": "LA Lakers",
     "YEAR": "2027",
     "PLAYER": "Luka Doncic",
@@ -112070,13 +112076,13 @@
   {
     "TEAM": "New York",
     "YEAR": "2027",
-    "PLAYER": "Andre Drummond",
+    "PLAYER": "Jordan Clarkson",
     "SALARY": "$3,876,529"
   },
   {
     "TEAM": "New York",
     "YEAR": "2027",
-    "PLAYER": "Jordan Clarkson",
+    "PLAYER": "Andre Drummond",
     "SALARY": "$3,876,529"
   },
   {
