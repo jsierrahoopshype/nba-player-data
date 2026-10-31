@@ -110114,13 +110114,13 @@
   {
     "TEAM": "Atlanta",
     "YEAR": "2027",
-    "PLAYER": "RayJ Dennis",
+    "PLAYER": "Keshon Gilbert",
     "SALARY": "$678,882"
   },
   {
     "TEAM": "Atlanta",
     "YEAR": "2027",
-    "PLAYER": "Keshon Gilbert",
+    "PLAYER": "RayJ Dennis",
     "SALARY": "$678,882"
   },
   {
@@ -112210,6 +112210,12 @@
     "YEAR": "2027",
     "PLAYER": "Ajay Mitchell",
     "SALARY": "$2,850,000"
+  },
+  {
+    "TEAM": "Oklahoma City",
+    "YEAR": "2027",
+    "PLAYER": "Ochai Agbaji",
+    "SALARY": "$2,474,729"
   },
   {
     "TEAM": "Oklahoma City",
