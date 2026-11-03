@@ -469,6 +469,49 @@
         }
         .remove-player-btn:hover { color: #e31837; }
     </style>
+    <style>
+        /* ===== New style + Image generator controls (additive, ns-*) ===== */
+        .ns-controls { display: flex; flex-wrap: wrap; gap: 18px 28px; align-items: flex-end; }
+        .ns-group { display: flex; flex-direction: column; gap: 8px; }
+        .ns-group > label { font-size: 15px; color: #bbb; font-weight: 600; }
+        .ns-seg { display: inline-flex; background: #1a1a1a; border: 2px solid #404040; border-radius: 10px; padding: 3px; gap: 3px; flex-wrap: wrap; }
+        .ns-seg button { background: transparent; color: #bbb; border: 0; border-radius: 7px; padding: 10px 16px; font-size: 15px; font-weight: 700; cursor: pointer; min-height: 40px; }
+        .ns-seg button.on { background: #e31837; color: #fff; }
+        .ns-seg button:disabled { opacity: .35; cursor: not-allowed; }
+        .ns-check { display: flex; align-items: center; gap: 8px; font-size: 14px; color: #ddd; cursor: pointer; }
+        .ns-check input { width: auto; cursor: pointer; }
+        .ns-hint { margin-top: 12px; font-size: 13px; color: #888; }
+        .ns-image-panel { margin-top: 30px; }
+        .ns-image-panel.active { display: block; }
+        .ns-pick { margin-top: 18px; }
+        .ns-pick-list { display: flex; flex-wrap: wrap; gap: 10px 22px; margin-top: 10px; }
+        .ns-pick-list label { display: flex; align-items: center; gap: 8px; font-size: 14px; color: #ddd; cursor: pointer; }
+        .ns-pick-list input { width: auto; cursor: pointer; }
+        .ns-custom-block { margin-top: 14px; border-top: 1px solid #404040; padding-top: 10px; }
+        .ns-custom-block h4 { font-size: 14px; color: #fff; letter-spacing: .04em; }
+        .ns-custom-block .ns-pick-list label { font-size: 13px; }
+        .ns-title-input { max-width: 420px; }
+        .ns-img-out { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 22px; margin-top: 24px; }
+        .ns-img-card { background: #1a1a1a; border: 2px solid #404040; border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+        .ns-img-card canvas { width: 100%; height: auto; border-radius: 8px; display: block; }
+        .ns-img-card .ns-fname { font-size: 12px; color: #888; word-break: break-all; }
+        .ns-img-card .download-btn { padding: 12px; font-size: 15px; }
+        @media (max-width: 700px) {
+            .header { padding: 24px 16px; }
+            .header h1 { font-size: 26px; }
+            .header p { font-size: 14px; }
+            .container { padding: 0 12px; margin: 20px auto; }
+            .settings-panel, .preview-panel { padding: 18px; }
+            .player-inputs { grid-template-columns: 1fr; gap: 12px; }
+            .vs-divider { text-align: center; padding-top: 0; font-size: 24px; }
+            .video-settings { grid-template-columns: 1fr; }
+            .button-group { grid-template-columns: 1fr; }
+            .ns-controls { gap: 14px; }
+            .ns-seg button { padding: 10px 12px; font-size: 14px; }
+            .ns-img-out { grid-template-columns: 1fr; }
+            .range-inputs { flex-direction: column; }
+        }
+    </style>
     <script src="https://cdn.jsdelivr.net/npm/mp4-muxer@latest/build/mp4-muxer.js"></script>
 </head>
 <body>
@@ -508,6 +551,29 @@
                         <span class="add-player-link" onclick="addPlayerInput(2)">+ Add player (combine)</span>
                     </div>
                 </div>
+            </div>
+
+            <!-- Output & Style (additive). Classic keeps the original rendering path untouched. -->
+            <div class="settings-section" id="nsOutputSection">
+                <h3>Output &amp; Style</h3>
+                <div class="ns-controls">
+                    <div class="ns-group">
+                        <label>Output</label>
+                        <div class="ns-seg" id="nsOutputSeg"><button type="button" data-v="video" class="on">Video</button><button type="button" data-v="image">Image</button></div>
+                    </div>
+                    <div class="ns-group">
+                        <label>Style</label>
+                        <div class="ns-seg" id="nsStyleSeg"><button type="button" data-v="new" class="on">New</button><button type="button" data-v="classic">Classic</button></div>
+                    </div>
+                    <div class="ns-group" id="nsThemeGroup">
+                        <label>Theme</label>
+                        <div class="ns-seg" id="nsThemeSeg"><button type="button" data-v="dark" class="on">Dark</button><button type="button" data-v="light">Light</button></div>
+                    </div>
+                    <div class="ns-group" id="nsCurGroup">
+                        <label class="ns-check"><input type="checkbox" id="nsIncludeCurrent" checked> <span id="nsCurLabel">Add Current season block</span></label>
+                    </div>
+                </div>
+                <div class="ns-hint" id="nsStyleHint"></div>
             </div>
 
             <div class="settings-section">
@@ -629,6 +695,35 @@
                 <button class="reset-btn" id="downloadBtn">Download WebM</button>
                 <button class="reset-btn" id="resetBtn">Create Another</button>
             </div>
+        </div>
+
+        <!-- Image generator (additive). Shown when Output = Image. -->
+        <div class="preview-panel ns-image-panel" id="nsImagePanel">
+            <div class="preview-header">
+                <h3>Image Generator</h3>
+            </div>
+            <div class="ns-controls">
+                <div class="ns-group">
+                    <label>Size</label>
+                    <div class="ns-seg" id="nsSizeSeg"><button type="button" data-v="1080x1080" class="on">1080x1080</button><button type="button" data-v="1080x1350">1080x1350</button><button type="button" data-v="1920x1080">1920x1080</button></div>
+                </div>
+                <div class="ns-group">
+                    <label>Mode</label>
+                    <div class="ns-seg" id="nsModeSeg"><button type="button" data-v="blocks" class="on">Blocks</button><button type="button" data-v="custom">Custom</button></div>
+                </div>
+            </div>
+            <div class="ns-pick">
+                <button type="button" class="section-load-btn" id="nsLoadBtn">Load stats for these players</button>
+            </div>
+            <div class="ns-pick" id="nsBlocksPick"></div>
+            <div class="ns-pick" id="nsCustomPick" style="display:none;">
+                <div class="ns-group">
+                    <label for="nsCustomTitle">Image title</label>
+                    <input type="text" id="nsCustomTitle" class="ns-title-input" value="HEAD TO HEAD" maxlength="40">
+                </div>
+                <div id="nsCustomList"></div>
+            </div>
+            <div class="ns-img-out" id="nsImgOut"></div>
         </div>
     </div>
 
@@ -3891,6 +3986,1336 @@
             document.getElementById('resetBtn').addEventListener('click', resetGenerator);
             document.getElementById('comparisonType').addEventListener('change', onComparisonTypeChange);
         });
+    </script>
+    <!-- hm-compare-newstyle-v1 : New style video + Image generator (additive block).
+         Everything below is new code. It only calls existing functions/globals
+         (performComparison, performCombinedComparison, collectSidePlayers, ...) and
+         never changes them, so the Classic rendering path stays byte-for-byte as before. -->
+    <script>
+    (function() {
+        'use strict';
+
+        var NS_BUILD = 'hm-compare-newstyle-v1';
+
+        // ---- UI state ----
+        var NS = {
+            output: 'video',      // video | image
+            style: 'new',         // new | classic (classic = original generateVideo path)
+            theme: 'dark',        // dark | light
+            size: '1080x1080',    // image size
+            mode: 'blocks',       // image mode: blocks | custom
+            loaded: null,         // last loaded comparison for the image generator
+            customPicked: [],     // custom-mode row keys, in the order they were ticked
+            blockPicked: null     // blocks-mode keys ticked (null = defaults)
+        };
+
+        // ---- Fonts: already loaded by this page (Google Fonts link in <head>) ----
+        var NF_HEAD = '"Barlow Condensed", "Arial Narrow", Arial, sans-serif';
+        var NF_BODY = '"Barlow", Arial, sans-serif';
+
+        // ---- Palettes. Light = the Trade Market / trade page tokens
+        //      (--bg #f5f5f7, --surface #fff, --border #d1d1d6, --text #1d1d1f,
+        //      --muted #6e6e73, inner divider #ededf1, 12px radii, 1px borders, no shadows).
+        //      Dark = charcoal background with light text, same layout. ----
+        var NS_THEMES = {
+            dark: {
+                bg: '#111215', surface: '#18191d', border: 'rgba(255,255,255,0.09)',
+                text: '#f5f5f7', muted: '#9a9aa3', divider: 'rgba(255,255,255,0.09)',
+                ring: 'rgba(255,255,255,0.90)', tint: 0.24, logoA: 0.13, loserA: 0.78
+            },
+            light: {
+                bg: '#f5f5f7', surface: '#ffffff', border: '#d1d1d6',
+                text: '#1d1d1f', muted: '#6e6e73', divider: '#ededf1',
+                ring: '#ffffff', tint: 0.15, logoA: 0.10, loserA: 0.80
+            }
+        };
+
+        // ---- NBA teams: name, NBA team id (logo file), primary / secondary colour.
+        //      Logos: the same nba-headshots repo the Trade Market uses
+        //      (teams/logos/current/svg/<teamId>.svg, served with CORS). ----
+        var NS_TEAMS = {
+            ATL: { n: 'Atlanta Hawks', id: 1610612737, p: '#E03A3E', s: '#C1D32F' },
+            BOS: { n: 'Boston Celtics', id: 1610612738, p: '#007A33', s: '#BA9653' },
+            BKN: { n: 'Brooklyn Nets', id: 1610612751, p: '#000000', s: '#FFFFFF' },
+            CHA: { n: 'Charlotte Hornets', id: 1610612766, p: '#1D1160', s: '#00788C' },
+            CHI: { n: 'Chicago Bulls', id: 1610612741, p: '#CE1141', s: '#000000' },
+            CLE: { n: 'Cleveland Cavaliers', id: 1610612739, p: '#860038', s: '#FDBB30' },
+            DAL: { n: 'Dallas Mavericks', id: 1610612742, p: '#00538C', s: '#B8C4CA' },
+            DEN: { n: 'Denver Nuggets', id: 1610612743, p: '#0E2240', s: '#FEC524' },
+            DET: { n: 'Detroit Pistons', id: 1610612765, p: '#C8102E', s: '#1D42BA' },
+            GSW: { n: 'Golden State Warriors', id: 1610612744, p: '#1D428A', s: '#FFC72C' },
+            HOU: { n: 'Houston Rockets', id: 1610612745, p: '#CE1141', s: '#C4CED4' },
+            IND: { n: 'Indiana Pacers', id: 1610612754, p: '#002D62', s: '#FDBB30' },
+            LAC: { n: 'LA Clippers', id: 1610612746, p: '#C8102E', s: '#1D428A' },
+            LAL: { n: 'Los Angeles Lakers', id: 1610612747, p: '#552583', s: '#FDB927' },
+            MEM: { n: 'Memphis Grizzlies', id: 1610612763, p: '#5D76A9', s: '#12173F' },
+            MIA: { n: 'Miami Heat', id: 1610612748, p: '#98002E', s: '#F9A01B' },
+            MIL: { n: 'Milwaukee Bucks', id: 1610612749, p: '#00471B', s: '#EEE1C6' },
+            MIN: { n: 'Minnesota Timberwolves', id: 1610612750, p: '#0C2340', s: '#78BE20' },
+            NOP: { n: 'New Orleans Pelicans', id: 1610612740, p: '#0C2340', s: '#C8102E' },
+            NYK: { n: 'New York Knicks', id: 1610612752, p: '#006BB6', s: '#F58426' },
+            OKC: { n: 'Oklahoma City Thunder', id: 1610612760, p: '#007AC1', s: '#EF3B24' },
+            ORL: { n: 'Orlando Magic', id: 1610612753, p: '#0077C0', s: '#C4CED4' },
+            PHI: { n: 'Philadelphia 76ers', id: 1610612755, p: '#006BB6', s: '#ED174C' },
+            PHX: { n: 'Phoenix Suns', id: 1610612756, p: '#1D1160', s: '#E56020' },
+            POR: { n: 'Portland Trail Blazers', id: 1610612757, p: '#E03A3E', s: '#000000' },
+            SAC: { n: 'Sacramento Kings', id: 1610612758, p: '#5A2D81', s: '#63727A' },
+            SAS: { n: 'San Antonio Spurs', id: 1610612759, p: '#C4CED4', s: '#000000' },
+            TOR: { n: 'Toronto Raptors', id: 1610612761, p: '#CE1141', s: '#000000' },
+            UTA: { n: 'Utah Jazz', id: 1610612762, p: '#002B5C', s: '#F9A01B' },
+            WAS: { n: 'Washington Wizards', id: 1610612764, p: '#002B5C', s: '#E31837' }
+        };
+        // Older abbreviations in the stats files -> today's franchise (colours + logo).
+        var NS_TEAM_ALIAS = {
+            NJN: 'BKN', BRK: 'BKN', NJ: 'BKN', SEA: 'OKC', VAN: 'MEM', NOH: 'NOP', NOK: 'NOP',
+            CHH: 'CHA', CHO: 'CHA', WSB: 'WAS', PHO: 'PHX', GOS: 'GSW', GS: 'GSW', SA: 'SAS',
+            NY: 'NYK', NO: 'NOP', UTH: 'UTA'
+        };
+        var NS_NEUTRAL = ['#8a8a92', '#5b5b63'];
+
+        // Lower-is-better rows. comparisons.json already marks these with
+        // "Who wins?" = "Least" (turnovers, body fat, weight, agility/sprint times,
+        // best award ranking) and the existing engine uses that, so career/range/combine
+        // rows arrive with the right winner. This list covers the rows this block builds
+        // itself (Current season).
+        var NS_LOWER_IS_BETTER = ['TURNOVERS', 'PERSONAL FOULS'];
+
+        // Section display names + sublines for the New style.
+        var NS_SECTION_META = {
+            'ACCOLADES': ['ACCOLADES', 'CAREER · AWARDS & HONORS'],
+            'NBA CAREER AVERAGES': ['CAREER AVERAGES', 'REGULAR SEASON & PLAYOFFS · PER GAME'],
+            'NBA CAREER TOTALS': ['CAREER TOTALS', 'REGULAR SEASON & PLAYOFFS'],
+            'NBA SEASON PEAK': ['SEASON PEAKS', 'BEST SINGLE SEASON · PER GAME'],
+            'PLAYOFF SUCCESS': ['PLAYOFF SUCCESS', 'SERIES REACHED · CAREER'],
+            'SALARIES': ['SALARIES', 'CAREER EARNINGS'],
+            'DRAFT COMBINE': ['DRAFT COMBINE', 'MEASUREMENTS & TESTING'],
+            'BEST AWARDS RANKING': ['BEST AWARD FINISHES', 'VOTING RANK · LOWER IS BETTER'],
+            'YEARS RECEIVING VOTES': ['YEARS RECEIVING VOTES', 'AWARD VOTING'],
+            'SIGNATURE SHOES': ['SIGNATURE SHOES', 'SNEAKERS'],
+            'NBA 2K': ['NBA 2K RATINGS', 'VIDEO GAME RATINGS'],
+            'COUNTING STATS: AVERAGES': ['SEASON AVERAGES', 'REGULAR SEASON & PLAYOFFS · PER GAME'],
+            'COUNTING STATS: TOTALS': ['SEASON TOTALS', 'REGULAR SEASON & PLAYOFFS'],
+            'SHOOTING EFFICIENCY': ['SHOOTING', 'REGULAR SEASON · TOTALS']
+        };
+
+        // =============================================================
+        // Small helpers
+        // =============================================================
+        function $(id) { return document.getElementById(id); }
+        function clamp01(v) { return v < 0 ? 0 : (v > 1 ? 1 : v); }
+        function ease(t) { t = clamp01(t); return 1 - Math.pow(1 - t, 3); }
+        function hexRgb(h) {
+            h = String(h).replace('#', '');
+            if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+            return [parseInt(h.substr(0, 2), 16), parseInt(h.substr(2, 2), 16), parseInt(h.substr(4, 2), 16)];
+        }
+        function rgba(h, a) { var c = hexRgb(h); return 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + a + ')'; }
+        function lum(h) {
+            var c = hexRgb(h).map(function(v) { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); });
+            return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+        }
+        function contrast(a, b) { var la = lum(a), lb = lum(b); return (Math.max(la, lb) + 0.05) / (Math.min(la, lb) + 0.05); }
+        function colorDist(a, b) {
+            var x = hexRgb(a), y = hexRgb(b);
+            return Math.sqrt(Math.pow(x[0] - y[0], 2) + Math.pow(x[1] - y[1], 2) + Math.pow(x[2] - y[2], 2));
+        }
+        function slug(s) {
+            return String(s).toLowerCase().replace(/\s*\+\s*/g, '-and-').normalize('NFD').replace(/[̀-ͯ]/g, '')
+                .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+        }
+        function lastName(n) {
+            var w = String(n).split(/\s+/).filter(function(x) { return x && !/^(jr\.?|sr\.?|ii|iii|iv|v)$/i.test(x); });
+            return w.length ? w[w.length - 1] : String(n);
+        }
+        function setLS(ctx, px) { if ('letterSpacing' in ctx) ctx.letterSpacing = px + 'px'; }
+        function rr(ctx, x, y, w, h, r) {
+            r = Math.max(0, Math.min(r, w / 2, h / 2));
+            ctx.beginPath();
+            ctx.moveTo(x + r, y); ctx.lineTo(x + w - r, y); ctx.arcTo(x + w, y, x + w, y + r, r);
+            ctx.lineTo(x + w, y + h - r); ctx.arcTo(x + w, y + h, x + w - r, y + h, r);
+            ctx.lineTo(x + r, y + h); ctx.arcTo(x, y + h, x, y + h - r, r);
+            ctx.lineTo(x, y + r); ctx.arcTo(x, y, x + r, y, r);
+            ctx.closePath();
+        }
+        function fitFont(ctx, text, size, floor, maxW, weight, fam) {
+            var sz = size;
+            ctx.font = weight + ' ' + sz + 'px ' + fam;
+            while (ctx.measureText(text).width > maxW && sz > floor) { sz -= 1; ctx.font = weight + ' ' + sz + 'px ' + fam; }
+            var fits = ctx.measureText(text).width <= maxW;
+            if (!fits) {
+                var t = String(text);
+                while (t.length > 1 && ctx.measureText(t + '…').width > maxW) t = t.slice(0, -1);
+                text = t + '…';
+            }
+            return { size: sz, text: text, fits: fits };
+        }
+
+        // =============================================================
+        // Teams, colours, age
+        // =============================================================
+        function normTeam(abbr) {
+            if (!abbr) return null;
+            var a = String(abbr).toUpperCase().trim();
+            if (NS_TEAM_ALIAS[a]) a = NS_TEAM_ALIAS[a];
+            return NS_TEAMS[a] ? a : null;
+        }
+
+        // Team for a player: that season's team (season mode) or the latest season's.
+        // Traded players: the last non-TOT row of that season.
+        function teamOf(name, year) {
+            var rows = playerData.rsStats.filter(function(r) { return r.PLAYER === name; });
+            if (!rows.length) return null;
+            var y = year ? String(year) : null;
+            if (!y) rows.forEach(function(r) { if (!y || parseInt(r.YEAR, 10) > parseInt(y, 10)) y = String(r.YEAR); });
+            var inYear = rows.filter(function(r) { return String(r.YEAR) === y && r.TEAM !== 'TOT'; });
+            if (!inYear.length) return null;
+            return normTeam(inYear[inYear.length - 1].TEAM);
+        }
+
+        // Age today from bio.json BIRTHDAY (M/D/YYYY), one decimal.
+        function ageOf(name) {
+            var bio = (playerData.bio || []).find(function(r) { return r.PLAYER === name; });
+            var bd = bio ? parseBioBirthday(bio.BIRTHDAY) : null;
+            if (!bd) return null;
+            var born = new Date(bd.year, bd.month - 1, bd.day);
+            var yrs = (Date.now() - born.getTime()) / (365.2425 * 86400000);
+            return isFinite(yrs) && yrs > 0 ? yrs.toFixed(1) : null;
+        }
+
+        // Pick one colour per side: primary unless it is too dark/light on the
+        // background (contrast < 1.7), and never two colours that read the same
+        // (RGB distance < 90) -> fall back to the secondary on one side.
+        function pickColors(team1, team2, theme) {
+            var bg = NS_THEMES[theme].bg;
+            function cands(t) { var x = NS_TEAMS[t]; return x ? [x.p, x.s] : NS_NEUTRAL.slice(); }
+            function ok(c) { return contrast(c, bg) >= 1.7; }
+            var a = cands(team1).filter(ok), b = cands(team2).filter(ok);
+            if (!a.length) a = [NS_NEUTRAL[theme === 'dark' ? 0 : 1]];
+            if (!b.length) b = [NS_NEUTRAL[theme === 'dark' ? 0 : 1]];
+            for (var i = 0; i < a.length; i++) {
+                for (var j = 0; j < b.length; j++) {
+                    if (colorDist(a[i], b[j]) >= 90) return [a[i], b[j]];
+                }
+            }
+            // Same palette both sides (e.g. teammates): keep side 1, contrast side 2.
+            return [a[0], theme === 'dark' ? '#e8e8ed' : '#3a3a40'];
+        }
+
+        // =============================================================
+        // Images (headshots + logos), all crossOrigin="anonymous" so the
+        // canvas stays untainted for PNG export / VideoFrame.
+        // =============================================================
+        var imgCache = {};
+        function loadImage(url, timeoutMs) {
+            if (!url) return Promise.resolve(null);
+            if (imgCache[url]) return imgCache[url];
+            imgCache[url] = new Promise(function(resolve) {
+                var done = false;
+                var img = new Image();
+                img.crossOrigin = 'anonymous';
+                img.onload = function() { if (!done) { done = true; resolve(img); } };
+                img.onerror = function() { if (!done) { done = true; resolve(null); } };
+                setTimeout(function() { if (!done) { done = true; resolve(null); } }, timeoutMs || 4000);
+                img.src = url;
+            }).then(function(im) { if (!im) delete imgCache[url]; return im; });
+            return imgCache[url];
+        }
+        // Headshot chain: face-fill-320 (transparent cut-out, what this page already
+        // uses, so the team colour shows inside the circle) -> face2-160 webp -> face2 png
+        // -> initials. face2 files have an opaque dark square background.
+        function loadFace(name) {
+            var id = playerData.headshots && playerData.headshots[name];
+            if (!id) return Promise.resolve(makeInitialsFace(name));
+            var base = 'https://jsierrahoopshype.github.io/nba-headshots/players/headshots/';
+            var urls = [base + 'face-fill-320/' + id + '.webp', base + 'face2-160/' + id + '.webp', base + 'face2/' + id + '.png'];
+            var i = 0;
+            function next() {
+                if (i >= urls.length) return Promise.resolve(makeInitialsFace(name));
+                return loadImage(urls[i++], 3000).then(function(im) { return im || next(); });
+            }
+            return next();
+        }
+        function loadLogo(abbr) {
+            var t = NS_TEAMS[abbr];
+            if (!t) return Promise.resolve(null);
+            return loadImage('https://jsierrahoopshype.github.io/nba-headshots/teams/logos/current/svg/' + t.id + '.svg', 4000);
+        }
+
+        // =============================================================
+        // Comparison gathering (mirrors generateVideo's validation, read-only)
+        // =============================================================
+        function gather(applySectionFilter) {
+            var player1 = $('player1').value.trim();
+            var player2 = $('player2').value.trim();
+            var compType = $('comparisonType').value;
+            var side1 = collectSidePlayers(1);
+            var side2 = collectSidePlayers(2);
+            var isCombine = (side1.length > 1 || side2.length > 1);
+            if (isCombine) {
+                var ce = validateCombineSides(side1, side2, compType);
+                if (ce) return { err: ce };
+            } else {
+                if (!player1 || !player2) return { err: 'Please select both players' };
+                if (!allPlayers.includes(player1) || !allPlayers.includes(player2)) return { err: 'Invalid player names. Please select from autocomplete.' };
+                if (player1 === player2) return { err: 'Please select two different players' };
+                side1 = [player1]; side2 = [player2];
+            }
+            var s1 = null, s2 = null;
+            if (compType === 'season') {
+                s1 = $('season1Select').value; s2 = $('season2Select').value;
+                if (!s1 || !s2) return { err: 'Please select seasons for both players' };
+            }
+            var data;
+            try {
+                data = isCombine ? performCombinedComparison(side1, side2) : performComparison(player1, player2);
+            } catch (e) {
+                return { err: e && e.message ? e.message : 'Could not build the comparison.' };
+            }
+            if (applySectionFilter) data = filterComparisonSections(data);
+            return { data: data, side1: side1, side2: side2, isCombine: isCombine, compType: compType, season1: s1, season2: s2 };
+        }
+
+        // =============================================================
+        // Blocks
+        // =============================================================
+        function isThree(metric) {
+            var m = String(metric);
+            return /three|3p|3-point|3-pointer/i.test(m) && !/contest/i.test(m);
+        }
+        // 3-point rows always go last in a block (after steals and blocks); stable otherwise.
+        function threeLast(rows) {
+            return rows.filter(function(r) { return !r.three; }).concat(rows.filter(function(r) { return r.three; }));
+        }
+        function prettyLabel(metric) {
+            var s = String(metric);
+            var po = / PO( peak)?$/.test(s);
+            s = s.replace(/ PO peak$/, '').replace(/ PO$/, '').replace(/ peak$/, '').replace(/ per game$/i, '');
+            if (po) s = 'Playoff ' + s;
+            return s.toUpperCase();
+        }
+        function countWins(rows) {
+            var a = 0, b = 0;
+            rows.forEach(function(r) { if (r.winner === 'player1') a++; else if (r.winner === 'player2') b++; });
+            return [a, b];
+        }
+        function sectionBlock(sec, idx) {
+            var meta = NS_SECTION_META[sec.name] || [String(sec.name).toUpperCase(), ''];
+            var rows = sec.items.map(function(it, i) {
+                return { key: 's' + idx + '|' + i, label: prettyLabel(it.metric), v1: it.p1Value, v2: it.p2Value, winner: it.winner, three: isThree(it.metric) };
+            });
+            rows = threeLast(rows);
+            var w = countWins(rows);
+            return { key: 'sec:' + sec.name, name: sec.name, title: meta[0], subline: meta[1], rows: rows, p1: w[0], p2: w[1],
+                     overall: sec.name !== 'DRAFT COMBINE' };
+        }
+
+        // ---- Current season block from rsStats ----
+        function currentSeasonYear() {
+            var d = new Date();
+            return String(d.getMonth() >= 8 ? d.getFullYear() + 1 : d.getFullYear()); // season ends in YEAR
+        }
+        function seasonText(endYear) { var y = parseInt(endYear, 10); return (y - 1) + '-' + String(y).slice(-2); }
+        function seasonAgg(names, year) {
+            var cols = ['GP', 'MIN', 'PTS', 'REB', 'AST', 'STL', 'BLK', 'TOV', 'FGM', 'FGA', '3P', '3PA', 'FTM', 'FTA', 'PF'];
+            var agg = {}, found = 0;
+            cols.forEach(function(c) { agg[c] = 0; });
+            names.forEach(function(n) {
+                var rows = playerData.rsStats.filter(function(r) { return r.PLAYER === n && String(r.YEAR) === year; });
+                if (!rows.length) return;
+                found++;
+                var tot = rows.find(function(r) { return r.TEAM === 'TOT'; });
+                (tot ? [tot] : rows).forEach(function(r) {
+                    cols.forEach(function(c) { var v = parseFloat(r[c]); if (!isNaN(v)) agg[c] += v; });
+                });
+            });
+            return found ? agg : null;
+        }
+        function hasCurrentSeasonData() {
+            var y = currentSeasonYear();
+            return playerData && playerData.rsStats && playerData.rsStats.some(function(r) { return String(r.YEAR) === y; });
+        }
+        function currentSeasonBlock(side1, side2, combined) {
+            var y = currentSeasonYear();
+            var a = seasonAgg(side1, y), b = seasonAgg(side2, y);
+            if (!a || !b || !a.GP || !b.GP) return null;
+            function pg(c) { return function(x) { return (x[c] / x.GP).toFixed(1); }; }
+            function tot(c) { return function(x) { return String(Math.round(x[c])); }; }
+            function pct(m, at) { return function(x) { return x[at] > 0 ? (x[m] / x[at] * 100).toFixed(1) + '%' : '-'; }; }
+            var stats = combined ? [
+                ['GAMES', tot('GP')], ['POINTS', tot('PTS')], ['REBOUNDS', tot('REB')], ['ASSISTS', tot('AST')],
+                ['STEALS', tot('STL')], ['BLOCKS', tot('BLK')], ['TURNOVERS', tot('TOV')], ['3-POINTERS MADE', tot('3P'), true]
+            ] : [
+                ['GAMES', tot('GP')], ['MINUTES', pg('MIN')], ['POINTS', pg('PTS')], ['REBOUNDS', pg('REB')], ['ASSISTS', pg('AST')],
+                ['STEALS', pg('STL')], ['BLOCKS', pg('BLK')], ['TURNOVERS', pg('TOV')], ['FIELD GOAL %', pct('FGM', 'FGA')],
+                ['FREE THROW %', pct('FTM', 'FTA')], ['3-POINTERS MADE', pg('3P'), true], ['3-POINT %', pct('3P', '3PA'), true]
+            ];
+            var rows = stats.map(function(s, i) {
+                var v1 = s[1](a), v2 = s[1](b);
+                var n1 = parseFloat(v1), n2 = parseFloat(v2);
+                var lower = NS_LOWER_IS_BETTER.indexOf(s[0]) !== -1;
+                var w = 'tie';
+                if (!isNaN(n1) && !isNaN(n2) && n1 !== n2) w = ((n1 > n2) !== lower) ? 'player1' : 'player2';
+                return { key: 'cur|' + i, label: s[0], v1: v1, v2: v2, winner: w, three: !!s[2] };
+            });
+            rows = threeLast(rows);
+            var w2 = countWins(rows);
+            return { key: 'cur', name: 'CURRENT SEASON', title: 'CURRENT SEASON · ' + seasonText(y),
+                     subline: combined ? 'REGULAR SEASON · TOTALS' : 'REGULAR SEASON · PER GAME',
+                     rows: rows, p1: w2[0], p2: w2[1], overall: true };
+        }
+        function curAllowed(info) { return info.compType === 'career'; }
+
+        function buildBlocks(info, includeCurrent) {
+            var blocks = info.data.sections.map(sectionBlock);
+            if (includeCurrent && curAllowed(info)) {
+                var cb = currentSeasonBlock(info.side1, info.side2, info.isCombine);
+                if (cb) blocks.unshift(cb);
+            }
+            return blocks;
+        }
+
+        // =============================================================
+        // Sides (names, team, colour, faces, logos)
+        // =============================================================
+        function nameSuffix(n) {
+            if (/ \+ /.test(String(n))) return '';
+            var m = String(n).match(/\(([^)]+)\)\s*$/);
+            return m ? m[1] : '';
+        }
+        function buildSides(info, theme) {
+            var yrs = [info.season1, info.season2];
+            var names = [info.data.player1Name, info.data.player2Name];
+            var sides = [info.side1, info.side2].map(function(list, i) {
+                var teams = list.map(function(n) { return teamOf(n, yrs[i]); });
+                var uniq = teams.filter(function(t, k) { return t && teams.indexOf(t) === k; });
+                return {
+                    names: list,
+                    combined: list.length > 1,
+                    display: list.join(' + '),
+                    short: list.map(lastName).join(' + '),
+                    suffix: nameSuffix(names[i]),
+                    teams: teams,
+                    team: uniq.length === 1 ? uniq[0] : null,
+                    uniqTeams: uniq,
+                    age: list.length === 1 ? ageOf(list[0]) : null,
+                    faces: [], logos: {}
+                };
+            });
+            var cols = pickColors(sides[0].teams[0], sides[1].teams[0], theme);
+            sides[0].color = cols[0]; sides[1].color = cols[1];
+            return sides;
+        }
+        // Per-member circle colours inside a combined side (contrast-checked vs bg).
+        function memberColor(side, k, theme) {
+            if (k === 0) return side.color;
+            var t = NS_TEAMS[side.teams[k]];
+            var bg = NS_THEMES[theme].bg;
+            if (!t) return side.color;
+            if (contrast(t.p, bg) >= 1.7) return t.p;
+            if (contrast(t.s, bg) >= 1.7) return t.s;
+            return side.color;
+        }
+        function loadSideAssets(sides) {
+            var jobs = [];
+            sides.forEach(function(sd) {
+                sd.names.slice(0, MAX_FACES).forEach(function(n, k) {
+                    jobs.push(loadFace(n).then(function(im) { sd.faces[k] = im; }));
+                });
+                sd.teams.forEach(function(t) {
+                    if (t && !(t in sd.logos)) {
+                        sd.logos[t] = null;
+                        jobs.push(loadLogo(t).then(function(im) { sd.logos[t] = im; }));
+                    }
+                });
+            });
+            return Promise.all(jobs);
+        }
+        function fontsReady() {
+            if (!document.fonts || !document.fonts.load) return Promise.resolve();
+            return Promise.all([
+                document.fonts.load('800 40px "Barlow Condensed"'), document.fonts.load('700 40px "Barlow Condensed"'),
+                document.fonts.load('600 40px "Barlow Condensed"'), document.fonts.load('500 20px "Barlow"'),
+                document.fonts.load('600 20px "Barlow"')
+            ]).catch(function() {});
+        }
+
+        // =============================================================
+        // Geometry
+        // =============================================================
+        function geom(W, H) {
+            var g = { W: W, H: H, land: W > H * 1.2 };
+            var S;
+            if (g.land) {
+                S = H / 1080;
+                g.S = S; g.pad = 40 * S;
+                g.titleY = 72 * S; g.titleSize = 52 * S;
+                g.cx1 = W * 0.135; g.cx2 = W * 0.865; g.D = 280 * S; g.cy = H * 0.41;
+                g.vsY = 128 * S;
+                g.nameY = g.cy + g.D / 2 + 60 * S; g.nameSize = 58 * S; g.nameMaxW = W * 0.235;
+                g.teamY = g.nameY + 48 * S; g.ageY = g.teamY + 38 * S;
+                g.blockTitleY = 196 * S; g.sublineY = 230 * S;
+                g.rowsTop = 256 * S; g.rowsBottom = H - 92 * S;
+                g.cardL = W * 0.268; g.cardR = W * 0.732;
+                g.x1 = W * 0.343; g.x2 = W * 0.657; g.boxW = W * 0.118;
+                g.logoSize = 760 * S; g.logoX = [g.cx1 - 170 * S, g.cx2 + 170 * S]; g.logoY = g.cy;
+                g.minRow = 40 * S; g.maxRow = 70 * S;
+            } else {
+                S = W / 1080;
+                g.S = S; g.pad = 44 * S;
+                g.titleY = 76 * S; g.titleSize = 54 * S;
+                g.D = Math.min(0.19 * W, 0.162 * H);
+                g.cy = g.titleY + 46 * S + g.D / 2;
+                g.cx1 = W * 0.25; g.cx2 = W * 0.75;
+                g.nameY = g.cy + g.D / 2 + 50 * S; g.nameSize = 50 * S; g.nameMaxW = W * 0.43;
+                g.teamY = g.nameY + 42 * S; g.ageY = g.teamY + 32 * S;
+                g.blockTitleY = g.ageY + 66 * S; g.sublineY = g.blockTitleY + 32 * S;
+                g.rowsTop = g.sublineY + 26 * S; g.rowsBottom = H - 80 * S;
+                g.cardL = g.pad; g.cardR = W - g.pad;
+                g.x1 = W * 0.19; g.x2 = W * 0.81; g.boxW = W * 0.24;
+                g.logoSize = W * 0.64; g.logoX = [g.cx1 - g.D * 0.95, g.cx2 + g.D * 0.95]; g.logoY = g.cy + 10 * S;
+                g.minRow = 40 * S; g.maxRow = 68 * S;
+            }
+            g.cardTop = g.blockTitleY - 46 * S;
+            g.cardBottom = g.rowsBottom + 14 * S;
+            g.labelW = (g.x2 - g.boxW / 2) - (g.x1 + g.boxW / 2) - 20 * S;
+            g.footerY = H - 36 * S;
+            return g;
+        }
+
+        // Split rows into pages: shrink the row height to the readable minimum first,
+        // then split evenly ("(1/2)", "(2/2)"). Group headers count as 0.62 of a row.
+        function rowUnits(r) { return r.group ? 0.62 : 1; }
+        function paginate(rows, g) {
+            var avail = g.rowsBottom - g.rowsTop;
+            var units = rows.reduce(function(s, r) { return s + rowUnits(r); }, 0);
+            if (units === 0) return [];
+            if (avail / units >= g.minRow) return [{ rows: rows, rowH: Math.min(g.maxRow, avail / units) }];
+            var perPage = Math.floor(avail / g.minRow);
+            var nPages = Math.ceil(units / perPage);
+            var target = units / nPages;
+            var pages = [], cur = [], cu = 0;
+            rows.forEach(function(r) {
+                if (cur.length && cu + rowUnits(r) > target + 0.01 && pages.length < nPages - 1) {
+                    // never leave a group header alone at the bottom of a page
+                    var tail = cur[cur.length - 1];
+                    if (tail.group) { cur.pop(); cu -= rowUnits(tail); pages.push(cur); cur = [tail]; cu = rowUnits(tail); }
+                    else { pages.push(cur); cur = []; cu = 0; }
+                }
+                cur.push(r); cu += rowUnits(r);
+            });
+            if (cur.length) pages.push(cur);
+            var maxUnits = Math.max.apply(null, pages.map(function(p) { return p.reduce(function(s, r) { return s + rowUnits(r); }, 0); }));
+            var rowH = Math.max(g.minRow * 0.9, Math.min(g.maxRow, avail / maxUnits));
+            return pages.map(function(p) { return { rows: p, rowH: rowH }; });
+        }
+
+        // =============================================================
+        // Drawing
+        // =============================================================
+        var MARK_PATHS = [
+            'M10 0C10 0 10 20 10 20', 'M0 10C0 10 20 10 20 10',
+            'M2.9 3.5C2.9 3.5 10 9.5 10 10C10 10.5 17.1 16.5 17.1 16.5',
+            'M17.1 3.5C17.1 3.5 10 9.5 10 10C10 10.5 2.9 16.5 2.9 16.5'
+        ];
+        // HoopsMatic basketball mark (same SVG as the site nav), drawn at radius r.
+        function drawMark(ctx, cx, cy, r) {
+            var k = r / 10;
+            ctx.save();
+            ctx.translate(cx - r, cy - r);
+            ctx.scale(k, k);
+            ctx.beginPath(); ctx.arc(10, 10, 10, 0, Math.PI * 2); ctx.fillStyle = '#E8531A'; ctx.fill();
+            ctx.strokeStyle = '#7A2800'; ctx.lineWidth = 1.2;
+            if (typeof Path2D !== 'undefined') MARK_PATHS.forEach(function(d) { ctx.stroke(new Path2D(d)); });
+            ctx.beginPath(); ctx.arc(10, 10, 10, 0, Math.PI * 2); ctx.strokeStyle = '#C44010'; ctx.lineWidth = 0.5; ctx.stroke();
+            ctx.restore();
+        }
+        function drawLogo(ctx, img, cx, cy, size) {
+            if (!img) return;
+            var iw = img.naturalWidth || img.width || 1, ih = img.naturalHeight || img.height || 1;
+            var k = size / Math.max(iw, ih);
+            ctx.drawImage(img, cx - iw * k / 2, cy - ih * k / 2, iw * k, ih * k);
+        }
+        function drawFace(ctx, img, color, cx, cy, d, th, ringW) {
+            ctx.save();
+            ctx.beginPath(); ctx.arc(cx, cy, d / 2, 0, Math.PI * 2);
+            ctx.fillStyle = color; ctx.fill();
+            ctx.clip();
+            if (img) ctx.drawImage(img, cx - d / 2, cy - d / 2, d, d);
+            ctx.restore();
+            ctx.beginPath(); ctx.arc(cx, cy, d / 2, 0, Math.PI * 2);
+            ctx.strokeStyle = th.ring; ctx.lineWidth = ringW; ctx.stroke();
+        }
+        function drawSideFaces(ctx, sd, cx, cy, D, th, S, theme) {
+            var n = Math.max(1, Math.min(sd.names.length, MAX_FACES));
+            if (n === 1) { drawFace(ctx, sd.faces[0], sd.color, cx, cy, D, th, 4 * S); return; }
+            // combine mode: smaller, overlapping circles
+            var d = D * (n === 2 ? 0.76 : 0.64);
+            var step = d * 0.62;
+            var total = d + step * (n - 1);
+            var x0 = cx - total / 2 + d / 2;
+            for (var k = n - 1; k >= 0; k--) {
+                drawFace(ctx, sd.faces[k], memberColor(sd, k, theme), x0 + k * step, cy + (k % 2 ? d * 0.06 : 0), d, th, 4 * S);
+            }
+        }
+        function drawDiamond(ctx, x, y, r, color) {
+            ctx.beginPath(); ctx.moveTo(x, y - r); ctx.lineTo(x + r, y); ctx.lineTo(x, y + r); ctx.lineTo(x - r, y); ctx.closePath();
+            ctx.fillStyle = color; ctx.fill();
+        }
+
+        function drawRow(ctx, g, sc, row, y, h, t) {
+            var th = NS_THEMES[sc.theme], S = g.S;
+            var cy = y + h / 2;
+            var a = clamp01(t * 1.6);
+            if (a <= 0) return;
+            ctx.save();
+            ctx.globalAlpha *= a;
+            ctx.textBaseline = 'middle';
+            ctx.textAlign = 'center';
+            if (row.group) {
+                ctx.font = '700 ' + Math.round(Math.min(h * 0.62, 18 * S)) + 'px ' + NF_HEAD;
+                setLS(ctx, 2 * S);
+                ctx.fillStyle = th.muted;
+                var gw = ctx.measureText(row.label).width;
+                ctx.fillText(row.label, (g.cardL + g.cardR) / 2, cy + 2 * S);
+                setLS(ctx, 0);
+                ctx.strokeStyle = th.divider; ctx.lineWidth = Math.max(1, S);
+                ctx.beginPath();
+                ctx.moveTo(g.cardL + 24 * S, cy); ctx.lineTo((g.cardL + g.cardR) / 2 - gw / 2 - 14 * S, cy);
+                ctx.moveTo((g.cardL + g.cardR) / 2 + gw / 2 + 14 * S, cy); ctx.lineTo(g.cardR - 24 * S, cy);
+                ctx.stroke();
+                ctx.restore();
+                return;
+            }
+            // label
+            var lf = fitFont(ctx, row.label, Math.round(Math.min(h * 0.38, 23 * S)), Math.round(12 * S), g.labelW, row.bold ? '800' : '600', NF_HEAD);
+            ctx.font = (row.bold ? '800 ' : '600 ') + lf.size + 'px ' + NF_HEAD;
+            setLS(ctx, 1 * S);
+            ctx.fillStyle = row.bold ? th.text : th.muted;
+            ctx.fillText(lf.text, (g.x1 + g.x2) / 2, cy + 1 * S);
+            setLS(ctx, 0);
+            // values
+            var vs = Math.round(Math.min(h * 0.54, 38 * S));
+            var vals = [row.v1, row.v2], xs = [g.x1, g.x2];
+            var bt = ease(t);
+            for (var i = 0; i < 2; i++) {
+                var win = row.winner === (i === 0 ? 'player1' : 'player2');
+                var col = sc.sides[i].color;
+                var txt = String(vals[i]);
+                var vf = fitFont(ctx, txt, vs, Math.round(14 * S), g.boxW - 44 * S, '700', NF_HEAD);
+                var x = xs[i];
+                if (win) {
+                    var slide = (1 - bt) * 34 * S * (i === 0 ? -1 : 1);
+                    var bh = h * 0.78, bw = g.boxW;
+                    ctx.save();
+                    ctx.globalAlpha *= bt;
+                    rr(ctx, x - bw / 2 + slide, cy - bh / 2, bw, bh, Math.min(12 * S, bh / 2));
+                    ctx.fillStyle = rgba(col, th.tint); ctx.fill();
+                    ctx.strokeStyle = rgba(col, 0.9); ctx.lineWidth = 2 * S; ctx.stroke();
+                    ctx.restore();
+                    ctx.font = '700 ' + vf.size + 'px ' + NF_HEAD;
+                    var tw = ctx.measureText(vf.text).width;
+                    var dr = Math.max(4 * S, vf.size * 0.2);
+                    var shift = (dr * 2 + 8 * S) / 2;
+                    ctx.save(); ctx.globalAlpha *= bt;
+                    drawDiamond(ctx, x + shift - tw / 2 - 8 * S - dr + slide, cy, dr, col);
+                    ctx.restore();
+                    ctx.fillStyle = th.text;
+                    ctx.fillText(vf.text, x + shift, cy + 1 * S);
+                } else {
+                    ctx.font = '700 ' + vf.size + 'px ' + NF_HEAD;
+                    ctx.save();
+                    if (row.winner !== 'tie') ctx.globalAlpha *= th.loserA;
+                    ctx.fillStyle = th.text;
+                    ctx.fillText(vf.text, x, cy + 1 * S);
+                    ctx.restore();
+                }
+            }
+            ctx.restore();
+        }
+
+        // sc: { W, H, theme, sides, topTitle }
+        // st: { headerT, block: {title, subline, titleColor}, rows, rowH, rowT[], titleT, blockA, winnerSide, dy }
+        function drawScene(ctx, sc, st) {
+            var g = geom(sc.W, sc.H), th = NS_THEMES[sc.theme], S = g.S;
+            var dy = st.dy || 0;
+            var hT = ease(st.headerT == null ? 1 : st.headerT);
+            ctx.save();
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
+            ctx.globalAlpha = 1;
+            ctx.fillStyle = th.bg;
+            ctx.fillRect(0, 0, sc.W, sc.H);
+            ctx.translate(0, dy);
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            var cxs = [g.cx1, g.cx2];
+
+            // big faded team logos, partly off-canvas toward each side
+            sc.sides.forEach(function(sd, i) {
+                var t = sd.team || sd.uniqTeams[0];
+                var img = t ? sd.logos[t] : null;
+                if (!img) return;
+                ctx.save();
+                ctx.globalAlpha = th.logoA * hT;
+                drawLogo(ctx, img, g.logoX[i], g.logoY, g.logoSize);
+                ctx.restore();
+            });
+
+            // final card: highlight the winning side's column
+            if (st.winnerSide === 0 || st.winnerSide === 1) {
+                var wi = st.winnerSide, wsd = sc.sides[wi];
+                var colW = g.land ? sc.W * 0.25 : sc.W * 0.42;
+                var top = g.cy - g.D / 2 - 22 * S, bot = g.ageY + 22 * S;
+                ctx.save();
+                ctx.globalAlpha = 0.9 * clamp01(st.blockA == null ? 1 : st.blockA);
+                rr(ctx, cxs[wi] - colW / 2, top, colW, bot - top, 16 * S);
+                ctx.fillStyle = rgba(wsd.color, th.tint * 0.8); ctx.fill();
+                ctx.strokeStyle = rgba(wsd.color, 0.9); ctx.lineWidth = 2 * S; ctx.stroke();
+                ctx.restore();
+            }
+
+            // title
+            ctx.save();
+            ctx.globalAlpha = hT;
+            ctx.fillStyle = th.text;
+            var tf = fitFont(ctx, sc.topTitle || 'PLAYER COMPARISON', g.titleSize, 20 * S, sc.W - 2 * g.pad, '800', NF_HEAD);
+            ctx.font = '800 ' + tf.size + 'px ' + NF_HEAD;
+            setLS(ctx, 3 * S);
+            ctx.fillText(tf.text, sc.W / 2, g.titleY + (1 - hT) * -16 * S);
+            setLS(ctx, 0);
+            ctx.restore();
+
+            // faces
+            sc.sides.forEach(function(sd, i) {
+                ctx.save();
+                ctx.globalAlpha = hT;
+                var k = 0.72 + 0.28 * hT;
+                ctx.translate(cxs[i], g.cy); ctx.scale(k, k); ctx.translate(-cxs[i], -g.cy);
+                drawSideFaces(ctx, sd, cxs[i], g.cy, g.D, th, S, sc.theme);
+                ctx.restore();
+            });
+
+            // HoopsMatic mark + VS
+            ctx.save();
+            ctx.globalAlpha = hT;
+            ctx.fillStyle = th.text;
+            if (g.land) {
+                drawMark(ctx, sc.W / 2 - 30 * S, g.vsY, 17 * S);
+                ctx.font = '800 ' + Math.round(36 * S) + 'px ' + NF_HEAD;
+                ctx.textAlign = 'left';
+                ctx.fillText('VS', sc.W / 2 - 6 * S, g.vsY + 2 * S);
+            } else {
+                drawMark(ctx, sc.W / 2, g.cy - 30 * S, 20 * S);
+                ctx.font = '800 ' + Math.round(44 * S) + 'px ' + NF_HEAD;
+                ctx.fillText('VS', sc.W / 2, g.cy + 28 * S);
+            }
+            ctx.restore();
+
+            // names, team, age
+            sc.sides.forEach(function(sd, i) {
+                var cx = cxs[i];
+                ctx.save();
+                ctx.globalAlpha = hT;
+                ctx.translate(0, (1 - hT) * 22 * S);
+                ctx.textAlign = 'center';
+                ctx.fillStyle = th.text;
+                var nm = sd.display.toUpperCase();
+                var nf = fitFont(ctx, nm, g.nameSize, Math.round(g.nameSize * 0.5), g.nameMaxW, '800', NF_HEAD);
+                if (!nf.fits && sd.combined) nf = fitFont(ctx, sd.short.toUpperCase(), g.nameSize, Math.round(g.nameSize * 0.45), g.nameMaxW, '800', NF_HEAD);
+                ctx.font = '800 ' + nf.size + 'px ' + NF_HEAD;
+                ctx.fillText(nf.text, cx, g.nameY);
+
+                // team logo + team name
+                var ls = 32 * S;
+                ctx.fillStyle = th.muted;
+                if (sd.team) {
+                    var tn = NS_TEAMS[sd.team].n;
+                    var tff = fitFont(ctx, tn, Math.round(21 * S), Math.round(13 * S), g.nameMaxW - ls - 10 * S, '600', NF_BODY);
+                    ctx.font = '600 ' + tff.size + 'px ' + NF_BODY;
+                    var tw = ctx.measureText(tff.text).width;
+                    var x0 = cx - (ls + 10 * S + tw) / 2;
+                    if (sd.logos[sd.team]) drawLogo(ctx, sd.logos[sd.team], x0 + ls / 2, g.teamY, ls);
+                    ctx.textAlign = 'left';
+                    ctx.fillText(tff.text, x0 + ls + 10 * S, g.teamY + 1 * S);
+                    ctx.textAlign = 'center';
+                } else if (sd.uniqTeams.length) {
+                    var n = sd.uniqTeams.length, gap = 8 * S;
+                    var sx = cx - (n * ls + (n - 1) * gap) / 2 + ls / 2;
+                    sd.uniqTeams.forEach(function(t, k) { drawLogo(ctx, sd.logos[t], sx + k * (ls + gap), g.teamY, ls); });
+                }
+                // age line (+ season / range suffix)
+                var ageTxt = sd.combined ? 'Combined · ' + sd.names.length + ' players' : (sd.age ? sd.age + ' years old' : '');
+                if (sd.suffix) ageTxt = ageTxt ? ageTxt + ' · ' + sd.suffix : sd.suffix;
+                if (ageTxt) {
+                    var af = fitFont(ctx, ageTxt, Math.round(20 * S), Math.round(12 * S), g.nameMaxW, '500', NF_BODY);
+                    ctx.font = '500 ' + af.size + 'px ' + NF_BODY;
+                    ctx.fillText(af.text, cx, g.ageY);
+                }
+                ctx.restore();
+            });
+
+            // block card
+            var bA = st.blockA == null ? 1 : clamp01(st.blockA);
+            if (st.block && bA > 0) {
+                ctx.save();
+                ctx.globalAlpha = bA;
+                var cardBottom = st.rowH ? Math.min(g.cardBottom, g.rowsTop + pageUnits(st.rows || []) * st.rowH + 14 * S) : g.cardBottom;
+                rr(ctx, g.cardL, g.cardTop, g.cardR - g.cardL, cardBottom - g.cardTop, 12 * S);
+                ctx.fillStyle = th.surface; ctx.fill();
+                ctx.strokeStyle = th.border; ctx.lineWidth = Math.max(1, S); ctx.stroke();
+
+                var tT = ease(st.titleT == null ? 1 : st.titleT);
+                ctx.save();
+                ctx.globalAlpha *= tT;
+                ctx.translate(0, (1 - tT) * 12 * S);
+                ctx.textAlign = 'center';
+                ctx.fillStyle = st.block.titleColor || th.text;
+                var bf = fitFont(ctx, st.block.title, Math.round(34 * S), Math.round(18 * S), g.cardR - g.cardL - 40 * S, '800', NF_HEAD);
+                ctx.font = '800 ' + bf.size + 'px ' + NF_HEAD;
+                setLS(ctx, 2 * S);
+                ctx.fillText(bf.text, (g.cardL + g.cardR) / 2, g.blockTitleY);
+                if (st.block.subline) {
+                    ctx.fillStyle = th.muted;
+                    var sf = fitFont(ctx, st.block.subline, Math.round(16 * S), Math.round(11 * S), g.cardR - g.cardL - 40 * S, '600', NF_BODY);
+                    ctx.font = '600 ' + sf.size + 'px ' + NF_BODY;
+                    setLS(ctx, 1.5 * S);
+                    ctx.fillText(sf.text, (g.cardL + g.cardR) / 2, g.sublineY);
+                }
+                setLS(ctx, 0);
+                ctx.restore();
+
+                var y = g.rowsTop;
+                var rows = st.rows || [];
+                for (var r = 0; r < rows.length; r++) {
+                    var h = st.rowH * rowUnits(rows[r]);
+                    var rt = st.rowT ? st.rowT[r] : 1;
+                    drawRow(ctx, g, sc, rows[r], y, h, rt == null ? 1 : rt);
+                    if (r < rows.length - 1 && !rows[r].group && !rows[r + 1].group && (rt == null || rt > 0)) {
+                        ctx.save();
+                        ctx.globalAlpha *= clamp01((rt == null ? 1 : rt) * 1.6);
+                        ctx.strokeStyle = th.divider; ctx.lineWidth = Math.max(1, S);
+                        ctx.beginPath(); ctx.moveTo(g.cardL + 20 * S, y + h); ctx.lineTo(g.cardR - 20 * S, y + h); ctx.stroke();
+                        ctx.restore();
+                    }
+                    y += h;
+                }
+                ctx.restore();
+            }
+            ctx.restore();
+
+            // footer wordmark (not shifted, always at the bottom)
+            ctx.save();
+            ctx.globalAlpha = hT;
+            ctx.textBaseline = 'middle';
+            ctx.font = '700 ' + Math.round(22 * S) + 'px ' + NF_HEAD;
+            setLS(ctx, 1 * S);
+            var wm = 'hoopsmatic.com';
+            var ww = ctx.measureText(wm).width;
+            var mr = 10 * S;
+            var fx = sc.W / 2 - (ww + mr * 2 + 8 * S) / 2;
+            drawMark(ctx, fx + mr, g.footerY, mr);
+            ctx.fillStyle = th.muted;
+            ctx.textAlign = 'left';
+            ctx.fillText(wm, fx + mr * 2 + 8 * S, g.footerY + 1 * S);
+            setLS(ctx, 0);
+            ctx.restore();
+        }
+
+        // Vertical offset that centres a short block in tall formats (stacked only).
+        function centerDy(g, maxUnits, rowH) {
+            if (g.land) return 0;
+            var spare = (g.rowsBottom - g.rowsTop) - maxUnits * rowH;
+            return spare > 0 ? Math.round(spare * 0.35) : 0;
+        }
+        function pageUnits(rows) { return rows.reduce(function(s, r) { return s + rowUnits(r); }, 0); }
+
+        // =============================================================
+        // Final card (video)
+        // =============================================================
+        function finalModel(blocks, sides) {
+            var t1 = 0, t2 = 0;
+            var rows = blocks.map(function(b, i) {
+                if (b.overall) { t1 += b.p1; t2 += b.p2; }
+                return { key: 'f' + i, label: b.title.replace(/ · .*$/, '') + (b.overall ? '' : ' *'),
+                         v1: String(b.p1), v2: String(b.p2),
+                         winner: b.p1 > b.p2 ? 'player1' : (b.p2 > b.p1 ? 'player2' : 'tie') };
+            });
+            rows.push({ key: 'fo', label: 'OVERALL', v1: String(t1), v2: String(t2), bold: true,
+                        winner: t1 > t2 ? 'player1' : (t2 > t1 ? 'player2' : 'tie') });
+            var win = t1 > t2 ? 0 : (t2 > t1 ? 1 : -1);
+            var who = win >= 0 ? (sides[win].combined ? sides[win].short : lastName(sides[win].names[0])) : '';
+            var title = win >= 0 ? (who + ' wins ' + Math.max(t1, t2) + '-' + Math.min(t1, t2)).toUpperCase() : ('TIED ' + t1 + '-' + t2);
+            var hasExcluded = blocks.some(function(b) { return !b.overall; });
+            return {
+                rows: rows, winnerSide: win,
+                block: { title: title, titleColor: win >= 0 ? sides[win].color : null,
+                         subline: 'CATEGORY WINS BY BLOCK' + (hasExcluded ? ' · * NOT IN OVERALL' : '') }
+            };
+        }
+
+        // =============================================================
+        // NEW STYLE VIDEO
+        // =============================================================
+        var NEW_RES = { '1080p': [1920, 1080], '720p': [1280, 720], 'square': [1080, 1080], 'story': [1080, 1920], 'portrait45': [1080, 1350] };
+
+        async function generateNewVideo() {
+            var info = gather(true);
+            if (info.err) { showStatus(info.err, 'error'); return; }
+            var res = $('resolution').value;
+            var dims = NEW_RES[res] || NEW_RES.square;
+            var W = dims[0], H = dims[1];
+            var fps = parseInt($('framerate').value, 10) || 30;
+            var theme = NS.theme;
+
+            var blocks = buildBlocks(info, $('nsIncludeCurrent').checked);
+            if (!blocks.length || !blocks.some(function(b) { return b.rows.length; })) {
+                showStatus('No comparison data found for these players. Try different players.', 'error');
+                return;
+            }
+
+            $('generateBtn').disabled = true;
+            $('loadingSpinner').style.display = 'inline-block';
+            $('btnText').textContent = 'Generating...';
+            showStatus('Starting video generation...', 'info');
+            updateProgress(5, 'Loading headshots and logos...');
+
+            try {
+                var sides = buildSides(info, theme);
+                await Promise.all([loadSideAssets(sides), fontsReady()]);
+                var sc = { W: W, H: H, theme: theme, sides: sides };
+                var g = geom(W, H);
+
+                // pages
+                var pages = [];
+                blocks.forEach(function(b) {
+                    var ps = paginate(b.rows, g);
+                    ps.forEach(function(p, k) {
+                        pages.push({ block: { title: b.title + (ps.length > 1 ? ' (' + (k + 1) + '/' + ps.length + ')' : ''), subline: b.subline },
+                                     rows: p.rows, rowH: p.rowH });
+                    });
+                });
+                var fin = finalModel(blocks, sides);
+                var finAvail = g.rowsBottom - g.rowsTop;
+                fin.rowH = Math.min(g.maxRow, finAvail / fin.rows.length);
+                var dy = 0; // video: header stays put; the card hugs each page's rows
+
+                // timeline (seconds)
+                var INTRO = 1.1, TITLE_IN = 0.4, ROW_GAP = 0.42, GROUP_GAP = 0.15, ROW_ANIM = 0.38, HOLD = 1.6, FADE = 0.35;
+                var tl = [], t = INTRO;
+                pages.forEach(function(p) {
+                    var starts = [], rt = t + TITLE_IN;
+                    p.rows.forEach(function(r) { starts.push(rt); rt += r.group ? GROUP_GAP : ROW_GAP; });
+                    var end = (starts.length ? starts[starts.length - 1] : t) + ROW_ANIM + HOLD;
+                    tl.push({ page: p, start: t, starts: starts, end: end });
+                    t = end + FADE;
+                });
+                var finStart = t, FIN_IN = 0.6, FIN_HOLD = 4.5;
+                var finStarts = fin.rows.map(function(r, i) { return finStart + FIN_IN + i * 0.22; });
+                var total = finStarts[finStarts.length - 1] + ROW_ANIM + FIN_HOLD;
+                var totalFrames = Math.ceil(total * fps);
+
+                function stateAt(sec) {
+                    var headerT = clamp01(sec / 0.8);
+                    if (sec >= finStart) {
+                        return { headerT: 1, block: fin.block, rows: fin.rows, rowH: fin.rowH, dy: dy,
+                                 titleT: (sec - finStart) / FIN_IN, blockA: (sec - finStart) / 0.4, winnerSide: fin.winnerSide,
+                                 rowT: finStarts.map(function(s) { return (sec - s) / ROW_ANIM; }) };
+                    }
+                    for (var i = 0; i < tl.length; i++) {
+                        var seg = tl[i];
+                        if (sec < seg.start) break;
+                        if (sec < seg.end + FADE) {
+                            var fadeOut = sec > seg.end ? 1 - (sec - seg.end) / FADE : 1;
+                            return { headerT: headerT, block: seg.page.block, rows: seg.page.rows, rowH: seg.page.rowH, dy: dy,
+                                     titleT: (sec - seg.start) / TITLE_IN, blockA: Math.min(fadeOut, (sec - seg.start) / 0.25),
+                                     rowT: seg.starts.map(function(s) { return (sec - s) / ROW_ANIM; }) };
+                        }
+                    }
+                    return { headerT: headerT, block: null, dy: dy };
+                }
+                window.__nsStateAt = function(sec, ctx2) { drawScene(ctx2, sc, stateAt(sec)); return total; }; // test hook
+
+                var canvas = $('videoCanvas');
+                canvas.width = W; canvas.height = H;
+                var previewCtx = canvas.getContext('2d');
+                $('previewPanel').classList.add('active');
+                $('previewPanel').style.display = '';
+                canvas.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+                var offscreen = document.createElement('canvas');
+                offscreen.width = W; offscreen.height = H;
+                var offCtx = offscreen.getContext('2d');
+
+                // Recorder + MP4 muxer: same setup as the Classic generator.
+                var stream = offscreen.captureStream(fps);
+                recordedChunks = [];
+                var mimeType = 'video/webm;codecs=vp9';
+                if (!MediaRecorder.isTypeSupported(mimeType)) {
+                    mimeType = 'video/webm;codecs=vp8';
+                    if (!MediaRecorder.isTypeSupported(mimeType)) mimeType = 'video/webm';
+                }
+                mediaRecorder = new MediaRecorder(stream, { mimeType: mimeType, videoBitsPerSecond: 8000000 });
+                mediaRecorder.ondataavailable = function(ev) { if (ev.data.size > 0) recordedChunks.push(ev.data); };
+                mediaRecorder.start();
+                await sleep(50);
+
+                var mp4Muxer = new Mp4Muxer.Muxer({
+                    target: new Mp4Muxer.ArrayBufferTarget(),
+                    fastStart: 'in-memory',
+                    video: { codec: 'avc', width: W, height: H }
+                });
+                var encErr = null;
+                var videoEncoder = new VideoEncoder({
+                    output: function(chunk, meta) { mp4Muxer.addVideoChunk(chunk, meta); },
+                    error: function(e) { encErr = e; console.error('VideoEncoder error:', e); }
+                });
+                videoEncoder.configure({ codec: 'avc1.4d0034', width: W, height: H, bitrate: 8000000, framerate: fps });
+
+                var frameDelay = Math.round(1000 / fps);
+                for (var frame = 0; frame < totalFrames; frame++) {
+                    var fStart = performance.now();
+                    drawScene(offCtx, sc, stateAt(frame / fps));
+                    previewCtx.drawImage(offscreen, 0, 0);
+                    var vf = new VideoFrame(offscreen, { timestamp: (frame * 1000000) / fps });
+                    videoEncoder.encode(vf, { keyFrame: frame % (fps * 2) === 0 });
+                    vf.close();
+                    if (frame % 30 === 0) updateProgress(10 + (frame / totalFrames) * 85, 'Rendering frame ' + frame + '/' + totalFrames + '...');
+                    var el = performance.now() - fStart;
+                    await sleep(Math.max(1, frameDelay - el));
+                }
+                await videoEncoder.flush();
+                mp4Muxer.finalize();
+                window.mp4Buffer = mp4Muxer.target.buffer;
+                if (encErr) console.warn('MP4 encoder reported an error; WebM is still available.');
+
+                updateProgress(96, 'Finalizing video...');
+                mediaRecorder.stop();
+                await new Promise(function(resolve) {
+                    mediaRecorder.onstop = function() {
+                        videoBlob = new Blob(recordedChunks, { type: 'video/webm' });
+                        updateProgress(100, 'Video complete!');
+                        showStatus('Video generated successfully! Size: ' + (videoBlob.size / 1024 / 1024).toFixed(2) + ' MB', 'success');
+                        $('downloadMp4Btn').style.display = 'block';
+                        $('downloadBtn').style.display = 'block';
+                        resolve();
+                    };
+                });
+            } catch (error) {
+                console.error('New style video error:', error);
+                showStatus('Error generating video: ' + error.message, 'error');
+            }
+            $('generateBtn').disabled = false;
+            $('loadingSpinner').style.display = 'none';
+            $('btnText').textContent = 'Generate Video';
+        }
+
+        // =============================================================
+        // IMAGE GENERATOR
+        // =============================================================
+        async function loadImageData() {
+            var info = gather(false);
+            if (info.err) { showStatus(info.err, 'error'); return; }
+            var blocks = buildBlocks(info, true);
+            if (!blocks.length) { showStatus('No comparison data found for these players.', 'error'); return; }
+            showStatus('Loading headshots and logos...', 'info');
+            NS.loaded = { info: info, blocks: blocks, sidesByTheme: {} };
+            NS.customPicked = [];
+            NS.blockPicked = null;
+            await fontsReady();
+            await ensureSides(NS.theme);
+            buildPickers();
+            await renderImages();
+            showStatus('Stats loaded: ' + blocks.length + ' blocks. Tick blocks or rows to build images.', 'success');
+        }
+        async function ensureSides(theme) {
+            var L = NS.loaded;
+            if (!L) return null;
+            if (!L.sidesByTheme[theme]) {
+                var sides = buildSides(L.info, theme);
+                await loadSideAssets(sides);
+                L.sidesByTheme[theme] = sides;
+            }
+            return L.sidesByTheme[theme];
+        }
+        function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;'); }
+
+        function buildPickers() {
+            var L = NS.loaded;
+            var bp = $('nsBlocksPick');
+            var html = '<div class="ns-group"><label>Blocks (one image per block)</label></div><div class="ns-pick-list">';
+            L.blocks.forEach(function(b, i) {
+                var on = NS.blockPicked ? NS.blockPicked.indexOf(b.key) !== -1 : i === 0;
+                html += '<label><input type="checkbox" class="ns-block-check" value="' + esc(b.key) + '"' + (on ? ' checked' : '') + '> ' + esc(b.title) + '</label>';
+            });
+            bp.innerHTML = html + '</div>';
+            bp.querySelectorAll('.ns-block-check').forEach(function(cb) { cb.addEventListener('change', scheduleRender); });
+
+            var cl = $('nsCustomList');
+            var h2 = '';
+            L.blocks.forEach(function(b) {
+                h2 += '<div class="ns-custom-block"><h4>' + esc(b.title) + '</h4><div class="ns-pick-list">';
+                b.rows.forEach(function(r) {
+                    var k = b.key + '||' + r.key;
+                    h2 += '<label><input type="checkbox" class="ns-row-check" value="' + esc(k) + '"' + (NS.customPicked.indexOf(k) !== -1 ? ' checked' : '') + '> ' +
+                          esc(r.label) + ' <span style="color:#777">(' + esc(r.v1) + ' / ' + esc(r.v2) + ')</span></label>';
+                });
+                h2 += '</div></div>';
+            });
+            cl.innerHTML = h2;
+            cl.querySelectorAll('.ns-row-check').forEach(function(cb) {
+                cb.addEventListener('change', function() {
+                    var i = NS.customPicked.indexOf(cb.value);
+                    if (cb.checked && i === -1) NS.customPicked.push(cb.value);
+                    if (!cb.checked && i !== -1) NS.customPicked.splice(i, 1);
+                    scheduleRender();
+                });
+            });
+        }
+
+        // The list of images to draw: [{block, rows, rowH, fileTag}]
+        function imagePlan(g) {
+            var L = NS.loaded, out = [];
+            function addBlock(b, tag) {
+                var ps = paginate(b.rows, g);
+                ps.forEach(function(p, k) {
+                    out.push({ block: { title: b.title + (ps.length > 1 ? ' (' + (k + 1) + '/' + ps.length + ')' : ''), subline: b.subline },
+                               rows: p.rows, rowH: p.rowH,
+                               fileTag: tag + (ps.length > 1 ? '-' + (k + 1) + 'of' + ps.length : '') });
+                });
+            }
+            if (NS.mode === 'blocks') {
+                var picked = Array.prototype.map.call(document.querySelectorAll('.ns-block-check:checked'), function(c) { return c.value; });
+                NS.blockPicked = picked;
+                L.blocks.forEach(function(b) {
+                    if (picked.indexOf(b.key) === -1) return;
+                    addBlock(b, slug(b.key === 'cur' ? 'current-season' : b.title));
+                });
+            } else {
+                var title = ($('nsCustomTitle').value || '').trim().toUpperCase() || 'HEAD TO HEAD';
+                var used = L.blocks.map(function(b) {
+                    var mine = NS.customPicked.filter(function(k) { return k.indexOf(b.key + '||') === 0; });
+                    var rows = mine.map(function(k) {
+                        var rk = k.slice(b.key.length + 2);
+                        return b.rows.find(function(r) { return r.key === rk; });
+                    }).filter(Boolean);
+                    return { b: b, rows: threeLast(rows) };
+                }).filter(function(x) { return x.rows.length; });
+                if (!used.length) return out;
+                var rows = [];
+                used.forEach(function(x) {
+                    if (used.length > 1) rows.push({ group: true, label: x.b.title });
+                    rows = rows.concat(x.rows);
+                });
+                addBlock({ title: title, subline: used.length === 1 ? used[0].b.subline : '', rows: rows }, slug(title) || 'custom');
+            }
+            return out;
+        }
+
+        var renderTimer = null, renderSeq = 0;
+        function scheduleRender() {
+            clearTimeout(renderTimer);
+            renderTimer = setTimeout(function() { renderImages(); }, 120);
+        }
+        async function renderImages() {
+            var L = NS.loaded, outEl = $('nsImgOut');
+            if (!L) return;
+            var seq = ++renderSeq;
+            var dims = NS.size.split('x').map(Number);
+            var W = dims[0], H = dims[1];
+            var sides = await ensureSides(NS.theme);
+            if (seq !== renderSeq) return;
+            var g = geom(W, H);
+            var plan = imagePlan(g);
+            outEl.innerHTML = '';
+            if (!plan.length) {
+                outEl.innerHTML = '<div class="section-filter-hint">' + (NS.mode === 'custom' ? 'Tick some stats above to build the custom image.' : 'Tick at least one block above.') + '</div>';
+                return;
+            }
+            var sc = { W: W, H: H, theme: NS.theme, sides: sides };
+            var p1 = slug(sides[0].display), p2 = slug(sides[1].display);
+            plan.forEach(function(item) {
+                var c = document.createElement('canvas');
+                c.width = W; c.height = H;
+                var dy = centerDy(g, pageUnits(item.rows), item.rowH);
+                drawScene(c.getContext('2d'), sc, { headerT: 1, block: item.block, rows: item.rows, rowH: item.rowH, dy: dy });
+                var fname = 'hoopsmatic-compare-' + p1 + '-vs-' + p2 + '-' + item.fileTag + '-' + W + 'x' + H + '.png';
+                var card = document.createElement('div');
+                card.className = 'ns-img-card';
+                var btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'download-btn';
+                btn.textContent = 'Download PNG';
+                btn.addEventListener('click', function() { downloadCanvas(c, fname); });
+                var fn = document.createElement('div');
+                fn.className = 'ns-fname';
+                fn.textContent = fname;
+                card.appendChild(c); card.appendChild(fn); card.appendChild(btn);
+                outEl.appendChild(card);
+            });
+        }
+        function downloadCanvas(c, fname) {
+            try {
+                c.toBlob(function(blob) {
+                    if (!blob) { showStatus('Could not export this image.', 'error'); return; }
+                    var url = URL.createObjectURL(blob);
+                    var a = document.createElement('a');
+                    a.href = url; a.download = fname;
+                    document.body.appendChild(a); a.click(); a.remove();
+                    setTimeout(function() { URL.revokeObjectURL(url); }, 4000);
+                }, 'image/png');
+            } catch (e) {
+                showStatus('Image export blocked: ' + e.message, 'error');
+            }
+        }
+
+        // =============================================================
+        // Controls wiring
+        // =============================================================
+        function segSet(id, v) {
+            var seg = $(id);
+            if (!seg) return;
+            seg.querySelectorAll('button').forEach(function(b) { b.classList.toggle('on', b.getAttribute('data-v') === v); });
+        }
+        function segWire(id, key, after) {
+            $(id).querySelectorAll('button').forEach(function(b) {
+                b.addEventListener('click', function() {
+                    if (b.disabled) return;
+                    NS[key] = b.getAttribute('data-v');
+                    segSet(id, NS[key]);
+                    if (after) after();
+                });
+            });
+        }
+        function groupOf(id) { var el = $(id); return el ? el.closest('.setting-group') : null; }
+
+        // The 4:5 option only exists while the New style is selected (Classic's own
+        // size table has no entry for it, so Classic never sees it).
+        function syncResolutionOptions() {
+            var sel = $('resolution');
+            var opt = sel.querySelector('option[value="portrait45"]');
+            if (NS.style === 'new' && !opt) {
+                opt = document.createElement('option');
+                opt.value = 'portrait45';
+                opt.textContent = 'Portrait 4:5 (1080x1350) - Feed (New style)';
+                sel.insertBefore(opt, sel.querySelector('option[value="story"]'));
+            } else if (NS.style !== 'new' && opt) {
+                if (sel.value === 'portrait45') sel.value = 'square';
+                opt.remove();
+            }
+        }
+        function syncCurrentOption() {
+            var ok = hasCurrentSeasonData() && $('comparisonType').value === 'career';
+            $('nsCurGroup').style.display = (ok && NS.style === 'new' && NS.output === 'video') ? '' : 'none';
+            $('nsCurLabel').textContent = 'Open with Current season block (' + seasonText(currentSeasonYear()) + ')';
+        }
+        function syncUI() {
+            var isImg = NS.output === 'image';
+            if (isImg && NS.style !== 'new') NS.style = 'new';
+            segSet('nsStyleSeg', NS.style);
+            segSet('nsOutputSeg', NS.output);
+            segSet('nsThemeSeg', NS.theme);
+            segSet('nsSizeSeg', NS.size);
+            segSet('nsModeSeg', NS.mode);
+            var classicBtn = $('nsStyleSeg').querySelector('button[data-v="classic"]');
+            classicBtn.disabled = isImg;
+            $('nsThemeGroup').style.display = NS.style === 'new' ? '' : 'none';
+            $('nsStyleHint').textContent = isImg
+                ? 'Images always use the New style. Pick blocks or individual stats below.'
+                : (NS.style === 'classic' ? 'Classic: the original video look, unchanged.' : 'New: team colours, one block per page, final score card.');
+            ['resolution', 'duration', 'framerate'].forEach(function(id) { var gp = groupOf(id); if (gp) gp.style.display = isImg ? 'none' : ''; });
+            $('generateBtn').style.display = isImg ? 'none' : '';
+            $('sectionFilterSection').style.display = isImg ? 'none' : '';
+            $('previewPanel').style.display = isImg ? 'none' : '';
+            $('nsImagePanel').classList.toggle('active', isImg);
+            $('nsBlocksPick').style.display = NS.mode === 'blocks' ? '' : 'none';
+            $('nsCustomPick').style.display = NS.mode === 'custom' ? '' : 'none';
+            syncResolutionOptions();
+            syncCurrentOption();
+        }
+
+        function applyUrlParams() {
+            var q = new URLSearchParams(location.search);
+            function setSide(side, list) {
+                if (!list.length) return;
+                $('player' + side).value = list[0];
+                populateSeasonDropdown(resolvePlayerName(list[0]) || list[0], String(side));
+                $('extra-players-' + side).innerHTML = '';
+                list.slice(1).forEach(function(n) {
+                    addPlayerInput(side);
+                    var ins = document.querySelectorAll('#extra-players-' + side + ' .extra-player-input');
+                    ins[ins.length - 1].value = n;
+                });
+            }
+            setSide(1, q.getAll('p1').filter(Boolean));
+            setSide(2, q.getAll('p2').filter(Boolean));
+            var type = q.get('type');
+            if (type && $('comparisonType').querySelector('option[value="' + type + '"]')) {
+                $('comparisonType').value = type;
+                $('comparisonType').dispatchEvent(new Event('change'));
+            }
+            if (q.get('s1')) $('season1Select').value = q.get('s1');
+            if (q.get('s2')) $('season2Select').value = q.get('s2');
+            if (q.get('from')) $('rangeFrom').value = q.get('from');
+            if (q.get('to')) $('rangeTo').value = q.get('to');
+            if (q.get('from2') || q.get('to2')) {
+                $('rangeDiffP2').checked = true;
+                if (typeof onRangeDiffToggle === 'function') onRangeDiffToggle();
+                if (q.get('from2')) $('rangeFrom2').value = q.get('from2');
+                if (q.get('to2')) $('rangeTo2').value = q.get('to2');
+            }
+            if (type === 'calendarRange' && typeof populateCalendarYears === 'function') populateCalendarYears();
+            if (q.get('fps') && $('framerate').querySelector('option[value="' + q.get('fps') + '"]')) $('framerate').value = q.get('fps');
+            var out = q.get('output'), style = q.get('style'), theme = q.get('theme'), size = q.get('size'), mode = q.get('mode');
+            if (out === 'image' || out === 'video') NS.output = out;
+            if (style === 'new' || style === 'classic') NS.style = style;
+            if (theme === 'dark' || theme === 'light') NS.theme = theme;
+            if (size && /^(1080x1080|1080x1350|1920x1080)$/.test(size)) NS.size = size;
+            if (mode === 'blocks' || mode === 'custom') NS.mode = mode;
+            if (q.get('title')) $('nsCustomTitle').value = q.get('title');
+            syncUI();
+            var res = q.get('res');
+            if (res && $('resolution').querySelector('option[value="' + res + '"]')) $('resolution').value = res;
+            if (NS.output === 'image' && q.getAll('p1').length && q.getAll('p2').length) loadImageData();
+        }
+
+        function init() {
+            segWire('nsOutputSeg', 'output', function() { syncUI(); if (NS.output === 'image' && !NS.loaded && allPlayers.length) loadImageData(); });
+            segWire('nsStyleSeg', 'style', syncUI);
+            segWire('nsThemeSeg', 'theme', function() { syncUI(); scheduleRender(); });
+            segWire('nsSizeSeg', 'size', function() { syncUI(); scheduleRender(); });
+            segWire('nsModeSeg', 'mode', function() { syncUI(); scheduleRender(); });
+            $('nsCustomTitle').addEventListener('input', scheduleRender);
+            $('nsLoadBtn').addEventListener('click', loadImageData);
+            $('comparisonType').addEventListener('change', syncCurrentOption);
+
+            // Route the Generate button: New style -> generateNewVideo; Classic -> the
+            // original generateVideo listener runs exactly as before. Capture phase on
+            // window runs before the button's own listener, so we only stop it for New.
+            window.addEventListener('click', function(e) {
+                var btn = $('generateBtn');
+                if (!btn || !(e.target === btn || btn.contains(e.target))) return;
+                if (NS.output !== 'video' || NS.style !== 'new') return;
+                e.stopPropagation();
+                e.preventDefault();
+                if (!btn.disabled) generateNewVideo();
+            }, true);
+            syncUI();
+        }
+
+        // Run URL prefill after the existing data load (which picks two random
+        // All-Stars at the end), without editing loadAllData itself.
+        var origLoadAllData = window.loadAllData;
+        window.loadAllData = async function() {
+            await origLoadAllData.apply(this, arguments);
+            try { syncUI(); applyUrlParams(); } catch (e) { console.warn('URL prefill failed:', e); }
+        };
+
+        window.addEventListener('DOMContentLoaded', init);
+
+        // test/debug surface (no side effects)
+        window.NS_NEWSTYLE = { build: NS_BUILD, state: NS, drawScene: drawScene, geom: geom, paginate: paginate,
+                               gather: gather, buildBlocks: buildBlocks, buildSides: buildSides, loadSideAssets: loadSideAssets,
+                               finalModel: finalModel, renderImages: renderImages, loadImageData: loadImageData, pickColors: pickColors };
+    })();
     </script>
 </body>
 </html>
