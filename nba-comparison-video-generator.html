@@ -3987,15 +3987,19 @@
             document.getElementById('comparisonType').addEventListener('change', onComparisonTypeChange);
         });
     </script>
-    <!-- hm-compare-newstyle-v1 : New style video + Image generator (additive block).
+    <!-- hm-compare-newstyle-v2 : New style video + Image generator (additive block).
          Everything below is new code. It only calls existing functions/globals
          (performComparison, performCombinedComparison, collectSidePlayers, ...) and
-         never changes them, so the Classic rendering path stays byte-for-byte as before. -->
+         never changes them, so the Classic rendering path stays byte-for-byte as before.
+         Look: a sibling of the HoopsMatic trade card (hoopsmatic-accounts src/wwtt/tradecard.js):
+         indigo gradient + violet glow, one column per side with a team-colour band and wash,
+         bare team logo + team name, big cut-out headshot, large name, lavender detail line,
+         a verdict-bar style scoreboard, DM Sans (self-hosted in fonts/dm-sans/). -->
     <script>
     (function() {
         'use strict';
 
-        var NS_BUILD = 'hm-compare-newstyle-v1';
+        var NS_BUILD = 'hm-compare-newstyle-v2';
 
         // ---- UI state ----
         var NS = {
@@ -4009,94 +4013,84 @@
             blockPicked: null     // blocks-mode keys ticked (null = defaults)
         };
 
-        // ---- Fonts: already loaded by this page (Google Fonts link in <head>) ----
-        var NF_HEAD = '"Barlow Condensed", "Arial Narrow", Arial, sans-serif';
-        var NF_BODY = '"Barlow", Arial, sans-serif';
+        // ---- Font: DM Sans, served from this repo (fonts/dm-sans/, OFL). No third-party request. ----
+        var NF = '"DM Sans", system-ui, -apple-system, "Segoe UI", Arial, sans-serif';
+        var NS_FONT_URL = 'fonts/dm-sans/dm-sans-latin-wght-normal.woff2';
 
-        // ---- Palettes. Light = the Trade Market / trade page tokens
-        //      (--bg #f5f5f7, --surface #fff, --border #d1d1d6, --text #1d1d1f,
-        //      --muted #6e6e73, inner divider #ededf1, 12px radii, 1px borders, no shadows).
-        //      Dark = charcoal background with light text, same layout. ----
+        // ---- Themes, both from the trade card's palette. Dark = the card itself
+        //      (bg gradient #241c45 -> #140f2a -> #2a1435, glow #4b3b8f, white text,
+        //      lavender tiers #cfc6f5 / #c4b5fd / #a89bd9, dividers white @ 14%).
+        //      Light = the same hues on a pale lavender ground, indigo ink. ----
         var NS_THEMES = {
             dark: {
-                bg: '#111215', surface: '#18191d', border: 'rgba(255,255,255,0.09)',
-                text: '#f5f5f7', muted: '#9a9aa3', divider: 'rgba(255,255,255,0.09)',
-                ring: 'rgba(255,255,255,0.90)', tint: 0.24, logoA: 0.13, loserA: 0.78
+                bg: ['#241c45', '#140f2a', '#2a1435'], base: '#140f2a', glow: '#4b3b8f', glowA: 0.55,
+                text: '#ffffff', sub: '#cfc6f5', accent: '#c4b5fd', muted: '#a89bd9', line: 'rgba(255,255,255,0.14)',
+                wash: 0.30, rowWash: 0.13, chip: '#2d2552', chipText: '#d8d0ff', fallback: '#8b7cf6', alt: '#c4b5fd',
+                barIdle: 'rgba(255,255,255,0.16)'
             },
             light: {
-                bg: '#f5f5f7', surface: '#ffffff', border: '#d1d1d6',
-                text: '#1d1d1f', muted: '#6e6e73', divider: '#ededf1',
-                ring: '#ffffff', tint: 0.15, logoA: 0.10, loserA: 0.80
+                bg: ['#f4f1fc', '#ebe6f8', '#f6eef6'], base: '#eeeaf9', glow: '#c4b5fd', glowA: 0.50,
+                text: '#140f2a', sub: '#3d3466', accent: '#5b46c9', muted: '#6e64a0', line: 'rgba(20,15,42,0.12)',
+                wash: 0.24, rowWash: 0.10, chip: '#e2dbf6', chipText: '#4b3b8f', fallback: '#6d5bd0', alt: '#5b46c9',
+                barIdle: 'rgba(20,15,42,0.12)'
             }
         };
+        var INK = '#140f2a';
 
-        // ---- NBA teams: name, NBA team id (logo file), primary / secondary colour.
-        //      Logos: the same nba-headshots repo the Trade Market uses
-        //      (teams/logos/current/svg/<teamId>.svg, served with CORS). ----
-        var NS_TEAMS = {
-            ATL: { n: 'Atlanta Hawks', id: 1610612737, p: '#E03A3E', s: '#C1D32F' },
-            BOS: { n: 'Boston Celtics', id: 1610612738, p: '#007A33', s: '#BA9653' },
-            BKN: { n: 'Brooklyn Nets', id: 1610612751, p: '#000000', s: '#FFFFFF' },
-            CHA: { n: 'Charlotte Hornets', id: 1610612766, p: '#1D1160', s: '#00788C' },
-            CHI: { n: 'Chicago Bulls', id: 1610612741, p: '#CE1141', s: '#000000' },
-            CLE: { n: 'Cleveland Cavaliers', id: 1610612739, p: '#860038', s: '#FDBB30' },
-            DAL: { n: 'Dallas Mavericks', id: 1610612742, p: '#00538C', s: '#B8C4CA' },
-            DEN: { n: 'Denver Nuggets', id: 1610612743, p: '#0E2240', s: '#FEC524' },
-            DET: { n: 'Detroit Pistons', id: 1610612765, p: '#C8102E', s: '#1D42BA' },
-            GSW: { n: 'Golden State Warriors', id: 1610612744, p: '#1D428A', s: '#FFC72C' },
-            HOU: { n: 'Houston Rockets', id: 1610612745, p: '#CE1141', s: '#C4CED4' },
-            IND: { n: 'Indiana Pacers', id: 1610612754, p: '#002D62', s: '#FDBB30' },
-            LAC: { n: 'LA Clippers', id: 1610612746, p: '#C8102E', s: '#1D428A' },
-            LAL: { n: 'Los Angeles Lakers', id: 1610612747, p: '#552583', s: '#FDB927' },
-            MEM: { n: 'Memphis Grizzlies', id: 1610612763, p: '#5D76A9', s: '#12173F' },
-            MIA: { n: 'Miami Heat', id: 1610612748, p: '#98002E', s: '#F9A01B' },
-            MIL: { n: 'Milwaukee Bucks', id: 1610612749, p: '#00471B', s: '#EEE1C6' },
-            MIN: { n: 'Minnesota Timberwolves', id: 1610612750, p: '#0C2340', s: '#78BE20' },
-            NOP: { n: 'New Orleans Pelicans', id: 1610612740, p: '#0C2340', s: '#C8102E' },
-            NYK: { n: 'New York Knicks', id: 1610612752, p: '#006BB6', s: '#F58426' },
-            OKC: { n: 'Oklahoma City Thunder', id: 1610612760, p: '#007AC1', s: '#EF3B24' },
-            ORL: { n: 'Orlando Magic', id: 1610612753, p: '#0077C0', s: '#C4CED4' },
-            PHI: { n: 'Philadelphia 76ers', id: 1610612755, p: '#006BB6', s: '#ED174C' },
-            PHX: { n: 'Phoenix Suns', id: 1610612756, p: '#1D1160', s: '#E56020' },
-            POR: { n: 'Portland Trail Blazers', id: 1610612757, p: '#E03A3E', s: '#000000' },
-            SAC: { n: 'Sacramento Kings', id: 1610612758, p: '#5A2D81', s: '#63727A' },
-            SAS: { n: 'San Antonio Spurs', id: 1610612759, p: '#C4CED4', s: '#000000' },
-            TOR: { n: 'Toronto Raptors', id: 1610612761, p: '#CE1141', s: '#000000' },
-            UTA: { n: 'Utah Jazz', id: 1610612762, p: '#002B5C', s: '#F9A01B' },
-            WAS: { n: 'Washington Wizards', id: 1610612764, p: '#002B5C', s: '#E31837' }
+        // ---- Team colours: the trade card's table (tradecard.js TEAM_COLORS), chosen to stand
+        //      out on its dark card. Team names for the header line. Logos: the same files the
+        //      trade card uses (nba-headshots teams/logos/current/svg/<abbr>.svg, CORS-enabled). ----
+        var NS_TEAM_COLORS = {
+            ATL: '#E03A3E', BOS: '#00A35C', BKN: '#A1A1A4', CHA: '#00A3B4', CHI: '#CE1141', CLE: '#FDBB30',
+            DAL: '#0A7BD1', DEN: '#FEC524', DET: '#C8102E', GSW: '#FFC72C', HOU: '#CE1141', IND: '#FDBB30',
+            LAC: '#C8102E', LAL: '#FDB927', MEM: '#5D76A9', MIA: '#E0234E', MIL: '#2E9E5B', MIN: '#3D8BD1',
+            NOP: '#B4975A', NYK: '#F58426', OKC: '#007AC1', ORL: '#0077C0', PHI: '#006BB6', PHX: '#E56020',
+            POR: '#E03A3E', SAC: '#8A5CC2', SAS: '#C4CED4', TOR: '#CE1141', UTA: '#9B6BDF', WAS: '#E31837'
         };
-        // Older abbreviations in the stats files -> today's franchise (colours + logo).
+        var NS_TEAM_NAMES = {
+            ATL: 'Atlanta Hawks', BOS: 'Boston Celtics', BKN: 'Brooklyn Nets', CHA: 'Charlotte Hornets',
+            CHI: 'Chicago Bulls', CLE: 'Cleveland Cavaliers', DAL: 'Dallas Mavericks', DEN: 'Denver Nuggets',
+            DET: 'Detroit Pistons', GSW: 'Golden State Warriors', HOU: 'Houston Rockets', IND: 'Indiana Pacers',
+            LAC: 'LA Clippers', LAL: 'Los Angeles Lakers', MEM: 'Memphis Grizzlies', MIA: 'Miami Heat',
+            MIL: 'Milwaukee Bucks', MIN: 'Minnesota Timberwolves', NOP: 'New Orleans Pelicans', NYK: 'New York Knicks',
+            OKC: 'Oklahoma City Thunder', ORL: 'Orlando Magic', PHI: 'Philadelphia 76ers', PHX: 'Phoenix Suns',
+            POR: 'Portland Trail Blazers', SAC: 'Sacramento Kings', SAS: 'San Antonio Spurs', TOR: 'Toronto Raptors',
+            UTA: 'Utah Jazz', WAS: 'Washington Wizards'
+        };
+        // Older abbreviations -> today's franchise (rsStats already uses franchise codes; kept as a guard).
         var NS_TEAM_ALIAS = {
             NJN: 'BKN', BRK: 'BKN', NJ: 'BKN', SEA: 'OKC', VAN: 'MEM', NOH: 'NOP', NOK: 'NOP',
             CHH: 'CHA', CHO: 'CHA', WSB: 'WAS', PHO: 'PHX', GOS: 'GSW', GS: 'GSW', SA: 'SAS',
             NY: 'NYK', NO: 'NOP', UTH: 'UTA'
         };
-        var NS_NEUTRAL = ['#8a8a92', '#5b5b63'];
 
         // Lower-is-better rows. comparisons.json already marks these with
-        // "Who wins?" = "Least" (turnovers, body fat, weight, agility/sprint times,
-        // best award ranking) and the existing engine uses that, so career/range/combine
+        // "Who wins?" = "Least" and the existing engine uses that, so career/range/combine
         // rows arrive with the right winner. This list covers the rows this block builds
         // itself (Current season).
-        var NS_LOWER_IS_BETTER = ['TURNOVERS', 'PERSONAL FOULS'];
+        var NS_LOWER_IS_BETTER = ['Turnovers', 'Personal fouls'];
 
-        // Section display names + sublines for the New style.
+        // Section display names + sublines (sentence case, as on the trade card).
         var NS_SECTION_META = {
-            'ACCOLADES': ['ACCOLADES', 'CAREER · AWARDS & HONORS'],
-            'NBA CAREER AVERAGES': ['CAREER AVERAGES', 'REGULAR SEASON & PLAYOFFS · PER GAME'],
-            'NBA CAREER TOTALS': ['CAREER TOTALS', 'REGULAR SEASON & PLAYOFFS'],
-            'NBA SEASON PEAK': ['SEASON PEAKS', 'BEST SINGLE SEASON · PER GAME'],
-            'PLAYOFF SUCCESS': ['PLAYOFF SUCCESS', 'SERIES REACHED · CAREER'],
-            'SALARIES': ['SALARIES', 'CAREER EARNINGS'],
-            'DRAFT COMBINE': ['DRAFT COMBINE', 'MEASUREMENTS & TESTING'],
-            'BEST AWARDS RANKING': ['BEST AWARD FINISHES', 'VOTING RANK · LOWER IS BETTER'],
-            'YEARS RECEIVING VOTES': ['YEARS RECEIVING VOTES', 'AWARD VOTING'],
-            'SIGNATURE SHOES': ['SIGNATURE SHOES', 'SNEAKERS'],
-            'NBA 2K': ['NBA 2K RATINGS', 'VIDEO GAME RATINGS'],
-            'COUNTING STATS: AVERAGES': ['SEASON AVERAGES', 'REGULAR SEASON & PLAYOFFS · PER GAME'],
-            'COUNTING STATS: TOTALS': ['SEASON TOTALS', 'REGULAR SEASON & PLAYOFFS'],
-            'SHOOTING EFFICIENCY': ['SHOOTING', 'REGULAR SEASON · TOTALS']
+            'ACCOLADES': ['Accolades', 'Career awards and honors'],
+            'NBA CAREER AVERAGES': ['Career averages', 'Regular season and playoffs, per game'],
+            'NBA CAREER TOTALS': ['Career totals', 'Regular season and playoffs'],
+            'NBA SEASON PEAK': ['Season peaks', 'Best single season, per game'],
+            'PLAYOFF SUCCESS': ['Playoff success', 'Series reached, career'],
+            'SALARIES': ['Salaries', 'Career earnings'],
+            'DRAFT COMBINE': ['Draft combine', 'Measurements and testing'],
+            'BEST AWARDS RANKING': ['Best award finishes', 'Voting rank, lower is better'],
+            'YEARS RECEIVING VOTES': ['Years receiving votes', 'Award voting'],
+            'SIGNATURE SHOES': ['Signature shoes', 'Sneakers'],
+            'NBA 2K': ['NBA 2K ratings', 'Video game ratings'],
+            'COUNTING STATS: AVERAGES': ['Season averages', 'Regular season and playoffs, per game'],
+            'COUNTING STATS: TOTALS': ['Season totals', 'Regular season and playoffs'],
+            'SHOOTING EFFICIENCY': ['Shooting', 'Regular season, totals']
         };
+
+        // Full rsStats / poStats as loaded (range comparisons swap playerData.rsStats for a
+        // filtered copy while they run; team and career lines always use the full data).
+        var NSD = { rs: null, po: null, byName: null, poByName: null };
 
         // =============================================================
         // Small helpers
@@ -4109,6 +4103,8 @@
             if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
             return [parseInt(h.substr(0, 2), 16), parseInt(h.substr(2, 2), 16), parseInt(h.substr(4, 2), 16)];
         }
+        function toHex(c) { return '#' + c.map(function(v) { v = Math.max(0, Math.min(255, Math.round(v))); return (v < 16 ? '0' : '') + v.toString(16); }).join(''); }
+        function mix(a, b, k) { var x = hexRgb(a), y = hexRgb(b); return toHex([0, 1, 2].map(function(i) { return x[i] + (y[i] - x[i]) * k; })); }
         function rgba(h, a) { var c = hexRgb(h); return 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + a + ')'; }
         function lum(h) {
             var c = hexRgb(h).map(function(v) { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); });
@@ -4119,15 +4115,19 @@
             var x = hexRgb(a), y = hexRgb(b);
             return Math.sqrt(Math.pow(x[0] - y[0], 2) + Math.pow(x[1] - y[1], 2) + Math.pow(x[2] - y[2], 2));
         }
+        // Text colour that reads on a filled team-colour pill.
+        function inkOn(c) { return contrast(c, '#ffffff') >= contrast(c, INK) ? '#ffffff' : INK; }
         function slug(s) {
             return String(s).toLowerCase().replace(/\s*\+\s*/g, '-and-').normalize('NFD').replace(/[̀-ͯ]/g, '')
                 .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
         }
+        function nameWords(n) {
+            return String(n).split(/\s+/).filter(Boolean);
+        }
         function lastName(n) {
-            var w = String(n).split(/\s+/).filter(function(x) { return x && !/^(jr\.?|sr\.?|ii|iii|iv|v)$/i.test(x); });
+            var w = nameWords(n).filter(function(x) { return !/^(jr\.?|sr\.?|ii|iii|iv|v)$/i.test(x); });
             return w.length ? w[w.length - 1] : String(n);
         }
-        function setLS(ctx, px) { if ('letterSpacing' in ctx) ctx.letterSpacing = px + 'px'; }
         function rr(ctx, x, y, w, h, r) {
             r = Math.max(0, Math.min(r, w / 2, h / 2));
             ctx.beginPath();
@@ -4137,68 +4137,146 @@
             ctx.lineTo(x, y + r); ctx.arcTo(x, y, x + r, y, r);
             ctx.closePath();
         }
-        function fitFont(ctx, text, size, floor, maxW, weight, fam) {
-            var sz = size;
-            ctx.font = weight + ' ' + sz + 'px ' + fam;
-            while (ctx.measureText(text).width > maxW && sz > floor) { sz -= 1; ctx.font = weight + ' ' + sz + 'px ' + fam; }
+        function font(w, px) { return w + ' ' + Math.round(px) + 'px ' + NF; }
+        function fitFont(ctx, text, size, floor, maxW, weight) {
+            var sz = Math.round(size);
+            ctx.font = font(weight, sz);
+            while (ctx.measureText(text).width > maxW && sz > floor) { sz -= 1; ctx.font = font(weight, sz); }
             var fits = ctx.measureText(text).width <= maxW;
             if (!fits) {
                 var t = String(text);
                 while (t.length > 1 && ctx.measureText(t + '…').width > maxW) t = t.slice(0, -1);
-                text = t + '…';
+                text = t.trimEnd() + '…';
             }
             return { size: sz, text: text, fits: fits };
         }
+        function seasonText(endYear) { var y = parseInt(endYear, 10); return (y - 1) + '-' + String(y).slice(-2); }
+        function ordinal(n) {
+            var s = ['th', 'st', 'nd', 'rd'], v = n % 100;
+            return n + (s[(v - 20) % 10] || s[v] || s[0]);
+        }
+        function currentSeasonYear() {
+            var d = new Date();
+            return String(d.getMonth() >= 8 ? d.getFullYear() + 1 : d.getFullYear()); // season ends in YEAR
+        }
 
         // =============================================================
-        // Teams, colours, age
+        // Data access (full rsStats/poStats, indexed by player)
         // =============================================================
+        function captureData() {
+            if (typeof playerData === 'undefined' || !playerData.rsStats) return;
+            NSD.rs = playerData.rsStats; NSD.po = playerData.poStats || [];
+            NSD.byName = null; NSD.poByName = null;
+        }
+        function index(rows) {
+            var m = {};
+            rows.forEach(function(r) { (m[r.PLAYER] || (m[r.PLAYER] = [])).push(r); });
+            return m;
+        }
+        function rsRows(name) {
+            if (!NSD.rs) captureData();
+            if (!NSD.byName) NSD.byName = index(NSD.rs || []);
+            return NSD.byName[name] || [];
+        }
+        function poRows(name) {
+            if (!NSD.po) captureData();
+            if (!NSD.poByName) NSD.poByName = index(NSD.po || []);
+            return NSD.poByName[name] || [];
+        }
+        var AGG_TEAM = /^(TOT|\d+TM)$/i;   // multi-team aggregate rows (none today, guarded anyway)
+        function seasonYears(rows) {
+            var seen = {}, out = [];
+            rows.forEach(function(r) { var y = parseInt(r.YEAR, 10); if (y && !seen[y]) { seen[y] = 1; out.push(y); } });
+            return out.sort(function(a, b) { return a - b; });
+        }
+
+        // =============================================================
+        // TEAM SHOWN FOR A PLAYER (New style video + images) - the one rule:
+        //  - Active (has a regular-season row in the current season or the one before it;
+        //    today 2026-27 or 2025-26): the team of his most recent row. When he played for
+        //    several teams that season, the last team he actually played for. Aggregate rows
+        //    (TOT/2TM/3TM...) are skipped. rsStats has one row per team and lists a traded
+        //    player's rows alphabetically, not by date, so "last" is worked out from:
+        //      1. his playoff team that season (you finish the season where you play the playoffs),
+        //      2. otherwise not the team(s) he played for the season before (= where he started),
+        //      3. otherwise the last row listed.
+        //  - No longer in the NBA: the team he played the most seasons for. Tie-break: more
+        //    games with that team, then the more recent stint.
+        //  - Combine mode: each player gets his own team by this same rule.
+        // Returns today's franchise abbreviation, or null (defunct team / no rows).
+        // =============================================================
+        function teamForPlayer(name) {
+            var rows = rsRows(name).filter(function(r) { return r.TEAM && !AGG_TEAM.test(r.TEAM); });
+            if (!rows.length) return null;
+            var years = seasonYears(rows);
+            var cur = parseInt(currentSeasonYear(), 10);
+            var last = years[years.length - 1];
+            if (last >= cur - 1) {
+                var inLast = rows.filter(function(r) { return parseInt(r.YEAR, 10) === last; });
+                var cands = inLast.map(function(r) { return r.TEAM; });
+                if (cands.length > 1) {
+                    var po = poRows(name).filter(function(r) { return parseInt(r.YEAR, 10) === last && cands.indexOf(r.TEAM) !== -1; });
+                    if (po.length) cands = [po[po.length - 1].TEAM];
+                }
+                if (cands.length > 1) {
+                    var before = rows.filter(function(r) { return parseInt(r.YEAR, 10) === last - 1; }).map(function(r) { return r.TEAM; });
+                    var moved = cands.filter(function(t) { return before.indexOf(t) === -1; });
+                    if (moved.length && moved.length < cands.length) cands = moved;
+                }
+                return normTeam(cands[cands.length - 1]);
+            }
+            var by = {};
+            rows.forEach(function(r) {
+                var t = r.TEAM, y = parseInt(r.YEAR, 10);
+                var e = by[t] || (by[t] = { team: t, years: {}, n: 0, gp: 0, lastYear: 0 });
+                if (!e.years[y]) { e.years[y] = 1; e.n++; }
+                e.gp += parseInt(r.GP, 10) || 0;
+                if (y > e.lastYear) e.lastYear = y;
+            });
+            var best = Object.keys(by).map(function(k) { return by[k]; }).sort(function(a, b) {
+                return (b.n - a.n) || (b.gp - a.gp) || (b.lastYear - a.lastYear);
+            })[0];
+            return normTeam(best.team);
+        }
         function normTeam(abbr) {
             if (!abbr) return null;
             var a = String(abbr).toUpperCase().trim();
             if (NS_TEAM_ALIAS[a]) a = NS_TEAM_ALIAS[a];
-            return NS_TEAMS[a] ? a : null;
+            return NS_TEAM_COLORS[a] ? a : null;
         }
 
-        // Team for a player: that season's team (season mode) or the latest season's.
-        // Traded players: the last non-TOT row of that season.
-        function teamOf(name, year) {
-            var rows = playerData.rsStats.filter(function(r) { return r.PLAYER === name; });
-            if (!rows.length) return null;
-            var y = year ? String(year) : null;
-            if (!y) rows.forEach(function(r) { if (!y || parseInt(r.YEAR, 10) > parseInt(y, 10)) y = String(r.YEAR); });
-            var inYear = rows.filter(function(r) { return String(r.YEAR) === y && r.TEAM !== 'TOT'; });
-            if (!inYear.length) return null;
-            return normTeam(inYear[inYear.length - 1].TEAM);
+        // Career length line (replaces age), from distinct rsStats seasons (not the span):
+        // active "17th season · since 2010-11", retired "15 seasons · 1996-97 to 2010-11".
+        function careerLine(name) {
+            var ys = seasonYears(rsRows(name));
+            if (!ys.length) return '';
+            var n = ys.length, first = seasonText(ys[0]), last = seasonText(ys[n - 1]);
+            var cur = parseInt(currentSeasonYear(), 10);
+            if (ys[n - 1] >= cur - 1) return ordinal(n) + ' season · since ' + first;
+            return n === 1 ? '1 season · ' + first : n + ' seasons · ' + first + ' to ' + last;
+        }
+        function careerShort(name) {   // combine mode: "17th season" / "15 seasons"
+            return careerLine(name).split(' · ')[0];
         }
 
-        // Age today from bio.json BIRTHDAY (M/D/YYYY), one decimal.
-        function ageOf(name) {
-            var bio = (playerData.bio || []).find(function(r) { return r.PLAYER === name; });
-            var bd = bio ? parseBioBirthday(bio.BIRTHDAY) : null;
-            if (!bd) return null;
-            var born = new Date(bd.year, bd.month - 1, bd.day);
-            var yrs = (Date.now() - born.getTime()) / (365.2425 * 86400000);
-            return isFinite(yrs) && yrs > 0 ? yrs.toFixed(1) : null;
+        // One colour per side. Contrast fallback: a team colour that reads too faintly on the
+        // theme background (contrast < 1.7, e.g. gold or silver on Light) is pushed toward the
+        // ink colour step by step, keeping its hue. Two sides that read the same (RGB distance
+        // < 90: teammates, CHI/TOR, BOS/MIL...) -> side 2 takes the theme's lavender.
+        function legible(c, theme) {
+            var bg = NS_THEMES[theme].base, toward = lum(bg) > 0.5 ? INK : '#ffffff', k = 0;
+            while (contrast(c, bg) < 1.7 && k < 14) { c = mix(c, toward, 0.12); k++; }
+            return c;
         }
-
-        // Pick one colour per side: primary unless it is too dark/light on the
-        // background (contrast < 1.7), and never two colours that read the same
-        // (RGB distance < 90) -> fall back to the secondary on one side.
+        function teamColor(abbr, theme) {
+            return legible(NS_TEAM_COLORS[abbr] || NS_THEMES[theme].fallback, theme);
+        }
         function pickColors(team1, team2, theme) {
-            var bg = NS_THEMES[theme].bg;
-            function cands(t) { var x = NS_TEAMS[t]; return x ? [x.p, x.s] : NS_NEUTRAL.slice(); }
-            function ok(c) { return contrast(c, bg) >= 1.7; }
-            var a = cands(team1).filter(ok), b = cands(team2).filter(ok);
-            if (!a.length) a = [NS_NEUTRAL[theme === 'dark' ? 0 : 1]];
-            if (!b.length) b = [NS_NEUTRAL[theme === 'dark' ? 0 : 1]];
-            for (var i = 0; i < a.length; i++) {
-                for (var j = 0; j < b.length; j++) {
-                    if (colorDist(a[i], b[j]) >= 90) return [a[i], b[j]];
-                }
-            }
-            // Same palette both sides (e.g. teammates): keep side 1, contrast side 2.
-            return [a[0], theme === 'dark' ? '#e8e8ed' : '#3a3a40'];
+            var th = NS_THEMES[theme];
+            var a = teamColor(team1, theme), b = teamColor(team2, theme);
+            if (colorDist(a, b) < 90) b = th.alt;
+            if (colorDist(a, b) < 90) b = theme === 'dark' ? '#ffffff' : '#3d3466';
+            return [a, b];
         }
 
         // =============================================================
@@ -4215,30 +4293,44 @@
                 img.crossOrigin = 'anonymous';
                 img.onload = function() { if (!done) { done = true; resolve(img); } };
                 img.onerror = function() { if (!done) { done = true; resolve(null); } };
-                setTimeout(function() { if (!done) { done = true; resolve(null); } }, timeoutMs || 4000);
+                setTimeout(function() { if (!done) { done = true; resolve(null); } }, timeoutMs || 5000);
                 img.src = url;
             }).then(function(im) { if (!im) delete imgCache[url]; return im; });
             return imgCache[url];
         }
-        // Headshot chain: face-fill-320 (transparent cut-out, what this page already
-        // uses, so the team colour shows inside the circle) -> face2-160 webp -> face2 png
-        // -> initials. face2 files have an opaque dark square background.
+        // Big cut-out headshots, as the trade card's big faces: head-uniform-sharp (480x480,
+        // made from NBA's 1040x760 originals) -> head-uniform-480 -> face-fill-320 -> initials.
+        // (cdn.nba.com itself sends no CORS header, so it would taint the canvas.)
         function loadFace(name) {
             var id = playerData.headshots && playerData.headshots[name];
-            if (!id) return Promise.resolve(makeInitialsFace(name));
+            if (!id) return Promise.resolve(null);
             var base = 'https://jsierrahoopshype.github.io/nba-headshots/players/headshots/';
-            var urls = [base + 'face-fill-320/' + id + '.webp', base + 'face2-160/' + id + '.webp', base + 'face2/' + id + '.png'];
+            var urls = [base + 'head-uniform-sharp/' + id + '.webp', base + 'head-uniform-480/' + id + '.webp', base + 'face-fill-320/' + id + '.webp'];
             var i = 0;
             function next() {
-                if (i >= urls.length) return Promise.resolve(makeInitialsFace(name));
-                return loadImage(urls[i++], 3000).then(function(im) { return im || next(); });
+                if (i >= urls.length) return Promise.resolve(null);
+                return loadImage(urls[i++], 4000).then(function(im) { return im || next(); });
             }
             return next();
         }
         function loadLogo(abbr) {
-            var t = NS_TEAMS[abbr];
-            if (!t) return Promise.resolve(null);
-            return loadImage('https://jsierrahoopshype.github.io/nba-headshots/teams/logos/current/svg/' + t.id + '.svg', 4000);
+            if (!abbr || !NS_TEAM_COLORS[abbr]) return Promise.resolve(null);
+            return loadImage('https://jsierrahoopshype.github.io/nba-headshots/teams/logos/current/svg/' + abbr.toLowerCase() + '.svg', 5000);
+        }
+        var fontPromise = null;
+        function fontsReady() {
+            if (fontPromise) return fontPromise;
+            fontPromise = (async function() {
+                try {
+                    if (typeof FontFace !== 'undefined' && document.fonts) {
+                        var ff = new FontFace('DM Sans', 'url(' + NS_FONT_URL + ') format("woff2")', { weight: '100 1000', style: 'normal' });
+                        await ff.load();
+                        document.fonts.add(ff);
+                        await Promise.all(['500', '600', '700', '800'].map(function(w) { return document.fonts.load(w + ' 40px "DM Sans"'); }));
+                    }
+                } catch (e) { console.warn('DM Sans did not load; using the system font.', e); }
+            })();
+            return fontPromise;
         }
 
         // =============================================================
@@ -4290,40 +4382,35 @@
             var s = String(metric);
             var po = / PO( peak)?$/.test(s);
             s = s.replace(/ PO peak$/, '').replace(/ PO$/, '').replace(/ peak$/, '').replace(/ per game$/i, '');
-            if (po) s = 'Playoff ' + s;
-            return s.toUpperCase();
+            return po ? 'Playoff ' + s : s;
         }
         function countWins(rows) {
             var a = 0, b = 0;
             rows.forEach(function(r) { if (r.winner === 'player1') a++; else if (r.winner === 'player2') b++; });
             return [a, b];
         }
-        function sectionBlock(sec, idx) {
-            var meta = NS_SECTION_META[sec.name] || [String(sec.name).toUpperCase(), ''];
+        function sectionBlock(sec, idx, note) {
+            var meta = NS_SECTION_META[sec.name] || [String(sec.name).charAt(0) + String(sec.name).slice(1).toLowerCase(), ''];
             var rows = sec.items.map(function(it, i) {
                 return { key: 's' + idx + '|' + i, label: prettyLabel(it.metric), v1: it.p1Value, v2: it.p2Value, winner: it.winner, three: isThree(it.metric) };
             });
             rows = threeLast(rows);
             var w = countWins(rows);
-            return { key: 'sec:' + sec.name, name: sec.name, title: meta[0], subline: meta[1], rows: rows, p1: w[0], p2: w[1],
-                     overall: sec.name !== 'DRAFT COMBINE' };
+            var sub = meta[1];
+            if (note) sub = sub ? sub + ' · ' + note : note;
+            return { key: 'sec:' + sec.name, name: sec.name, title: meta[0], subline: sub, rows: rows, p1: w[0], p2: w[1] };
         }
 
         // ---- Current season block from rsStats ----
-        function currentSeasonYear() {
-            var d = new Date();
-            return String(d.getMonth() >= 8 ? d.getFullYear() + 1 : d.getFullYear()); // season ends in YEAR
-        }
-        function seasonText(endYear) { var y = parseInt(endYear, 10); return (y - 1) + '-' + String(y).slice(-2); }
         function seasonAgg(names, year) {
             var cols = ['GP', 'MIN', 'PTS', 'REB', 'AST', 'STL', 'BLK', 'TOV', 'FGM', 'FGA', '3P', '3PA', 'FTM', 'FTA', 'PF'];
             var agg = {}, found = 0;
             cols.forEach(function(c) { agg[c] = 0; });
             names.forEach(function(n) {
-                var rows = playerData.rsStats.filter(function(r) { return r.PLAYER === n && String(r.YEAR) === year; });
+                var rows = rsRows(n).filter(function(r) { return String(r.YEAR) === year; });
                 if (!rows.length) return;
                 found++;
-                var tot = rows.find(function(r) { return r.TEAM === 'TOT'; });
+                var tot = rows.find(function(r) { return AGG_TEAM.test(r.TEAM); });
                 (tot ? [tot] : rows).forEach(function(r) {
                     cols.forEach(function(c) { var v = parseFloat(r[c]); if (!isNaN(v)) agg[c] += v; });
                 });
@@ -4332,7 +4419,8 @@
         }
         function hasCurrentSeasonData() {
             var y = currentSeasonYear();
-            return playerData && playerData.rsStats && playerData.rsStats.some(function(r) { return String(r.YEAR) === y; });
+            var rs = NSD.rs || (typeof playerData !== 'undefined' && playerData.rsStats);
+            return !!(rs && rs.some(function(r) { return String(r.YEAR) === y; }));
         }
         function currentSeasonBlock(side1, side2, combined) {
             var y = currentSeasonYear();
@@ -4342,12 +4430,12 @@
             function tot(c) { return function(x) { return String(Math.round(x[c])); }; }
             function pct(m, at) { return function(x) { return x[at] > 0 ? (x[m] / x[at] * 100).toFixed(1) + '%' : '-'; }; }
             var stats = combined ? [
-                ['GAMES', tot('GP')], ['POINTS', tot('PTS')], ['REBOUNDS', tot('REB')], ['ASSISTS', tot('AST')],
-                ['STEALS', tot('STL')], ['BLOCKS', tot('BLK')], ['TURNOVERS', tot('TOV')], ['3-POINTERS MADE', tot('3P'), true]
+                ['Games', tot('GP')], ['Points', tot('PTS')], ['Rebounds', tot('REB')], ['Assists', tot('AST')],
+                ['Steals', tot('STL')], ['Blocks', tot('BLK')], ['Turnovers', tot('TOV')], ['3-pointers made', tot('3P'), true]
             ] : [
-                ['GAMES', tot('GP')], ['MINUTES', pg('MIN')], ['POINTS', pg('PTS')], ['REBOUNDS', pg('REB')], ['ASSISTS', pg('AST')],
-                ['STEALS', pg('STL')], ['BLOCKS', pg('BLK')], ['TURNOVERS', pg('TOV')], ['FIELD GOAL %', pct('FGM', 'FGA')],
-                ['FREE THROW %', pct('FTM', 'FTA')], ['3-POINTERS MADE', pg('3P'), true], ['3-POINT %', pct('3P', '3PA'), true]
+                ['Games', tot('GP')], ['Minutes', pg('MIN')], ['Points', pg('PTS')], ['Rebounds', pg('REB')], ['Assists', pg('AST')],
+                ['Steals', pg('STL')], ['Blocks', pg('BLK')], ['Turnovers', pg('TOV')], ['Field goal %', pct('FGM', 'FGA')],
+                ['Free throw %', pct('FTM', 'FTA')], ['3-pointers made', pg('3P'), true], ['3-point %', pct('3P', '3PA'), true]
             ];
             var rows = stats.map(function(s, i) {
                 var v1 = s[1](a), v2 = s[1](b);
@@ -4359,14 +4447,27 @@
             });
             rows = threeLast(rows);
             var w2 = countWins(rows);
-            return { key: 'cur', name: 'CURRENT SEASON', title: 'CURRENT SEASON · ' + seasonText(y),
-                     subline: combined ? 'REGULAR SEASON · TOTALS' : 'REGULAR SEASON · PER GAME',
-                     rows: rows, p1: w2[0], p2: w2[1], overall: true };
+            return { key: 'cur', name: 'CURRENT SEASON', title: 'Current season · ' + seasonText(y),
+                     subline: combined ? 'Regular season, totals' : 'Regular season, per game',
+                     rows: rows, p1: w2[0], p2: w2[1] };
         }
         function curAllowed(info) { return info.compType === 'career'; }
 
+        function nameSuffix(n) {
+            if (/ \+ /.test(String(n))) return '';
+            var m = String(n).match(/\(([^)]+)\)\s*$/);
+            return m ? m[1] : '';
+        }
+        // Season / range scope goes in the block subline, so the career line under each name
+        // stays the same in every comparison mode.
+        function modeNote(info) {
+            var a = nameSuffix(info.data.player1Name), b = nameSuffix(info.data.player2Name);
+            if (!a && !b) return '';
+            return a === b ? a : (a || '-') + ' vs ' + (b || '-');
+        }
         function buildBlocks(info, includeCurrent) {
-            var blocks = info.data.sections.map(sectionBlock);
+            var note = modeNote(info);
+            var blocks = info.data.sections.map(function(sec, i) { return sectionBlock(sec, i, note); });
             if (includeCurrent && curAllowed(info)) {
                 var cb = currentSeasonBlock(info.side1, info.side2, info.isCombine);
                 if (cb) blocks.unshift(cb);
@@ -4377,27 +4478,20 @@
         // =============================================================
         // Sides (names, team, colour, faces, logos)
         // =============================================================
-        function nameSuffix(n) {
-            if (/ \+ /.test(String(n))) return '';
-            var m = String(n).match(/\(([^)]+)\)\s*$/);
-            return m ? m[1] : '';
-        }
+        var MAX_SIDE_FACES = 3;
         function buildSides(info, theme) {
-            var yrs = [info.season1, info.season2];
-            var names = [info.data.player1Name, info.data.player2Name];
-            var sides = [info.side1, info.side2].map(function(list, i) {
-                var teams = list.map(function(n) { return teamOf(n, yrs[i]); });
+            var sides = [info.side1, info.side2].map(function(list) {
+                var teams = list.map(teamForPlayer);
                 var uniq = teams.filter(function(t, k) { return t && teams.indexOf(t) === k; });
                 return {
                     names: list,
                     combined: list.length > 1,
                     display: list.join(' + '),
                     short: list.map(lastName).join(' + '),
-                    suffix: nameSuffix(names[i]),
                     teams: teams,
-                    team: uniq.length === 1 ? uniq[0] : null,
+                    team: uniq.length === 1 && teams.every(function(t) { return t === uniq[0]; }) ? uniq[0] : null,
                     uniqTeams: uniq,
-                    age: list.length === 1 ? ageOf(list[0]) : null,
+                    career: list.map(careerLine),
                     faces: [], logos: {}
                 };
             });
@@ -4405,20 +4499,10 @@
             sides[0].color = cols[0]; sides[1].color = cols[1];
             return sides;
         }
-        // Per-member circle colours inside a combined side (contrast-checked vs bg).
-        function memberColor(side, k, theme) {
-            if (k === 0) return side.color;
-            var t = NS_TEAMS[side.teams[k]];
-            var bg = NS_THEMES[theme].bg;
-            if (!t) return side.color;
-            if (contrast(t.p, bg) >= 1.7) return t.p;
-            if (contrast(t.s, bg) >= 1.7) return t.s;
-            return side.color;
-        }
         function loadSideAssets(sides) {
             var jobs = [];
             sides.forEach(function(sd) {
-                sd.names.slice(0, MAX_FACES).forEach(function(n, k) {
+                sd.names.slice(0, MAX_SIDE_FACES).forEach(function(n, k) {
                     jobs.push(loadFace(n).then(function(im) { sd.faces[k] = im; }));
                 });
                 sd.teams.forEach(function(t) {
@@ -4430,64 +4514,42 @@
             });
             return Promise.all(jobs);
         }
-        function fontsReady() {
-            if (!document.fonts || !document.fonts.load) return Promise.resolve();
-            return Promise.all([
-                document.fonts.load('800 40px "Barlow Condensed"'), document.fonts.load('700 40px "Barlow Condensed"'),
-                document.fonts.load('600 40px "Barlow Condensed"'), document.fonts.load('500 20px "Barlow"'),
-                document.fonts.load('600 20px "Barlow"')
-            ]).catch(function() {});
-        }
 
         // =============================================================
-        // Geometry
+        // Geometry. S = 1 at 1080 px (width for square/portrait, height for 16:9).
+        // Top: two side columns (the trade card's columns) + the scoreboard strip;
+        // middle: the stream of block titles and rows; bottom: hoopsmatic.com/compare.
         // =============================================================
         function geom(W, H) {
-            var g = { W: W, H: H, land: W > H * 1.2 };
-            var S;
-            if (g.land) {
-                S = H / 1080;
-                g.S = S; g.pad = 40 * S;
-                g.titleY = 72 * S; g.titleSize = 52 * S;
-                g.cx1 = W * 0.135; g.cx2 = W * 0.865; g.D = 280 * S; g.cy = H * 0.41;
-                g.vsY = 128 * S;
-                g.nameY = g.cy + g.D / 2 + 60 * S; g.nameSize = 58 * S; g.nameMaxW = W * 0.235;
-                g.teamY = g.nameY + 48 * S; g.ageY = g.teamY + 38 * S;
-                g.blockTitleY = 196 * S; g.sublineY = 230 * S;
-                g.rowsTop = 256 * S; g.rowsBottom = H - 92 * S;
-                g.cardL = W * 0.268; g.cardR = W * 0.732;
-                g.x1 = W * 0.343; g.x2 = W * 0.657; g.boxW = W * 0.118;
-                g.logoSize = 760 * S; g.logoX = [g.cx1 - 170 * S, g.cx2 + 170 * S]; g.logoY = g.cy;
-                g.minRow = 40 * S; g.maxRow = 70 * S;
-            } else {
-                S = W / 1080;
-                g.S = S; g.pad = 44 * S;
-                g.titleY = 76 * S; g.titleSize = 54 * S;
-                g.D = Math.min(0.19 * W, 0.162 * H);
-                g.cy = g.titleY + 46 * S + g.D / 2;
-                g.cx1 = W * 0.25; g.cx2 = W * 0.75;
-                g.nameY = g.cy + g.D / 2 + 50 * S; g.nameSize = 50 * S; g.nameMaxW = W * 0.43;
-                g.teamY = g.nameY + 42 * S; g.ageY = g.teamY + 32 * S;
-                g.blockTitleY = g.ageY + 66 * S; g.sublineY = g.blockTitleY + 32 * S;
-                g.rowsTop = g.sublineY + 26 * S; g.rowsBottom = H - 80 * S;
-                g.cardL = g.pad; g.cardR = W - g.pad;
-                g.x1 = W * 0.19; g.x2 = W * 0.81; g.boxW = W * 0.24;
-                g.logoSize = W * 0.64; g.logoX = [g.cx1 - g.D * 0.95, g.cx2 + g.D * 0.95]; g.logoY = g.cy + 10 * S;
-                g.minRow = 40 * S; g.maxRow = 68 * S;
-            }
-            g.cardTop = g.blockTitleY - 46 * S;
-            g.cardBottom = g.rowsBottom + 14 * S;
-            g.labelW = (g.x2 - g.boxW / 2) - (g.x1 + g.boxW / 2) - 20 * S;
-            g.footerY = H - 36 * S;
+            var land = W > H * 1.2;
+            var S = land ? H / 1080 : W / 1080;
+            var g = { W: W, H: H, S: S, land: land };
+            g.pad = 44 * S;
+            g.band = 12 * S;
+            g.colH = land ? 300 * S : Math.max(232 * S, Math.min(H * 0.215, 360 * S));
+            g.stripH = 92 * S;
+            g.headH = g.colH + g.stripH;
+            g.face = g.colH - g.band - 8 * S;
+            g.footY = H - 30 * S;
+            g.viewTop = g.headH + 6 * S;
+            g.viewBot = H - 62 * S;
+            g.viewH = g.viewBot - g.viewTop;
+            g.cw = land ? Math.min(W - 2 * g.pad, 1240 * S) : W - 2 * g.pad;
+            g.cL = (W - g.cw) / 2; g.cR = g.cL + g.cw;
+            g.x1 = g.cL + g.cw * 0.14; g.x2 = g.cR - g.cw * 0.14;
+            g.valW = g.cw * 0.25;
+            g.labelW = g.cw * 0.40;
+            g.rowH = 64 * S; g.minRow = 44 * S; g.maxRow = 74 * S;
+            g.titleH = 108 * S;
             return g;
         }
-
-        // Split rows into pages: shrink the row height to the readable minimum first,
-        // then split evenly ("(1/2)", "(2/2)"). Group headers count as 0.62 of a row.
         function rowUnits(r) { return r.group ? 0.62 : 1; }
+        function pageUnits(rows) { return rows.reduce(function(s, r) { return s + rowUnits(r); }, 0); }
+
+        // Images: shrink rows to the readable minimum first, then split evenly ("(1/2)"...).
         function paginate(rows, g) {
-            var avail = g.rowsBottom - g.rowsTop;
-            var units = rows.reduce(function(s, r) { return s + rowUnits(r); }, 0);
+            var avail = g.viewH - g.titleH;
+            var units = pageUnits(rows);
             if (units === 0) return [];
             if (avail / units >= g.minRow) return [{ rows: rows, rowH: Math.min(g.maxRow, avail / units) }];
             var perPage = Math.floor(avail / g.minRow);
@@ -4496,15 +4558,14 @@
             var pages = [], cur = [], cu = 0;
             rows.forEach(function(r) {
                 if (cur.length && cu + rowUnits(r) > target + 0.01 && pages.length < nPages - 1) {
-                    // never leave a group header alone at the bottom of a page
-                    var tail = cur[cur.length - 1];
+                    var tail = cur[cur.length - 1];   // never leave a group header alone at the bottom
                     if (tail.group) { cur.pop(); cu -= rowUnits(tail); pages.push(cur); cur = [tail]; cu = rowUnits(tail); }
                     else { pages.push(cur); cur = []; cu = 0; }
                 }
                 cur.push(r); cu += rowUnits(r);
             });
             if (cur.length) pages.push(cur);
-            var maxUnits = Math.max.apply(null, pages.map(function(p) { return p.reduce(function(s, r) { return s + rowUnits(r); }, 0); }));
+            var maxUnits = Math.max.apply(null, pages.map(pageUnits));
             var rowH = Math.max(g.minRow * 0.9, Math.min(g.maxRow, avail / maxUnits));
             return pages.map(function(p) { return { rows: p, rowH: rowH }; });
         }
@@ -4512,321 +4573,313 @@
         // =============================================================
         // Drawing
         // =============================================================
-        var MARK_PATHS = [
-            'M10 0C10 0 10 20 10 20', 'M0 10C0 10 20 10 20 10',
-            'M2.9 3.5C2.9 3.5 10 9.5 10 10C10 10.5 17.1 16.5 17.1 16.5',
-            'M17.1 3.5C17.1 3.5 10 9.5 10 10C10 10.5 2.9 16.5 2.9 16.5'
-        ];
-        // HoopsMatic basketball mark (same SVG as the site nav), drawn at radius r.
-        function drawMark(ctx, cx, cy, r) {
-            var k = r / 10;
-            ctx.save();
-            ctx.translate(cx - r, cy - r);
-            ctx.scale(k, k);
-            ctx.beginPath(); ctx.arc(10, 10, 10, 0, Math.PI * 2); ctx.fillStyle = '#E8531A'; ctx.fill();
-            ctx.strokeStyle = '#7A2800'; ctx.lineWidth = 1.2;
-            if (typeof Path2D !== 'undefined') MARK_PATHS.forEach(function(d) { ctx.stroke(new Path2D(d)); });
-            ctx.beginPath(); ctx.arc(10, 10, 10, 0, Math.PI * 2); ctx.strokeStyle = '#C44010'; ctx.lineWidth = 0.5; ctx.stroke();
-            ctx.restore();
+        function drawBackground(ctx, g, th) {
+            var bg = ctx.createLinearGradient(0, 0, g.W, g.H);
+            bg.addColorStop(0, th.bg[0]); bg.addColorStop(0.55, th.bg[1]); bg.addColorStop(1, th.bg[2]);
+            ctx.fillStyle = bg; ctx.fillRect(0, 0, g.W, g.H);
+            var R = Math.max(g.W, g.H) * 0.7;
+            var gl = ctx.createRadialGradient(g.W * 0.18, g.H * 0.12, 0, g.W * 0.18, g.H * 0.12, R);
+            gl.addColorStop(0, rgba(th.glow, th.glowA)); gl.addColorStop(1, rgba(th.glow, 0));
+            ctx.fillStyle = gl; ctx.fillRect(0, 0, g.W, g.H);
         }
-        function drawLogo(ctx, img, cx, cy, size) {
+        function drawLogo(ctx, img, x, y, size) {   // x, y = top-left of a size x size box
             if (!img) return;
             var iw = img.naturalWidth || img.width || 1, ih = img.naturalHeight || img.height || 1;
             var k = size / Math.max(iw, ih);
-            ctx.drawImage(img, cx - iw * k / 2, cy - ih * k / 2, iw * k, ih * k);
+            ctx.drawImage(img, x + (size - iw * k) / 2, y + (size - ih * k) / 2, iw * k, ih * k);
         }
-        function drawFace(ctx, img, color, cx, cy, d, th, ringW) {
-            ctx.save();
-            ctx.beginPath(); ctx.arc(cx, cy, d / 2, 0, Math.PI * 2);
-            ctx.fillStyle = color; ctx.fill();
-            ctx.clip();
-            if (img) ctx.drawImage(img, cx - d / 2, cy - d / 2, d, d);
-            ctx.restore();
-            ctx.beginPath(); ctx.arc(cx, cy, d / 2, 0, Math.PI * 2);
-            ctx.strokeStyle = th.ring; ctx.lineWidth = ringW; ctx.stroke();
+        function initials(name) {
+            var w = nameWords(name).filter(function(x) { return !/^(jr\.?|sr\.?|ii|iii|iv)$/i.test(x); });
+            return w.length ? (w.length === 1 ? w[0].slice(0, 2) : w[0][0] + w[w.length - 1][0]).toUpperCase() : '';
         }
-        function drawSideFaces(ctx, sd, cx, cy, D, th, S, theme) {
-            var n = Math.max(1, Math.min(sd.names.length, MAX_FACES));
-            if (n === 1) { drawFace(ctx, sd.faces[0], sd.color, cx, cy, D, th, 4 * S); return; }
-            // combine mode: smaller, overlapping circles
-            var d = D * (n === 2 ? 0.76 : 0.64);
-            var step = d * 0.62;
-            var total = d + step * (n - 1);
-            var x0 = cx - total / 2 + d / 2;
-            for (var k = n - 1; k >= 0; k--) {
-                drawFace(ctx, sd.faces[k], memberColor(sd, k, theme), x0 + k * step, cy + (k % 2 ? d * 0.06 : 0), d, th, 4 * S);
-            }
-        }
-        function drawDiamond(ctx, x, y, r, color) {
-            ctx.beginPath(); ctx.moveTo(x, y - r); ctx.lineTo(x + r, y); ctx.lineTo(x, y + r); ctx.lineTo(x - r, y); ctx.closePath();
-            ctx.fillStyle = color; ctx.fill();
+        // A face in a square box (x, y = top-left, d = size), bottom on the column's base.
+        // No photo: the trade card's fallback (dark disc, team-colour ring, initials).
+        function drawFaceBox(ctx, img, name, color, th, x, y, d, S) {
+            if (img) { ctx.drawImage(img, x, y, d, d); return; }
+            var cx = x + d / 2, cy = y + d * 0.52, r = d * 0.34;
+            ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2);
+            ctx.fillStyle = th.chip; ctx.fill();
+            ctx.lineWidth = 4 * S; ctx.strokeStyle = color; ctx.stroke();
+            ctx.fillStyle = th.chipText; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            ctx.font = font(700, r * 0.78);
+            ctx.fillText(initials(name), cx, cy + r * 0.04);
         }
 
-        function drawRow(ctx, g, sc, row, y, h, t) {
+        // The two columns: band, wash, faces, team line, name, career line.
+        // emph[i] (0..1) brightens a column's wash (final card winner).
+        function drawColumns(ctx, g, sc, hT, emph) {
+            var th = NS_THEMES[sc.theme], S = g.S, half = g.W / 2;
+            sc.sides.forEach(function(sd, i) {
+                var x0 = i ? half : 0, col = sd.color;
+                var e = emph ? (emph[i] || 0) : 0;
+                ctx.save();
+                ctx.beginPath(); ctx.rect(x0, 0, half, g.colH); ctx.clip();
+                var wash = ctx.createLinearGradient(0, 0, 0, g.headH);
+                wash.addColorStop(0, rgba(col, Math.min(0.75, th.wash * (1 + 1.2 * e))));
+                wash.addColorStop(1, rgba(col, 0));
+                ctx.fillStyle = wash; ctx.fillRect(x0, 0, half, g.colH);
+                // band
+                ctx.fillStyle = col; ctx.fillRect(x0, 0, half, g.band);
+
+                ctx.globalAlpha = hT;
+                // faces on the outer edge, sitting on the column's base
+                var n = Math.max(1, Math.min(sd.names.length, MAX_SIDE_FACES));
+                var d = n === 1 ? g.face : g.face * (n === 2 ? 0.84 : 0.72);
+                var step = n === 1 ? 0 : d * 0.56;
+                var span = d + step * (n - 1);
+                var rise = (1 - ease(hT)) * 26 * S;
+                var outer = g.pad * 0.4;
+                for (var k = n - 1; k >= 0; k--) {
+                    var fx = i === 0 ? outer + k * step : g.W - outer - d - k * step;
+                    var mc = k === 0 ? col : teamColor(sd.teams[k], sc.theme);
+                    drawFaceBox(ctx, sd.faces[k], sd.names[k], mc, th, fx, g.colH - d + rise, d, S);
+                }
+
+                // text block, mirrored: left column left-aligned after the faces,
+                // right column right-aligned before them.
+                var gap = 24 * S;
+                var tx = i === 0 ? outer + span + gap : g.W - outer - span - gap;
+                var maxW = half - span - outer - gap - g.pad * 0.8;
+                var align = i === 0 ? 'left' : 'right';
+                ctx.textAlign = align; ctx.textBaseline = 'alphabetic';
+                var lines = [];
+                // team: bare logo + team name (combined side, several teams: just the logos)
+                var logoS = 40 * S;
+                lines.push({ h: logoS + 14 * S, draw: function(y) {
+                    var teams = sd.team ? [sd.team] : sd.uniqTeams;
+                    if (!teams.length) return;
+                    if (sd.team) {
+                        var tf = fitFont(ctx, NS_TEAM_NAMES[sd.team], 25 * S, 15 * S, maxW - logoS - 12 * S, 700);
+                        ctx.font = font(700, tf.size);
+                        var tw = ctx.measureText(tf.text).width;
+                        var lx = i === 0 ? tx : tx - tw - 12 * S - logoS;
+                        drawLogo(ctx, sd.logos[sd.team], lx, y, logoS);
+                        ctx.fillStyle = th.text;
+                        ctx.fillText(tf.text, i === 0 ? tx + logoS + 12 * S : tx, y + logoS * 0.5 + tf.size * 0.36);
+                    } else {
+                        teams.slice(0, 3).forEach(function(t, k) {
+                            var lx = i === 0 ? tx + k * (logoS + 10 * S) : tx - logoS - k * (logoS + 10 * S);
+                            drawLogo(ctx, sd.logos[t], lx, y, logoS);
+                        });
+                    }
+                } });
+                // name: first name smaller over a large surname (the trade card's two-line name)
+                if (!sd.combined) {
+                    var w = nameWords(sd.names[0]);
+                    var big = w.length > 1 ? w.slice(1).join(' ') : w[0];
+                    var bf = fitFont(ctx, big, (g.land ? 62 : 54) * S, 26 * S, maxW, 800);
+                    if (w.length > 1) {
+                        var ff = fitFont(ctx, w[0], 27 * S, 16 * S, maxW, 600);
+                        lines.push({ h: ff.size * 1.15, draw: function(y) { ctx.font = font(600, ff.size); ctx.fillStyle = th.text; ctx.fillText(ff.text, tx, y + ff.size * 0.95); } });
+                    }
+                    lines.push({ h: bf.size * 1.08, draw: function(y) { ctx.font = font(800, bf.size); ctx.fillStyle = th.text; ctx.fillText(bf.text, tx, y + bf.size * 0.9); } });
+                    var cl = sd.career[0];
+                    if (cl) {
+                        var cf = fitFont(ctx, cl, 21 * S, 13 * S, maxW, 600);
+                        lines.push({ h: cf.size * 1.5, draw: function(y) { ctx.font = font(600, cf.size); ctx.fillStyle = th.accent; ctx.fillText(cf.text, tx, y + cf.size * 1.25); } });
+                    }
+                } else {
+                    var nf = fitFont(ctx, sd.short, (g.land ? 50 : 42) * S, 22 * S, maxW, 800);
+                    lines.push({ h: nf.size * 1.12, draw: function(y) { ctx.font = font(800, nf.size); ctx.fillStyle = th.text; ctx.fillText(nf.text, tx, y + nf.size * 0.92); } });
+                    sd.names.slice(0, 3).forEach(function(nm, k) {
+                        var t = lastName(nm) + ' · ' + careerShort(nm);
+                        var mf = fitFont(ctx, t, 19 * S, 12 * S, maxW, 600);
+                        lines.push({ h: mf.size * 1.32, draw: function(y) { ctx.font = font(600, mf.size); ctx.fillStyle = th.accent; ctx.fillText(mf.text, tx, y + mf.size * 1.1); } });
+                    });
+                }
+                var total = lines.reduce(function(s, l) { return s + l.h; }, 0);
+                var y = g.band + Math.max(14 * S, (g.colH - g.band - total) / 2) + rise * 0.6;
+                lines.forEach(function(l) { l.draw(y); y += l.h; });
+                ctx.restore();
+            });
+            // divider between the columns (as between the trade card's columns)
+            ctx.fillStyle = th.line;
+            ctx.fillRect(half - S, g.band, 2 * S, g.colH - g.band);
+        }
+
+        // Scoreboard strip, the trade card's verdict bar: counts on the outside,
+        // the leader line in the middle, a split bar in the two team colours.
+        // sb: { a, b, ratio (0..1, null = idle), text, pulse: [p0, p1] }
+        function drawStrip(ctx, g, sc, sb, alpha) {
             var th = NS_THEMES[sc.theme], S = g.S;
-            var cy = y + h / 2;
-            var a = clamp01(t * 1.6);
+            ctx.save();
+            ctx.globalAlpha = alpha;
+            ctx.fillStyle = th.line;
+            ctx.fillRect(0, g.colH, g.W, Math.max(1, 2 * S));
+            var midY = g.colH + g.stripH * 0.5;
+            var numS = 62 * S;
+            var vals = [sb.a, sb.b];
+            for (var i = 0; i < 2; i++) {
+                var p = sb.pulse ? clamp01(sb.pulse[i]) : 0;
+                var col = sc.sides[i].color;
+                ctx.save();
+                ctx.font = font(800, numS);
+                var txt = String(vals[i]);
+                var tw = ctx.measureText(txt).width;
+                var cx = i === 0 ? g.pad + tw / 2 : g.W - g.pad - tw / 2;
+                if (p > 0) {
+                    // pulse: a team-colour pill behind the number, the number swells
+                    var ph = numS * 1.05, pw = tw + 34 * S;
+                    ctx.globalAlpha = alpha * p;
+                    rr(ctx, cx - pw / 2, midY - ph / 2, pw, ph, ph / 2);
+                    ctx.fillStyle = col; ctx.fill();
+                    ctx.globalAlpha = alpha;
+                }
+                var k = 1 + 0.22 * p;
+                ctx.translate(cx, midY); ctx.scale(k, k);
+                ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                ctx.fillStyle = p > 0.35 ? inkOn(col) : th.text;
+                ctx.fillText(txt, 0, 2 * S);
+                ctx.restore();
+            }
+            // leader line + split bar
+            var bx = g.pad + 150 * S, bw = g.W - 2 * bx, by = midY + 14 * S, bh = 14 * S;
+            if (sb.text) {
+                ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
+                var lf = fitFont(ctx, sb.text, 27 * S, 15 * S, bw, 700);
+                ctx.font = font(700, lf.size);
+                ctx.fillStyle = th.text;
+                ctx.fillText(lf.text, g.W / 2, by - 14 * S);
+            }
+            if (sb.ratio == null) {
+                rr(ctx, bx, by, bw, bh, bh / 2); ctx.fillStyle = th.barIdle; ctx.fill();
+            } else {
+                var wa = Math.round(bw * sb.ratio);
+                ctx.save();
+                rr(ctx, bx, by, bw, bh, bh / 2); ctx.clip();
+                ctx.fillStyle = sc.sides[0].color; ctx.fillRect(bx, by, wa, bh);
+                ctx.fillStyle = sc.sides[1].color; ctx.fillRect(bx + wa, by, bw - wa, bh);
+                ctx.restore();
+            }
+            ctx.restore();
+        }
+
+        function drawFooter(ctx, g, th, alpha) {
+            ctx.save();
+            ctx.globalAlpha = alpha;
+            ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            ctx.font = font(600, 21 * g.S);
+            ctx.fillStyle = th.muted;
+            ctx.fillText('hoopsmatic.com/compare', g.W / 2, g.footY);
+            ctx.restore();
+        }
+
+        // Block title inside the stream (a divider between blocks).
+        function drawTitle(ctx, g, th, block, y, h, t, first) {
+            var a = clamp01(t * 2.2);
             if (a <= 0) return;
+            var S = g.S;
             ctx.save();
             ctx.globalAlpha *= a;
-            ctx.textBaseline = 'middle';
-            ctx.textAlign = 'center';
-            if (row.group) {
-                ctx.font = '700 ' + Math.round(Math.min(h * 0.62, 18 * S)) + 'px ' + NF_HEAD;
-                setLS(ctx, 2 * S);
+            ctx.translate(0, (1 - ease(t * 1.6)) * 14 * S);
+            if (!first) { ctx.fillStyle = th.line; ctx.fillRect(g.cL, y + 6 * S, g.cw, Math.max(1, 2 * S)); }
+            ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
+            var tf = fitFont(ctx, block.title, (block.big ? 46 : 36) * S, 20 * S, g.cw, 800);
+            ctx.font = font(800, tf.size);
+            ctx.fillStyle = th.text;
+            var ty = y + h * (block.subline ? 0.52 : 0.64);
+            ctx.fillText(tf.text, g.W / 2, ty);
+            if (block.subline) {
+                var sf = fitFont(ctx, block.subline, 19 * S, 12 * S, g.cw, 500);
+                ctx.font = font(500, sf.size);
                 ctx.fillStyle = th.muted;
-                var gw = ctx.measureText(row.label).width;
-                ctx.fillText(row.label, (g.cardL + g.cardR) / 2, cy + 2 * S);
-                setLS(ctx, 0);
-                ctx.strokeStyle = th.divider; ctx.lineWidth = Math.max(1, S);
-                ctx.beginPath();
-                ctx.moveTo(g.cardL + 24 * S, cy); ctx.lineTo((g.cardL + g.cardR) / 2 - gw / 2 - 14 * S, cy);
-                ctx.moveTo((g.cardL + g.cardR) / 2 + gw / 2 + 14 * S, cy); ctx.lineTo(g.cardR - 24 * S, cy);
-                ctx.stroke();
+                ctx.fillText(sf.text, g.W / 2, ty + 32 * S);
+            }
+            if (block.bandColor) {
+                ctx.fillStyle = block.bandColor;
+                ctx.fillRect(g.W / 2 - 70 * S, ty + 22 * S, 140 * S, 6 * S);
+            }
+            ctx.restore();
+        }
+
+        // One stat row. t = reveal progress (>= 1 settled). line = draw the hairline under it.
+        function drawRow(ctx, g, sc, row, y, h, t, line) {
+            var th = NS_THEMES[sc.theme], S = g.S;
+            var a = clamp01(t * 2.4);
+            if (a <= 0) return;
+            var cy = y + h / 2;
+            ctx.save();
+            ctx.globalAlpha *= a;
+            if (line) { ctx.fillStyle = th.line; ctx.fillRect(g.cL, y + h - Math.max(1, S), g.cw, Math.max(1, S)); }
+            ctx.textBaseline = 'middle'; ctx.textAlign = 'center';
+            if (row.group) {
+                var gf = fitFont(ctx, row.label, Math.min(h * 0.5, 20 * S), 11 * S, g.cw * 0.7, 700);
+                ctx.font = font(700, gf.size);
+                ctx.fillStyle = th.muted;
+                var gw = ctx.measureText(gf.text).width;
+                ctx.fillText(gf.text, g.W / 2, cy + 1 * S);
+                ctx.fillStyle = th.line;
+                ctx.fillRect(g.cL, cy, g.W / 2 - gw / 2 - 16 * S - g.cL, Math.max(1, S));
+                ctx.fillRect(g.W / 2 + gw / 2 + 16 * S, cy, g.cR - (g.W / 2 + gw / 2 + 16 * S), Math.max(1, S));
                 ctx.restore();
                 return;
             }
+            var bt = ease(t * 1.25);
+            // winner wash from his side of the row
+            var wi = row.winner === 'player1' ? 0 : (row.winner === 'player2' ? 1 : -1);
+            if (wi >= 0) {
+                var col = sc.sides[wi].color;
+                var gx0 = wi === 0 ? g.cL : g.cR, gx1 = wi === 0 ? g.cL + g.cw * 0.42 : g.cR - g.cw * 0.42;
+                var wg = ctx.createLinearGradient(gx0, 0, gx1, 0);
+                wg.addColorStop(0, rgba(col, th.rowWash * bt)); wg.addColorStop(1, rgba(col, 0));
+                ctx.fillStyle = wg;
+                ctx.fillRect(Math.min(gx0, gx1), y + 1 * S, g.cw * 0.42, h - 2 * S);
+            }
             // label
-            var lf = fitFont(ctx, row.label, Math.round(Math.min(h * 0.38, 23 * S)), Math.round(12 * S), g.labelW, row.bold ? '800' : '600', NF_HEAD);
-            ctx.font = (row.bold ? '800 ' : '600 ') + lf.size + 'px ' + NF_HEAD;
-            setLS(ctx, 1 * S);
-            ctx.fillStyle = row.bold ? th.text : th.muted;
-            ctx.fillText(lf.text, (g.x1 + g.x2) / 2, cy + 1 * S);
-            setLS(ctx, 0);
+            var lf = fitFont(ctx, row.label, Math.min(h * 0.37, 25 * S), 12 * S, g.labelW, row.bold ? 800 : 600);
+            ctx.font = font(row.bold ? 800 : 600, lf.size);
+            ctx.fillStyle = row.bold ? th.text : th.sub;
+            ctx.fillText(lf.text, g.W / 2, cy + 1 * S);
             // values
-            var vs = Math.round(Math.min(h * 0.54, 38 * S));
+            var vs = Math.min(h * 0.5, 36 * S);
             var vals = [row.v1, row.v2], xs = [g.x1, g.x2];
-            var bt = ease(t);
             for (var i = 0; i < 2; i++) {
-                var win = row.winner === (i === 0 ? 'player1' : 'player2');
-                var col = sc.sides[i].color;
                 var txt = String(vals[i]);
-                var vf = fitFont(ctx, txt, vs, Math.round(14 * S), g.boxW - 44 * S, '700', NF_HEAD);
+                var vf = fitFont(ctx, txt, vs, 13 * S, g.valW - 40 * S, 700);
                 var x = xs[i];
-                if (win) {
-                    var slide = (1 - bt) * 34 * S * (i === 0 ? -1 : 1);
-                    var bh = h * 0.78, bw = g.boxW;
+                if (i === wi) {
+                    var c = sc.sides[i].color;
+                    ctx.font = font(800, vf.size);
+                    var tw = ctx.measureText(vf.text).width;
+                    var ph = Math.min(h * 0.7, vf.size * 1.55), pw = Math.min(g.valW, tw + 40 * S) * (0.55 + 0.45 * bt);
                     ctx.save();
                     ctx.globalAlpha *= bt;
-                    rr(ctx, x - bw / 2 + slide, cy - bh / 2, bw, bh, Math.min(12 * S, bh / 2));
-                    ctx.fillStyle = rgba(col, th.tint); ctx.fill();
-                    ctx.strokeStyle = rgba(col, 0.9); ctx.lineWidth = 2 * S; ctx.stroke();
+                    rr(ctx, x - pw / 2, cy - ph / 2, pw, ph, ph / 2);
+                    ctx.fillStyle = c; ctx.fill();
                     ctx.restore();
-                    ctx.font = '700 ' + vf.size + 'px ' + NF_HEAD;
-                    var tw = ctx.measureText(vf.text).width;
-                    var dr = Math.max(4 * S, vf.size * 0.2);
-                    var shift = (dr * 2 + 8 * S) / 2;
-                    ctx.save(); ctx.globalAlpha *= bt;
-                    drawDiamond(ctx, x + shift - tw / 2 - 8 * S - dr + slide, cy, dr, col);
-                    ctx.restore();
-                    ctx.fillStyle = th.text;
-                    ctx.fillText(vf.text, x + shift, cy + 1 * S);
-                } else {
-                    ctx.font = '700 ' + vf.size + 'px ' + NF_HEAD;
-                    ctx.save();
-                    if (row.winner !== 'tie') ctx.globalAlpha *= th.loserA;
-                    ctx.fillStyle = th.text;
+                    ctx.fillStyle = bt > 0.5 ? inkOn(c) : th.text;
                     ctx.fillText(vf.text, x, cy + 1 * S);
-                    ctx.restore();
+                } else {
+                    ctx.font = font(wi === -1 ? 700 : 600, vf.size);
+                    ctx.fillStyle = wi === -1 ? th.text : th.muted;
+                    ctx.fillText(vf.text, x, cy + 1 * S);
                 }
             }
             ctx.restore();
         }
 
-        // sc: { W, H, theme, sides, topTitle }
-        // st: { headerT, block: {title, subline, titleColor}, rows, rowH, rowT[], titleT, blockA, winnerSide, dy }
-        function drawScene(ctx, sc, st) {
-            var g = geom(sc.W, sc.H), th = NS_THEMES[sc.theme], S = g.S;
-            var dy = st.dy || 0;
-            var hT = ease(st.headerT == null ? 1 : st.headerT);
-            ctx.save();
-            ctx.setTransform(1, 0, 0, 1, 0, 0);
-            ctx.globalAlpha = 1;
-            ctx.fillStyle = th.bg;
-            ctx.fillRect(0, 0, sc.W, sc.H);
-            ctx.translate(0, dy);
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            var cxs = [g.cx1, g.cx2];
-
-            // big faded team logos, partly off-canvas toward each side
-            sc.sides.forEach(function(sd, i) {
-                var t = sd.team || sd.uniqTeams[0];
-                var img = t ? sd.logos[t] : null;
-                if (!img) return;
-                ctx.save();
-                ctx.globalAlpha = th.logoA * hT;
-                drawLogo(ctx, img, g.logoX[i], g.logoY, g.logoSize);
-                ctx.restore();
-            });
-
-            // final card: highlight the winning side's column
-            if (st.winnerSide === 0 || st.winnerSide === 1) {
-                var wi = st.winnerSide, wsd = sc.sides[wi];
-                var colW = g.land ? sc.W * 0.25 : sc.W * 0.42;
-                var top = g.cy - g.D / 2 - 22 * S, bot = g.ageY + 22 * S;
-                ctx.save();
-                ctx.globalAlpha = 0.9 * clamp01(st.blockA == null ? 1 : st.blockA);
-                rr(ctx, cxs[wi] - colW / 2, top, colW, bot - top, 16 * S);
-                ctx.fillStyle = rgba(wsd.color, th.tint * 0.8); ctx.fill();
-                ctx.strokeStyle = rgba(wsd.color, 0.9); ctx.lineWidth = 2 * S; ctx.stroke();
-                ctx.restore();
+        // Stream items: [{type:'title'|'row', block|row, h, y}] -> drawn in (0, top) space.
+        function drawItems(ctx, g, sc, items, offY, tOf) {
+            var th = NS_THEMES[sc.theme];
+            for (var k = 0; k < items.length; k++) {
+                var it = items[k], y = it.y - offY;
+                if (y > g.H || y + it.h < -g.H) continue;
+                var t = tOf ? tOf(k) : 1;
+                if (it.type === 'title') drawTitle(ctx, g, th, it.block, y, it.h, t, k === 0);
+                else {
+                    var nx = items[k + 1];
+                    drawRow(ctx, g, sc, it.row, y, it.h, t, !!(nx && nx.type === 'row' && !it.row.group && !nx.row.group));
+                }
             }
-
-            // title
-            ctx.save();
-            ctx.globalAlpha = hT;
-            ctx.fillStyle = th.text;
-            var tf = fitFont(ctx, sc.topTitle || 'PLAYER COMPARISON', g.titleSize, 20 * S, sc.W - 2 * g.pad, '800', NF_HEAD);
-            ctx.font = '800 ' + tf.size + 'px ' + NF_HEAD;
-            setLS(ctx, 3 * S);
-            ctx.fillText(tf.text, sc.W / 2, g.titleY + (1 - hT) * -16 * S);
-            setLS(ctx, 0);
-            ctx.restore();
-
-            // faces
-            sc.sides.forEach(function(sd, i) {
-                ctx.save();
-                ctx.globalAlpha = hT;
-                var k = 0.72 + 0.28 * hT;
-                ctx.translate(cxs[i], g.cy); ctx.scale(k, k); ctx.translate(-cxs[i], -g.cy);
-                drawSideFaces(ctx, sd, cxs[i], g.cy, g.D, th, S, sc.theme);
-                ctx.restore();
-            });
-
-            // HoopsMatic mark + VS
-            ctx.save();
-            ctx.globalAlpha = hT;
-            ctx.fillStyle = th.text;
-            if (g.land) {
-                drawMark(ctx, sc.W / 2 - 30 * S, g.vsY, 17 * S);
-                ctx.font = '800 ' + Math.round(36 * S) + 'px ' + NF_HEAD;
-                ctx.textAlign = 'left';
-                ctx.fillText('VS', sc.W / 2 - 6 * S, g.vsY + 2 * S);
-            } else {
-                drawMark(ctx, sc.W / 2, g.cy - 30 * S, 20 * S);
-                ctx.font = '800 ' + Math.round(44 * S) + 'px ' + NF_HEAD;
-                ctx.fillText('VS', sc.W / 2, g.cy + 28 * S);
-            }
-            ctx.restore();
-
-            // names, team, age
-            sc.sides.forEach(function(sd, i) {
-                var cx = cxs[i];
-                ctx.save();
-                ctx.globalAlpha = hT;
-                ctx.translate(0, (1 - hT) * 22 * S);
-                ctx.textAlign = 'center';
-                ctx.fillStyle = th.text;
-                var nm = sd.display.toUpperCase();
-                var nf = fitFont(ctx, nm, g.nameSize, Math.round(g.nameSize * 0.5), g.nameMaxW, '800', NF_HEAD);
-                if (!nf.fits && sd.combined) nf = fitFont(ctx, sd.short.toUpperCase(), g.nameSize, Math.round(g.nameSize * 0.45), g.nameMaxW, '800', NF_HEAD);
-                ctx.font = '800 ' + nf.size + 'px ' + NF_HEAD;
-                ctx.fillText(nf.text, cx, g.nameY);
-
-                // team logo + team name
-                var ls = 32 * S;
-                ctx.fillStyle = th.muted;
-                if (sd.team) {
-                    var tn = NS_TEAMS[sd.team].n;
-                    var tff = fitFont(ctx, tn, Math.round(21 * S), Math.round(13 * S), g.nameMaxW - ls - 10 * S, '600', NF_BODY);
-                    ctx.font = '600 ' + tff.size + 'px ' + NF_BODY;
-                    var tw = ctx.measureText(tff.text).width;
-                    var x0 = cx - (ls + 10 * S + tw) / 2;
-                    if (sd.logos[sd.team]) drawLogo(ctx, sd.logos[sd.team], x0 + ls / 2, g.teamY, ls);
-                    ctx.textAlign = 'left';
-                    ctx.fillText(tff.text, x0 + ls + 10 * S, g.teamY + 1 * S);
-                    ctx.textAlign = 'center';
-                } else if (sd.uniqTeams.length) {
-                    var n = sd.uniqTeams.length, gap = 8 * S;
-                    var sx = cx - (n * ls + (n - 1) * gap) / 2 + ls / 2;
-                    sd.uniqTeams.forEach(function(t, k) { drawLogo(ctx, sd.logos[t], sx + k * (ls + gap), g.teamY, ls); });
-                }
-                // age line (+ season / range suffix)
-                var ageTxt = sd.combined ? 'Combined · ' + sd.names.length + ' players' : (sd.age ? sd.age + ' years old' : '');
-                if (sd.suffix) ageTxt = ageTxt ? ageTxt + ' · ' + sd.suffix : sd.suffix;
-                if (ageTxt) {
-                    var af = fitFont(ctx, ageTxt, Math.round(20 * S), Math.round(12 * S), g.nameMaxW, '500', NF_BODY);
-                    ctx.font = '500 ' + af.size + 'px ' + NF_BODY;
-                    ctx.fillText(af.text, cx, g.ageY);
-                }
-                ctx.restore();
-            });
-
-            // block card
-            var bA = st.blockA == null ? 1 : clamp01(st.blockA);
-            if (st.block && bA > 0) {
-                ctx.save();
-                ctx.globalAlpha = bA;
-                var cardBottom = st.rowH ? Math.min(g.cardBottom, g.rowsTop + pageUnits(st.rows || []) * st.rowH + 14 * S) : g.cardBottom;
-                rr(ctx, g.cardL, g.cardTop, g.cardR - g.cardL, cardBottom - g.cardTop, 12 * S);
-                ctx.fillStyle = th.surface; ctx.fill();
-                ctx.strokeStyle = th.border; ctx.lineWidth = Math.max(1, S); ctx.stroke();
-
-                var tT = ease(st.titleT == null ? 1 : st.titleT);
-                ctx.save();
-                ctx.globalAlpha *= tT;
-                ctx.translate(0, (1 - tT) * 12 * S);
-                ctx.textAlign = 'center';
-                ctx.fillStyle = st.block.titleColor || th.text;
-                var bf = fitFont(ctx, st.block.title, Math.round(34 * S), Math.round(18 * S), g.cardR - g.cardL - 40 * S, '800', NF_HEAD);
-                ctx.font = '800 ' + bf.size + 'px ' + NF_HEAD;
-                setLS(ctx, 2 * S);
-                ctx.fillText(bf.text, (g.cardL + g.cardR) / 2, g.blockTitleY);
-                if (st.block.subline) {
-                    ctx.fillStyle = th.muted;
-                    var sf = fitFont(ctx, st.block.subline, Math.round(16 * S), Math.round(11 * S), g.cardR - g.cardL - 40 * S, '600', NF_BODY);
-                    ctx.font = '600 ' + sf.size + 'px ' + NF_BODY;
-                    setLS(ctx, 1.5 * S);
-                    ctx.fillText(sf.text, (g.cardL + g.cardR) / 2, g.sublineY);
-                }
-                setLS(ctx, 0);
-                ctx.restore();
-
-                var y = g.rowsTop;
-                var rows = st.rows || [];
-                for (var r = 0; r < rows.length; r++) {
-                    var h = st.rowH * rowUnits(rows[r]);
-                    var rt = st.rowT ? st.rowT[r] : 1;
-                    drawRow(ctx, g, sc, rows[r], y, h, rt == null ? 1 : rt);
-                    if (r < rows.length - 1 && !rows[r].group && !rows[r + 1].group && (rt == null || rt > 0)) {
-                        ctx.save();
-                        ctx.globalAlpha *= clamp01((rt == null ? 1 : rt) * 1.6);
-                        ctx.strokeStyle = th.divider; ctx.lineWidth = Math.max(1, S);
-                        ctx.beginPath(); ctx.moveTo(g.cardL + 20 * S, y + h); ctx.lineTo(g.cardR - 20 * S, y + h); ctx.stroke();
-                        ctx.restore();
-                    }
-                    y += h;
-                }
-                ctx.restore();
-            }
-            ctx.restore();
-
-            // footer wordmark (not shifted, always at the bottom)
-            ctx.save();
-            ctx.globalAlpha = hT;
-            ctx.textBaseline = 'middle';
-            ctx.font = '700 ' + Math.round(22 * S) + 'px ' + NF_HEAD;
-            setLS(ctx, 1 * S);
-            var wm = 'hoopsmatic.com';
-            var ww = ctx.measureText(wm).width;
-            var mr = 10 * S;
-            var fx = sc.W / 2 - (ww + mr * 2 + 8 * S) / 2;
-            drawMark(ctx, fx + mr, g.footerY, mr);
-            ctx.fillStyle = th.muted;
-            ctx.textAlign = 'left';
-            ctx.fillText(wm, fx + mr * 2 + 8 * S, g.footerY + 1 * S);
-            setLS(ctx, 0);
-            ctx.restore();
         }
 
-        // Vertical offset that centres a short block in tall formats (stacked only).
-        function centerDy(g, maxUnits, rowH) {
-            if (g.land) return 0;
-            var spare = (g.rowsBottom - g.rowsTop) - maxUnits * rowH;
-            return spare > 0 ? Math.round(spare * 0.35) : 0;
+        function leaderText(sc, a, b, done) {
+            var nm = function(i) { var sd = sc.sides[i]; return sd.combined ? sd.short : lastName(sd.names[0]); };
+            if (a === 0 && b === 0) return '';
+            if (a === b) return (done ? 'Tied ' : 'All square ') + a + '–' + b;
+            var w = a > b ? 0 : 1;
+            return nm(w) + (done ? ' wins ' : ' leads ') + Math.max(a, b) + '–' + Math.min(a, b);
         }
-        function pageUnits(rows) { return rows.reduce(function(s, r) { return s + rowUnits(r); }, 0); }
 
         // =============================================================
         // Final card (video)
@@ -4834,28 +4887,184 @@
         function finalModel(blocks, sides) {
             var t1 = 0, t2 = 0;
             var rows = blocks.map(function(b, i) {
-                if (b.overall) { t1 += b.p1; t2 += b.p2; }
-                return { key: 'f' + i, label: b.title.replace(/ · .*$/, '') + (b.overall ? '' : ' *'),
+                t1 += b.p1; t2 += b.p2;
+                return { key: 'f' + i, label: b.title.replace(/ · .*$/, ''),
                          v1: String(b.p1), v2: String(b.p2),
                          winner: b.p1 > b.p2 ? 'player1' : (b.p2 > b.p1 ? 'player2' : 'tie') };
             });
-            rows.push({ key: 'fo', label: 'OVERALL', v1: String(t1), v2: String(t2), bold: true,
+            rows.push({ key: 'fo', label: 'Overall', v1: String(t1), v2: String(t2), bold: true,
                         winner: t1 > t2 ? 'player1' : (t2 > t1 ? 'player2' : 'tie') });
             var win = t1 > t2 ? 0 : (t2 > t1 ? 1 : -1);
             var who = win >= 0 ? (sides[win].combined ? sides[win].short : lastName(sides[win].names[0])) : '';
             var title = win >= 0 ? (who + ' wins ' + Math.max(t1, t2) + '-' + Math.min(t1, t2)).toUpperCase() : ('TIED ' + t1 + '-' + t2);
-            var hasExcluded = blocks.some(function(b) { return !b.overall; });
-            return {
-                rows: rows, winnerSide: win,
-                block: { title: title, titleColor: win >= 0 ? sides[win].color : null,
-                         subline: 'CATEGORY WINS BY BLOCK' + (hasExcluded ? ' · * NOT IN OVERALL' : '') }
-            };
+            return { rows: rows, winnerSide: win, t1: t1, t2: t2,
+                     block: { title: title, subline: '', big: true, bandColor: win >= 0 ? sides[win].color : null } };
         }
 
         // =============================================================
         // NEW STYLE VIDEO
+        // Continuous stream under a fixed scoreboard, paced like Classic's video:
+        // 2.0 s before the first reveal, one reveal every 0.66 s, the count moves the
+        // moment a row's winner lands, the stream lerps upward 0.04/frame (at 30 fps)
+        // toward the newest row, 0.8 s pause, then the final card (ties take half a slot
+        // and score nothing, block titles take a slot).
         // =============================================================
         var NEW_RES = { '1080p': [1920, 1080], '720p': [1280, 720], 'square': [1080, 1080], 'story': [1080, 1920], 'portrait45': [1080, 1350] };
+
+        function buildTimeline(blocks, sides, g, fps) {
+            var START = 2.0, GAP = 0.66, TIE_GAP = 0.33, LAND = 0.26, PAUSE = 0.8, FIN_IN = 0.6, FIN_STEP = 0.22, FIN_HOLD = 7.0, FADE = 0.5;
+            var items = [], y = 0, t = START - GAP;
+            blocks.forEach(function(b) {
+                if (!b.rows.length) return;
+                items.push({ type: 'title', block: { title: b.title, subline: b.subline }, h: g.titleH, y: y, at: t });
+                y += g.titleH; t += GAP;
+                b.rows.forEach(function(r) {
+                    items.push({ type: 'row', row: r, h: g.rowH, y: y, at: t });
+                    y += g.rowH;
+                    t += r.winner === 'tie' || (r.winner !== 'player1' && r.winner !== 'player2') ? TIE_GAP : GAP;
+                });
+            });
+            var lastAt = items.length ? items[items.length - 1].at : START;
+            var events = [];   // score events, in time order
+            var a = 0, b = 0;
+            items.forEach(function(it) {
+                if (it.type !== 'row') return;
+                if (it.row.winner === 'player1') { a++; events.push({ t: it.at + LAND, side: 0, a: a, b: b }); }
+                else if (it.row.winner === 'player2') { b++; events.push({ t: it.at + LAND, side: 1, a: a, b: b }); }
+            });
+            var fin = finalModel(blocks, sides);
+            var finStart = lastAt + GAP + PAUSE;
+            var finStarts = fin.rows.map(function(r, i) { return finStart + FIN_IN + i * FIN_STEP; });
+            var total = finStarts[finStarts.length - 1] + 0.4 + FIN_HOLD;
+            return { items: items, events: events, totalH: y, fin: fin, finStart: finStart, finStarts: finStarts,
+                     total: total, LAND: LAND, FADE: FADE, FIN_IN: FIN_IN, a: a, b: b };
+        }
+
+        // Scroll offset per frame: Classic's 0.04/frame lerp (fps-corrected). Classic shows all
+        // rows up front and aims at 55%; here rows appear as they reveal, so the newest settled
+        // row is aimed at 76% of the visible stream (no empty lower half); never past the end.
+        function buildScroll(tl, g, fps, frames) {
+            var out = new Float32Array(frames), cur = 0;
+            var k = 1 - Math.pow(1 - 0.04, 30 / fps);
+            var maxScroll = Math.max(0, tl.totalH - g.viewH + 24 * g.S);
+            var idx = -1;
+            for (var f = 0; f < frames; f++) {
+                var sec = f / fps;
+                while (idx + 1 < tl.items.length && tl.items[idx + 1].at + tl.LAND <= sec) idx++;
+                var target = idx >= 0 ? Math.max(0, tl.items[idx].y + tl.items[idx].h - g.viewH * 0.76) : 0;
+                target = Math.min(target, maxScroll);
+                if (cur > target) cur = target;
+                cur += (target - cur) * k;
+                out[f] = cur;
+            }
+            return out;
+        }
+
+        function scoreAt(tl, sec) {
+            var a = 0, b = 0, last = null, prev = null;
+            for (var i = 0; i < tl.events.length; i++) {
+                var e = tl.events[i];
+                if (e.t > sec) break;
+                prev = last; last = e; a = e.a; b = e.b;
+            }
+            var pulse = [0, 0];
+            tl.events.forEach(function(e) {
+                var d = sec - e.t;
+                if (d >= 0 && d < 0.5) pulse[e.side] = Math.max(pulse[e.side], 1 - d / 0.5);
+            });
+            var ratio = null;
+            if (a + b > 0) {
+                var r1 = a / (a + b);
+                var r0 = prev ? prev.a / (prev.a + prev.b) : 0.5;
+                var k = last ? ease((sec - last.t) / 0.35) : 1;
+                ratio = r0 + (r1 - r0) * k;
+            }
+            return { a: a, b: b, ratio: ratio, pulse: pulse };
+        }
+
+        // Background strips that fade the stream out at the top and bottom of its view
+        // (opaque at the view's edge, clear toward the middle). Built once per video.
+        function edgeStrips(sc) {
+            if (sc.edges) return sc.edges;
+            var g = sc.g, th = NS_THEMES[sc.theme], S = g.S;
+            function strip(y0, h, opaqueAtTop) {
+                var c = document.createElement('canvas');
+                c.width = g.W; c.height = Math.max(1, Math.ceil(h));
+                var x = c.getContext('2d');
+                x.translate(0, -y0); drawBackground(x, g, th); x.setTransform(1, 0, 0, 1, 0, 0);
+                x.globalCompositeOperation = 'destination-in';
+                var m = x.createLinearGradient(0, 0, 0, c.height);
+                m.addColorStop(0, opaqueAtTop ? 'rgba(0,0,0,1)' : 'rgba(0,0,0,0)');
+                m.addColorStop(1, opaqueAtTop ? 'rgba(0,0,0,0)' : 'rgba(0,0,0,1)');
+                x.fillStyle = m; x.fillRect(0, 0, c.width, c.height);
+                return c;
+            }
+            var fe = 34 * S, fb = 70 * S;
+            sc.edges = { top: strip(g.viewTop, fe, true), bot: strip(g.viewBot - fb, fb, false) };
+            return sc.edges;
+        }
+
+        // One video frame at time sec.
+        function drawVideoFrame(ctx, sc, tl, sec, scrollY) {
+            var g = sc.g, th = NS_THEMES[sc.theme], S = g.S;
+            var hT = clamp01(sec / 0.8);
+            ctx.save();
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
+            ctx.globalAlpha = 1;
+            var finK = clamp01((sec - tl.finStart) / tl.FADE);
+            var emph = [0, 0];
+            if (tl.fin.winnerSide >= 0) emph[tl.fin.winnerSide] = ease(finK);
+            // Background + columns are static once the intro is over (they only change again
+            // while the winner's column brightens), so they are drawn once and reused.
+            var key = hT >= 1 ? emph[0].toFixed(2) + '|' + emph[1].toFixed(2) : null;
+            if (key && sc.headCache && sc.headCache.key === key) {
+                ctx.drawImage(sc.headCache.c, 0, 0);
+            } else {
+                var hc = key ? (sc.headCache && sc.headCache.c) || document.createElement('canvas') : null;
+                var tctx = ctx;
+                if (hc) { hc.width = g.W; hc.height = g.H; tctx = hc.getContext('2d'); }
+                drawBackground(tctx, g, th);
+                drawColumns(tctx, g, sc, hT, emph);
+                if (hc) { sc.headCache = { key: key, c: hc }; ctx.drawImage(hc, 0, 0); }
+            }
+            var sb = scoreAt(tl, sec);
+            sb.text = sec >= tl.finStart ? leaderText(sc, tl.a, tl.b, true) : leaderText(sc, sb.a, sb.b, false);
+            drawStrip(ctx, g, sc, sb, hT);
+
+            // stream (scrolling), drawn straight onto the frame inside the view, then faded
+            // at its top/bottom edges by two precomputed strips of the background
+            if (finK < 1) {
+                ctx.save();
+                ctx.globalAlpha = 1 - finK;
+                ctx.beginPath(); ctx.rect(0, g.viewTop, g.W, g.viewH); ctx.clip();
+                ctx.translate(0, g.viewTop);
+                drawItems(ctx, g, sc, tl.items, scrollY, function(k) { return (sec - tl.items[k].at) / 0.38; });
+                ctx.restore();
+                var ed = edgeStrips(sc);
+                ctx.drawImage(ed.top, 0, g.viewTop);
+                ctx.drawImage(ed.bot, 0, g.viewBot - ed.bot.height);
+            }
+            // final card in the stream area
+            if (sec >= tl.finStart) {
+                var fin = tl.fin, n = fin.rows.length;
+                var avail = g.viewH - g.titleH * 1.15;
+                var rh = Math.max(g.minRow * 0.85, Math.min(g.maxRow, avail / n));
+                var used = g.titleH * 1.15 + rh * n;
+                var top = g.viewTop + Math.max(0, (g.viewH - used) * 0.4);
+                ctx.save();
+                ctx.globalAlpha = clamp01((sec - tl.finStart - 0.15) / 0.4);
+                drawTitle(ctx, g, th, fin.block, top, g.titleH, (sec - tl.finStart) / tl.FIN_IN, true);
+                var y = top + g.titleH * 1.15;
+                for (var r = 0; r < n; r++) {
+                    var rt = (sec - tl.finStarts[r]) / 0.38;
+                    drawRow(ctx, g, sc, fin.rows[r], y, rh, rt, r < n - 1);
+                    y += rh;
+                }
+                ctx.restore();
+            }
+            drawFooter(ctx, g, th, hT);
+            ctx.restore();
+        }
 
         async function generateNewVideo() {
             var info = gather(true);
@@ -4866,8 +5075,8 @@
             var fps = parseInt($('framerate').value, 10) || 30;
             var theme = NS.theme;
 
-            var blocks = buildBlocks(info, $('nsIncludeCurrent').checked);
-            if (!blocks.length || !blocks.some(function(b) { return b.rows.length; })) {
+            var blocks = buildBlocks(info, $('nsIncludeCurrent').checked).filter(function(b) { return b.rows.length; });
+            if (!blocks.length) {
                 showStatus('No comparison data found for these players. Try different players.', 'error');
                 return;
             }
@@ -4881,58 +5090,18 @@
             try {
                 var sides = buildSides(info, theme);
                 await Promise.all([loadSideAssets(sides), fontsReady()]);
-                var sc = { W: W, H: H, theme: theme, sides: sides };
                 var g = geom(W, H);
+                var sc = { W: W, H: H, theme: theme, sides: sides, g: g };
+                var tl = buildTimeline(blocks, sides, g, fps);
+                var totalFrames = Math.ceil(tl.total * fps);
+                var scroll = buildScroll(tl, g, fps, totalFrames);
 
-                // pages
-                var pages = [];
-                blocks.forEach(function(b) {
-                    var ps = paginate(b.rows, g);
-                    ps.forEach(function(p, k) {
-                        pages.push({ block: { title: b.title + (ps.length > 1 ? ' (' + (k + 1) + '/' + ps.length + ')' : ''), subline: b.subline },
-                                     rows: p.rows, rowH: p.rowH });
-                    });
-                });
-                var fin = finalModel(blocks, sides);
-                var finAvail = g.rowsBottom - g.rowsTop;
-                fin.rowH = Math.min(g.maxRow, finAvail / fin.rows.length);
-                var dy = 0; // video: header stays put; the card hugs each page's rows
-
-                // timeline (seconds)
-                var INTRO = 1.1, TITLE_IN = 0.4, ROW_GAP = 0.42, GROUP_GAP = 0.15, ROW_ANIM = 0.38, HOLD = 1.6, FADE = 0.35;
-                var tl = [], t = INTRO;
-                pages.forEach(function(p) {
-                    var starts = [], rt = t + TITLE_IN;
-                    p.rows.forEach(function(r) { starts.push(rt); rt += r.group ? GROUP_GAP : ROW_GAP; });
-                    var end = (starts.length ? starts[starts.length - 1] : t) + ROW_ANIM + HOLD;
-                    tl.push({ page: p, start: t, starts: starts, end: end });
-                    t = end + FADE;
-                });
-                var finStart = t, FIN_IN = 0.6, FIN_HOLD = 4.5;
-                var finStarts = fin.rows.map(function(r, i) { return finStart + FIN_IN + i * 0.22; });
-                var total = finStarts[finStarts.length - 1] + ROW_ANIM + FIN_HOLD;
-                var totalFrames = Math.ceil(total * fps);
-
-                function stateAt(sec) {
-                    var headerT = clamp01(sec / 0.8);
-                    if (sec >= finStart) {
-                        return { headerT: 1, block: fin.block, rows: fin.rows, rowH: fin.rowH, dy: dy,
-                                 titleT: (sec - finStart) / FIN_IN, blockA: (sec - finStart) / 0.4, winnerSide: fin.winnerSide,
-                                 rowT: finStarts.map(function(s) { return (sec - s) / ROW_ANIM; }) };
-                    }
-                    for (var i = 0; i < tl.length; i++) {
-                        var seg = tl[i];
-                        if (sec < seg.start) break;
-                        if (sec < seg.end + FADE) {
-                            var fadeOut = sec > seg.end ? 1 - (sec - seg.end) / FADE : 1;
-                            return { headerT: headerT, block: seg.page.block, rows: seg.page.rows, rowH: seg.page.rowH, dy: dy,
-                                     titleT: (sec - seg.start) / TITLE_IN, blockA: Math.min(fadeOut, (sec - seg.start) / 0.25),
-                                     rowT: seg.starts.map(function(s) { return (sec - s) / ROW_ANIM; }) };
-                        }
-                    }
-                    return { headerT: headerT, block: null, dy: dy };
-                }
-                window.__nsStateAt = function(sec, ctx2) { drawScene(ctx2, sc, stateAt(sec)); return total; }; // test hook
+                // test hook: draw any moment of this video
+                window.__nsFrameAt = function(sec, ctx2) {
+                    var f = Math.max(0, Math.min(totalFrames - 1, Math.round(sec * fps)));
+                    drawVideoFrame(ctx2, sc, tl, sec, scroll[f]);
+                    return { total: tl.total, finStart: tl.finStart, a: tl.a, b: tl.b, fin: [tl.fin.t1, tl.fin.t2] };
+                };
 
                 var canvas = $('videoCanvas');
                 canvas.width = W; canvas.height = H;
@@ -4973,7 +5142,7 @@
                 var frameDelay = Math.round(1000 / fps);
                 for (var frame = 0; frame < totalFrames; frame++) {
                     var fStart = performance.now();
-                    drawScene(offCtx, sc, stateAt(frame / fps));
+                    drawVideoFrame(offCtx, sc, tl, frame / fps, scroll[frame]);
                     previewCtx.drawImage(offscreen, 0, 0);
                     var vf = new VideoFrame(offscreen, { timestamp: (frame * 1000000) / fps });
                     videoEncoder.encode(vf, { keyFrame: frame % (fps * 2) === 0 });
@@ -5009,12 +5178,32 @@
         }
 
         // =============================================================
-        // IMAGE GENERATOR
+        // IMAGE GENERATOR (same header, the block as the stream, block tally in the strip)
         // =============================================================
+        function drawImage(ctx, sc, item) {
+            var g = sc.g, th = NS_THEMES[sc.theme];
+            ctx.save();
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
+            drawBackground(ctx, g, th);
+            drawColumns(ctx, g, sc, 1, null);
+            var a = item.score[0], b = item.score[1];
+            drawStrip(ctx, g, sc, { a: a, b: b, ratio: a + b ? a / (a + b) : null, text: leaderText(sc, a, b, true) }, 1);
+            var items = [{ type: 'title', block: item.block, h: g.titleH, y: 0 }], y = g.titleH;
+            item.rows.forEach(function(r) { var h = item.rowH * rowUnits(r); items.push({ type: 'row', row: r, h: h, y: y }); y += h; });
+            var spare = g.viewH - y;
+            var top = g.viewTop + (spare > 0 ? Math.round(spare * 0.35) : 0);
+            ctx.save();
+            ctx.translate(0, top);
+            drawItems(ctx, g, sc, items, 0, null);
+            ctx.restore();
+            drawFooter(ctx, g, th, 1);
+            ctx.restore();
+        }
+
         async function loadImageData() {
             var info = gather(false);
             if (info.err) { showStatus(info.err, 'error'); return; }
-            var blocks = buildBlocks(info, true);
+            var blocks = buildBlocks(info, true).filter(function(b) { return b.rows.length; });
             if (!blocks.length) { showStatus('No comparison data found for these players.', 'error'); return; }
             showStatus('Loading headshots and logos...', 'info');
             NS.loaded = { info: info, blocks: blocks, sidesByTheme: {} };
@@ -5071,14 +5260,15 @@
             });
         }
 
-        // The list of images to draw: [{block, rows, rowH, fileTag}]
+        // The list of images to draw: [{block, rows, rowH, score, fileTag}]
         function imagePlan(g) {
             var L = NS.loaded, out = [];
             function addBlock(b, tag) {
                 var ps = paginate(b.rows, g);
+                var score = countWins(b.rows);
                 ps.forEach(function(p, k) {
                     out.push({ block: { title: b.title + (ps.length > 1 ? ' (' + (k + 1) + '/' + ps.length + ')' : ''), subline: b.subline },
-                               rows: p.rows, rowH: p.rowH,
+                               rows: p.rows, rowH: p.rowH, score: score,
                                fileTag: tag + (ps.length > 1 ? '-' + (k + 1) + 'of' + ps.length : '') });
                 });
             }
@@ -5090,7 +5280,7 @@
                     addBlock(b, slug(b.key === 'cur' ? 'current-season' : b.title));
                 });
             } else {
-                var title = ($('nsCustomTitle').value || '').trim().toUpperCase() || 'HEAD TO HEAD';
+                var title = ($('nsCustomTitle').value || '').trim() || 'Head to head';
                 var used = L.blocks.map(function(b) {
                     var mine = NS.customPicked.filter(function(k) { return k.indexOf(b.key + '||') === 0; });
                     var rows = mine.map(function(k) {
@@ -5122,6 +5312,7 @@
             var dims = NS.size.split('x').map(Number);
             var W = dims[0], H = dims[1];
             var sides = await ensureSides(NS.theme);
+            await fontsReady();
             if (seq !== renderSeq) return;
             var g = geom(W, H);
             var plan = imagePlan(g);
@@ -5130,13 +5321,12 @@
                 outEl.innerHTML = '<div class="section-filter-hint">' + (NS.mode === 'custom' ? 'Tick some stats above to build the custom image.' : 'Tick at least one block above.') + '</div>';
                 return;
             }
-            var sc = { W: W, H: H, theme: NS.theme, sides: sides };
+            var sc = { W: W, H: H, theme: NS.theme, sides: sides, g: g };
             var p1 = slug(sides[0].display), p2 = slug(sides[1].display);
             plan.forEach(function(item) {
                 var c = document.createElement('canvas');
                 c.width = W; c.height = H;
-                var dy = centerDy(g, pageUnits(item.rows), item.rowH);
-                drawScene(c.getContext('2d'), sc, { headerT: 1, block: item.block, rows: item.rows, rowH: item.rowH, dy: dy });
+                drawImage(c.getContext('2d'), sc, item);
                 var fname = 'hoopsmatic-compare-' + p1 + '-vs-' + p2 + '-' + item.fileTag + '-' + W + 'x' + H + '.png';
                 var card = document.createElement('div');
                 card.className = 'ns-img-card';
@@ -5220,7 +5410,7 @@
             $('nsThemeGroup').style.display = NS.style === 'new' ? '' : 'none';
             $('nsStyleHint').textContent = isImg
                 ? 'Images always use the New style. Pick blocks or individual stats below.'
-                : (NS.style === 'classic' ? 'Classic: the original video look, unchanged.' : 'New: team colours, one block per page, final score card.');
+                : (NS.style === 'classic' ? 'Classic: the original video look, unchanged.' : 'New: trade-card look, running score, continuous scroll, final score card.');
             ['resolution', 'duration', 'framerate'].forEach(function(id) { var gp = groupOf(id); if (gp) gp.style.display = isImg ? 'none' : ''; });
             $('generateBtn').style.display = isImg ? 'none' : '';
             $('sectionFilterSection').style.display = isImg ? 'none' : '';
@@ -5306,15 +5496,16 @@
         var origLoadAllData = window.loadAllData;
         window.loadAllData = async function() {
             await origLoadAllData.apply(this, arguments);
-            try { syncUI(); applyUrlParams(); } catch (e) { console.warn('URL prefill failed:', e); }
+            try { captureData(); syncUI(); applyUrlParams(); } catch (e) { console.warn('URL prefill failed:', e); }
         };
 
         window.addEventListener('DOMContentLoaded', init);
 
         // test/debug surface (no side effects)
-        window.NS_NEWSTYLE = { build: NS_BUILD, state: NS, drawScene: drawScene, geom: geom, paginate: paginate,
+        window.NS_NEWSTYLE = { build: NS_BUILD, state: NS, geom: geom, paginate: paginate, drawImage: drawImage,
                                gather: gather, buildBlocks: buildBlocks, buildSides: buildSides, loadSideAssets: loadSideAssets,
-                               finalModel: finalModel, renderImages: renderImages, loadImageData: loadImageData, pickColors: pickColors };
+                               finalModel: finalModel, renderImages: renderImages, loadImageData: loadImageData, pickColors: pickColors,
+                               teamForPlayer: teamForPlayer, careerLine: careerLine, captureData: captureData, buildTimeline: buildTimeline, fontsReady: fontsReady };
     })();
     </script>
 </body>
