@@ -3987,7 +3987,7 @@
             document.getElementById('comparisonType').addEventListener('change', onComparisonTypeChange);
         });
     </script>
-    <!-- hm-compare-newstyle-v4 : New style video + Image generator (additive block).
+    <!-- hm-compare-newstyle-v5 : New style video + Image generator (additive block).
          Everything below is new code. It only calls existing functions/globals
          (performComparison, performCombinedComparison, collectSidePlayers, ...) and
          never changes them, so the Classic rendering path stays byte-for-byte as before.
@@ -3999,7 +3999,7 @@
     (function() {
         'use strict';
 
-        var NS_BUILD = 'hm-compare-newstyle-v4';
+        var NS_BUILD = 'hm-compare-newstyle-v5';
 
         // Playback speed multiplier for the New style video: every New-style duration (header
         // intro, row reveal slots, scoreboard pulse, scroll easing, block-title pauses, final
@@ -4017,7 +4017,8 @@
             loaded: null,         // last loaded comparison for the image generator
             customPicked: [],     // custom-mode row keys, in the order they were ticked
             blockPicked: null,    // blocks-mode keys ticked (null = defaults)
-            hideZero: true        // images: hide rows where both sides are 0
+            hideZero: true,       // images: hide rows where both sides are 0
+            wantCurrent: false    // Current season block (key 'cur'): off by default; URL current=1 turns it on
         };
 
         // ---- Font: Poppins SemiBold 600 + Bold 700, the trade card's two faces (tradecard.js),
@@ -5403,8 +5404,11 @@
             var firstOk = null;
             L.blocks.forEach(function(b) {
                 var why = blockEmptyWhy(b);
-                if (!why && firstOk === null) firstOk = b.key;
-                var on = !why && (NS.blockPicked ? NS.blockPicked.indexOf(b.key) !== -1 : b.key === firstOk);
+                // default: the first block with rows, except Current season (key 'cur', whatever the
+                // season label), which starts unticked unless the URL asks for it
+                if (!why && firstOk === null && b.key !== 'cur') firstOk = b.key;
+                var on = !why && (NS.blockPicked ? NS.blockPicked.indexOf(b.key) !== -1
+                                                 : (b.key === firstOk || (b.key === 'cur' && NS.wantCurrent)));
                 html += '<label' + (why ? ' style="opacity:.45;cursor:not-allowed"' : '') + '><input type="checkbox" class="ns-block-check" value="' + esc(b.key) + '"' +
                         (on ? ' checked' : '') + (why ? ' disabled' : '') + '> ' + esc(b.title) +
                         (why ? ' <span style="color:#999;font-size:12px">(' + esc(why) + ')</span>' : '') + '</label>';
@@ -5647,6 +5651,10 @@
             if (mode === 'blocks' || mode === 'custom') NS.mode = mode;
             if (q.get('title')) $('nsCustomTitle').value = q.get('title');
             if (q.get('zeros') === 'show') { NS.hideZero = false; if ($('nsHideZero')) $('nsHideZero').checked = false; }
+            if (q.get('current') === '1' || q.get('current') === '0') {
+                NS.wantCurrent = q.get('current') === '1';
+                $('nsIncludeCurrent').checked = NS.wantCurrent;
+            }
             syncUI();
             var res = q.get('res');
             if (res && $('resolution').querySelector('option[value="' + res + '"]')) $('resolution').value = res;
@@ -5673,6 +5681,9 @@
                 });
             }
             $('nsLoadBtn').addEventListener('click', loadImageData);
+            // Current season starts unticked for the video too (the checkbox markup above this block
+            // stays byte-identical, so the default is set here).
+            $('nsIncludeCurrent').checked = NS.wantCurrent;
             $('comparisonType').addEventListener('change', syncCurrentOption);
 
             // Route the Generate button: New style -> generateNewVideo; Classic -> the
