@@ -3987,7 +3987,7 @@
             document.getElementById('comparisonType').addEventListener('change', onComparisonTypeChange);
         });
     </script>
-    <!-- hm-compare-newstyle-v3 : New style video + Image generator (additive block).
+    <!-- hm-compare-newstyle-v4 : New style video + Image generator (additive block).
          Everything below is new code. It only calls existing functions/globals
          (performComparison, performCombinedComparison, collectSidePlayers, ...) and
          never changes them, so the Classic rendering path stays byte-for-byte as before.
@@ -3999,7 +3999,13 @@
     (function() {
         'use strict';
 
-        var NS_BUILD = 'hm-compare-newstyle-v3';
+        var NS_BUILD = 'hm-compare-newstyle-v4';
+
+        // Playback speed multiplier for the New style video: every New-style duration (header
+        // intro, row reveal slots, scoreboard pulse, scroll easing, block-title pauses, final
+        // card) is divided by it. 1.14 = 14% faster. Frame rate and easing shapes are unchanged.
+        const NEW_STYLE_SPEED = 1.14;
+        function dur(sec) { return sec / NEW_STYLE_SPEED; }
 
         // ---- UI state ----
         var NS = {
@@ -5065,7 +5071,8 @@
         var NEW_RES = { '1080p': [1920, 1080], '720p': [1280, 720], 'square': [1080, 1080], 'story': [1080, 1920], 'portrait45': [1080, 1350] };
 
         function buildTimeline(blocks, sides, g, fps) {
-            var START = 2.0, GAP = 0.66, TIE_GAP = 0.33, LAND = 0.26, PAUSE = 0.8, FIN_IN = 0.6, FIN_STEP = 0.22, FIN_HOLD = 7.0, FADE = 0.5;
+            var START = dur(2.0), GAP = dur(0.66), TIE_GAP = dur(0.33), LAND = dur(0.26), PAUSE = dur(0.8),
+                FIN_IN = dur(0.6), FIN_STEP = dur(0.22), FIN_HOLD = dur(7.0), FADE = dur(0.5), ROW_IN = dur(0.38);
             var items = [], y = 0, t = START - GAP;
             blocks.forEach(function(b) {
                 if (!b.rows.length) return;
@@ -5088,9 +5095,9 @@
             var fin = finalModel(blocks, sides);
             var finStart = lastAt + GAP + PAUSE;
             var finStarts = fin.rows.map(function(r, i) { return finStart + FIN_IN + i * FIN_STEP; });
-            var total = finStarts[finStarts.length - 1] + 0.4 + FIN_HOLD;
+            var total = finStarts[finStarts.length - 1] + dur(0.4) + FIN_HOLD;
             return { items: items, events: events, totalH: y, fin: fin, finStart: finStart, finStarts: finStarts,
-                     total: total, LAND: LAND, FADE: FADE, FIN_IN: FIN_IN, a: a, b: b };
+                     total: total, LAND: LAND, FADE: FADE, FIN_IN: FIN_IN, ROW_IN: ROW_IN, a: a, b: b };
         }
 
         // Scroll offset per frame: Classic's 0.04/frame lerp (fps-corrected). Classic shows all
@@ -5098,7 +5105,8 @@
         // row is aimed at 76% of the visible stream (no empty lower half); never past the end.
         function buildScroll(tl, g, fps, frames) {
             var out = new Float32Array(frames), cur = 0;
-            var k = 1 - Math.pow(1 - 0.04, 30 / fps);
+            // 0.04 per 1/30 s; NEW_STYLE_SPEED shortens its time constant like every other duration
+            var k = 1 - Math.pow(1 - 0.04, 30 * NEW_STYLE_SPEED / fps);
             var maxScroll = Math.max(0, tl.totalH - g.viewH + 24 * g.S);
             var idx = -1;
             for (var f = 0; f < frames; f++) {
@@ -5123,13 +5131,13 @@
             var pulse = [0, 0];
             tl.events.forEach(function(e) {
                 var d = sec - e.t;
-                if (d >= 0 && d < 0.5) pulse[e.side] = Math.max(pulse[e.side], 1 - d / 0.5);
+                if (d >= 0 && d < dur(0.5)) pulse[e.side] = Math.max(pulse[e.side], 1 - d / dur(0.5));
             });
             var ratio = null;
             if (a + b > 0) {
                 var r1 = a / (a + b);
                 var r0 = prev ? prev.a / (prev.a + prev.b) : 0.5;
-                var k = last ? ease((sec - last.t) / 0.35) : 1;
+                var k = last ? ease((sec - last.t) / dur(0.35)) : 1;
                 ratio = r0 + (r1 - r0) * k;
             }
             return { a: a, b: b, ratio: ratio, pulse: pulse };
@@ -5160,7 +5168,7 @@
         // One video frame at time sec.
         function drawVideoFrame(ctx, sc, tl, sec, scrollY) {
             var g = sc.g, th = NS_THEMES[sc.theme], S = g.S;
-            var hT = clamp01(sec / 0.8);
+            var hT = clamp01(sec / dur(0.8));
             ctx.save();
             ctx.setTransform(1, 0, 0, 1, 0, 0);
             ctx.globalAlpha = 1;
@@ -5191,7 +5199,7 @@
                 ctx.globalAlpha = 1 - finK;
                 ctx.beginPath(); ctx.rect(0, g.viewTop, g.W, g.viewH); ctx.clip();
                 ctx.translate(0, g.viewTop);
-                drawItems(ctx, g, sc, tl.items, scrollY, function(k) { return (sec - tl.items[k].at) / 0.38; });
+                drawItems(ctx, g, sc, tl.items, scrollY, function(k) { return (sec - tl.items[k].at) / tl.ROW_IN; });
                 ctx.restore();
                 var ed = edgeStrips(sc);
                 ctx.drawImage(ed.top, 0, g.viewTop);
@@ -5205,11 +5213,11 @@
                 var used = g.titleH * 1.15 + rh * n;
                 var top = g.viewTop + Math.max(0, (g.viewH - used) * 0.4);
                 ctx.save();
-                ctx.globalAlpha = clamp01((sec - tl.finStart - 0.15) / 0.4);
+                ctx.globalAlpha = clamp01((sec - tl.finStart - dur(0.15)) / dur(0.4));
                 drawTitle(ctx, g, th, fin.block, top, g.titleH, (sec - tl.finStart) / tl.FIN_IN, true);
                 var y = top + g.titleH * 1.15;
                 for (var r = 0; r < n; r++) {
-                    var rt = (sec - tl.finStarts[r]) / 0.38;
+                    var rt = (sec - tl.finStarts[r]) / tl.ROW_IN;
                     drawRow(ctx, g, sc, fin.rows[r], y, rh, rt, r < n - 1);
                     y += rh;
                 }
