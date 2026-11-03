@@ -3987,19 +3987,19 @@
             document.getElementById('comparisonType').addEventListener('change', onComparisonTypeChange);
         });
     </script>
-    <!-- hm-compare-newstyle-v2 : New style video + Image generator (additive block).
+    <!-- hm-compare-newstyle-v3 : New style video + Image generator (additive block).
          Everything below is new code. It only calls existing functions/globals
          (performComparison, performCombinedComparison, collectSidePlayers, ...) and
          never changes them, so the Classic rendering path stays byte-for-byte as before.
          Look: a sibling of the HoopsMatic trade card (hoopsmatic-accounts src/wwtt/tradecard.js):
          indigo gradient + violet glow, one column per side with a team-colour band and wash,
          bare team logo + team name, big cut-out headshot, large name, lavender detail line,
-         a verdict-bar style scoreboard, DM Sans (self-hosted in fonts/dm-sans/). -->
+         a verdict-bar style scoreboard, Poppins 600/700 like the trade card (self-hosted in fonts/poppins/). -->
     <script>
     (function() {
         'use strict';
 
-        var NS_BUILD = 'hm-compare-newstyle-v2';
+        var NS_BUILD = 'hm-compare-newstyle-v3';
 
         // ---- UI state ----
         var NS = {
@@ -4010,12 +4010,14 @@
             mode: 'blocks',       // image mode: blocks | custom
             loaded: null,         // last loaded comparison for the image generator
             customPicked: [],     // custom-mode row keys, in the order they were ticked
-            blockPicked: null     // blocks-mode keys ticked (null = defaults)
+            blockPicked: null,    // blocks-mode keys ticked (null = defaults)
+            hideZero: true        // images: hide rows where both sides are 0
         };
 
-        // ---- Font: DM Sans, served from this repo (fonts/dm-sans/, OFL). No third-party request. ----
-        var NF = '"DM Sans", system-ui, -apple-system, "Segoe UI", Arial, sans-serif';
-        var NS_FONT_URL = 'fonts/dm-sans/dm-sans-latin-wght-normal.woff2';
+        // ---- Font: Poppins SemiBold 600 + Bold 700, the trade card's two faces (tradecard.js),
+        //      served from this repo (fonts/poppins/, OFL). No third-party request. ----
+        var NF = '"Poppins", system-ui, -apple-system, "Segoe UI", Arial, sans-serif';
+        var NS_FONTS = { 600: 'fonts/poppins/poppins-600.woff2', 700: 'fonts/poppins/poppins-700.woff2' };
 
         // ---- Themes, both from the trade card's palette. Dark = the card itself
         //      (bg gradient #241c45 -> #140f2a -> #2a1435, glow #4b3b8f, white text,
@@ -4025,13 +4027,13 @@
             dark: {
                 bg: ['#241c45', '#140f2a', '#2a1435'], base: '#140f2a', glow: '#4b3b8f', glowA: 0.55,
                 text: '#ffffff', sub: '#cfc6f5', accent: '#c4b5fd', muted: '#a89bd9', line: 'rgba(255,255,255,0.14)',
-                wash: 0.30, rowWash: 0.13, chip: '#2d2552', chipText: '#d8d0ff', fallback: '#8b7cf6', alt: '#c4b5fd',
+                wash: 0.30, rowWash: 0.13, chip: '#2d2552', chipText: '#d8d0ff', fallback: '#8b7cf6', alt: '#c4b5fd', neutral: '#9d97b8',
                 barIdle: 'rgba(255,255,255,0.16)'
             },
             light: {
                 bg: ['#f4f1fc', '#ebe6f8', '#f6eef6'], base: '#eeeaf9', glow: '#c4b5fd', glowA: 0.50,
                 text: '#140f2a', sub: '#3d3466', accent: '#5b46c9', muted: '#6e64a0', line: 'rgba(20,15,42,0.12)',
-                wash: 0.24, rowWash: 0.10, chip: '#e2dbf6', chipText: '#4b3b8f', fallback: '#6d5bd0', alt: '#5b46c9',
+                wash: 0.24, rowWash: 0.10, chip: '#e2dbf6', chipText: '#4b3b8f', fallback: '#6d5bd0', alt: '#5b46c9', neutral: '#6f6a86',
                 barIdle: 'rgba(20,15,42,0.12)'
             }
         };
@@ -4056,6 +4058,14 @@
             OKC: 'Oklahoma City Thunder', ORL: 'Orlando Magic', PHI: 'Philadelphia 76ers', PHX: 'Phoenix Suns',
             POR: 'Portland Trail Blazers', SAC: 'Sacramento Kings', SAS: 'San Antonio Spurs', TOR: 'Toronto Raptors',
             UTA: 'Utah Jazz', WAS: 'Washington Wizards'
+        };
+        // Defunct franchises in rsStats (not in the trade card's 30-team table): shown as plain
+        // text in the team line, no logo, neutral colour.
+        var NS_DEFUNCT_TEAMS = {
+            AND: 'Anderson Packers', BAL: 'Baltimore Bullets', CHS: 'Chicago Stags', CLR: 'Cleveland Rebels',
+            DNN: 'Denver Nuggets (1949-50)', DTF: 'Detroit Falcons', INJ: 'Indianapolis Jets', INO: 'Indianapolis Olympians',
+            PIT: 'Pittsburgh Ironmen', PRO: 'Providence Steamrollers', SHE: 'Sheboygan Red Skins', STB: 'St. Louis Bombers',
+            TOH: 'Toronto Huskies', WSC: 'Washington Capitols'
         };
         // Older abbreviations -> today's franchise (rsStats already uses franchise codes; kept as a guard).
         var NS_TEAM_ALIAS = {
@@ -4137,7 +4147,8 @@
             ctx.lineTo(x, y + r); ctx.arcTo(x, y, x + r, y, r);
             ctx.closePath();
         }
-        function font(w, px) { return w + ' ' + Math.round(px) + 'px ' + NF; }
+        // Only the trade card's two weights exist: anything bolder than 600 draws in 700.
+        function font(w, px) { return (w >= 700 ? 700 : 600) + ' ' + Math.round(px) + 'px ' + NF; }
         function fitFont(ctx, text, size, floor, maxW, weight) {
             var sz = Math.round(size);
             ctx.font = font(weight, sz);
@@ -4203,7 +4214,8 @@
         //  - No longer in the NBA: the team he played the most seasons for. Tie-break: more
         //    games with that team, then the more recent stint.
         //  - Combine mode: each player gets his own team by this same rule.
-        // Returns today's franchise abbreviation, or null (defunct team / no rows).
+        // Returns today's franchise abbreviation, a defunct team's code (see NS_DEFUNCT_TEAMS),
+        // or null when he has no rows.
         // =============================================================
         function teamForPlayer(name) {
             var rows = rsRows(name).filter(function(r) { return r.TEAM && !AGG_TEAM.test(r.TEAM); });
@@ -4242,8 +4254,9 @@
             if (!abbr) return null;
             var a = String(abbr).toUpperCase().trim();
             if (NS_TEAM_ALIAS[a]) a = NS_TEAM_ALIAS[a];
-            return NS_TEAM_COLORS[a] ? a : null;
+            return a;
         }
+        function teamName(code) { return NS_TEAM_NAMES[code] || NS_DEFUNCT_TEAMS[code] || code; }
 
         // Career length line (replaces age), from distinct rsStats seasons (not the span):
         // active "17th season · since 2010-11", retired "15 seasons · 1996-97 to 2010-11".
@@ -4261,7 +4274,7 @@
 
         // One colour per side. Contrast fallback: a team colour that reads too faintly on the
         // theme background (contrast < 1.7, e.g. gold or silver on Light) is pushed toward the
-        // ink colour step by step, keeping its hue. Two sides that read the same (RGB distance
+        // ink colour step by step, keeping its hue. Defunct teams take the theme's neutral. Two sides that read the same (RGB distance
         // < 90: teammates, CHI/TOR, BOS/MIL...) -> side 2 takes the theme's lavender.
         function legible(c, theme) {
             var bg = NS_THEMES[theme].base, toward = lum(bg) > 0.5 ? INK : '#ffffff', k = 0;
@@ -4269,7 +4282,7 @@
             return c;
         }
         function teamColor(abbr, theme) {
-            return legible(NS_TEAM_COLORS[abbr] || NS_THEMES[theme].fallback, theme);
+            return legible(NS_TEAM_COLORS[abbr] || NS_THEMES[theme].neutral, theme);
         }
         function pickColors(team1, team2, theme) {
             var th = NS_THEMES[theme];
@@ -4323,12 +4336,13 @@
             fontPromise = (async function() {
                 try {
                     if (typeof FontFace !== 'undefined' && document.fonts) {
-                        var ff = new FontFace('DM Sans', 'url(' + NS_FONT_URL + ') format("woff2")', { weight: '100 1000', style: 'normal' });
-                        await ff.load();
-                        document.fonts.add(ff);
-                        await Promise.all(['500', '600', '700', '800'].map(function(w) { return document.fonts.load(w + ' 40px "DM Sans"'); }));
+                        await Promise.all(Object.keys(NS_FONTS).map(function(w) {
+                            var ff = new FontFace('Poppins', 'url(' + NS_FONTS[w] + ') format("woff2")', { weight: w, style: 'normal' });
+                            return ff.load().then(function(x) { document.fonts.add(x); });
+                        }));
+                        await Promise.all(['600', '700'].map(function(w) { return document.fonts.load(w + ' 40px "Poppins"'); }));
                     }
-                } catch (e) { console.warn('DM Sans did not load; using the system font.', e); }
+                } catch (e) { console.warn('Poppins did not load; using the system font.', e); }
             })();
             return fontPromise;
         }
@@ -4384,21 +4398,47 @@
             s = s.replace(/ PO peak$/, '').replace(/ PO$/, '').replace(/ peak$/, '').replace(/ per game$/i, '');
             return po ? 'Playoff ' + s : s;
         }
+        // Count sections: the awards data lists only what a player won, so "-" there means 0
+        // (the engine already scores "1 vs -" for the side with 1). Shown as 0 and treated as a value.
+        // Signature shoes is not one: a shoe comparison needs both players to have signature shoes.
+        var NS_COUNT_SECTIONS = ['ACCOLADES', 'YEARS RECEIVING VOTES', 'PLAYOFF SUCCESS'];
+        // Shown when both sides have data, never scored (no winner pill, no point, not in totals).
+        var NS_UNSCORED_SECTIONS = ['DRAFT COMBINE'];
+        function hasVal(v) { var t = v == null ? '' : String(v).trim(); return t !== '' && t !== '-'; }
+        function isZero(v) { return hasVal(v) && parseNumericValue(v) === 0; }
+        function bothZero(r) { return !r.group && isZero(r.v1) && isZero(r.v2); }
+        // A row is a matchup only when both sides have a value; others are hidden in the New style.
+        // Returns the matchup rows, plus why the block is empty when none are left.
+        function matchupRows(all, names) {
+            var rows = all.filter(function(r) { return hasVal(r.v1) && hasVal(r.v2); });
+            var why = '';
+            if (!rows.length) {
+                var a = all.some(function(r) { return hasVal(r.v1); }), b = all.some(function(r) { return hasVal(r.v2); });
+                why = !a && !b ? 'no data' : (!a ? 'no data for ' + names[0] : (!b ? 'no data for ' + names[1] : 'no stat they both have'));
+            }
+            return { rows: rows, why: why };
+        }
         function countWins(rows) {
             var a = 0, b = 0;
-            rows.forEach(function(r) { if (r.winner === 'player1') a++; else if (r.winner === 'player2') b++; });
+            rows.forEach(function(r) { if (r.unscored || r.group) return; if (r.winner === 'player1') a++; else if (r.winner === 'player2') b++; });
             return [a, b];
         }
-        function sectionBlock(sec, idx, note) {
+        function sectionBlock(sec, idx, note, names) {
             var meta = NS_SECTION_META[sec.name] || [String(sec.name).charAt(0) + String(sec.name).slice(1).toLowerCase(), ''];
-            var rows = sec.items.map(function(it, i) {
-                return { key: 's' + idx + '|' + i, label: prettyLabel(it.metric), v1: it.p1Value, v2: it.p2Value, winner: it.winner, three: isThree(it.metric) };
+            var counts = NS_COUNT_SECTIONS.indexOf(sec.name) !== -1;
+            var scored = NS_UNSCORED_SECTIONS.indexOf(sec.name) === -1;
+            var z = function(v) { return counts && !hasVal(v) ? '0' : v; };
+            var all = sec.items.map(function(it, i) {
+                return { key: 's' + idx + '|' + i, label: prettyLabel(it.metric), v1: z(it.p1Value), v2: z(it.p2Value), winner: it.winner,
+                         three: isThree(it.metric), unscored: !scored };
             });
-            rows = threeLast(rows);
-            var w = countWins(rows);
+            var m = matchupRows(threeLast(all), names);
+            var w = countWins(m.rows);
             var sub = meta[1];
+            if (!scored) sub = sub ? sub + ' · not scored' : 'Not scored';
             if (note) sub = sub ? sub + ' · ' + note : note;
-            return { key: 'sec:' + sec.name, name: sec.name, title: meta[0], subline: sub, rows: rows, p1: w[0], p2: w[1] };
+            return { key: 'sec:' + sec.name, name: sec.name, title: meta[0], subline: sub, rows: m.rows, why: m.why,
+                     scored: scored, p1: w[0], p2: w[1] };
         }
 
         // ---- Current season block from rsStats ----
@@ -4445,11 +4485,11 @@
                 if (!isNaN(n1) && !isNaN(n2) && n1 !== n2) w = ((n1 > n2) !== lower) ? 'player1' : 'player2';
                 return { key: 'cur|' + i, label: s[0], v1: v1, v2: v2, winner: w, three: !!s[2] };
             });
-            rows = threeLast(rows);
-            var w2 = countWins(rows);
+            var m = matchupRows(threeLast(rows), [side1.join(' + '), side2.join(' + ')]);
+            var w2 = countWins(m.rows);
             return { key: 'cur', name: 'CURRENT SEASON', title: 'Current season · ' + seasonText(y),
                      subline: combined ? 'Regular season, totals' : 'Regular season, per game',
-                     rows: rows, p1: w2[0], p2: w2[1] };
+                     rows: m.rows, why: m.why, scored: true, p1: w2[0], p2: w2[1] };
         }
         function curAllowed(info) { return info.compType === 'career'; }
 
@@ -4467,7 +4507,10 @@
         }
         function buildBlocks(info, includeCurrent) {
             var note = modeNote(info);
-            var blocks = info.data.sections.map(function(sec, i) { return sectionBlock(sec, i, note); });
+            var names = [info.side1.join(' + '), info.side2.join(' + ')];
+            // Every block is returned; blocks with no matchup rows carry .why and are skipped by the
+            // video and greyed out in the image picker.
+            var blocks = info.data.sections.map(function(sec, i) { return sectionBlock(sec, i, note, names); });
             if (includeCurrent && curAllowed(info)) {
                 var cb = currentSeasonBlock(info.side1, info.side2, info.isCombine);
                 if (cb) blocks.unshift(cb);
@@ -4520,13 +4563,14 @@
         // Top: two side columns (the trade card's columns) + the scoreboard strip;
         // middle: the stream of block titles and rows; bottom: hoopsmatic.com/compare.
         // =============================================================
-        function geom(W, H) {
+        // hs (0..1, default 1) shrinks the header (faces, names) when an image needs the room.
+        function geom(W, H, hs) {
             var land = W > H * 1.2;
             var S = land ? H / 1080 : W / 1080;
-            var g = { W: W, H: H, S: S, land: land };
+            var g = { W: W, H: H, S: S, land: land, hs: hs || 1 };
             g.pad = 44 * S;
             g.band = 12 * S;
-            g.colH = land ? 300 * S : Math.max(232 * S, Math.min(H * 0.215, 360 * S));
+            g.colH = (land ? 300 * S : Math.max(232 * S, Math.min(H * 0.215, 360 * S))) * g.hs;
             g.stripH = 92 * S;
             g.headH = g.colH + g.stripH;
             g.face = g.colH - g.band - 8 * S;
@@ -4541,33 +4585,137 @@
             g.labelW = g.cw * 0.40;
             g.rowH = 64 * S; g.minRow = 44 * S; g.maxRow = 74 * S;
             g.titleH = 108 * S;
+            g.mid = W / 2;
             return g;
         }
         function rowUnits(r) { return r.group ? 0.62 : 1; }
         function pageUnits(rows) { return rows.reduce(function(s, r) { return s + rowUnits(r); }, 0); }
 
-        // Images: shrink rows to the readable minimum first, then split evenly ("(1/2)"...).
-        function paginate(rows, g) {
-            var avail = g.viewH - g.titleH;
-            var units = pageUnits(rows);
-            if (units === 0) return [];
-            if (avail / units >= g.minRow) return [{ rows: rows, rowH: Math.min(g.maxRow, avail / units) }];
-            var perPage = Math.floor(avail / g.minRow);
-            var nPages = Math.ceil(units / perPage);
-            var target = units / nPages;
-            var pages = [], cur = [], cu = 0;
+        // Short labels, used only at the densest image layout (step d).
+        var NS_SHORT_LABELS = {
+            'Most Valuable Player': 'MVP', 'Finals MVP': 'Finals MVP', 'Conference Finals MVP': 'Conf. Finals MVP',
+            'All-NBA First Team': 'All-NBA 1st', 'All-NBA Selections': 'All-NBA', 'All-Star MVP': 'ASG MVP',
+            'Defensive Player of the Year': 'DPOY', 'All-Defensive First Team': 'All-Def 1st',
+            'All-Defensive Team Selections': 'All-Def teams', 'Rookie of the Year': 'ROY', 'All-Rookie First Team': 'All-Rookie 1st',
+            'All-Rookie Second Team': 'All-Rookie 2nd', 'NBA Cup Champion': 'Cup champ', 'All-Tournament Cup Team': 'All-Cup team',
+            'Sixth Man of the Year': '6MOY', 'Most Improved Player': 'MIP', 'Clutch Player of the Year': 'Clutch POY',
+            'Player of the Week': 'Player of week', 'Player of the Month': 'Player of month', 'Rookie of the Month': 'Rookie of month',
+            'Defensive Player of the Month': 'Def. POM', 'Scoring Leader': 'Scoring title', 'Rebounding Leader': 'Reb. title',
+            'Assists Leader': 'Ast. title', 'Blocks Leader': 'Blk. title', 'Steals Leader': 'Stl. title',
+            'Three-Point Contest': '3PT contest', 'Skills Challenge': 'Skills', 'FIBA Olympics All-Star Five': 'FIBA All-Star 5',
+            'Olympic Medals': 'Olympic medals', 'World Cup Gold': 'WC gold', 'World Cup Medals': 'WC medals', 'World Cup MVP': 'WC MVP',
+            'Field Goal %': 'FG%', 'Three Point %': '3P%', 'Free Throw %': 'FT%', 'Field goal %': 'FG%', 'Free throw %': 'FT%',
+            '3-pointers made': '3PM', '3-point %': '3P%', 'Conference Semis': 'Conf. semis', 'Conference Finals': 'Conf. finals',
+            'Career earnings': 'Earnings', 'Average salary': 'Avg salary', 'Highest salary': 'Top salary', 'Lowest salary': 'Low salary',
+            'Height without shoes': 'Height', 'Standing reach (inches)': 'Reach (in)', 'Standing reach': 'Reach',
+            'Lane agility time': 'Lane agility', 'Three quarter sprint': '3/4 sprint', 'Standing vertical leap': 'Stand. vert.',
+            'Max vertical leap': 'Max vert.', 'Max bench press': 'Bench', 'Years with MVP votes': 'MVP vote yrs',
+            'Years with DPOY votes': 'DPOY vote yrs', 'Years with ROY votes': 'ROY vote yrs', 'Years with Sixth Man votes': '6MOY vote yrs',
+            'Years with MIP votes': 'MIP vote yrs', 'Years with Clutch Player votes': 'Clutch vote yrs',
+            'Years with Hustle Award votes': 'Hustle vote yrs', 'Number of Shoes': 'Shoes', 'Years from first to last': 'Shoe years',
+            'Average career rating': 'Avg rating', 'Highest rating': 'Top rating', 'Lowest rating': 'Low rating'
+        };
+        function shortLabel(l) {
+            if (NS_SHORT_LABELS[l]) return NS_SHORT_LABELS[l];
+            if (/^Playoff /.test(l)) return 'PO ' + shortLabel(l.slice(8));
+            return l;
+        }
+
+        // Split rows into n columns in reading order (down, then across), by row units;
+        // a group header never ends a column.
+        function splitColumns(rows, n) {
+            if (n === 1) return [rows];
+            var target = pageUnits(rows) / n, cols = [[]], cu = 0;
             rows.forEach(function(r) {
-                if (cur.length && cu + rowUnits(r) > target + 0.01 && pages.length < nPages - 1) {
-                    var tail = cur[cur.length - 1];   // never leave a group header alone at the bottom
-                    if (tail.group) { cur.pop(); cu -= rowUnits(tail); pages.push(cur); cur = [tail]; cu = rowUnits(tail); }
-                    else { pages.push(cur); cur = []; cu = 0; }
+                var cur = cols[cols.length - 1];
+                if (cur.length && cu + rowUnits(r) > target + 0.01 && cols.length < n) {
+                    var tail = cur[cur.length - 1];
+                    if (tail.group) { cur.pop(); cols.push([tail]); cu = rowUnits(tail); }
+                    else { cols.push([]); cu = 0; }
+                    cur = cols[cols.length - 1];
                 }
                 cur.push(r); cu += rowUnits(r);
             });
-            if (cur.length) pages.push(cur);
-            var maxUnits = Math.max.apply(null, pages.map(pageUnits));
-            var rowH = Math.max(g.minRow * 0.9, Math.min(g.maxRow, avail / maxUnits));
-            return pages.map(function(p) { return { rows: p, rowH: rowH }; });
+            return cols;
+        }
+        // Geometry of column ci of n inside the stream, plus the density's font sizes.
+        // Side by side (n > 1), the value slots are sized to the widest value in the column
+        // (rv, pill included) and the label gets the rest.
+        function colGeom(g, ci, n, d, rowH, short, rv) {
+            var S = g.S, gap = n > 1 ? 30 * S : 0;
+            var w = (g.cw - gap * (n - 1)) / n, cL = g.cL + ci * (w + gap);
+            var c = Object.assign({}, g);
+            c.cL = cL; c.cR = cL + w; c.cw = w; c.mid = cL + w / 2;
+            if (n > 1) {
+                c.valW = Math.max(w * 0.18, Math.min(w * 0.30, rv || 0));
+                c.x1 = cL + c.valW / 2; c.x2 = c.cR - c.valW / 2;
+                c.labelW = w - 2 * c.valW - 20 * S;
+            } else {
+                c.x1 = cL + w * 0.14; c.x2 = c.cR - w * 0.14;
+                c.valW = w * 0.25; c.labelW = w * 0.40;
+            }
+            c.vs = Math.max(d.v[0] * S, Math.min(d.v[1] * S, rowH * 0.52)); c.vsMin = d.v[0] * S;
+            c.ls = Math.max(d.l[0] * S, Math.min(d.l[1] * S, rowH * 0.38)); c.lsMin = d.l[0] * S;
+            c.short = !!short;
+            return c;
+        }
+        // Image layout: every block (and every Custom selection) on ONE image, never split.
+        // Tries, stopping at the first that fits: a) normal rows, b) compact rows (values >= 28 px,
+        // labels >= 20 px at 1080 wide), c) two columns of rows side by side (three on 16:9),
+        // d) the same with short labels. If (d) doesn't fit, the header shrinks (smaller faces and
+        // names) and the steps run again. Last resort: rows squeezed below the compact minimum.
+        // Rows are never dropped.
+        var NS_DENSITY = [
+            { name: 'normal', multi: false, h: [56, 74], v: [30, 36], l: [22, 25] },
+            { name: 'compact', multi: false, h: [42, 56], v: [28, 32], l: [20, 23] },
+            { name: 'columns', multi: true, h: [42, 70], v: [28, 34], l: [20, 24] },
+            { name: 'short', multi: true, h: [42, 70], v: [28, 34], l: [20, 24], short: true }
+        ];
+        function widthsFit(ctx, cols, cgs) {
+            for (var ci = 0; ci < cols.length; ci++) {
+                var c = cgs[ci];
+                for (var k = 0; k < cols[ci].length; k++) {
+                    var r = cols[ci][k];
+                    if (r.group) continue;
+                    ctx.font = font(r.bold ? 700 : 600, c.lsMin);
+                    if (ctx.measureText(c.short ? shortLabel(r.label) : r.label).width > c.labelW) return false;
+                    ctx.font = font(700, c.vsMin);
+                    if (ctx.measureText(String(r.v1)).width > c.valW - 24 * c.S || ctx.measureText(String(r.v2)).width > c.valW - 24 * c.S) return false;
+                }
+            }
+            return true;
+        }
+        // Width a column's value slot needs: its widest value at the density's smallest value size,
+        // plus the winner pill's padding.
+        function valueRoom(ctx, col, vsMin, S) {
+            ctx.font = font(700, vsMin);
+            var m = 0;
+            col.forEach(function(r) { if (!r.group) m = Math.max(m, ctx.measureText(String(r.v1)).width, ctx.measureText(String(r.v2)).width); });
+            return m + 40 * S;
+        }
+        function layoutImage(ctx, W, H, rows) {
+            var hss = [1, 0.84, 0.7];
+            for (var hi = 0; hi < hss.length; hi++) {
+                var g = geom(W, H, hss[hi]), avail = g.viewH - g.titleH;
+                for (var di = 0; di < NS_DENSITY.length; di++) {
+                    var d = NS_DENSITY[di], n = d.multi ? (g.land ? 3 : 2) : 1;
+                    var cols = splitColumns(rows, n);
+                    var maxU = Math.max.apply(null, cols.map(pageUnits)) || 1;
+                    var rowH = Math.min(d.h[1] * g.S, avail / maxU);
+                    if (rowH < d.h[0] * g.S - 0.01) continue;
+                    var cgs = cols.map(function(c, ci) { return colGeom(g, ci, n, d, rowH, d.short, valueRoom(ctx, c, d.v[0] * g.S, g.S)); });
+                    if (!widthsFit(ctx, cols, cgs)) continue;
+                    return { g: g, cols: cols, cgs: cgs, rowH: rowH, units: maxU, density: d.name, hs: hss[hi] };
+                }
+            }
+            // last resort: smallest header, short labels, rows squeezed to fit; nothing is dropped
+            var g2 = geom(W, H, hss[hss.length - 1]), n2 = g2.land ? 3 : 2;
+            var cols2 = splitColumns(rows, n2), maxU2 = Math.max.apply(null, cols2.map(pageUnits)) || 1;
+            var rowH2 = (g2.viewH - g2.titleH) / maxU2;
+            var d2 = { v: [Math.min(28, rowH2 / g2.S * 0.6), 28], l: [Math.min(20, rowH2 / g2.S * 0.42), 20] };
+            console.warn('New style image: ' + rows.length + ' rows needed the squeezed layout.');
+            return { g: g2, cols: cols2, cgs: cols2.map(function(c, ci) { return colGeom(g2, ci, n2, d2, rowH2, true, valueRoom(ctx, c, d2.v[0] * g2.S, g2.S)); }),
+                     rowH: rowH2, units: maxU2, density: 'squeezed', hs: hss[hss.length - 1] };
         }
 
         // =============================================================
@@ -4644,18 +4792,20 @@
                 ctx.textAlign = align; ctx.textBaseline = 'alphabetic';
                 var lines = [];
                 // team: bare logo + team name (combined side, several teams: just the logos)
-                var logoS = 40 * S;
-                lines.push({ h: logoS + 14 * S, draw: function(y) {
+                var ts = g.hs || 1, ts2 = Math.max(0.8, ts);
+                var logoS = 40 * S * ts;
+                lines.push({ h: logoS + 14 * S * ts, draw: function(y) {
                     var teams = sd.team ? [sd.team] : sd.uniqTeams;
                     if (!teams.length) return;
                     if (sd.team) {
-                        var tf = fitFont(ctx, NS_TEAM_NAMES[sd.team], 25 * S, 15 * S, maxW - logoS - 12 * S, 700);
+                        // defunct team: no logo, the name as plain text
+                        var logo = sd.logos[sd.team], lw = logo ? logoS + 12 * S : 0;
+                        var tf = fitFont(ctx, teamName(sd.team), 25 * S * ts2, 13 * S, maxW - lw, 700);
                         ctx.font = font(700, tf.size);
                         var tw = ctx.measureText(tf.text).width;
-                        var lx = i === 0 ? tx : tx - tw - 12 * S - logoS;
-                        drawLogo(ctx, sd.logos[sd.team], lx, y, logoS);
+                        if (logo) drawLogo(ctx, logo, i === 0 ? tx : tx - tw - 12 * S - logoS, y, logoS);
                         ctx.fillStyle = th.text;
-                        ctx.fillText(tf.text, i === 0 ? tx + logoS + 12 * S : tx, y + logoS * 0.5 + tf.size * 0.36);
+                        ctx.fillText(tf.text, i === 0 ? tx + lw : tx, y + logoS * 0.5 + tf.size * 0.36);
                     } else {
                         teams.slice(0, 3).forEach(function(t, k) {
                             var lx = i === 0 ? tx + k * (logoS + 10 * S) : tx - logoS - k * (logoS + 10 * S);
@@ -4667,23 +4817,23 @@
                 if (!sd.combined) {
                     var w = nameWords(sd.names[0]);
                     var big = w.length > 1 ? w.slice(1).join(' ') : w[0];
-                    var bf = fitFont(ctx, big, (g.land ? 62 : 54) * S, 26 * S, maxW, 800);
+                    var bf = fitFont(ctx, big, (g.land ? 62 : 54) * S * ts, 24 * S, maxW, 800);
                     if (w.length > 1) {
-                        var ff = fitFont(ctx, w[0], 27 * S, 16 * S, maxW, 600);
+                        var ff = fitFont(ctx, w[0], 27 * S * ts2, 16 * S, maxW, 600);
                         lines.push({ h: ff.size * 1.15, draw: function(y) { ctx.font = font(600, ff.size); ctx.fillStyle = th.text; ctx.fillText(ff.text, tx, y + ff.size * 0.95); } });
                     }
                     lines.push({ h: bf.size * 1.08, draw: function(y) { ctx.font = font(800, bf.size); ctx.fillStyle = th.text; ctx.fillText(bf.text, tx, y + bf.size * 0.9); } });
                     var cl = sd.career[0];
                     if (cl) {
-                        var cf = fitFont(ctx, cl, 21 * S, 13 * S, maxW, 600);
+                        var cf = fitFont(ctx, cl, 21 * S * ts2, 10 * S, maxW, 600);   // long retired spans shrink, never cut
                         lines.push({ h: cf.size * 1.5, draw: function(y) { ctx.font = font(600, cf.size); ctx.fillStyle = th.accent; ctx.fillText(cf.text, tx, y + cf.size * 1.25); } });
                     }
                 } else {
-                    var nf = fitFont(ctx, sd.short, (g.land ? 50 : 42) * S, 22 * S, maxW, 800);
+                    var nf = fitFont(ctx, sd.short, (g.land ? 50 : 42) * S * ts, 22 * S, maxW, 800);
                     lines.push({ h: nf.size * 1.12, draw: function(y) { ctx.font = font(800, nf.size); ctx.fillStyle = th.text; ctx.fillText(nf.text, tx, y + nf.size * 0.92); } });
                     sd.names.slice(0, 3).forEach(function(nm, k) {
                         var t = lastName(nm) + ' · ' + careerShort(nm);
-                        var mf = fitFont(ctx, t, 19 * S, 12 * S, maxW, 600);
+                        var mf = fitFont(ctx, t, 19 * S * ts2, 12 * S, maxW, 600);
                         lines.push({ h: mf.size * 1.32, draw: function(y) { ctx.font = font(600, mf.size); ctx.fillStyle = th.accent; ctx.fillText(mf.text, tx, y + mf.size * 1.1); } });
                     });
                 }
@@ -4797,7 +4947,7 @@
             var th = NS_THEMES[sc.theme], S = g.S;
             var a = clamp01(t * 2.4);
             if (a <= 0) return;
-            var cy = y + h / 2;
+            var cy = y + h / 2, mid = g.mid != null ? g.mid : g.W / 2;
             ctx.save();
             ctx.globalAlpha *= a;
             if (line) { ctx.fillStyle = th.line; ctx.fillRect(g.cL, y + h - Math.max(1, S), g.cw, Math.max(1, S)); }
@@ -4807,16 +4957,16 @@
                 ctx.font = font(700, gf.size);
                 ctx.fillStyle = th.muted;
                 var gw = ctx.measureText(gf.text).width;
-                ctx.fillText(gf.text, g.W / 2, cy + 1 * S);
+                ctx.fillText(gf.text, mid, cy + 1 * S);
                 ctx.fillStyle = th.line;
-                ctx.fillRect(g.cL, cy, g.W / 2 - gw / 2 - 16 * S - g.cL, Math.max(1, S));
-                ctx.fillRect(g.W / 2 + gw / 2 + 16 * S, cy, g.cR - (g.W / 2 + gw / 2 + 16 * S), Math.max(1, S));
+                ctx.fillRect(g.cL, cy, mid - gw / 2 - 16 * S - g.cL, Math.max(1, S));
+                ctx.fillRect(mid + gw / 2 + 16 * S, cy, g.cR - (mid + gw / 2 + 16 * S), Math.max(1, S));
                 ctx.restore();
                 return;
             }
             var bt = ease(t * 1.25);
             // winner wash from his side of the row
-            var wi = row.winner === 'player1' ? 0 : (row.winner === 'player2' ? 1 : -1);
+            var wi = row.unscored ? -1 : (row.winner === 'player1' ? 0 : (row.winner === 'player2' ? 1 : -1));
             if (wi >= 0) {
                 var col = sc.sides[wi].color;
                 var gx0 = wi === 0 ? g.cL : g.cR, gx1 = wi === 0 ? g.cL + g.cw * 0.42 : g.cR - g.cw * 0.42;
@@ -4826,22 +4976,23 @@
                 ctx.fillRect(Math.min(gx0, gx1), y + 1 * S, g.cw * 0.42, h - 2 * S);
             }
             // label
-            var lf = fitFont(ctx, row.label, Math.min(h * 0.37, 25 * S), 12 * S, g.labelW, row.bold ? 800 : 600);
+            var label = g.short ? shortLabel(row.label) : row.label;
+            var lf = fitFont(ctx, label, g.ls || Math.min(h * 0.37, 25 * S), g.lsMin || 12 * S, g.labelW, row.bold ? 800 : 600);
             ctx.font = font(row.bold ? 800 : 600, lf.size);
             ctx.fillStyle = row.bold ? th.text : th.sub;
-            ctx.fillText(lf.text, g.W / 2, cy + 1 * S);
+            ctx.fillText(lf.text, mid, cy + 1 * S);
             // values
-            var vs = Math.min(h * 0.5, 36 * S);
+            var vs = g.vs || Math.min(h * 0.5, 36 * S);
             var vals = [row.v1, row.v2], xs = [g.x1, g.x2];
             for (var i = 0; i < 2; i++) {
                 var txt = String(vals[i]);
-                var vf = fitFont(ctx, txt, vs, 13 * S, g.valW - 40 * S, 700);
+                var vf = fitFont(ctx, txt, vs, g.vsMin || 13 * S, g.valW - 24 * S, 700);
                 var x = xs[i];
                 if (i === wi) {
                     var c = sc.sides[i].color;
                     ctx.font = font(800, vf.size);
                     var tw = ctx.measureText(vf.text).width;
-                    var ph = Math.min(h * 0.7, vf.size * 1.55), pw = Math.min(g.valW, tw + 40 * S) * (0.55 + 0.45 * bt);
+                    var ph = Math.min(h * 0.82, vf.size * 1.5), pw = Math.min(g.valW, tw + 36 * S) * (0.55 + 0.45 * bt);
                     ctx.save();
                     ctx.globalAlpha *= bt;
                     rr(ctx, x - pw / 2, cy - ph / 2, pw, ph, ph / 2);
@@ -4884,9 +5035,10 @@
         // =============================================================
         // Final card (video)
         // =============================================================
+        // Breakdown = scored blocks that are in the video (Draft combine and skipped blocks are not).
         function finalModel(blocks, sides) {
             var t1 = 0, t2 = 0;
-            var rows = blocks.map(function(b, i) {
+            var rows = blocks.filter(function(b) { return b.scored && b.rows.length; }).map(function(b, i) {
                 t1 += b.p1; t2 += b.p2;
                 return { key: 'f' + i, label: b.title.replace(/ · .*$/, ''),
                          v1: String(b.p1), v2: String(b.p2),
@@ -4906,8 +5058,9 @@
         // Continuous stream under a fixed scoreboard, paced like Classic's video:
         // 2.0 s before the first reveal, one reveal every 0.66 s, the count moves the
         // moment a row's winner lands, the stream lerps upward 0.04/frame (at 30 fps)
-        // toward the newest row, 0.8 s pause, then the final card (ties take half a slot
-        // and score nothing, block titles take a slot).
+        // toward the newest row, 0.8 s pause, then the final card (ties and unscored Draft
+        // combine rows take half a slot and score nothing, block titles take a slot). Blocks
+        // without a single matchup row are not in the video.
         // =============================================================
         var NEW_RES = { '1080p': [1920, 1080], '720p': [1280, 720], 'square': [1080, 1080], 'story': [1080, 1920], 'portrait45': [1080, 1350] };
 
@@ -4921,14 +5074,14 @@
                 b.rows.forEach(function(r) {
                     items.push({ type: 'row', row: r, h: g.rowH, y: y, at: t });
                     y += g.rowH;
-                    t += r.winner === 'tie' || (r.winner !== 'player1' && r.winner !== 'player2') ? TIE_GAP : GAP;
+                    t += r.unscored || (r.winner !== 'player1' && r.winner !== 'player2') ? TIE_GAP : GAP;
                 });
             });
             var lastAt = items.length ? items[items.length - 1].at : START;
             var events = [];   // score events, in time order
             var a = 0, b = 0;
             items.forEach(function(it) {
-                if (it.type !== 'row') return;
+                if (it.type !== 'row' || it.row.unscored) return;
                 if (it.row.winner === 'player1') { a++; events.push({ t: it.at + LAND, side: 0, a: a, b: b }); }
                 else if (it.row.winner === 'player2') { b++; events.push({ t: it.at + LAND, side: 1, a: a, b: b }); }
             });
@@ -5075,7 +5228,7 @@
             var fps = parseInt($('framerate').value, 10) || 30;
             var theme = NS.theme;
 
-            var blocks = buildBlocks(info, $('nsIncludeCurrent').checked).filter(function(b) { return b.rows.length; });
+            var blocks = buildBlocks(info, $('nsIncludeCurrent').checked).filter(function(b) { return b.rows.length; });   // skip non-matchup blocks
             if (!blocks.length) {
                 showStatus('No comparison data found for these players. Try different players.', 'error');
                 return;
@@ -5100,7 +5253,10 @@
                 window.__nsFrameAt = function(sec, ctx2) {
                     var f = Math.max(0, Math.min(totalFrames - 1, Math.round(sec * fps)));
                     drawVideoFrame(ctx2, sc, tl, sec, scroll[f]);
-                    return { total: tl.total, finStart: tl.finStart, a: tl.a, b: tl.b, fin: [tl.fin.t1, tl.fin.t2] };
+                    return { total: tl.total, finStart: tl.finStart, a: tl.a, b: tl.b, fin: [tl.fin.t1, tl.fin.t2],
+                             titles: tl.items.filter(function(it) { return it.type === 'title'; }).map(function(it) { return [it.block.title, +it.at.toFixed(2)]; }),
+                             breakdown: tl.fin.rows.map(function(r) { return r.label + ' ' + r.v1 + '-' + r.v2; }),
+                             skipped: blocks.length ? undefined : null };
                 };
 
                 var canvas = $('videoCanvas');
@@ -5181,21 +5337,26 @@
         // IMAGE GENERATOR (same header, the block as the stream, block tally in the strip)
         // =============================================================
         function drawImage(ctx, sc, item) {
-            var g = sc.g, th = NS_THEMES[sc.theme];
+            var L = item.layout, g = L.g, th = NS_THEMES[sc.theme], S = g.S;
             ctx.save();
             ctx.setTransform(1, 0, 0, 1, 0, 0);
             drawBackground(ctx, g, th);
             drawColumns(ctx, g, sc, 1, null);
             var a = item.score[0], b = item.score[1];
-            drawStrip(ctx, g, sc, { a: a, b: b, ratio: a + b ? a / (a + b) : null, text: leaderText(sc, a, b, true) }, 1);
-            var items = [{ type: 'title', block: item.block, h: g.titleH, y: 0 }], y = g.titleH;
-            item.rows.forEach(function(r) { var h = item.rowH * rowUnits(r); items.push({ type: 'row', row: r, h: h, y: y }); y += h; });
-            var spare = g.viewH - y;
+            drawStrip(ctx, g, sc, { a: a, b: b, ratio: a + b ? a / (a + b) : null,
+                                    text: item.scored ? leaderText(sc, a, b, true) : 'Not scored' }, 1);
+            var used = g.titleH + L.units * L.rowH, spare = g.viewH - used;
             var top = g.viewTop + (spare > 0 ? Math.round(spare * 0.35) : 0);
-            ctx.save();
-            ctx.translate(0, top);
-            drawItems(ctx, g, sc, items, 0, null);
-            ctx.restore();
+            drawTitle(ctx, g, th, item.block, top, g.titleH, 1, true);
+            L.cols.forEach(function(col, ci) {
+                var cg = L.cgs[ci], y = top + g.titleH;
+                col.forEach(function(r, k) {
+                    var h = L.rowH * rowUnits(r), nx = col[k + 1];
+                    drawRow(ctx, cg, sc, r, y, h, 1, !!(nx && !r.group && !nx.group));
+                    y += h;
+                });
+                if (ci > 0) { ctx.fillStyle = th.line; ctx.fillRect(cg.cL - 15 * S - S, top + g.titleH, 2 * S, L.units * L.rowH); }
+            });
             drawFooter(ctx, g, th, 1);
             ctx.restore();
         }
@@ -5203,8 +5364,8 @@
         async function loadImageData() {
             var info = gather(false);
             if (info.err) { showStatus(info.err, 'error'); return; }
-            var blocks = buildBlocks(info, true).filter(function(b) { return b.rows.length; });
-            if (!blocks.length) { showStatus('No comparison data found for these players.', 'error'); return; }
+            var blocks = buildBlocks(info, true);   // blocks without matchup rows stay, greyed out in the picker
+            if (!blocks.some(function(b) { return b.rows.length; })) { showStatus('No comparison data found for these players.', 'error'); return; }
             showStatus('Loading headshots and logos...', 'info');
             NS.loaded = { info: info, blocks: blocks, sidesByTheme: {} };
             NS.customPicked = [];
@@ -5231,9 +5392,14 @@
             var L = NS.loaded;
             var bp = $('nsBlocksPick');
             var html = '<div class="ns-group"><label>Blocks (one image per block)</label></div><div class="ns-pick-list">';
-            L.blocks.forEach(function(b, i) {
-                var on = NS.blockPicked ? NS.blockPicked.indexOf(b.key) !== -1 : i === 0;
-                html += '<label><input type="checkbox" class="ns-block-check" value="' + esc(b.key) + '"' + (on ? ' checked' : '') + '> ' + esc(b.title) + '</label>';
+            var firstOk = null;
+            L.blocks.forEach(function(b) {
+                var why = blockEmptyWhy(b);
+                if (!why && firstOk === null) firstOk = b.key;
+                var on = !why && (NS.blockPicked ? NS.blockPicked.indexOf(b.key) !== -1 : b.key === firstOk);
+                html += '<label' + (why ? ' style="opacity:.45;cursor:not-allowed"' : '') + '><input type="checkbox" class="ns-block-check" value="' + esc(b.key) + '"' +
+                        (on ? ' checked' : '') + (why ? ' disabled' : '') + '> ' + esc(b.title) +
+                        (why ? ' <span style="color:#999;font-size:12px">(' + esc(why) + ')</span>' : '') + '</label>';
             });
             bp.innerHTML = html + '</div>';
             bp.querySelectorAll('.ns-block-check').forEach(function(cb) { cb.addEventListener('change', scheduleRender); });
@@ -5241,6 +5407,7 @@
             var cl = $('nsCustomList');
             var h2 = '';
             L.blocks.forEach(function(b) {
+                if (!b.rows.length) return;   // no matchup rows: nothing to pick
                 h2 += '<div class="ns-custom-block"><h4>' + esc(b.title) + '</h4><div class="ns-pick-list">';
                 b.rows.forEach(function(r) {
                     var k = b.key + '||' + r.key;
@@ -5260,23 +5427,32 @@
             });
         }
 
-        // The list of images to draw: [{block, rows, rowH, score, fileTag}]
-        function imagePlan(g) {
+        // Rows an image shows: matchup rows, minus both-zero rows when "Hide rows where both are zero" is on.
+        function imageRows(rows) {
+            return NS.hideZero ? rows.filter(function(r) { return !bothZero(r); }) : rows;
+        }
+        function blockEmptyWhy(b) {
+            if (!b.rows.length) return b.why || 'no data';
+            if (!imageRows(b.rows).length) return 'every row is 0 and 0';
+            return '';
+        }
+        // The list of images to draw: [{block, layout, score, scored, fileTag}], ONE per block.
+        function imagePlan(ctx, W, H) {
             var L = NS.loaded, out = [];
             function addBlock(b, tag) {
-                var ps = paginate(b.rows, g);
-                var score = countWins(b.rows);
-                ps.forEach(function(p, k) {
-                    out.push({ block: { title: b.title + (ps.length > 1 ? ' (' + (k + 1) + '/' + ps.length + ')' : ''), subline: b.subline },
-                               rows: p.rows, rowH: p.rowH, score: score,
-                               fileTag: tag + (ps.length > 1 ? '-' + (k + 1) + 'of' + ps.length : '') });
-                });
+                var rows = imageRows(b.rows);
+                // drop sub-headers left without rows (custom mode)
+                rows = rows.filter(function(r, k) { return !r.group || (rows[k + 1] && !rows[k + 1].group); });
+                if (!rows.filter(function(r) { return !r.group; }).length) return;
+                out.push({ block: { title: b.title, subline: b.subline }, layout: layoutImage(ctx, W, H, rows),
+                           score: countWins(rows), scored: b.scored !== false || rows.some(function(r) { return !r.unscored && !r.group; }),
+                           fileTag: tag });
             }
             if (NS.mode === 'blocks') {
                 var picked = Array.prototype.map.call(document.querySelectorAll('.ns-block-check:checked'), function(c) { return c.value; });
                 NS.blockPicked = picked;
                 L.blocks.forEach(function(b) {
-                    if (picked.indexOf(b.key) === -1) return;
+                    if (picked.indexOf(b.key) === -1 || blockEmptyWhy(b)) return;
                     addBlock(b, slug(b.key === 'cur' ? 'current-season' : b.title));
                 });
             } else {
@@ -5287,7 +5463,7 @@
                         var rk = k.slice(b.key.length + 2);
                         return b.rows.find(function(r) { return r.key === rk; });
                     }).filter(Boolean);
-                    return { b: b, rows: threeLast(rows) };
+                    return { b: b, rows: threeLast(imageRows(rows)) };
                 }).filter(function(x) { return x.rows.length; });
                 if (!used.length) return out;
                 var rows = [];
@@ -5314,18 +5490,19 @@
             var sides = await ensureSides(NS.theme);
             await fontsReady();
             if (seq !== renderSeq) return;
-            var g = geom(W, H);
-            var plan = imagePlan(g);
+            var mc = document.createElement('canvas').getContext('2d');
+            var plan = imagePlan(mc, W, H);
             outEl.innerHTML = '';
             if (!plan.length) {
-                outEl.innerHTML = '<div class="section-filter-hint">' + (NS.mode === 'custom' ? 'Tick some stats above to build the custom image.' : 'Tick at least one block above.') + '</div>';
+                outEl.innerHTML = '<div class="section-filter-hint">' + (NS.mode === 'custom' ? 'Tick some stats above to build the custom image (rows where both are 0 are hidden while that box is ticked).' : 'Tick at least one block above.') + '</div>';
                 return;
             }
-            var sc = { W: W, H: H, theme: NS.theme, sides: sides, g: g };
+            var sc = { W: W, H: H, theme: NS.theme, sides: sides };
             var p1 = slug(sides[0].display), p2 = slug(sides[1].display);
             plan.forEach(function(item) {
                 var c = document.createElement('canvas');
                 c.width = W; c.height = H;
+                c.dataset.density = item.layout.density + ' / header ' + item.layout.hs + ' / ' + item.layout.cols.length + ' col';
                 drawImage(c.getContext('2d'), sc, item);
                 var fname = 'hoopsmatic-compare-' + p1 + '-vs-' + p2 + '-' + item.fileTag + '-' + W + 'x' + H + '.png';
                 var card = document.createElement('div');
@@ -5461,6 +5638,7 @@
             if (size && /^(1080x1080|1080x1350|1920x1080)$/.test(size)) NS.size = size;
             if (mode === 'blocks' || mode === 'custom') NS.mode = mode;
             if (q.get('title')) $('nsCustomTitle').value = q.get('title');
+            if (q.get('zeros') === 'show') { NS.hideZero = false; if ($('nsHideZero')) $('nsHideZero').checked = false; }
             syncUI();
             var res = q.get('res');
             if (res && $('resolution').querySelector('option[value="' + res + '"]')) $('resolution').value = res;
@@ -5474,6 +5652,18 @@
             segWire('nsSizeSeg', 'size', function() { syncUI(); scheduleRender(); });
             segWire('nsModeSeg', 'mode', function() { syncUI(); scheduleRender(); });
             $('nsCustomTitle').addEventListener('input', scheduleRender);
+            // "Hide rows where both are zero" (images only), inline in the image controls.
+            var ctl = document.querySelector('#nsImagePanel .ns-controls');
+            if (ctl && !$('nsHideZero')) {
+                var hz = document.createElement('div');
+                hz.className = 'ns-group';
+                hz.innerHTML = '<label class="ns-check"><input type="checkbox" id="nsHideZero" checked> Hide rows where both are zero</label>';
+                ctl.appendChild(hz);
+                $('nsHideZero').addEventListener('change', function() {
+                    NS.hideZero = this.checked;
+                    if (NS.loaded) { buildPickers(); scheduleRender(); }
+                });
+            }
             $('nsLoadBtn').addEventListener('click', loadImageData);
             $('comparisonType').addEventListener('change', syncCurrentOption);
 
@@ -5502,10 +5692,10 @@
         window.addEventListener('DOMContentLoaded', init);
 
         // test/debug surface (no side effects)
-        window.NS_NEWSTYLE = { build: NS_BUILD, state: NS, geom: geom, paginate: paginate, drawImage: drawImage,
+        window.NS_NEWSTYLE = { build: NS_BUILD, state: NS, geom: geom, layoutImage: layoutImage, drawImage: drawImage,
                                gather: gather, buildBlocks: buildBlocks, buildSides: buildSides, loadSideAssets: loadSideAssets,
                                finalModel: finalModel, renderImages: renderImages, loadImageData: loadImageData, pickColors: pickColors,
-                               teamForPlayer: teamForPlayer, careerLine: careerLine, captureData: captureData, buildTimeline: buildTimeline, fontsReady: fontsReady };
+                               teamForPlayer: teamForPlayer, careerLine: careerLine, captureData: captureData, teamName: teamName, buildTimeline: buildTimeline, fontsReady: fontsReady };
     })();
     </script>
 </body>
