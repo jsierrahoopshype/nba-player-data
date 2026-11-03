@@ -3987,7 +3987,7 @@
             document.getElementById('comparisonType').addEventListener('change', onComparisonTypeChange);
         });
     </script>
-    <!-- hm-compare-newstyle-v6 : New style video + Image generator (additive block).
+    <!-- hm-compare-newstyle-v7 : New style video + Image generator (additive block).
          Everything below is new code. It only calls existing functions/globals
          (performComparison, performCombinedComparison, collectSidePlayers, ...) and
          never changes them, so the Classic rendering path stays byte-for-byte as before.
@@ -3999,7 +3999,7 @@
     (function() {
         'use strict';
 
-        var NS_BUILD = 'hm-compare-newstyle-v6';
+        var NS_BUILD = 'hm-compare-newstyle-v7';
 
         // Playback speed multiplier for the New style video: every New-style duration (header
         // intro, row reveal slots, scoreboard pulse, scroll easing, block-title pauses, final
@@ -4264,6 +4264,29 @@
             return a;
         }
         function teamName(code) { return NS_TEAM_NAMES[code] || NS_DEFUNCT_TEAMS[code] || code; }
+        // Short team names, for a header slot the full name doesn't fit.
+        var NS_TEAM_SHORT = {
+            ATL: 'Hawks', BOS: 'Celtics', BKN: 'Nets', CHA: 'Hornets', CHI: 'Bulls', CLE: 'Cavaliers', DAL: 'Mavericks',
+            DEN: 'Nuggets', DET: 'Pistons', GSW: 'Warriors', HOU: 'Rockets', IND: 'Pacers', LAC: 'Clippers', LAL: 'Lakers',
+            MEM: 'Grizzlies', MIA: 'Heat', MIL: 'Bucks', MIN: 'Timberwolves', NOP: 'Pelicans', NYK: 'Knicks', OKC: 'Thunder',
+            ORL: 'Magic', PHI: '76ers', PHX: 'Suns', POR: 'Trail Blazers', SAC: 'Kings', SAS: 'Spurs', TOR: 'Raptors',
+            UTA: 'Jazz', WAS: 'Wizards',
+            AND: 'Packers', BAL: 'Bullets', CHS: 'Stags', CLR: 'Rebels', DNN: 'Nuggets', DTF: 'Falcons', INJ: 'Jets',
+            INO: 'Olympians', PIT: 'Ironmen', PRO: 'Steamrollers', SHE: 'Red Skins', STB: 'Bombers', TOH: 'Huskies', WSC: 'Capitols'
+        };
+        // Team name for a header slot, never cut with an ellipsis: the full name shrinks down to
+        // `min`; below that the short name is used, shrinking as far as it has to.
+        function fitTeamName(ctx, code, size, min, maxW) {
+            var full = teamName(code);
+            for (var z = Math.round(size); z >= min; z--) {
+                ctx.font = font(700, z);
+                if (ctx.measureText(full).width <= maxW) return { text: full, size: z };
+            }
+            var short = NS_TEAM_SHORT[code] || full, sz = Math.round(size);
+            ctx.font = font(700, sz);
+            while (sz > 1 && ctx.measureText(short).width > maxW) { sz--; ctx.font = font(700, sz); }
+            return { text: short, size: sz };
+        }
 
         // Career length line (replaces age), from distinct rsStats seasons (not the span):
         // active "17th season · since 2010-11", retired "15 seasons · 1996-97 to 2010-11".
@@ -4391,9 +4414,14 @@
         // =============================================================
         // Blocks
         // =============================================================
+        // Real 3-point stats only, matched on the whole name once a " PO" / " peak" / " per game"
+        // suffix is removed: "Three Point %", "Three Pointers Made/Attempted", "3-pointers made",
+        // "3-point %", 3PM, 3PA, 3P%, "three-point percentage"... Never "Three quarter sprint",
+        // "Three-Point Contest" or anything else that merely contains "three".
+        var NS_THREE_RE = /^(?:three[- ]?point(?:ers?)?|3[- ]?(?:pointers?|point|pt|p))(?:[- ]?(?:made|attempted|attempts|m|a))?(?: ?%| percentage)?$/i;
         function isThree(metric) {
-            var m = String(metric);
-            return /three|3p|3-point|3-pointer/i.test(m) && !/contest/i.test(m);
+            var base = String(metric).replace(/ PO( peak)?$/, '').replace(/ peak$/, '').replace(/ per game$/i, '').trim();
+            return NS_THREE_RE.test(base);
         }
         // 3-point rows always go last in a block (after steals and blocks); stable otherwise.
         function threeLast(rows) {
@@ -4803,7 +4831,7 @@
                     if (sd.team) {
                         // defunct team: no logo, the name as plain text
                         var logo = sd.logos[sd.team], lw = logo ? logoS + 12 * S : 0;
-                        var tf = fitFont(ctx, teamName(sd.team), 25 * S * ts2, 13 * S, maxW - lw, 700);
+                        var tf = fitTeamName(ctx, sd.team, 25 * S * ts2, 16 * S * ts2, maxW - lw);   // full name down to 16 px, then the short name
                         ctx.font = font(700, tf.size);
                         var tw = ctx.measureText(tf.text).width;
                         if (logo) drawLogo(ctx, logo, i === 0 ? tx : tx - tw - 12 * S - logoS, y, logoS);
