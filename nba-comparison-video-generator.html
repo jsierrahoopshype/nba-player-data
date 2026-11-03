@@ -4831,7 +4831,7 @@
                     if (sd.team) {
                         // defunct team: no logo, the name as plain text
                         var logo = sd.logos[sd.team], lw = logo ? logoS + 12 * S : 0;
-                        var tf = fitTeamName(ctx, sd.team, 25 * S * ts2, 16 * S * ts2, maxW - lw);   // full name down to 16 px, then the short name
+                        var tf = fitTeamName(ctx, sd.team, 25 * S * ts2, 15 * S * ts2, maxW - lw);   // full name down to 15 px ("Philadelphia 76ers" fits at 1080x1350), then the short name
                         ctx.font = font(700, tf.size);
                         var tw = ctx.measureText(tf.text).width;
                         if (logo) drawLogo(ctx, logo, i === 0 ? tx : tx - tw - 12 * S - logoS, y, logoS);

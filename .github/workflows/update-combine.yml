@@ -1,0 +1,50 @@
+name: Update Draft Combine from prospect database
+
+# Syncs combine-v3.json (Draft Combine rows for the comparison tool and the
+# video generator) from the HoopsMatic prospect database's public data file
+# (repo nba-draft-combine, GitHub Pages). No token or secret: a public GET.
+
+on:
+  schedule:
+    - cron: '40 6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-combine:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Fetch and merge combine-v3.json
+        run: python scripts/update-combine.py
+
+      # A failed or bad fetch must never replace the committed file: the update
+      # script exits 1 on a fetch error or a malformed source, and this refuses
+      # an empty file or one with fewer than 90% of the committed records.
+      - name: Refuse a worse combine-v3.json
+        run: python scripts/check_data_file.py combine-v3.json
+
+      - name: Commit and push if changed
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add combine-v3.json
+          if git diff --cached --quiet; then
+            echo "combine-v3.json unchanged; nothing to commit."
+            exit 0
+          fi
+          git commit -m "Auto-update combine-v3.json from prospect database [$(date +'%Y-%m-%d %H:%M')]"
+          git pull --rebase origin main && git push || (sleep $((RANDOM % 20 + 5)) && git pull --rebase origin main && git push)
