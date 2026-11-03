@@ -3987,7 +3987,7 @@
             document.getElementById('comparisonType').addEventListener('change', onComparisonTypeChange);
         });
     </script>
-    <!-- hm-compare-newstyle-v5 : New style video + Image generator (additive block).
+    <!-- hm-compare-newstyle-v6 : New style video + Image generator (additive block).
          Everything below is new code. It only calls existing functions/globals
          (performComparison, performCombinedComparison, collectSidePlayers, ...) and
          never changes them, so the Classic rendering path stays byte-for-byte as before.
@@ -3999,7 +3999,7 @@
     (function() {
         'use strict';
 
-        var NS_BUILD = 'hm-compare-newstyle-v5';
+        var NS_BUILD = 'hm-compare-newstyle-v6';
 
         // Playback speed multiplier for the New style video: every New-style duration (header
         // intro, row reveal slots, scoreboard pulse, scroll easing, block-title pauses, final
@@ -4409,8 +4409,6 @@
         // (the engine already scores "1 vs -" for the side with 1). Shown as 0 and treated as a value.
         // Signature shoes is not one: a shoe comparison needs both players to have signature shoes.
         var NS_COUNT_SECTIONS = ['ACCOLADES', 'YEARS RECEIVING VOTES', 'PLAYOFF SUCCESS'];
-        // Shown when both sides have data, never scored (no winner pill, no point, not in totals).
-        var NS_UNSCORED_SECTIONS = ['DRAFT COMBINE'];
         function hasVal(v) { var t = v == null ? '' : String(v).trim(); return t !== '' && t !== '-'; }
         function isZero(v) { return hasVal(v) && parseNumericValue(v) === 0; }
         function bothZero(r) { return !r.group && isZero(r.v1) && isZero(r.v2); }
@@ -4427,25 +4425,23 @@
         }
         function countWins(rows) {
             var a = 0, b = 0;
-            rows.forEach(function(r) { if (r.unscored || r.group) return; if (r.winner === 'player1') a++; else if (r.winner === 'player2') b++; });
+            rows.forEach(function(r) { if (r.group) return; if (r.winner === 'player1') a++; else if (r.winner === 'player2') b++; });
             return [a, b];
         }
         function sectionBlock(sec, idx, note, names) {
             var meta = NS_SECTION_META[sec.name] || [String(sec.name).charAt(0) + String(sec.name).slice(1).toLowerCase(), ''];
             var counts = NS_COUNT_SECTIONS.indexOf(sec.name) !== -1;
-            var scored = NS_UNSCORED_SECTIONS.indexOf(sec.name) === -1;
             var z = function(v) { return counts && !hasVal(v) ? '0' : v; };
             var all = sec.items.map(function(it, i) {
                 return { key: 's' + idx + '|' + i, label: prettyLabel(it.metric), v1: z(it.p1Value), v2: z(it.p2Value), winner: it.winner,
-                         three: isThree(it.metric), unscored: !scored };
+                         three: isThree(it.metric) };
             });
             var m = matchupRows(threeLast(all), names);
             var w = countWins(m.rows);
             var sub = meta[1];
-            if (!scored) sub = sub ? sub + ' · not scored' : 'Not scored';
             if (note) sub = sub ? sub + ' · ' + note : note;
             return { key: 'sec:' + sec.name, name: sec.name, title: meta[0], subline: sub, rows: m.rows, why: m.why,
-                     scored: scored, p1: w[0], p2: w[1] };
+                     p1: w[0], p2: w[1] };
         }
 
         // ---- Current season block from rsStats ----
@@ -4496,7 +4492,7 @@
             var w2 = countWins(m.rows);
             return { key: 'cur', name: 'CURRENT SEASON', title: 'Current season · ' + seasonText(y),
                      subline: combined ? 'Regular season, totals' : 'Regular season, per game',
-                     rows: m.rows, why: m.why, scored: true, p1: w2[0], p2: w2[1] };
+                     rows: m.rows, why: m.why, p1: w2[0], p2: w2[1] };
         }
         function curAllowed(info) { return info.compType === 'career'; }
 
@@ -4973,7 +4969,7 @@
             }
             var bt = ease(t * 1.25);
             // winner wash from his side of the row
-            var wi = row.unscored ? -1 : (row.winner === 'player1' ? 0 : (row.winner === 'player2' ? 1 : -1));
+            var wi = row.winner === 'player1' ? 0 : (row.winner === 'player2' ? 1 : -1);
             if (wi >= 0) {
                 var col = sc.sides[wi].color;
                 var gx0 = wi === 0 ? g.cL : g.cR, gx1 = wi === 0 ? g.cL + g.cw * 0.42 : g.cR - g.cw * 0.42;
@@ -5042,10 +5038,10 @@
         // =============================================================
         // Final card (video)
         // =============================================================
-        // Breakdown = scored blocks that are in the video (Draft combine and skipped blocks are not).
+        // Breakdown = every block that is in the video (skipped blocks are not).
         function finalModel(blocks, sides) {
             var t1 = 0, t2 = 0;
-            var rows = blocks.filter(function(b) { return b.scored && b.rows.length; }).map(function(b, i) {
+            var rows = blocks.filter(function(b) { return b.rows.length; }).map(function(b, i) {
                 t1 += b.p1; t2 += b.p2;
                 return { key: 'f' + i, label: b.title.replace(/ · .*$/, ''),
                          v1: String(b.p1), v2: String(b.p2),
@@ -5065,8 +5061,8 @@
         // Continuous stream under a fixed scoreboard, paced like Classic's video:
         // 2.0 s before the first reveal, one reveal every 0.66 s, the count moves the
         // moment a row's winner lands, the stream lerps upward 0.04/frame (at 30 fps)
-        // toward the newest row, 0.8 s pause, then the final card (ties and unscored Draft
-        // combine rows take half a slot and score nothing, block titles take a slot). Blocks
+        // toward the newest row, 0.8 s pause, then the final card (ties take half a slot and
+        // score nothing, block titles take a slot). Blocks
         // without a single matchup row are not in the video.
         // =============================================================
         var NEW_RES = { '1080p': [1920, 1080], '720p': [1280, 720], 'square': [1080, 1080], 'story': [1080, 1920], 'portrait45': [1080, 1350] };
@@ -5082,14 +5078,14 @@
                 b.rows.forEach(function(r) {
                     items.push({ type: 'row', row: r, h: g.rowH, y: y, at: t });
                     y += g.rowH;
-                    t += r.unscored || (r.winner !== 'player1' && r.winner !== 'player2') ? TIE_GAP : GAP;
+                    t += r.winner !== 'player1' && r.winner !== 'player2' ? TIE_GAP : GAP;
                 });
             });
             var lastAt = items.length ? items[items.length - 1].at : START;
             var events = [];   // score events, in time order
             var a = 0, b = 0;
             items.forEach(function(it) {
-                if (it.type !== 'row' || it.row.unscored) return;
+                if (it.type !== 'row') return;
                 if (it.row.winner === 'player1') { a++; events.push({ t: it.at + LAND, side: 0, a: a, b: b }); }
                 else if (it.row.winner === 'player2') { b++; events.push({ t: it.at + LAND, side: 1, a: a, b: b }); }
             });
@@ -5353,7 +5349,7 @@
             drawColumns(ctx, g, sc, 1, null);
             var a = item.score[0], b = item.score[1];
             drawStrip(ctx, g, sc, { a: a, b: b, ratio: a + b ? a / (a + b) : null,
-                                    text: item.scored ? leaderText(sc, a, b, true) : 'Not scored' }, 1);
+                                    text: leaderText(sc, a, b, true) }, 1);
             var used = g.titleH + L.units * L.rowH, spare = g.viewH - used;
             var top = g.viewTop + (spare > 0 ? Math.round(spare * 0.35) : 0);
             drawTitle(ctx, g, th, item.block, top, g.titleH, 1, true);
@@ -5457,7 +5453,7 @@
                 rows = rows.filter(function(r, k) { return !r.group || (rows[k + 1] && !rows[k + 1].group); });
                 if (!rows.filter(function(r) { return !r.group; }).length) return;
                 out.push({ block: { title: b.title, subline: b.subline }, layout: layoutImage(ctx, W, H, rows),
-                           score: countWins(rows), scored: b.scored !== false || rows.some(function(r) { return !r.unscored && !r.group; }),
+                           score: countWins(rows),
                            fileTag: tag });
             }
             if (NS.mode === 'blocks') {
