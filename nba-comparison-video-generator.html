@@ -4276,11 +4276,13 @@
         };
         // Team name for a header slot, never cut with an ellipsis: the full name shrinks down to
         // `min`; below that the short name is used, shrinking as far as it has to.
-        function fitTeamName(ctx, code, size, min, maxW) {
+        // slack: extra px the FULL name may use (it runs into the inner padding,
+        // never the divider); the short-name fallback still fits maxW.
+        function fitTeamName(ctx, code, size, min, maxW, slack) {
             var full = teamName(code);
             for (var z = Math.round(size); z >= min; z--) {
                 ctx.font = font(700, z);
-                if (ctx.measureText(full).width <= maxW) return { text: full, size: z };
+                if (ctx.measureText(full).width <= maxW + (slack || 0)) return { text: full, size: z };
             }
             var short = NS_TEAM_SHORT[code] || full, sz = Math.round(size);
             ctx.font = font(700, sz);
@@ -4831,7 +4833,7 @@
                     if (sd.team) {
                         // defunct team: no logo, the name as plain text
                         var logo = sd.logos[sd.team], lw = logo ? logoS + 12 * S : 0;
-                        var tf = fitTeamName(ctx, sd.team, 25 * S * ts2, 15 * S * ts2, maxW - lw);   // full name down to 15 px ("Philadelphia 76ers" fits at 1080x1350), then the short name
+                        var tf = fitTeamName(ctx, sd.team, 25 * S * ts2, 15 * S * ts2, maxW - lw, 2 * S);   // full name down to 15 px (up to 2 px into the padding, so "Philadelphia 76ers" fits at 1080x1350), then the short name
                         ctx.font = font(700, tf.size);
                         var tw = ctx.measureText(tf.text).width;
                         if (logo) drawLogo(ctx, logo, i === 0 ? tx : tx - tw - 12 * S - logoS, y, logoS);
