@@ -4156,6 +4156,13 @@
         }
         // Only the trade card's two weights exist: anything bolder than 600 draws in 700.
         function font(w, px) { return (w >= 700 ? 700 : 600) + ' ' + Math.round(px) + 'px ' + NF; }
+        // Like fitFont, but never cuts the text: the size keeps dropping until it fits.
+        function fitShrink(ctx, text, size, maxW, weight) {
+            var sz = Math.round(size);
+            ctx.font = font(weight, sz);
+            while (ctx.measureText(text).width > maxW && sz > 1) { sz -= 1; ctx.font = font(weight, sz); }
+            return { text: text, size: sz };
+        }
         function fitFont(ctx, text, size, floor, maxW, weight) {
             var sz = Math.round(size);
             ctx.font = font(weight, sz);
@@ -4307,21 +4314,21 @@
         // ---- Comparison range (Season / Age / Calendar range modes; Career has none) ----
         // From the same inputs and season filter as the comparison itself (validateRangeInputs,
         // getRangeYears). Returns null in Career / Season / combined comparisons, else
-        // { mode, labels: [left, right], shared: label | null, lines: [left detail, right detail] }.
+        // { mode, labels: [left, right], shared: label | null, lines: [left line, right line] }.
+        // The lines replace the career line under each name, in the header.
         function rangeText(mode, from, to) {
             if (mode === 'calendarRange') return seasonText(from) + ' to ' + seasonText(to);
             return (mode === 'ageRange' ? 'Ages ' : 'Seasons ') + from + '\u2013' + to;
         }
-        // Detail line under the name for the filtered span, e.g. "Ages 18–38 · 2003-04 to 2022-23"
-        // (calendar range: "6 seasons · 2017-18 to 2022-23", the label is already a span).
+        // The player's own span inside the range: "Ages 18–38 · 2003-04 to 2022-23",
+        // "Seasons 1–10 · 2003-04 to 2012-13"; calendar range: just the span, "2017-18 to 2022-23".
         function rangeLine(name, mode, from, to, label) {
             var inRange = {};
             getRangeYears(name, mode, from, to).forEach(function(y) { inRange[y] = 1; });
             var ys = seasonYears(rsRows(name)).filter(function(y) { return inRange[y]; });
             if (!ys.length) return label;
             var span = ys.length === 1 ? seasonText(ys[0]) : seasonText(ys[0]) + ' to ' + seasonText(ys[ys.length - 1]);
-            if (mode === 'calendarRange') return (ys.length === 1 ? '1 season' : ys.length + ' seasons') + ' · ' + span;
-            return label + ' · ' + span;
+            return mode === 'calendarRange' ? span : label + ' · ' + span;
         }
         function rangeInfo(info) {
             if (!info || info.isCombine || !/^(seasonRange|ageRange|calendarRange)$/.test(info.compType)) return null;
@@ -4566,15 +4573,15 @@
             return m ? m[1] : '';
         }
         // Season scope goes in the block subline. Range modes (Season / Age / Calendar range)
-        // show their range as a label under the title instead, and a range detail line under
-        // each name (rangeInfo).
+        // keep the block sublines plain: the range is shown once, in the header, in place of
+        // each player's career line (rangeInfo).
         function modeNote(info) {
             var a = nameSuffix(info.data.player1Name), b = nameSuffix(info.data.player2Name);
             if (!a && !b) return '';
             return a === b ? a : (a || '-') + ' vs ' + (b || '-');
         }
         function buildBlocks(info, includeCurrent) {
-            var note = rangeInfo(info) ? '' : modeNote(info);   // range modes: the range label, not the subline
+            var note = rangeInfo(info) ? '' : modeNote(info);   // range modes: the range is in the header
             var names = [info.side1.join(' + '), info.side2.join(' + ')];
             // Every block is returned; blocks with no matchup rows carry .why and are skipped by the
             // video and greyed out in the image picker.
@@ -4607,7 +4614,7 @@
                 };
             });
             var rg = rangeInfo(info);
-            if (rg) { sides[0].career = [rg.lines[0]]; sides[1].career = [rg.lines[1]]; }
+            if (rg) { sides[0].career = [rg.lines[0]]; sides[1].career = [rg.lines[1]]; sides[0].rangeLine = sides[1].rangeLine = true; }
             var cols = pickColors(sides[0].teams[0], sides[1].teams[0], theme);
             sides[0].color = cols[0]; sides[1].color = cols[1];
             return sides;
@@ -4634,7 +4641,6 @@
         // middle: the stream of block titles and rows; bottom: hoopsmatic.com/compare.
         // =============================================================
         // hs (0..1, default 1) shrinks the header (faces, names) when an image needs the room.
-        var NS_RANGE = null;   // { video: bool } while a range comparison's geometry is built
         function geom(W, H, hs) {
             var land = W > H * 1.2;
             var S = land ? H / 1080 : W / 1080;
@@ -4657,11 +4663,6 @@
             g.rowH = 64 * S; g.minRow = 44 * S; g.maxRow = 74 * S;
             g.titleH = 108 * S;
             g.mid = W / 2;
-            // Range label (NS_RANGE, set while a range comparison is laid out): images give it
-            // room under each title; the video gives it a band under the header for the whole video.
-            g.rangeH = NS_RANGE ? 48 * S : 0;
-            if (NS_RANGE && NS_RANGE.video) { g.viewTop += g.rangeH; g.viewH = g.viewBot - g.viewTop; }
-            else g.titleH += g.rangeH;
             return g;
         }
         function rowUnits(r) { return r.group ? 0.62 : 1; }
@@ -4901,7 +4902,8 @@
                     lines.push({ h: bf.size * 1.08, draw: function(y) { ctx.font = font(800, bf.size); ctx.fillStyle = th.text; ctx.fillText(bf.text, tx, y + bf.size * 0.9); } });
                     var cl = sd.career[0];
                     if (cl) {
-                        var cf = fitFont(ctx, cl, 21 * S * ts2, 10 * S, maxW, 600);   // long retired spans shrink, never cut
+                        var cf = sd.rangeLine ? fitShrink(ctx, cl, 21 * S * ts2, maxW, 600)   // range line: shrinks as far as needed, no ellipsis
+                                              : fitFont(ctx, cl, 21 * S * ts2, 10 * S, maxW, 600);   // long retired spans shrink, never cut
                         lines.push({ h: cf.size * 1.5, draw: function(y) { ctx.font = font(600, cf.size); ctx.fillStyle = th.accent; ctx.fillText(cf.text, tx, y + cf.size * 1.25); } });
                     }
                 } else {
@@ -4990,26 +4992,6 @@
             ctx.restore();
         }
 
-        // Range label in the trade card's chip style (Poppins Bold on the chip colour, pill).
-        // One shared label centred, or each player's own label under his column.
-        function drawRangeChip(ctx, g, th, text, cx, top, maxW) {
-            var S = g.S, h = 34 * S, padX = 16 * S;
-            var f = fitFont(ctx, text, 19 * S, 12 * S, maxW - 2 * padX, 700);
-            ctx.font = font(700, f.size);
-            var w = ctx.measureText(f.text).width + 2 * padX;
-            rr(ctx, cx - w / 2, top, w, h, h / 2);
-            ctx.fillStyle = th.chip; ctx.fill();
-            ctx.fillStyle = th.chipText;
-            ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-            ctx.fillText(f.text, cx, top + h / 2 + 1 * S);
-        }
-        function drawRangeLabels(ctx, g, th, rg, top) {
-            ctx.save();
-            if (rg.shared) drawRangeChip(ctx, g, th, rg.shared, g.W / 2, top, g.cw);
-            else rg.labels.forEach(function(l, i) { drawRangeChip(ctx, g, th, l, i ? g.W * 0.75 : g.W * 0.25, top, g.W / 2 - 2 * g.pad); });
-            ctx.restore();
-        }
-
         // Block title inside the stream (a divider between blocks).
         function drawTitle(ctx, g, th, block, y, h, t, first) {
             var a = clamp01(t * 2.2);
@@ -5023,26 +5005,6 @@
             var tf = fitFont(ctx, block.title, (block.big ? 46 : 36) * S, 20 * S, g.cw, 800);
             ctx.font = font(800, tf.size);
             ctx.fillStyle = th.text;
-            if (block.range) {
-                // title, (final card: winner band), range label, then the subline
-                var rty = y + (block.big ? 64 : 58) * S;
-                ctx.fillText(tf.text, g.W / 2, rty);
-                if (block.bandColor) {
-                    ctx.fillStyle = block.bandColor;
-                    ctx.fillRect(g.W / 2 - 70 * S, rty + 22 * S, 140 * S, 6 * S);
-                }
-                var chipTop = rty + (block.bandColor ? 42 : 16) * S;
-                drawRangeLabels(ctx, g, th, block.range, chipTop);
-                if (block.subline) {
-                    var rsf = fitFont(ctx, block.subline, 19 * S, 12 * S, g.cw, 500);
-                    ctx.font = font(500, rsf.size);
-                    ctx.fillStyle = th.muted;
-                    ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
-                    ctx.fillText(rsf.text, g.W / 2, chipTop + 34 * S + 27 * S);
-                }
-                ctx.restore();
-                return;
-            }
             var ty = y + h * (block.subline ? 0.52 : 0.64);
             ctx.fillText(tf.text, g.W / 2, ty);
             if (block.subline) {
@@ -5152,7 +5114,7 @@
         // Final card (video)
         // =============================================================
         // Breakdown = every block that is in the video (skipped blocks are not).
-        function finalModel(blocks, sides, range) {
+        function finalModel(blocks, sides) {
             var t1 = 0, t2 = 0;
             var rows = blocks.filter(function(b) { return b.rows.length; }).map(function(b, i) {
                 t1 += b.p1; t2 += b.p2;
@@ -5166,7 +5128,7 @@
             var who = win >= 0 ? (sides[win].combined ? sides[win].short : lastName(sides[win].names[0])) : '';
             var title = win >= 0 ? (who + ' wins ' + Math.max(t1, t2) + '-' + Math.min(t1, t2)).toUpperCase() : ('TIED ' + t1 + '-' + t2);
             return { rows: rows, winnerSide: win, t1: t1, t2: t2,
-                     block: { title: title, subline: '', big: true, bandColor: win >= 0 ? sides[win].color : null, range: range || null } };
+                     block: { title: title, subline: '', big: true, bandColor: win >= 0 ? sides[win].color : null } };
         }
 
         // =============================================================
@@ -5202,7 +5164,7 @@
                 if (it.row.winner === 'player1') { a++; events.push({ t: it.at + LAND, side: 0, a: a, b: b }); }
                 else if (it.row.winner === 'player2') { b++; events.push({ t: it.at + LAND, side: 1, a: a, b: b }); }
             });
-            var fin = finalModel(blocks, sides, sides.range);
+            var fin = finalModel(blocks, sides);
             var finStart = lastAt + GAP + PAUSE;
             var finStarts = fin.rows.map(function(r, i) { return finStart + FIN_IN + i * FIN_STEP; });
             var total = finStarts[finStarts.length - 1] + dur(0.4) + FIN_HOLD;
@@ -5275,8 +5237,6 @@
             return sc.edges;
         }
 
-        function sides0Range(sc) { return sc.sides && sc.sides.range; }
-
         // One video frame at time sec.
         function drawVideoFrame(ctx, sc, tl, sec, scrollY) {
             var g = sc.g, th = NS_THEMES[sc.theme], S = g.S;
@@ -5303,7 +5263,6 @@
             var sb = scoreAt(tl, sec);
             sb.text = sec >= tl.finStart ? leaderText(sc, tl.a, tl.b, true) : leaderText(sc, sb.a, sb.b, false);
             drawStrip(ctx, g, sc, sb, hT);
-            if (sides0Range(sc)) drawRangeLabels(ctx, g, th, sc.sides.range, g.headH + 8 * S);   // whole video, full opacity
 
             // stream (scrolling), drawn straight onto the frame inside the view, then faded
             // at its top/bottom edges by two precomputed strips of the background
@@ -5321,15 +5280,14 @@
             // final card in the stream area
             if (sec >= tl.finStart) {
                 var fin = tl.fin, n = fin.rows.length;
-                var finTH = g.titleH * 1.15 + (fin.block.range ? g.rangeH : 0);   // + the range label under the title
-                var avail = g.viewH - finTH;
+                var avail = g.viewH - g.titleH * 1.15;
                 var rh = Math.max(g.minRow * 0.85, Math.min(g.maxRow, avail / n));
-                var used = finTH + rh * n;
+                var used = g.titleH * 1.15 + rh * n;
                 var top = g.viewTop + Math.max(0, (g.viewH - used) * 0.4);
                 ctx.save();
                 ctx.globalAlpha = clamp01((sec - tl.finStart - dur(0.15)) / dur(0.4));
                 drawTitle(ctx, g, th, fin.block, top, g.titleH, (sec - tl.finStart) / tl.FIN_IN, true);
-                var y = top + finTH;
+                var y = top + g.titleH * 1.15;
                 for (var r = 0; r < n; r++) {
                     var rt = (sec - tl.finStarts[r]) / tl.ROW_IN;
                     drawRow(ctx, g, sc, fin.rows[r], y, rh, rt, r < n - 1);
@@ -5364,11 +5322,8 @@
 
             try {
                 var sides = buildSides(info, theme);
-                sides.range = rangeInfo(info);
                 await Promise.all([loadSideAssets(sides), fontsReady()]);
-                NS_RANGE = sides.range ? { video: true } : null;
                 var g = geom(W, H);
-                NS_RANGE = null;
                 var sc = { W: W, H: H, theme: theme, sides: sides, g: g };
                 var tl = buildTimeline(blocks, sides, g, fps);
                 var totalFrames = Math.ceil(tl.total * fps);
@@ -5572,7 +5527,7 @@
                 // drop sub-headers left without rows (custom mode)
                 rows = rows.filter(function(r, k) { return !r.group || (rows[k + 1] && !rows[k + 1].group); });
                 if (!rows.filter(function(r) { return !r.group; }).length) return;
-                out.push({ block: { title: b.title, subline: b.subline, range: L.range }, layout: layoutImage(ctx, W, H, rows),
+                out.push({ block: { title: b.title, subline: b.subline }, layout: layoutImage(ctx, W, H, rows),
                            score: countWins(rows),
                            fileTag: tag });
             }
@@ -5619,9 +5574,7 @@
             await fontsReady();
             if (seq !== renderSeq) return;
             var mc = document.createElement('canvas').getContext('2d');
-            NS_RANGE = L.range ? { video: false } : null;
-            var plan;
-            try { plan = imagePlan(mc, W, H); } finally { NS_RANGE = null; }
+            var plan = imagePlan(mc, W, H);
             outEl.innerHTML = '';
             if (!plan.length) {
                 outEl.innerHTML = '<div class="section-filter-hint">' + (NS.mode === 'custom' ? 'Tick some stats above to build the custom image (rows where both are 0 are hidden while that box is ticked).' : 'Tick at least one block above.') + '</div>';
