@@ -110114,13 +110114,13 @@
   {
     "TEAM": "Atlanta",
     "YEAR": "2027",
-    "PLAYER": "Keshon Gilbert",
+    "PLAYER": "RayJ Dennis",
     "SALARY": "$678,882"
   },
   {
     "TEAM": "Atlanta",
     "YEAR": "2027",
-    "PLAYER": "RayJ Dennis",
+    "PLAYER": "Keshon Gilbert",
     "SALARY": "$678,882"
   },
   {
@@ -110644,6 +110644,12 @@
     "YEAR": "2027",
     "PLAYER": "Ernest Udeh",
     "SALARY": "$678,882"
+  },
+  {
+    "TEAM": "Cleveland",
+    "YEAR": "2027",
+    "PLAYER": "Norchad Omier",
+    "SALARY": "$620,358"
   },
   {
     "TEAM": "Dallas",
@@ -111912,12 +111918,6 @@
     "SALARY": "$678,882"
   },
   {
-    "TEAM": "Minnesota",
-    "YEAR": "2027",
-    "PLAYER": "Enrique Freeman",
-    "SALARY": "$651,571"
-  },
-  {
     "TEAM": "New Orleans",
     "YEAR": "2027",
     "PLAYER": "Zion Williamson",
@@ -112210,6 +112210,12 @@
     "YEAR": "2027",
     "PLAYER": "Ajay Mitchell",
     "SALARY": "$2,850,000"
+  },
+  {
+    "TEAM": "Oklahoma City",
+    "YEAR": "2027",
+    "PLAYER": "Dalen Terry",
+    "SALARY": "$2,399,280"
   },
   {
     "TEAM": "Oklahoma City",
@@ -112724,13 +112730,13 @@
   {
     "TEAM": "Sacramento",
     "YEAR": "2027",
-    "PLAYER": "Jonathan Mogbo",
+    "PLAYER": "Leaky Black",
     "SALARY": "$678,882"
   },
   {
     "TEAM": "Sacramento",
     "YEAR": "2027",
-    "PLAYER": "Leaky Black",
+    "PLAYER": "Jonathan Mogbo",
     "SALARY": "$678,882"
   },
   {
