@@ -4156,6 +4156,21 @@
         }
         // Only the trade card's two weights exist: anything bolder than 600 draws in 700.
         function font(w, px) { return (w >= 700 ? 700 : 600) + ' ' + Math.round(px) + 'px ' + NF; }
+        // Header range line (range modes): one line from the career line's size down to `min`
+        // (its normal size, 15 px at 1080); if it still doesn't fit, two lines split at " · ",
+        // both at the largest size (>= min) where each fits. Never cut: only a half that can't
+        // fit even at `min` goes smaller. Returns [{ text, size }, ...].
+        function rangeLines(ctx, text, size, min, maxW) {
+            var one = fitShrink(ctx, text, size, maxW, 600);
+            var cut = text.indexOf(' \u00b7 ');
+            if (one.size >= Math.round(min) || cut < 0) return [one];
+            var a = text.slice(0, cut), b = text.slice(cut + 3);
+            var sz = Math.round(size);
+            function fits(z) { ctx.font = font(600, z); return ctx.measureText(a).width <= maxW && ctx.measureText(b).width <= maxW; }
+            while (sz > Math.round(min) && !fits(sz)) sz--;
+            while (sz > 1 && !fits(sz)) sz--;
+            return [{ text: a, size: sz }, { text: b, size: sz }];
+        }
         // Like fitFont, but never cuts the text: the size keeps dropping until it fits.
         function fitShrink(ctx, text, size, maxW, weight) {
             var sz = Math.round(size);
@@ -4901,9 +4916,14 @@
                     }
                     lines.push({ h: bf.size * 1.08, draw: function(y) { ctx.font = font(800, bf.size); ctx.fillStyle = th.text; ctx.fillText(bf.text, tx, y + bf.size * 0.9); } });
                     var cl = sd.career[0];
-                    if (cl) {
-                        var cf = sd.rangeLine ? fitShrink(ctx, cl, 21 * S * ts2, maxW, 600)   // range line: shrinks as far as needed, no ellipsis
-                                              : fitFont(ctx, cl, 21 * S * ts2, 10 * S, maxW, 600);   // long retired spans shrink, never cut
+                    if (cl && sd.rangeLine) {
+                        rangeLines(ctx, cl, 21 * S * ts2, 15 * S, maxW).forEach(function(rl, k) {
+                            // first line keeps the career line's spacing; the second sits close under it
+                            var lh = k ? rl.size * 1.3 : rl.size * 1.5, base = k ? rl.size * 1.05 : rl.size * 1.25;
+                            lines.push({ h: lh, draw: function(y) { ctx.font = font(600, rl.size); ctx.fillStyle = th.accent; ctx.fillText(rl.text, tx, y + base); } });
+                        });
+                    } else if (cl) {
+                        var cf = fitFont(ctx, cl, 21 * S * ts2, 10 * S, maxW, 600);   // long retired spans shrink, never cut
                         lines.push({ h: cf.size * 1.5, draw: function(y) { ctx.font = font(600, cf.size); ctx.fillStyle = th.accent; ctx.fillText(cf.text, tx, y + cf.size * 1.25); } });
                     }
                 } else {
@@ -5240,7 +5260,9 @@
         // One video frame at time sec.
         function drawVideoFrame(ctx, sc, tl, sec, scrollY) {
             var g = sc.g, th = NS_THEMES[sc.theme], S = g.S;
-            var hT = clamp01(sec / dur(0.8));
+            // The header is whole from frame 0 (photos, names, team, career/range line, 0-0
+            // scoreboard), so the first frame works as the platform preview; no fade-in.
+            var hT = 1;
             ctx.save();
             ctx.setTransform(1, 0, 0, 1, 0, 0);
             ctx.globalAlpha = 1;
