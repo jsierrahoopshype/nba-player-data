@@ -110630,12 +110630,6 @@
   {
     "TEAM": "Cleveland",
     "YEAR": "2027",
-    "PLAYER": "Tristan Enaruna",
-    "SALARY": "$678,882"
-  },
-  {
-    "TEAM": "Cleveland",
-    "YEAR": "2027",
     "PLAYER": "Ernest Udeh",
     "SALARY": "$678,882"
   },
@@ -110644,6 +110638,12 @@
     "YEAR": "2027",
     "PLAYER": "Norchad Omier",
     "SALARY": "$620,358"
+  },
+  {
+    "TEAM": "Cleveland",
+    "YEAR": "2027",
+    "PLAYER": "Riley Minix",
+    "SALARY": "$608,653"
   },
   {
     "TEAM": "Dallas",
@@ -111602,8 +111602,8 @@
   {
     "TEAM": "Memphis",
     "YEAR": "2027",
-    "PLAYER": "Carson Cooper",
-    "SALARY": "$678,882"
+    "PLAYER": "Richie Saunders",
+    "SALARY": "$608,653"
   },
   {
     "TEAM": "Miami",
