@@ -111915,7 +111915,7 @@
     "TEAM": "Minnesota",
     "YEAR": "2027",
     "PLAYER": "Johni Broome",
-    "SALARY": "$593,046"
+    "SALARY": "$589,145"
   },
   {
     "TEAM": "New Orleans",
@@ -113164,5 +113164,11 @@
     "YEAR": "2027",
     "PLAYER": "Reece Beekman",
     "SALARY": "$678,882"
+  },
+  {
+    "TEAM": "Chicago",
+    "YEAR": "2027",
+    "PLAYER": "Orlando Robinson",
+    "SALARY": "$2,263,472"
   }
 ]
