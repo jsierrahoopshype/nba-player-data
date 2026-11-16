@@ -110120,8 +110120,8 @@
   {
     "TEAM": "Atlanta",
     "YEAR": "2027",
-    "PLAYER": "Keshon Gilbert",
-    "SALARY": "$678,882"
+    "PLAYER": "Rafael Castro",
+    "SALARY": "$577,440"
   },
   {
     "TEAM": "Boston",
@@ -110528,19 +110528,25 @@
   {
     "TEAM": "Chicago",
     "YEAR": "2027",
+    "PLAYER": "Orlando Robinson",
+    "SALARY": "$2,263,472"
+  },
+  {
+    "TEAM": "Chicago",
+    "YEAR": "2027",
     "PLAYER": "Jordan Hawkins",
     "SALARY": "$678,882"
   },
   {
     "TEAM": "Chicago",
     "YEAR": "2027",
-    "PLAYER": "Tobe Awaka",
+    "PLAYER": "Jaylin Sellers",
     "SALARY": "$678,882"
   },
   {
     "TEAM": "Chicago",
     "YEAR": "2027",
-    "PLAYER": "Jaylin Sellers",
+    "PLAYER": "Tobe Awaka",
     "SALARY": "$678,882"
   },
   {
@@ -112016,13 +112022,13 @@
   {
     "TEAM": "New Orleans",
     "YEAR": "2027",
-    "PLAYER": "Malik Dia",
+    "PLAYER": "Jaron Pierre",
     "SALARY": "$678,882"
   },
   {
     "TEAM": "New Orleans",
     "YEAR": "2027",
-    "PLAYER": "Jaron Pierre",
+    "PLAYER": "Malik Dia",
     "SALARY": "$678,882"
   },
   {
@@ -113164,11 +113170,5 @@
     "YEAR": "2027",
     "PLAYER": "Reece Beekman",
     "SALARY": "$678,882"
-  },
-  {
-    "TEAM": "Chicago",
-    "YEAR": "2027",
-    "PLAYER": "Orlando Robinson",
-    "SALARY": "$2,263,472"
   }
 ]
