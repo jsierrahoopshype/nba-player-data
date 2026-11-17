@@ -13,7 +13,10 @@ The full files (rsStats.json, awards.json, ...) are left untouched: other tools
 still read them.
 
 Per-player file format:
-  { "<dataset>": [[<row index in the full file>, <row>], ...], ... }
+  { "<dataset>": [[<row index in the full file>, <row>], ...], ...,
+    "links": { "<player name>": { "hub": "<Head to Head hub slug>", "hs": "<headshot stem>" } } }
+"links" (from data/h2h-players.json, see h2h_links()) is only for the page's look:
+the player's HoopsMatic Head to Head page and headshot.
 The row index lets the page rebuild, for the players it has loaded, exactly the
 same rows in exactly the same order as the full file, so every filter()/find()
 in the page returns what it returned before. Rows are copied as-is.
@@ -33,7 +36,9 @@ writing anything if a source file is missing or malformed.
 """
 import json
 import os
+import re
 import sys
+import unicodedata
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT_DIR = os.path.join(ROOT, 'players')
@@ -72,6 +77,71 @@ def slug(name):
     # whose names start with '_'.
     s = ''.join(c.lower() if (c.isascii() and c.isalnum()) else '_' for c in name)
     return 'p' + s if s.startswith('_') else s
+
+
+H2H_FILE = os.path.join(ROOT, 'data', 'h2h-players.json')
+
+
+def h2h_slugify(s):
+    # nba-head-to-head build/build.mjs slugify(): NFKD, accents dropped, lowercase,
+    # every run of other characters -> '-', no leading/trailing '-'.
+    s = unicodedata.normalize('NFKD', s)
+    s = ''.join(c for c in s if not ('\u0300' <= c <= '\u036f')).lower()
+    return re.sub(r'[^a-z0-9]+', '-', s).strip('-')
+
+
+def h2h_links(names, rs_rows):
+    """name -> {"hub": Head to Head hub slug, "hs": headshot stem or absent}.
+
+    From data/h2h-players.json (scripts/update_h2h_players.py). A player is matched by
+    name (Head to Head's slug rule, then a looser one) and career years: our rsStats
+    YEAR is the season's end year, Head to Head's first/last its start year. Only a
+    single candidate whose career overlaps ours gets a link; none or several: no link.
+    Missing file: no links (the page then shows initials and plain names)."""
+    try:
+        with open(H2H_FILE, encoding='utf-8') as f:
+            h2h = json.load(f)
+    except (OSError, ValueError):
+        print('note: data/h2h-players.json missing or unreadable, no Head to Head links')
+        return {}
+    by = {}
+    for e in h2h:
+        by.setdefault(h2h_slugify(e[0]), []).append(e)
+    years = {}
+    for r in rs_rows:
+        n, y = r.get('PLAYER'), str(r.get('YEAR', ''))
+        if isinstance(n, str) and y.isdigit():
+            lo, hi = years.get(n.strip(), (9999, 0))
+            years[n.strip()] = (min(lo, int(y) - 1), max(hi, int(y) - 1))
+
+    def overlaps(e, yr):
+        return yr is None or not (isinstance(e[2], int) and isinstance(e[3], int)) or \
+            (e[2] <= yr[1] + 1 and yr[0] - 1 <= e[3])
+
+    def loose(n):
+        # second try: no "(1965)" tag, no Jr./Sr./II-V, no punctuation ("AJ" = "A.J.", "Amare" = "Amar'e")
+        n = re.sub(r'\s*\(\d{4}\)\s*$', '', n)
+        k = h2h_slugify(n)
+        k = re.sub(r'-(jr|sr|ii|iii|iv|v)$', '', k)
+        return k.replace('-', '')
+
+    by_loose = {}
+    for e in h2h:
+        by_loose.setdefault(loose(e[0]), []).append(e)
+
+    out = {}
+    for n in names:
+        cands = [e for e in by.get(h2h_slugify(n), []) if overlaps(e, years.get(n))]
+        if not cands:
+            cands = [e for e in by_loose.get(loose(n), []) if overlaps(e, years.get(n))]
+        # several players fit (same name, overlapping careers): no link rather than a wrong one
+        if len(cands) == 1:
+            e = cands[0]
+            link = {'hub': e[1]}
+            if e[4]:
+                link['hs'] = e[4]
+            out[n] = link
+    return out
 
 
 def main():
@@ -114,6 +184,11 @@ def main():
                 seen.add(s)
                 files.setdefault(s, {}).setdefault(key, []).append([idx, row])
 
+    # Head to Head hub link + headshot per listed player, under "links" in his file.
+    links = h2h_links(names, data['rsStats'])
+    for n, link in links.items():
+        files.setdefault(slug(n), {}).setdefault('links', {})[n] = link
+
     # Every listed player must have a file (they all come from rsStats/awards rows).
     missing = [n for n in names if slug(n) not in files]
     if missing:
@@ -146,7 +221,7 @@ def main():
             os.remove(os.path.join(OUT_DIR, fn))
             removed += 1
 
-    print(f'{len(names)} players, {written} player files ({changed} changed, {removed} removed)')
+    print(f'{len(names)} players ({len(links)} with a Head to Head page), {written} player files ({changed} changed, {removed} removed)')
     return 0
 
 

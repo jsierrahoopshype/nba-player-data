@@ -82,6 +82,17 @@ def main():
         print(f'FAIL: {len(bad)} player/dataset mismatches, e.g. {bad[:5]}')
         failures += 1
 
+    # "links" (Head to Head page + headshot): only listed names, safe slugs and stems
+    bad_links = []
+    for s_, content in file_cache.items():
+        for n, l in (content.get('links') or {}).items():
+            if n not in names or not re.fullmatch(r'[a-z0-9-]+', l.get('hub', '')) or \
+                    ('hs' in l and not re.fullmatch(r'[0-9a-z-]+', l['hs'])) or b.slug(n) != s_:
+                bad_links.append((s_, n, l))
+    if bad_links:
+        print(f'FAIL: {len(bad_links)} bad "links" entries, e.g. {bad_links[:3]}')
+        failures += 1
+
     # slug parity with the page's JavaScript
     node = shutil.which('node')
     if node:

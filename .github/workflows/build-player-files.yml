@@ -8,7 +8,7 @@ name: Build per-player files
 # The data jobs push with the built-in token, and GitHub does not start
 # workflows from such pushes, so this listens for those jobs finishing
 # (workflow_run) rather than for the push. A push by a person to one of the
-# source files triggers it directly. The schedule is a safety net.
+# source files triggers it directly.
 on:
   workflow_run:
     workflows:
@@ -38,8 +38,7 @@ on:
       - sneakers.json
       - bio.json
       - scripts/build_player_files.py
-  schedule:
-    - cron: '17 */6 * * *'
+      - data/h2h-players.json
   workflow_dispatch:
 
 concurrency:
@@ -64,6 +63,11 @@ jobs:
         with:
           python-version: '3.11'
 
+      # Each player's Head to Head page and headshot, for the tool's look (data/h2h-players.json).
+      # A failed fetch keeps the saved copy and the build goes on.
+      - name: Refresh the Head to Head player list
+        run: python scripts/update_h2h_players.py || echo "Head to Head list not refreshed; using the saved copy"
+
       # Writes only under players/. Exits 1 without writing if a source file is
       # missing, unreadable or empty.
       - name: Build per-player files
@@ -75,7 +79,7 @@ jobs:
 
       - name: Commit and push if changed
         run: |
-          git add -A players/
+          git add -A players/ data/h2h-players.json
           if git diff --cached --quiet; then
             echo "players/ unchanged"
             exit 0
