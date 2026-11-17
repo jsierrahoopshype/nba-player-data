@@ -130,7 +130,7 @@ def h2h_links(names, rs_rows):
         by_loose.setdefault(loose(e[0]), []).append(e)
 
     out = {}
-    for n in names:
+    for n in sorted(names):  # sorted: the same file bytes on every run
         cands = [e for e in by.get(h2h_slugify(n), []) if overlaps(e, years.get(n))]
         if not cands:
             cands = [e for e in by_loose.get(loose(n), []) if overlaps(e, years.get(n))]
