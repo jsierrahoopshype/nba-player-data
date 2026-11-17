@@ -5,6 +5,46 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NBA Player Comparison Tool - HoopsHype</title>
     <meta name="description" content="Compare any two NBA players across 140+ categories including awards, stats, salaries, and more.">
+    <script>
+        // Speed: start the comparison data downloads immediately. Placed before the
+        // render-blocking font stylesheet below, which otherwise holds up the main script
+        // (and its downloads) until the stylesheet arrives. The main script takes these
+        // responses with cmpTakeJSON() instead of downloading again.
+        // playerSlug() must match slug() in scripts/build_player_files.py.
+        function playerSlug(name) {
+            let s = '';
+            for (const c of String(name)) s += /^[A-Za-z0-9]$/.test(c) ? c.toLowerCase() : '_';
+            return s.charAt(0) === '_' ? 'p' + s : s; // GitHub Pages skips files starting with '_'
+        }
+        var CMP_DATA_BASE_URL = 'https://jsierrahoopshype.github.io/nba-player-data/';
+        var cmpPrefetched = {};
+        // Resolves to { status, json } (json is null for a non-OK status); rejects on network error.
+        function cmpFetchJSON(url) {
+            return fetch(url).then(r => r.ok ? r.json().then(j => ({ status: r.status, json: j }))
+                                             : { status: r.status, json: null });
+        }
+        function cmpTakeJSON(url) {
+            const p = cmpPrefetched[url];
+            if (p) { delete cmpPrefetched[url]; return p; }
+            return cmpFetchJSON(url);
+        }
+        (function () {
+            try {
+                const urls = ['comparisons.json', 'players/index.json', 'allstars-data.json'].map(f => CMP_DATA_BASE_URL + f);
+                const q = new URLSearchParams(location.search);
+                ['p1', 'p2'].forEach(k => {
+                    const v = q.get(k);
+                    if (v) v.split(',').forEach(n => {
+                        n = n.trim();
+                        if (n) urls.push(CMP_DATA_BASE_URL + 'players/' + encodeURIComponent(playerSlug(n)) + '.json');
+                    });
+                });
+                urls.forEach(u => {
+                    if (!cmpPrefetched[u]) { cmpPrefetched[u] = cmpFetchJSON(u); cmpPrefetched[u].catch(() => {}); }
+                });
+            } catch (e) { /* best-effort: the main script fetches anything missing */ }
+        })();
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -801,138 +841,105 @@
     </div>
 
     <script>
-        // CONFIGURATION: Using separate JSON files (under 25MB each)
-        const DATA_BASE_URL = 'https://jsierrahoopshype.github.io/nba-player-data/';
+        // CONFIGURATION
+        // The page no longer downloads the full data files (rsStats.json etc., ~15 MB).
+        // scripts/build_player_files.py splits them into one small file per player
+        // (players/<slug>.json) plus a name index (players/index.json); a comparison
+        // fetches only the players it shows. The full files stay in the repo for other tools.
+        const DATA_BASE_URL = CMP_DATA_BASE_URL; // set in the <head> script
+        const PLAYER_FILES_URL = DATA_BASE_URL + 'players/';
         const DATA_FILES = {
-            awards: 'awards.json',
-            allStar: 'allStar.json',
-            awardVotes: 'awardVotes.json',
-            combine: 'combine-v3.json',
-            nba2k: 'nba2k.json',
-            poSeries: 'poSeries.json',
-            poStats: 'poStats.json',
-            rsStats: 'rsStats.json',
-            salaries: 'salaries.json',
-            sneakers: 'sneakers.json',
             comparisons: 'comparisons.json',
-            bio: 'bio.json',
-            allStarsData: 'allstars-data.json'
+            allStarsData: 'allstars-data.json',
+            playerIndex: 'players/index.json'
         };
+        // Datasets held in each per-player file (same keys as playerData).
+        const PLAYER_DATASETS = ['awards', 'allStar', 'awardVotes', 'combine', 'nba2k', 'poSeries',
+                                 'poStats', 'rsStats', 'salaries', 'sneakers', 'bio'];
 
         let playerData = {};
         let players = [];
         let dataLoaded = false;
+        PLAYER_DATASETS.forEach(k => { playerData[k] = []; });
 
-        // Fix column swaps in STL/BLK/TOV
-        // The JSON export has these columns incorrectly mapped
-        // Note: Previous column swap fix removed - data is now correctly formatted via update-rs-stats.py
+        // ===== Per-player data store =====
+        // playerData.<dataset> holds the rows of every player loaded so far, in the same
+        // order as the full file (each row carries its index in the full file), so every
+        // existing filter()/find() over playerData returns what it returned when the
+        // whole file was loaded.
+        const loadedRowMaps = {};
+        PLAYER_DATASETS.forEach(k => { loadedRowMaps[k] = new Map(); });
+        const playerFileRequests = {};   // slug -> Promise
+        const loadedPlayerSlugs = new Set();
 
-        // Load JSON data from GitHub
+        // playerSlug() is defined in the <head> script.
+
+        function mergePlayerFile(file) {
+            PLAYER_DATASETS.forEach(k => {
+                const entries = file[k];
+                if (!entries || !entries.length) return;
+                const m = loadedRowMaps[k];
+                let added = false;
+                entries.forEach(e => {
+                    if (!m.has(e[0])) { m.set(e[0], e[1]); added = true; }
+                });
+                if (added) playerData[k] = [...m.keys()].sort((a, b) => a - b).map(i => m.get(i));
+            });
+        }
+
+        function loadPlayerFile(slug) {
+            if (!playerFileRequests[slug]) {
+                playerFileRequests[slug] = cmpTakeJSON(PLAYER_FILES_URL + encodeURIComponent(slug) + '.json')
+                    .then(r => {
+                        if (r.status === 404) return null; // no rows for this name
+                        if (!r.json) throw new Error('HTTP ' + r.status + ' for player file ' + slug);
+                        return r.json;
+                    })
+                    .then(file => {
+                        if (file) mergePlayerFile(file);
+                        loadedPlayerSlugs.add(slug);
+                    })
+                    .catch(err => {
+                        delete playerFileRequests[slug]; // allow a retry later
+                        throw err;
+                    });
+            }
+            return playerFileRequests[slug];
+        }
+
+        function isPlayerLoaded(name) {
+            return loadedPlayerSlugs.has(playerSlug(name));
+        }
+
+        // Resolves once every named player's rows are in playerData.
+        function ensurePlayers(names) {
+            const slugs = [...new Set(names.filter(Boolean).map(playerSlug))];
+            return Promise.all(slugs.map(loadPlayerFile));
+        }
+
+        // Load the comparison definitions, the player name index and the All-Star list.
         async function loadData() {
-            console.log('Loading player data from GitHub (JSON format)...');
-            
+            const getJSON = (file) => cmpTakeJSON(DATA_BASE_URL + file).then(r => {
+                if (!r.json) throw new Error('HTTP ' + r.status + ' for ' + file);
+                return r.json;
+            });
+
             try {
-                // Add cache-busting timestamp to force fresh loads
-                const timestamp = Date.now();
-                const cacheBust = `?t=${timestamp}`;
-                
-                // Load all JSON files in parallel
                 const results = await Promise.all([
-                    fetch(DATA_BASE_URL + DATA_FILES.awards + cacheBust).then(r => r.json()),
-                    fetch(DATA_BASE_URL + DATA_FILES.allStar + cacheBust).then(r => r.json()),
-                    fetch(DATA_BASE_URL + DATA_FILES.awardVotes + cacheBust).then(r => r.json()),
-                    fetch(DATA_BASE_URL + DATA_FILES.combine + cacheBust).then(r => r.json()),
-                    fetch(DATA_BASE_URL + DATA_FILES.nba2k + cacheBust).then(r => r.json()),
-                    fetch(DATA_BASE_URL + DATA_FILES.poSeries + cacheBust).then(r => r.json()),
-                    fetch(DATA_BASE_URL + DATA_FILES.poStats + cacheBust).then(r => r.json()),
-                    fetch(DATA_BASE_URL + DATA_FILES.rsStats + cacheBust).then(r => r.json()),
-                    fetch(DATA_BASE_URL + DATA_FILES.salaries + cacheBust).then(r => r.json()),
-                    fetch(DATA_BASE_URL + DATA_FILES.sneakers + cacheBust).then(r => r.json()),
-                    fetch(DATA_BASE_URL + DATA_FILES.comparisons + cacheBust).then(r => r.json())
+                    getJSON(DATA_FILES.comparisons),
+                    getJSON(DATA_FILES.playerIndex),
+                    // Optional - for the random comparison and same-era suggestions
+                    getJSON(DATA_FILES.allStarsData).catch(() => null)
                 ]);
-                
-                // Assign results to playerData
-                playerData.awards = results[0];
-                playerData.allStar = results[1];
-                playerData.awardVotes = results[2];
-                playerData.combine = results[3];
-                playerData.nba2k = results[4];
-                playerData.poSeries = results[5];
-                playerData.poStats = results[6];
-                playerData.rsStats = results[7];
-                playerData.salaries = results[8];
-                playerData.sneakers = results[9];
-                playerData.comparisons = results[10];
-                
-                // Fix column swaps in STL/BLK/TOV data
-                // The JSON data has these columns rotated - fix them here
-                // Data is now correctly formatted - no column swaps needed
-                // (Previous workaround removed since update-rs-stats.py now generates correct data)
-                
-                // Try to load All-Stars data (optional - for random comparison feature)
-                try {
-                    const allStarsResponse = await fetch(DATA_BASE_URL + DATA_FILES.allStarsData + cacheBust);
-                    if (allStarsResponse.ok) {
-                        playerData.allStarsData = await allStarsResponse.json();
-                    }
-                } catch (e) {
-                    playerData.allStarsData = null;
-                }
+                playerData.comparisons = results[0];
+                playerData.allStarsData = results[2];
 
-                // Load bio data (optional - for Range Comparison tab)
-                try {
-                    const bioResponse = await fetch(DATA_BASE_URL + DATA_FILES.bio + cacheBust);
-                    if (bioResponse.ok) {
-                        playerData.bio = await bioResponse.json();
-                    }
-                } catch (e) {
-                    playerData.bio = null;
-                }
-
-                console.log('Data loaded successfully:', {
-                    comparisons: playerData.comparisons.length,
-                    awards: playerData.awards.length,
-                    rsStats: playerData.rsStats.length
-                });
-                
-                // Debug: Check sample data structure
-                if (playerData.rsStats.length > 0) {
-                    console.log('Sample RS-Stats row:', playerData.rsStats[0]);
-                }
-                if (playerData.awards.length > 0) {
-                    console.log('Sample Awards row:', playerData.awards[0]);
-                }
-                
-                // Debug: Test LeBron James data
-                const lebronRS = playerData.rsStats.filter(r => r.PLAYER && r.PLAYER.includes('LeBron'));
-                const lebronAwards = playerData.awards.filter(r => r['PLAYER / COACH'] && r['PLAYER / COACH'].includes('LeBron'));
-                console.log('LeBron RS-Stats rows:', lebronRS.length);
-                console.log('LeBron Awards rows:', lebronAwards.length);
-                if (lebronRS.length > 0) {
-                    console.log('LeBron RS sample:', lebronRS[0]);
-                }
-                if (lebronAwards.length > 0) {
-                    console.log('LeBron Award sample:', lebronAwards[0]);
-                }
-                
-                // Extract unique players
-                const playersSet = new Set();
-                
-                playerData.rsStats.forEach(row => {
-                    if (row.PLAYER) playersSet.add(row.PLAYER.trim());
-                });
-                
-                playerData.awards.forEach(row => {
-                    if (row['PLAYER / COACH']) playersSet.add(row['PLAYER / COACH'].trim());
-                });
-                
-                players = Array.from(playersSet).sort();
+                // Same list the page used to build from rsStats + awards (trimmed, sorted).
+                players = results[1].slice().sort();
                 dataLoaded = true;
-                
+
                 console.log(`Found ${players.length} unique players`);
-                
                 return Promise.resolve();
-                
             } catch (error) {
                 console.error('Error loading data:', error);
                 throw error;
@@ -952,6 +959,21 @@
                 const urlParams = new URLSearchParams(window.location.search);
                 const urlP1 = urlParams.get('p1');
                 const urlP2 = urlParams.get('p2');
+
+                // Make sure the rows of every player named in the URL are loaded before the
+                // URL handling below (combine, range and career all read playerData directly).
+                const urlNames = [];
+                [urlP1, urlP2].forEach(v => {
+                    if (v) v.split(',').forEach(n => { const r = findPlayerName(n.trim()); if (r) urlNames.push(r); });
+                });
+                await ensurePlayers(urlNames);
+
+                // Reveal the page with its web fonts in place, as it always was when the data
+                // took longer than the fonts (otherwise <select> text renders 1px off).
+                // Capped so a slow font never holds the comparison back for long.
+                try {
+                    await Promise.race([document.fonts.ready, new Promise(r => setTimeout(r, 1500))]);
+                } catch (e) { /* fonts API unavailable: carry on */ }
 
                 // Combine Mode URL: a comma inside p1/p2 means that side holds 2+
                 // players. Checked BEFORE `mode` because combine is career-only —
@@ -997,7 +1019,7 @@
                     document.getElementById('player1-bottom').value = p1;
                     document.getElementById('player2-bottom').value = p2;
                     updateStickyPlayerOptions();
-                    setTimeout(() => compareFromInputs(), 500);
+                    setTimeout(() => compareFromInputs(), 0);
                 }
                 
                 showLoading(false);
@@ -1452,7 +1474,7 @@
             updateStickyPlayerOptions();
             // runComparison() re-collects from the inputs, so it applies the same
             // validation (and the same single-vs-single fallback) as a UI click.
-            setTimeout(() => runComparison(), 500);
+            setTimeout(() => runComparison(), 0);
             return true;
         }
 
@@ -1491,9 +1513,18 @@
             const resultsDiv = document.getElementById('results');
             resultsDiv.innerHTML = '<div class="loading"><div class="spinner"></div><div>Comparing…</div></div>';
 
+            const seq = ++careerCompareSeq;
             setTimeout(() => {
-                const out = performCombinedComparison(side1, side2);
-                displayResults(out.results, out.name1, out.name2);
+                ensurePlayers(side1.concat(side2)).then(() => {
+                    if (seq !== careerCompareSeq) return;
+                    const out = performCombinedComparison(side1, side2);
+                    displayResults(out.results, out.name1, out.name2);
+                }).catch(err => {
+                    console.error('[ComparePlayers]', err);
+                    if (seq !== careerCompareSeq) return;
+                    resultsDiv.innerHTML = '';
+                    showError("Couldn't load the player database. Try refreshing — if this keeps happening, the data might be updating right now.");
+                });
             }, 100);
         }
 
@@ -1552,11 +1583,24 @@
             // Update page title
             document.title = `${player1Name} vs ${player2Name} - NBA Career Comparison`;
             
+            const seq = ++careerCompareSeq;
             setTimeout(() => {
-                const results = performComparison(player1Name, player2Name);
-                displayResults(results, player1Name, player2Name);
+                ensurePlayers([player1Name, player2Name]).then(() => {
+                    if (seq !== careerCompareSeq) return; // a newer comparison was started
+                    const results = performComparison(player1Name, player2Name);
+                    displayResults(results, player1Name, player2Name);
+                }).catch(err => {
+                    console.error('[ComparePlayers]', err);
+                    if (seq !== careerCompareSeq) return;
+                    resultsDiv.innerHTML = '';
+                    showError("Couldn't load the player database. Try refreshing — if this keeps happening, the data might be updating right now.");
+                });
             }, 100);
         }
+
+        // Increments on every career/combine comparison so a slow player-file fetch
+        // can't overwrite a newer comparison.
+        let careerCompareSeq = 0;
 
         function parseNumericValue(value) {
             // Helper function to convert values to numbers for comparison
@@ -3072,6 +3116,11 @@
         function populateCalendarYears() {
             const p1 = findPlayerName((document.getElementById('range-player1').value || '').trim());
             const p2 = findPlayerName((document.getElementById('range-player2').value || '').trim());
+            const need = [p1, p2].filter(Boolean);
+            if (need.some(n => !isPlayerLoaded(n))) {
+                // Fill the dropdowns again once the players' seasons have arrived.
+                ensurePlayers(need).then(() => populateCalendarYears()).catch(err => console.error('[ComparePlayers]', err));
+            }
             const union = getUnionYears([p1, p2].filter(Boolean));
             const p2years = p2 ? getUnionYears([p2]) : union;
             populateOneYearSelect('range-from-cal', 'range-from', union, false);
@@ -3412,7 +3461,7 @@
 
             // Auto-run only when we have a complete, resolvable comparison.
             if (p1 && p2 && from && to && findPlayerName(p1) && findPlayerName(p2)) {
-                setTimeout(() => compareRange(), 500);
+                setTimeout(() => compareRange(), 0);
             }
         }
 
@@ -3424,6 +3473,18 @@
             if (!p1) { alert('Player 1 not found. Please select from suggestions.'); return; }
             if (!p2) { alert('Player 2 not found. Please select from suggestions.'); return; }
             if (p1 === p2) { alert('Please select two different players.'); return; }
+
+            // Fetch the two players' rows first, then run this same function again.
+            if (!isPlayerLoaded(p1) || !isPlayerLoaded(p2)) {
+                const rd = document.getElementById('range-results');
+                rd.innerHTML = '<div class="loading"><div class="spinner"></div><div>Comparing ranges…</div></div>';
+                ensurePlayers([p1, p2]).then(() => compareRange()).catch(err => {
+                    console.error('[ComparePlayers]', err);
+                    rd.innerHTML = '';
+                    showError("Couldn't load the player database. Try refreshing — if this keeps happening, the data might be updating right now.");
+                });
+                return;
+            }
 
             document.getElementById('range-player1').value = p1;
             document.getElementById('range-player2').value = p2;
