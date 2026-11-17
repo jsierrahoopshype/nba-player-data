@@ -1,0 +1,86 @@
+name: Build per-player files
+
+# The comparison tool (nba-player-comparison-tool.html, hoopsmatic.com/compare)
+# loads players/<player>.json and players/index.json instead of the full data
+# files. scripts/build_player_files.py rebuilds them from the full files; this
+# runs it after every job that updates one of those files.
+#
+# The data jobs push with the built-in token, and GitHub does not start
+# workflows from such pushes, so this listens for those jobs finishing
+# (workflow_run) rather than for the push. A push by a person to one of the
+# source files triggers it directly. The schedule is a safety net.
+on:
+  workflow_run:
+    workflows:
+      - Daily data chain
+      - Build RS and PO stats from NBA box scores
+      - Update RS Stats
+      - Update PO Stats
+      - Update Awards from Google Sheets
+      - Update Award Votes from Google Sheets
+      - Update Bio from Google Sheets
+      - Update Salaries from Google Sheets
+      - Update Draft Combine from prospect database
+      - Update NBA 2K Ratings from Google Sheets
+    types: [completed]
+  push:
+    branches: [main]
+    paths:
+      - awards.json
+      - allStar.json
+      - awardVotes.json
+      - combine-v3.json
+      - nba2k.json
+      - poSeries.json
+      - poStats.json
+      - rsStats.json
+      - salaries.json
+      - sneakers.json
+      - bio.json
+      - scripts/build_player_files.py
+  schedule:
+    - cron: '17 */6 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: build-player-files
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      # Writes only under players/. Exits 1 without writing if a source file is
+      # missing, unreadable or empty.
+      - name: Build per-player files
+        run: python scripts/build_player_files.py
+
+      # Every player's rows must equal what the full files hold for them.
+      - name: Check per-player files against the full files
+        run: python scripts/test_player_files.py
+
+      - name: Commit and push if changed
+        run: |
+          git add -A players/
+          if git diff --cached --quiet; then
+            echo "players/ unchanged"
+            exit 0
+          fi
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git commit -m "Rebuild per-player files for the comparison tool [$(date +'%Y-%m-%d %H:%M')]"
+          git pull --rebase origin main && git push || (sleep $((RANDOM % 20 + 5)) && git pull --rebase origin main && git push)
