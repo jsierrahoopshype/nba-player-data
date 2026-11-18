@@ -147,11 +147,17 @@
         .sb-faces { display: flex; justify-content: center; flex-wrap: wrap; gap: .25rem; }
         .player-score:first-child .sb-faces .fm { box-shadow: 0 0 0 2px var(--a); }
         .player-score:last-child .sb-faces .fm { box-shadow: 0 0 0 2px var(--b); }
-        .player-name-score { font-weight: 700; font-size: .84rem; line-height: 1.2; overflow-wrap: break-word; hyphens: auto; -webkit-hyphens: auto; max-width: 100%; }
+        .player-name-score { font-weight: 700; font-size: .84rem; line-height: 1.2; overflow-wrap: break-word; hyphens: auto; -webkit-hyphens: auto; max-width: 100%; text-wrap: balance; }
         .sb-namerow { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: .3rem; min-width: 0; max-width: 100%; }
         .sb-shuffle { flex: 0 0 auto; display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; padding: 0;
             border: 1px solid var(--border); border-radius: 8px; background: var(--surface); color: var(--text); cursor: pointer; }
         .sb-shuffle:hover { border-color: var(--text); }
+        /* touch screens: a 44px tap area (WCAG 2.5.5) with the button still small; the gap keeps it off the name link */
+        @media (pointer: coarse) {
+            .sb-namerow { gap: .5rem; }
+            .sb-shuffle { position: relative; width: 34px; height: 34px; }
+            .sb-shuffle::after { content: ""; position: absolute; inset: -5px; }
+        }
         .sb-shuffle:focus-visible { outline: 2px solid var(--text); outline-offset: 2px; }
         .sb-mid { display: flex; flex-direction: column; align-items: center; text-align: center; }
         .sb-big { font-family: var(--mono); font-size: 1.75rem; line-height: 1.1; white-space: nowrap; font-variant-numeric: tabular-nums; }
@@ -174,7 +180,7 @@
         .cmp-head, .comparison-row { display: grid; grid-template-columns: minmax(0,34fr) minmax(0,32fr) minmax(0,34fr); align-items: stretch; }
         .cmp-head { background: var(--surface-hover); border-bottom: 1px solid var(--border); }
         .cmp-head > div { padding: .55rem .55rem; display: flex; flex-direction: column; align-items: flex-end; justify-content: flex-end; gap: .3rem; text-align: right; min-width: 0; }
-        .cmp-head .player-name-cell { font-family: 'DM Sans', sans-serif; font-size: .72rem; font-weight: 700; color: var(--text); line-height: 1.3; overflow-wrap: break-word; hyphens: auto; -webkit-hyphens: auto; max-width: 100%; }
+        .cmp-head .player-name-cell { font-family: 'DM Sans', sans-serif; font-size: .72rem; font-weight: 700; color: var(--text); line-height: 1.3; overflow-wrap: break-word; hyphens: auto; -webkit-hyphens: auto; max-width: 100%; text-wrap: balance; }
         .comparison-row { border-bottom: 1px solid var(--border); }
         .comparison-row:last-child { border-bottom: none; }
         .comparison-row > div { padding: .55rem .55rem; min-height: 2.6rem; display: flex; align-items: center; min-width: 0; overflow-wrap: anywhere; line-height: 1.3; }
@@ -217,6 +223,9 @@
             .sb-big { font-size: 1.3rem; }
             .score-summary .ph { --s: 56px !important; }
             .player-name-score { font-size: .76rem; }
+        }
+        /* (mouse only: on touch screens the button keeps its 44px tap area) */
+        @media (max-width: 360px) and (pointer: fine) {
             .sb-shuffle { width: 26px; height: 26px; }
         }
         @media (min-width: 640px) {
