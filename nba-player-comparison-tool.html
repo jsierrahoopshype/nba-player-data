@@ -19,9 +19,14 @@
         var CMP_DATA_BASE_URL = 'https://jsierrahoopshype.github.io/nba-player-data/';
         var cmpPrefetched = {};
         // Resolves to { status, json } (json is null for a non-OK status); rejects on network error.
-        function cmpFetchJSON(url) {
-            return fetch(url).then(r => r.ok ? r.json().then(j => ({ status: r.status, json: j }))
-                                             : { status: r.status, json: null });
+        // A server error (5xx) or a network error is retried once after a short pause: the
+        // hoopsmatic.com Worker relays these files and its upstream can fail for a moment.
+        function cmpFetchJSON(url, retried) {
+            const again = () => new Promise(res => setTimeout(res, 700)).then(() => cmpFetchJSON(url, true));
+            return fetch(url).then(r => {
+                if (r.status >= 500 && !retried) return again();
+                return r.ok ? r.json().then(j => ({ status: r.status, json: j })) : { status: r.status, json: null };
+            }, err => { if (retried) throw err; return again(); });
         }
         function cmpTakeJSON(url) {
             const p = cmpPrefetched[url];
