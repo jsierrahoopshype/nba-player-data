@@ -147,7 +147,7 @@
         .sb-faces { display: flex; justify-content: center; flex-wrap: wrap; gap: .25rem; }
         .player-score:first-child .sb-faces .fm { box-shadow: 0 0 0 2px var(--a); }
         .player-score:last-child .sb-faces .fm { box-shadow: 0 0 0 2px var(--b); }
-        .player-name-score { font-weight: 700; font-size: .84rem; line-height: 1.2; overflow-wrap: break-word; hyphens: auto; -webkit-hyphens: auto; max-width: 100%; text-wrap: balance; }
+        .player-name-score { font-weight: 700; font-size: .84rem; line-height: 1.2; max-width: 100%; text-wrap: balance; }
         .sb-namerow { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: .3rem; min-width: 0; max-width: 100%; }
         .sb-shuffle { flex: 0 0 auto; display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; padding: 0;
             border: 1px solid var(--border); border-radius: 8px; background: var(--surface); color: var(--text); cursor: pointer; }
@@ -178,12 +178,21 @@
 
         .cmp-box { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; font-size: .8rem; }
         .cmp-head, .comparison-row { display: grid; grid-template-columns: minmax(0,34fr) minmax(0,32fr) minmax(0,34fr); align-items: stretch; }
+        /* the header row: two halves, the left player at the left, the right one at the right
+           (Head to Head .cs-legend), so long names have room */
+        .cmp-head { grid-template-columns: minmax(0,1fr) minmax(0,1fr); }
+        .cmp-head > div:nth-child(2) { display: none; }
+        .cmp-head > div:first-child { align-items: flex-start; text-align: left; }
         .cmp-head { background: var(--surface-hover); border-bottom: 1px solid var(--border); }
         .cmp-head > div { padding: .55rem .55rem; display: flex; flex-direction: column; align-items: flex-end; justify-content: flex-end; gap: .3rem; text-align: right; min-width: 0; }
-        .cmp-head .player-name-cell { font-family: 'DM Sans', sans-serif; font-size: .72rem; font-weight: 700; color: var(--text); line-height: 1.3; overflow-wrap: break-word; hyphens: auto; -webkit-hyphens: auto; max-width: 100%; text-wrap: balance; }
+        .cmp-head .player-name-cell { font-family: 'DM Sans', sans-serif; font-size: .72rem; font-weight: 700; color: var(--text); line-height: 1.3; max-width: 100%; text-wrap: balance; }
         .comparison-row { border-bottom: 1px solid var(--border); }
         .comparison-row:last-child { border-bottom: none; }
-        .comparison-row > div { padding: .55rem .55rem; min-height: 2.6rem; display: flex; align-items: center; min-width: 0; overflow-wrap: anywhere; line-height: 1.3; }
+        .comparison-row > div { padding: .55rem .55rem; min-height: 2.6rem; display: flex; align-items: center; min-width: 0; line-height: 1.3; }
+        .metric-name { overflow-wrap: break-word; }
+        /* a name's words and a figure never break (see fitComparison) */
+        .nb, .num { white-space: nowrap; }
+        .num { font-variant-numeric: tabular-nums; }
         .player-value { justify-content: flex-end; text-align: right; font-family: var(--mono); font-weight: 500; font-size: .92rem; font-variant-numeric: tabular-nums; color: var(--text); }
         .comparison-row.winner-left .player-value.winner { background: var(--ta); font-weight: 700; }
         .comparison-row.winner-right .player-value.winner { background: var(--tb); font-weight: 700; }
@@ -213,6 +222,20 @@
         .range-diff-toggle input { accent-color: var(--text); }
         .range-summary { font-size: .86rem; font-weight: 600; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: .7rem .8rem; margin-bottom: 1rem; }
 
+        /* phones: faces and score on one row, the names on the row under them, each name
+           with half the box (left player left-aligned, right player right-aligned, as Head to
+           Head's .cs-legend), so long surnames fit whole */
+        @media (max-width: 480px) {
+            .score-summary { grid-template-columns: repeat(4, minmax(0,1fr)); row-gap: .55rem; column-gap: .3rem; }
+            .score-summary > .player-score { display: contents; }
+            .score-summary > .player-score:first-child > :first-child { grid-column: 1; grid-row: 1; justify-self: start; }
+            .score-summary > .sb-mid { grid-column: 2 / span 2; grid-row: 1; }
+            .score-summary > .player-score:last-child > :first-child { grid-column: 4; grid-row: 1; justify-self: end; }
+            .score-summary > .player-score:first-child > .sb-namerow { grid-column: 1 / span 2; grid-row: 2; justify-content: flex-start; text-align: left; }
+            .score-summary > .player-score:last-child > .sb-namerow { grid-column: 3 / span 2; grid-row: 2; justify-content: flex-end; text-align: right; }
+            .score-summary > .player-score:first-child .sb-faces { justify-content: flex-start; }
+            .score-summary > .player-score:last-child .sb-faces { justify-content: flex-end; }
+        }
         /* small phones: a smaller score and faces so each name column keeps whole words */
         @media (max-width: 420px) {
             .cmp-head .player-name-cell { font-size: .64rem; }
@@ -2262,7 +2285,7 @@
                 ? `<img src="${HS_BUST + l.hs}.webp" alt="${hmEsc(name)}"${cls === 'ph' ? '' : ' loading="lazy"'} data-i="${ini}" onerror="${HS_ERR}">`
                 : ini;
             return url
-                ? `<a class="${cls}"${st} href="${url}" title="${hmEsc(name)} on HoopsMatic">${img}</a>`
+                ? `<a class="${cls}"${st} href="${url}" title="${hmEsc(name)} on HoopsMatic" aria-label="${hmEsc(name)}">${img}</a>`
                 : `<span class="${cls}"${st}>${img}</span>`;
         }
         // The players behind a side's label: a group's "A + B" (combine mode) or one player.
@@ -2278,9 +2301,114 @@
         // (site rule: every named player links to his page); a group reads "A + B".
         function playerNameLinks(label) {
             return sideMembers(label).map(n => {
-                const url = playerPageUrl(n);
-                return url ? `<a href="${url}">${hmEsc(n)}</a>` : hmEsc(n);
+                const url = playerPageUrl(n), inner = nameWords(n);
+                return url ? `<a class="pn" href="${url}" data-full="${hmEsc(n)}">${inner}</a>`
+                           : `<span class="pn" data-full="${hmEsc(n)}">${inner}</span>`;
             }).join(' + ');
+        }
+        // A name as unbreakable words: lines may break between words, never inside one.
+        // hyphenBreak (last resort, see fitComparison): a hyphenated surname may also break
+        // right after its own hyphen ("Gilgeous-" / "Alexander").
+        function nameWords(n, hyphenBreak) {
+            return String(n).split(/\s+/).filter(Boolean).map(w => hyphenBreak && w.indexOf('-') > 0
+                ? w.replace(/-/g, '-\n').split('\n').map(part => `<span class="nb">${hmEsc(part)}</span>`).join('<wbr>')
+                : `<span class="nb">${hmEsc(w)}</span>`).join(' ');
+        }
+        // "Giannis Antetokounmpo" -> "G. Antetokounmpo" (the rest of the name kept as is).
+        function initialName(n) {
+            const w = String(n).split(/\s+/).filter(Boolean);
+            return w.length < 2 ? n : w[0].charAt(0) + '. ' + w.slice(1).join(' ');
+        }
+
+        // ===== Fitting names and figures into their columns (phones) =====
+        // Rules: a name never breaks inside a word, a number never wraps.
+        //   - names: shrink the font down to a readable minimum; if it still doesn't fit,
+        //     show "G. Antetokounmpo" (the full name stays as the link's accessible name);
+        //   - money: in a section where any dollar figure doesn't fit, all its dollar
+        //     figures show in short form ($397.5M); the full figure stays for screen
+        //     readers and comes back when there is room (wider screen);
+        //   - other numbers that don't fit: a smaller font.
+        // Runs after every render, when a results box changes width, and when the fonts load.
+        const NAME_MIN_PX = { score: 12, head: 10.5 }, NUM_MIN_PX = 11;
+        const MONEY_RE = /^\$\d{1,3}(,\d{3})+(\.\d+)?$/;
+        // Wider than its box? The widest unbreakable piece (a name word, a figure) against the
+        // content width; scrollWidth alone misses overflow on the start side of right-aligned cells.
+        function overflows(el) {
+            const cs = getComputedStyle(el);
+            const avail = el.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+            let widest = 0;
+            el.querySelectorAll('.nb, .num').forEach(x => {
+                if (x.closest('.sr-only')) return;
+                const vis = x.classList.contains('num') ? (x.querySelector('[aria-hidden="true"]') || x) : x;
+                widest = Math.max(widest, vis.getBoundingClientRect().width);
+            });
+            return widest > avail + 0.5 || el.scrollWidth > el.clientWidth + 0.5;
+        }
+        function shrinkToFit(el, minPx) {
+            let size = parseFloat(getComputedStyle(el).fontSize);
+            while (overflows(el) && size > minPx) { size = Math.max(minPx, size - 0.5); el.style.fontSize = size + 'px'; }
+            return !overflows(el);
+        }
+        function setName(pn, short, hyphenBreak) {
+            const full = pn.dataset.full;
+            pn.innerHTML = short
+                ? `<span aria-hidden="true">${nameWords(initialName(full), hyphenBreak)}</span><span class="sr-only">${hmEsc(full)}</span>`
+                : nameWords(full);
+            if (short) pn.setAttribute('title', full); else pn.removeAttribute('title');
+        }
+        function shortMoney(s) {
+            const n = parseFloat(String(s).replace(/[$,]/g, ''));
+            if (!isFinite(n)) return s;
+            const a = Math.abs(n);
+            const [d, u] = a >= 1e9 ? [1e9, 'B'] : a >= 1e6 ? [1e6, 'M'] : a >= 1e3 ? [1e3, 'K'] : [1, ''];
+            if (!u) return s;
+            const v = n / d;
+            return '$' + v.toFixed(v >= 10 ? 1 : 2) + u;   // $397.5M, $28.4M, $1.79M
+        }
+        function setNum(num, short) {
+            const full = num.dataset.full;
+            num.innerHTML = short ? `<span aria-hidden="true">${hmEsc(shortMoney(full))}</span><span class="sr-only">${hmEsc(full)}</span>` : hmEsc(full);
+        }
+        function fitComparison(scope) {
+            if (!scope || !scope.offsetWidth) return;   // hidden (other tab): fitted when shown
+            scope.querySelectorAll('.player-name-score, .cmp-head .player-name-cell').forEach(el => {
+                const min = el.classList.contains('player-name-score') ? NAME_MIN_PX.score : NAME_MIN_PX.head;
+                const pns = el.querySelectorAll('.pn');
+                el.style.fontSize = '';
+                pns.forEach(pn => setName(pn, false));
+                if (shrinkToFit(el, min)) return;
+                el.style.fontSize = '';
+                pns.forEach(pn => setName(pn, true));
+                if (shrinkToFit(el, min)) return;
+                // last resort: a hyphenated surname may break after its hyphen
+                el.style.fontSize = '';
+                pns.forEach(pn => setName(pn, true, true));
+                shrinkToFit(el, min);
+            });
+            scope.querySelectorAll('.section-score').forEach(el => el.querySelectorAll('.pn').forEach(pn => setName(pn, false)));
+            scope.querySelectorAll('.cmp-box').forEach(box => {
+                const cells = [...box.querySelectorAll('.player-value')].filter(c => c.querySelector('.num'));
+                cells.forEach(c => { c.style.fontSize = ''; setNum(c.querySelector('.num'), false); });
+                const money = cells.filter(c => MONEY_RE.test(c.querySelector('.num').dataset.full));
+                if (money.some(overflows)) money.forEach(c => setNum(c.querySelector('.num'), true));
+                cells.forEach(c => { if (overflows(c)) shrinkToFit(c, NUM_MIN_PX); });
+            });
+        }
+        // Refit when a results box changes width (rotation, resize, a tab shown) and once the fonts are in.
+        const fitWidths = new WeakMap();
+        const fitObserver = typeof ResizeObserver === 'function' ? new ResizeObserver(entries => {
+            entries.forEach(e => {
+                const w = Math.round(e.contentRect.width);
+                if (w && fitWidths.get(e.target) !== w) { fitWidths.set(e.target, w); fitComparison(e.target); }
+            });
+        }) : null;
+        function watchFit(wrap) {
+            if (fitObserver && !fitWidths.has(wrap)) { fitWidths.set(wrap, Math.round(wrap.getBoundingClientRect().width)); fitObserver.observe(wrap); }
+        }
+        if (document.fonts) {
+            const refitAll = () => document.querySelectorAll('.filter-cmp-wrap').forEach(fitComparison);
+            document.fonts.ready.then(refitAll);
+            if (document.fonts.addEventListener) document.fonts.addEventListener('loadingdone', refitAll);
         }
         const SHUFFLE_SVG = '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
             '<path d="M16 3h5v5"/><path d="M4 20 21 3"/><path d="M21 16v5h-5"/><path d="M15 15l6 6"/><path d="M4 4l5 5"/></svg>';
@@ -2358,8 +2486,9 @@
                                             item.winner === 'player2' ? 'winner-right' : 'tie';
                             const p1Class = item.winner === 'player1' ? 'player-value winner' : 'player-value';
                             const p2Class = item.winner === 'player2' ? 'player-value winner' : 'player-value';
-                            const p1Display = item.player1Value !== null ? item.player1Value : '<span class="no-data">–</span>';
-                            const p2Display = item.player2Value !== null ? item.player2Value : '<span class="no-data">–</span>';
+                            const numSpan = (v) => `<span class="num" data-full="${hmEsc(v)}">${hmEsc(v)}</span>`;
+                            const p1Display = item.player1Value !== null ? numSpan(item.player1Value) : '<span class="no-data">–</span>';
+                            const p2Display = item.player2Value !== null ? numSpan(item.player2Value) : '<span class="no-data">–</span>';
 
                             html += `
                                 <div class="comparison-row ${rowClass}">
@@ -2375,6 +2504,8 @@
                 });
 
                 wrap.innerHTML = html;
+                fitComparison(wrap);
+                watchFit(wrap);
 
                 wrap.querySelectorAll('.cmp-sec-check').forEach(cb => {
                     cb.addEventListener('change', function() {
