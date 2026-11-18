@@ -126,10 +126,8 @@
         .loop-button.active { background: var(--text); color: #fff; }
         .loop-interval { font-family: var(--mono); font-size: .7rem; font-weight: 500; padding: .5rem .5rem; border: 1px solid var(--border); border-radius: 6px;
             background: var(--surface); color: var(--text); cursor: pointer; }
-        .loop-stop-floating { display: none; position: fixed; bottom: 1rem; right: 1rem; z-index: 9999; background: var(--text); color: #fff; border: none;
-            border-radius: 10px; padding: .65rem 1rem; font-family: var(--mono); font-size: .72rem; font-weight: 600; cursor: pointer; }
-        .loop-stop-floating:hover { background: #3a3a3c; }
-        .loop-stop-floating.visible { display: block; }
+        .loop-stop-bar { margin: 0 0 .6rem; }
+        .loop-stop-bar .loop-button { width: 100%; }
 
         /* faces: nba-headshots busts shown whole on a light grey #f0f0f2 circle; initials when there is no file */
         .ph, .f, .fm { position: relative; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; overflow: hidden;
@@ -149,7 +147,12 @@
         .sb-faces { display: flex; justify-content: center; flex-wrap: wrap; gap: .25rem; }
         .player-score:first-child .sb-faces .fm { box-shadow: 0 0 0 2px var(--a); }
         .player-score:last-child .sb-faces .fm { box-shadow: 0 0 0 2px var(--b); }
-        .player-name-score { font-weight: 700; font-size: .84rem; line-height: 1.2; overflow-wrap: anywhere; }
+        .player-name-score { font-weight: 700; font-size: .84rem; line-height: 1.2; overflow-wrap: break-word; hyphens: auto; -webkit-hyphens: auto; max-width: 100%; }
+        .sb-namerow { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: .3rem; min-width: 0; max-width: 100%; }
+        .sb-shuffle { flex: 0 0 auto; display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; padding: 0;
+            border: 1px solid var(--border); border-radius: 8px; background: var(--surface); color: var(--text); cursor: pointer; }
+        .sb-shuffle:hover { border-color: var(--text); }
+        .sb-shuffle:focus-visible { outline: 2px solid var(--text); outline-offset: 2px; }
         .sb-mid { display: flex; flex-direction: column; align-items: center; text-align: center; }
         .sb-big { font-family: var(--mono); font-size: 1.75rem; line-height: 1.1; white-space: nowrap; font-variant-numeric: tabular-nums; }
         .score-value { display: inline-block; font-weight: 500; color: var(--text); border-radius: 8px; padding: 0 .2em; }
@@ -161,7 +164,7 @@
         .category-section { margin-bottom: 1.6rem; min-width: 0; }
         .category-title { font-size: 1rem; font-weight: 700; letter-spacing: -.01em; line-height: 1.3; margin-bottom: .7rem; padding-bottom: .35rem; border-bottom: 2px solid var(--text); }
         .section-score { font-family: var(--mono); font-size: .68rem; font-weight: 500; color: var(--text-secondary); letter-spacing: 0; margin-top: .15rem; }
-        .section-score .clickable-player-name { color: var(--text); font-weight: 600; }
+        .section-score a { color: var(--text); font-weight: 600; }
         .cmp-toggle-label { flex: 0 0 auto; display: inline-flex; align-items: center; cursor: pointer; }
         .cmp-toggle-label input { cursor: pointer; margin: 0; accent-color: var(--text); width: .85rem; height: .85rem; }
         .category-title .cmp-toggle-label { margin-right: .45rem; vertical-align: -1px; }
@@ -171,7 +174,7 @@
         .cmp-head, .comparison-row { display: grid; grid-template-columns: minmax(0,34fr) minmax(0,32fr) minmax(0,34fr); align-items: stretch; }
         .cmp-head { background: var(--surface-hover); border-bottom: 1px solid var(--border); }
         .cmp-head > div { padding: .55rem .55rem; display: flex; flex-direction: column; align-items: flex-end; justify-content: flex-end; gap: .3rem; text-align: right; min-width: 0; }
-        .cmp-head .player-name-cell { font-family: 'DM Sans', sans-serif; font-size: .72rem; font-weight: 700; color: var(--text); line-height: 1.3; overflow-wrap: anywhere; }
+        .cmp-head .player-name-cell { font-family: 'DM Sans', sans-serif; font-size: .72rem; font-weight: 700; color: var(--text); line-height: 1.3; overflow-wrap: break-word; hyphens: auto; -webkit-hyphens: auto; max-width: 100%; }
         .comparison-row { border-bottom: 1px solid var(--border); }
         .comparison-row:last-child { border-bottom: none; }
         .comparison-row > div { padding: .55rem .55rem; min-height: 2.6rem; display: flex; align-items: center; min-width: 0; overflow-wrap: anywhere; line-height: 1.3; }
@@ -180,8 +183,6 @@
         .comparison-row.winner-right .player-value.winner { background: var(--tb); font-weight: 700; }
         .metric-name { justify-content: center; text-align: center; font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: .72rem; color: var(--text); }
         .no-data { color: var(--text-secondary); font-weight: 500; }
-        .clickable-player-name, .player-value[data-player-name] { text-decoration: none !important; }
-        .clickable-player-name:hover, .player-value[data-player-name]:hover { text-decoration: underline !important; text-underline-offset: 2px; }
 
         /* more comparisons: Head to Head's chips */
         .suggestions-section { margin: 1.6rem 0 1rem; }
@@ -206,6 +207,18 @@
         .range-diff-toggle input { accent-color: var(--text); }
         .range-summary { font-size: .86rem; font-weight: 600; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: .7rem .8rem; margin-bottom: 1rem; }
 
+        /* small phones: a smaller score and faces so each name column keeps whole words */
+        @media (max-width: 420px) {
+            .cmp-head .player-name-cell { font-size: .64rem; }
+            .cmp-head > div { padding: .5rem .45rem; }
+        }
+        @media (max-width: 360px) {
+            .score-summary { padding: .9rem .5rem .8rem; gap: .25rem; }
+            .sb-big { font-size: 1.3rem; }
+            .score-summary .ph { --s: 56px !important; }
+            .player-name-score { font-size: .76rem; }
+            .sb-shuffle { width: 26px; height: 26px; }
+        }
         @media (min-width: 640px) {
             .player-name-score { font-size: .95rem; }
             .vs-text { padding-top: .9rem; }
@@ -2237,7 +2250,7 @@
             const l = playerLinks[name] || {}, ini = hmEsc(playerInitials(name)), url = playerPageUrl(name);
             const st = size ? ` style="--s:${size}px"` : '';
             const img = l.hs && /^[0-9a-z-]+$/.test(l.hs)
-                ? `<img src="${HS_BUST + l.hs}.webp" alt="${hmEsc(name)}" loading="lazy" data-i="${ini}" onerror="${HS_ERR}">`
+                ? `<img src="${HS_BUST + l.hs}.webp" alt="${hmEsc(name)}"${cls === 'ph' ? '' : ' loading="lazy"'} data-i="${ini}" onerror="${HS_ERR}">`
                 : ini;
             return url
                 ? `<a class="${cls}"${st} href="${url}" title="${hmEsc(name)} on HoopsMatic">${img}</a>`
@@ -2252,6 +2265,17 @@
             if (m.length === 1) return playerFace(m[0], 'ph', big);
             return '<div class="sb-faces">' + m.map(n => playerFace(n, 'fm')).join('') + '</div>';
         }
+        // A side's name(s), each player a link to his Head to Head page when he has one
+        // (site rule: every named player links to his page); a group reads "A + B".
+        function playerNameLinks(label) {
+            return sideMembers(label).map(n => {
+                const url = playerPageUrl(n);
+                return url ? `<a href="${url}">${hmEsc(n)}</a>` : hmEsc(n);
+            }).join(' + ');
+        }
+        const SHUFFLE_SVG = '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+            '<path d="M16 3h5v5"/><path d="M4 20 21 3"/><path d="M21 16v5h-5"/><path d="M15 15l6 6"/><path d="M4 4l5 5"/></svg>';
+
         // House rule: in a stat ordering 3-pointers go last. Display order only (scores are
         // computed before this): inside each run of regular-season or playoff stats, the
         // "Three Point %" rows move to the end of that run.
@@ -2273,12 +2297,16 @@
             const hiddenSections = new Set();
 
             const esc = (s) => String(s);
-            const nameDiv = (n) => clickable
-                ? `<div class="player-name-score clickable-player-name" data-player-name="${esc(n)}" style="cursor: pointer;">${esc(n)}</div>`
-                : `<div class="player-name-score">${esc(n)}</div>`;
-            const nameSpan = (n) => clickable
-                ? `<span class="clickable-player-name" data-player-name="${esc(n)}" style="cursor: pointer;">${esc(n)}</span>`
-                : esc(n);
+            // The name links to his page; in career mode a shuffle button beside it keeps the
+            // "random opponent" action the name used to have (wireScoreNameClicks reads
+            // .clickable-player-name). Groups (combine mode) get no button: it did nothing there.
+            const nameDiv = (n) => {
+                const shuffle = clickable && players.includes(n)
+                    ? `<button type="button" class="sb-shuffle clickable-player-name" data-player-name="${hmEsc(n)}" title="Random opponent for ${hmEsc(n)}" aria-label="Random opponent for ${hmEsc(n)}">${SHUFFLE_SVG}</button>`
+                    : '';
+                return `<div class="sb-namerow"><div class="player-name-score">${playerNameLinks(n)}</div>${shuffle}</div>`;
+            };
+            const nameSpan = (n) => playerNameLinks(n);
             // a side's small faces for a box's header row (each member of a group)
             const headFaces = (n) => '<span class="sb-faces">' + sideMembers(n).map(m => playerFace(m, 'f')).join('') + '</span>';
 
@@ -2312,9 +2340,9 @@
                     if (!secHidden) {
                         // one box per section (Head to Head .vt): both players in a header row, then a row per stat
                         html += `<div class="cmp-box"><div class="cmp-head">
-                                    <div>${headFaces(p1)}<div class="player-value player-name-cell">${esc(p1)}</div></div>
+                                    <div>${headFaces(p1)}<div class="player-name-cell">${playerNameLinks(p1)}</div></div>
                                     <div></div>
-                                    <div>${headFaces(p2)}<div class="player-value player-name-cell">${esc(p2)}</div></div>
+                                    <div>${headFaces(p2)}<div class="player-name-cell">${playerNameLinks(p2)}</div></div>
                                 </div>`;
                         threesLast(items).forEach(item => {
                             const rowClass = item.winner === 'player1' ? 'winner-left' :
@@ -2357,7 +2385,11 @@
             const resultsDiv = document.getElementById('results');
 
             // Filterable scored region (toggles + live recompute); extras live outside it.
-            resultsDiv.innerHTML = '<div class="filter-cmp-wrap"></div>';
+            // While the loop runs, a Stop button sits at the top of the results (in the page,
+            // nothing pinned over it).
+            resultsDiv.innerHTML = (loopActive
+                ? '<div class="loop-stop-bar"><button type="button" class="loop-button active" onclick="toggleLoop()">Stop Comparison Loop</button></div>'
+                : '') + '<div class="filter-cmp-wrap"></div>';
             const wrap = resultsDiv.querySelector('.filter-cmp-wrap');
             renderFilterableComparison(wrap, results, player1Name, player2Name, {
                 clickable: true,
@@ -2506,8 +2538,7 @@
                 loopBtnBottom.textContent = 'Stop Comparison Loop';
                 loopBtnBottom.classList.add('active');
             }
-            const floatBtn = document.getElementById('loopStopFloat');
-            if (floatBtn) floatBtn.classList.add('visible');
+            // (the in-page Stop bar appears at the top of the results with the first loop render)
             scrollSelect.disabled = true;
             stickySelect.disabled = true;
             usedOpponents.clear();
@@ -2532,8 +2563,7 @@
                 loopBtnBottom.textContent = 'Start Comparison Loop';
                 loopBtnBottom.classList.remove('active');
             }
-            const floatBtn = document.getElementById('loopStopFloat');
-            if (floatBtn) floatBtn.classList.remove('visible');
+            document.querySelectorAll('.loop-stop-bar').forEach(el => el.remove());
             scrollSelect.disabled = false;
             stickySelect.disabled = false;
             
@@ -3129,8 +3159,8 @@
         function displayRangeResults(results, p1, p2, meta) {
             const resultsDiv = document.getElementById('range-results');
 
-            const summary = `Comparing ${p1} ${rangeLabel(meta.mode, meta.from1, meta.to1)} ` +
-                `(${yearSpan(results.years1)}) vs ${p2} ${rangeLabel(meta.mode, meta.from2, meta.to2)} ` +
+            const summary = `Comparing ${playerNameLinks(p1)} ${rangeLabel(meta.mode, meta.from1, meta.to1)} ` +
+                `(${yearSpan(results.years1)}) vs ${playerNameLinks(p2)} ${rangeLabel(meta.mode, meta.from2, meta.to2)} ` +
                 `(${yearSpan(results.years2)})`;
 
             const renderedAny = Object.keys(results.categories).some(s => results.categories[s].length > 0);
@@ -3144,6 +3174,5 @@
             }
         }
     </script>
-    <button class="loop-stop-floating" id="loopStopFloat" onclick="toggleLoop()">⏹ Stop Loop</button>
 </body>
 </html>
