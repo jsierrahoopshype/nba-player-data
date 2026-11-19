@@ -728,7 +728,6 @@
                     transform: (value) => typeof value === 'string' ? value.trim() : value
                 });
                 
-                console.log(`${sheetName}: ${parsed.data.length} rows, cols: ${Object.keys(parsed.data[0] || {}).slice(0, 5).join(', ')}...`);
                 return parsed.data;
             } catch (error) {
                 console.warn(`Error fetching Google Sheet ${sheetName}:`, error);
@@ -850,7 +849,6 @@
                     });
                 });
             });
-            if (n > 0) console.log('Fixed ' + n + ' mojibake player names');
         }
 
         // Fix column swaps in data
@@ -876,12 +874,10 @@
                 poFixed++;
             });
             
-            console.log('Fixed column swaps: ' + poFixed + ' PO rows');
         }
 
         // ===== DATA LOADING =====
         async function fetchJSON(url) {
-            console.log('Fetching:', url.split('/').pop()); // Log filename only
             try {
                 // Add 30-second timeout
                 const controller = new AbortController();
@@ -921,11 +917,9 @@
                 
                 if (hasGSheetData) {
                     dataSource = 'Google Sheets';
-                    console.log('Current season data loaded from Google Sheets');
                 } else {
                     // Fallback to JSON if Google Sheets failed
                     dataSource = 'JSON';
-                    console.log('Google Sheets unavailable, falling back to JSON...');
                     updateProgress(15, `Loading ${formatSeasonYear(CURRENT_SEASON_YEAR)} data from JSON fallback...`);
                     currentData = await fetchJSON(JSON_URL);
                 }
@@ -935,37 +929,32 @@
                     ? sheetSeasonYear
                     : (currentData && currentData.season ? String(parseInt(currentData.season) + 1) : null);
                 if (reportedSeason && reportedSeason !== CURRENT_SEASON_YEAR) {
-                    console.log(`Data reports season ${formatSeasonYear(reportedSeason)}; using it as the current season`);
                     CURRENT_SEASON_YEAR = reportedSeason;
                 }
                 PREV_SEASON_YEAR = String(parseInt(CURRENT_SEASON_YEAR) - 1);
                 
-                console.log('Starting historical data load...');
                 updateProgress(20, 'Loading historical data...');
                 
                 // Load historical JSON files in parallel (plus last season's frozen file)
                 const [rsData, poData, adv1Data, adv2Data, prevData] = await Promise.all([
-                    fetchJSON(HISTORICAL_RS_URL).then(d => { console.log('RS data fetched'); return d; }),
-                    fetchJSON(HISTORICAL_PO_URL).then(d => { console.log('PO data fetched'); return d; }),
-                    fetchJSON(HISTORICAL_ADV1_URL).then(d => { console.log('ADV1 data fetched'); return d; }),
-                    fetchJSON(HISTORICAL_ADV2_URL).then(d => { console.log('ADV2 data fetched'); return d; }),
-                    fetchJSON(seasonJsonURL(PREV_SEASON_YEAR)).then(d => { console.log('Previous season data fetched'); return d; })
+                    fetchJSON(HISTORICAL_RS_URL),
+                    fetchJSON(HISTORICAL_PO_URL),
+                    fetchJSON(HISTORICAL_ADV1_URL),
+                    fetchJSON(HISTORICAL_ADV2_URL),
+                    fetchJSON(seasonJsonURL(PREV_SEASON_YEAR))
                 ]);
                 
-                console.log('All historical data fetched');
                 
                 updateProgress(50, 'Processing data...');
                 
                 // Process historical RS stats
                 if (rsData) {
                     data.rsStats = rsData.rsStats || [];
-                    console.log('RS Stats loaded:', data.rsStats.length);
                 }
                 
                 // Process historical PO stats
                 if (poData) {
                     data.poStats = poData.poStats || [];
-                    console.log('PO Stats loaded:', data.poStats.length);
                 }
                 
                 // Process historical advanced data (part 1)
@@ -974,10 +963,6 @@
                     data.historical.scoring = adv1Data.scoring || [];
                     data.historical.shotLocation = adv1Data.shotLocation || [];
                     data.historical.defense = adv1Data.defense || [];
-                    console.log('Historical adv1 loaded:', {
-                        advanced: data.historical.advanced.length,
-                        scoring: data.historical.scoring.length
-                    });
                 }
                 
                 // Process historical advanced data (part 2)
@@ -987,11 +972,6 @@
                     data.historical.hustle = adv2Data.hustle || [];
                     data.historical.plusMinus = adv2Data.plusMinus || [];
                     data.historical.winsLosses = adv2Data.winsLosses || [];
-                    console.log('Historical adv2 loaded:', {
-                        clutch: data.historical.clutch.length,
-                        hustle: data.historical.hustle.length,
-                        plusMinus: data.historical.plusMinus.length
-                    });
                     historicalDataLoaded = true;
                 }
                 
@@ -1071,7 +1051,6 @@
                                     count++;
                                 }
                             });
-                            console.log(`Indexed ${count} players from ${key}`);
                         }
                     });
                     
@@ -1111,7 +1090,6 @@
                         });
                     }
                     
-                    console.log(`${formatSeasonYear(CURRENT_SEASON_YEAR)} data loaded:`, Object.keys(currentSeasonPlayers).length, 'players');
                 }
                 
                 // Previous season: final advanced/scoring/etc. numbers from its frozen JSON
@@ -1132,7 +1110,6 @@
                             prevSeasonPlayersNormalized[normalizedName]._originalName = name;
                         });
                     });
-                    console.log(`${formatSeasonYear(PREV_SEASON_YEAR)} data loaded:`, Object.keys(prevSeasonPlayers).length, 'players');
                 }
 
                 updateProgress(80, 'Building player database...');
@@ -1187,7 +1164,6 @@
                 playerPOSeasons[name] = seasons.sort((a, b) => parseInt(b.year) - parseInt(a.year));
             });
 
-            console.log('Built player list:', players.length, 'players');
         }
 
         // Attach a current-season entry to each matching historical player, or add the player (rookies)
@@ -1218,7 +1194,6 @@
                 seasons.push({ year: CURRENT_SEASON_YEAR, team: row.TEAM_ABBREVIATION || row.TEAM || '', data: playerObj.rsStats || null });
                 added++;
             });
-            console.log(`Added ${formatSeasonYear(CURRENT_SEASON_YEAR)} for ${added} players (${newPlayers} new)`);
         }
 
         // ===== COMPARISON CONFIGURATION =====
@@ -1501,7 +1476,6 @@
             });
             
             if (availableStars.length < 2) {
-                console.log('Not enough stars found');
                 return;
             }
             
@@ -1558,7 +1532,6 @@
             }
             
             if (topScorers.length < 2) {
-                console.log('Not enough players found for season', keepSeason);
                 return;
             }
             
