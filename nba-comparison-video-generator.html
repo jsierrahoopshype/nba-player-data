@@ -512,7 +512,7 @@
             .range-inputs { flex-direction: column; }
         }
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/mp4-muxer@latest/build/mp4-muxer.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mp4-muxer@5.2.2/build/mp4-muxer.js"></script>
 </head>
 <body>
     <div class="header">
@@ -3742,33 +3742,9 @@
                 await sleep(50);
                 updateProgress(30, 'Recording started...');
 
-                // Set up parallel MP4 muxer
-                var mp4Muxer = new Mp4Muxer.Muxer({
-                    target: new Mp4Muxer.ArrayBufferTarget(),
-                    fastStart: 'in-memory',
-                    video: {
-                        codec: 'avc',
-                        width: dims.width,
-                        height: dims.height
-                    }
-                });
-
-                var videoEncoder = new VideoEncoder({
-                    output: function(chunk, meta) {
-                        mp4Muxer.addVideoChunk(chunk, meta);
-                    },
-                    error: function(e) {
-                        console.error('VideoEncoder error:', e);
-                    }
-                });
-
-                videoEncoder.configure({
-                    codec: 'avc1.4d0034',
-                    width: dims.width,
-                    height: dims.height,
-                    bitrate: 8_000_000,
-                    framerate: framerate
-                });
+                // Parallel MP4 (tested setup; never blocks the WebM)
+                window.mp4Buffer = null;
+                var mp4Rec = await createMp4Recorder(dims.width, dims.height, framerate);
 
                 // --- Frame rendering loop (setTimeout-based, not rAF) ---
                 var frameDelay = Math.round(1000 / framerate);
@@ -3866,9 +3842,7 @@
                     previewCtx.drawImage(offscreen, 0, 0);
 
                     // Capture frame for MP4 encoder
-                    var videoFrame = new VideoFrame(offscreen, { timestamp: (frame * 1_000_000) / framerate });
-                    videoEncoder.encode(videoFrame, { keyFrame: frame % (framerate * 2) === 0 });
-                    videoFrame.close();
+                    mp4Rec.encode(offscreen, (frame * 1_000_000) / framerate, frame % (framerate * 2) === 0);
 
                     // Update progress bar every 30 frames
                     if (frame % 30 === 0) {
@@ -3882,9 +3856,7 @@
                 }
 
                 // Finalize MP4
-                await videoEncoder.flush();
-                mp4Muxer.finalize();
-                window.mp4Buffer = mp4Muxer.target.buffer;
+                window.mp4Buffer = await mp4Rec.finish();
 
                 // Stop recording
                 updateProgress(95, 'Finalizing video...');
@@ -3895,8 +3867,8 @@
                     mediaRecorder.onstop = function() {
                         videoBlob = new Blob(recordedChunks, { type: 'video/webm' });
                         updateProgress(100, 'Video complete!');
-                        showStatus('Video generated successfully! Size: ' + (videoBlob.size / 1024 / 1024).toFixed(2) + ' MB', 'success');
-                        document.getElementById('downloadMp4Btn').style.display = 'block';
+                        showStatus('Video generated successfully! Size: ' + (videoBlob.size / 1024 / 1024).toFixed(2) + ' MB.' + mp4StatusNote(), 'success');
+                        showMp4Button();
                         document.getElementById('downloadBtn').style.display = 'block';
                         document.getElementById('generateBtn').disabled = false;
                         document.getElementById('loadingSpinner').style.display = 'none';
@@ -3912,6 +3884,112 @@
                 document.getElementById('loadingSpinner').style.display = 'none';
                 document.getElementById('btnText').textContent = 'Generate Video';
             }
+        }
+
+
+        // ========================================
+        // MP4 ENCODER SETUP (shared by Classic and New)
+        // ========================================
+        // Some browsers/PCs accept an H.264 setup but then return no video at all,
+        // which made mp4-muxer crash at the end ("reading 'colorSpace'") and took the
+        // WebM download down with it. So: test-encode two frames with each candidate
+        // setup and keep the first one that really produces video.
+        async function pickMp4EncoderConfig(W, H, fps) {
+            if (typeof VideoEncoder === 'undefined' || typeof VideoFrame === 'undefined' || typeof Mp4Muxer === 'undefined') return null;
+            var codecs = ['avc1.640034', 'avc1.4d0034', 'avc1.420034', 'avc1.42e034'];   // High, Main, Baseline, Constrained Baseline (level 5.2)
+            var accels = ['no-preference', 'prefer-software', 'prefer-hardware'];
+            var probe = document.createElement('canvas');
+            probe.width = W; probe.height = H;
+            var pctx = probe.getContext('2d');
+            for (var a = 0; a < accels.length; a++) {
+                for (var c = 0; c < codecs.length; c++) {
+                    var cfg = { codec: codecs[c], width: W, height: H, bitrate: 8000000, framerate: fps, hardwareAcceleration: accels[a] };
+                    try {
+                        var sup = await VideoEncoder.isConfigSupported(cfg);
+                        if (!sup || !sup.supported) continue;
+                        var ok = await new Promise(function(resolve) {
+                            var got = false, done = false;
+                            var finish = function(v) { if (!done) { done = true; try { enc.close(); } catch (e) {} resolve(v); } };
+                            var enc = new VideoEncoder({
+                                output: function(chunk, meta) { if (meta && meta.decoderConfig) got = true; },
+                                error: function() { finish(false); }
+                            });
+                            enc.configure(cfg);
+                            for (var i = 0; i < 2; i++) {
+                                pctx.fillStyle = i ? '#222' : '#ddd';
+                                pctx.fillRect(0, 0, W, H);
+                                var vf = new VideoFrame(probe, { timestamp: i * Math.round(1000000 / fps) });
+                                enc.encode(vf, { keyFrame: i === 0 });
+                                vf.close();
+                            }
+                            enc.flush().then(function() { finish(got); }, function() { finish(false); });
+                            setTimeout(function() { finish(got); }, 4000);   // never hang the generator on a stuck encoder
+                        });
+                        if (ok) { console.log('[VideoGen] MP4 encoder:', cfg.codec, cfg.hardwareAcceleration); return cfg; }
+                    } catch (e) { /* try the next setup */ }
+                }
+            }
+            console.warn('[VideoGen] No working MP4 encoder in this browser; WebM only.');
+            return null;
+        }
+
+        // Builds the MP4 side of a render. Every call is safe: if MP4 can't be made,
+        // encode() and finish() quietly do nothing and the WebM still completes.
+        async function createMp4Recorder(W, H, fps) {
+            var cfg = await pickMp4EncoderConfig(W, H, fps);
+            var rec = { ok: false, gotConfig: false, chunks: 0, muxer: null, encoder: null };
+            if (cfg) try {
+                rec.muxer = new Mp4Muxer.Muxer({
+                    target: new Mp4Muxer.ArrayBufferTarget(),
+                    fastStart: 'in-memory',
+                    video: { codec: 'avc', width: W, height: H }
+                });
+                rec.encoder = new VideoEncoder({
+                    output: function(chunk, meta) {
+                        if (meta && meta.decoderConfig) rec.gotConfig = true;
+                        rec.chunks++;
+                        try { rec.muxer.addVideoChunk(chunk, meta); } catch (e) { console.error('MP4 muxer error:', e); rec.ok = false; }
+                    },
+                    error: function(e) { console.error('VideoEncoder error:', e); rec.ok = false; }
+                });
+                rec.encoder.configure(cfg);
+                rec.ok = true;
+            } catch (e) {
+                console.error('MP4 setup failed:', e);
+                rec.ok = false;
+            }
+            rec.encode = function(canvas, timestamp, keyFrame) {
+                if (!rec.ok || !rec.encoder || rec.encoder.state !== 'configured') return;
+                try {
+                    var vf = new VideoFrame(canvas, { timestamp: timestamp });
+                    rec.encoder.encode(vf, { keyFrame: keyFrame });
+                    vf.close();
+                } catch (e) { console.error('MP4 frame error:', e); rec.ok = false; }
+            };
+            // Returns the finished MP4 bytes, or null if this browser couldn't make one.
+            rec.finish = async function() {
+                try {
+                    if (rec.encoder && rec.encoder.state === 'configured') await rec.encoder.flush();
+                    if (!rec.ok || !rec.gotConfig || !rec.chunks) return null;
+                    rec.muxer.finalize();
+                    return rec.muxer.target.buffer;
+                } catch (e) {
+                    console.error('MP4 finalize failed:', e);
+                    return null;
+                } finally {
+                    try { if (rec.encoder && rec.encoder.state !== 'closed') rec.encoder.close(); } catch (e) {}
+                }
+            };
+            return rec;
+        }
+
+        // Shows the MP4 button only when there is an MP4 to download.
+        function showMp4Button() {
+            var b = document.getElementById('downloadMp4Btn');
+            b.style.display = window.mp4Buffer ? 'block' : 'none';
+        }
+        function mp4StatusNote() {
+            return window.mp4Buffer ? '' : ' MP4 isn\'t available in this browser, so only the WebM download is shown (try Chrome or Edge, fully updated, for MP4).';
         }
 
         // ========================================
@@ -5385,34 +5463,20 @@
                 mediaRecorder.start();
                 await sleep(50);
 
-                var mp4Muxer = new Mp4Muxer.Muxer({
-                    target: new Mp4Muxer.ArrayBufferTarget(),
-                    fastStart: 'in-memory',
-                    video: { codec: 'avc', width: W, height: H }
-                });
-                var encErr = null;
-                var videoEncoder = new VideoEncoder({
-                    output: function(chunk, meta) { mp4Muxer.addVideoChunk(chunk, meta); },
-                    error: function(e) { encErr = e; console.error('VideoEncoder error:', e); }
-                });
-                videoEncoder.configure({ codec: 'avc1.4d0034', width: W, height: H, bitrate: 8000000, framerate: fps });
+                window.mp4Buffer = null;
+                var mp4Rec = await createMp4Recorder(W, H, fps);
 
                 var frameDelay = Math.round(1000 / fps);
                 for (var frame = 0; frame < totalFrames; frame++) {
                     var fStart = performance.now();
                     drawVideoFrame(offCtx, sc, tl, frame / fps, scroll[frame]);
                     previewCtx.drawImage(offscreen, 0, 0);
-                    var vf = new VideoFrame(offscreen, { timestamp: (frame * 1000000) / fps });
-                    videoEncoder.encode(vf, { keyFrame: frame % (fps * 2) === 0 });
-                    vf.close();
+                    mp4Rec.encode(offscreen, (frame * 1000000) / fps, frame % (fps * 2) === 0);
                     if (frame % 30 === 0) updateProgress(10 + (frame / totalFrames) * 85, 'Rendering frame ' + frame + '/' + totalFrames + '...');
                     var el = performance.now() - fStart;
                     await sleep(Math.max(1, frameDelay - el));
                 }
-                await videoEncoder.flush();
-                mp4Muxer.finalize();
-                window.mp4Buffer = mp4Muxer.target.buffer;
-                if (encErr) console.warn('MP4 encoder reported an error; WebM is still available.');
+                window.mp4Buffer = await mp4Rec.finish();
 
                 updateProgress(96, 'Finalizing video...');
                 mediaRecorder.stop();
@@ -5420,8 +5484,8 @@
                     mediaRecorder.onstop = function() {
                         videoBlob = new Blob(recordedChunks, { type: 'video/webm' });
                         updateProgress(100, 'Video complete!');
-                        showStatus('Video generated successfully! Size: ' + (videoBlob.size / 1024 / 1024).toFixed(2) + ' MB', 'success');
-                        $('downloadMp4Btn').style.display = 'block';
+                        showStatus('Video generated successfully! Size: ' + (videoBlob.size / 1024 / 1024).toFixed(2) + ' MB.' + mp4StatusNote(), 'success');
+                        showMp4Button();
                         $('downloadBtn').style.display = 'block';
                         resolve();
                     };
