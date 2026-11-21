@@ -3983,13 +3983,90 @@
             return rec;
         }
 
-        // Shows the MP4 button only when there is an MP4 to download.
+        // Shows the MP4 button when there is an MP4. If the browser couldn't make one
+        // while recording, convert the finished WebM to MP4 right here in the page
+        // with ffmpeg.wasm (its own H.264 encoder, so it works on any PC).
         function showMp4Button() {
             var b = document.getElementById('downloadMp4Btn');
-            b.style.display = window.mp4Buffer ? 'block' : 'none';
+            if (window.mp4Buffer) { b.style.display = 'block'; b.disabled = false; b.textContent = 'Download MP4'; return; }
+            b.style.display = 'none';
+            if (videoBlob) convertWebmToMp4(videoBlob);
         }
-        function mp4StatusNote() {
-            return window.mp4Buffer ? '' : ' MP4 isn\'t available in this browser, so only the WebM download is shown (try Chrome or Edge, fully updated, for MP4).';
+        function mp4StatusNote() { return ''; }
+
+        var FFMPEG_CDN = 'https://cdn.jsdelivr.net/npm/';
+        var ffmpegInstance = null;
+        async function loadFfmpeg(onStep) {
+            if (ffmpegInstance) return ffmpegInstance;
+            async function blobUrl(url, type) {
+                var r = await fetch(url);
+                if (!r.ok) throw new Error('Could not download ' + url);
+                return URL.createObjectURL(new Blob([await r.arrayBuffer()], { type: type }));
+            }
+            onStep('Downloading the MP4 converter (about 30 MB, first time only)...');
+            if (typeof FFmpegWASM === 'undefined') {
+                await new Promise(function(res, rej) {
+                    var sc = document.createElement('script');
+                    sc.src = FFMPEG_CDN + '@ffmpeg/ffmpeg@0.12.15/dist/umd/ffmpeg.js';
+                    sc.onload = res; sc.onerror = function() { rej(new Error('Could not load the MP4 converter')); };
+                    document.head.appendChild(sc);
+                });
+            }
+            // Worker + core are turned into same-page blob URLs (browsers won't start a worker straight from a CDN).
+            var urls = await Promise.all([
+                blobUrl(FFMPEG_CDN + '@ffmpeg/ffmpeg@0.12.15/dist/umd/814.ffmpeg.js', 'text/javascript'),
+                blobUrl(FFMPEG_CDN + '@ffmpeg/core@0.12.10/dist/umd/ffmpeg-core.js', 'text/javascript'),
+                blobUrl(FFMPEG_CDN + '@ffmpeg/core@0.12.10/dist/umd/ffmpeg-core.wasm', 'application/wasm')
+            ]);
+            var ff = new FFmpegWASM.FFmpeg();
+            // The library starts a custom worker as a "module" worker, but this worker file is the classic
+            // kind (it needs importScripts), so for this one URL start it as a classic worker instead.
+            var NativeWorker = window.Worker;
+            window.Worker = function(url, opts) {
+                if (String(url) === urls[0]) return new NativeWorker(urls[0]);
+                return new NativeWorker(url, opts);
+            };
+            try {
+                await ff.load({ classWorkerURL: urls[0], coreURL: urls[1], wasmURL: urls[2] });
+            } finally {
+                window.Worker = NativeWorker;
+            }
+            ffmpegInstance = ff;
+            return ff;
+        }
+
+        var mp4ConvertFor = null;   // the WebM being converted, so an old conversion never overwrites a newer video
+        async function convertWebmToMp4(blob) {
+            if (mp4ConvertFor === blob) return;
+            mp4ConvertFor = blob;
+            var gen = document.getElementById('generateBtn');
+            var step = function(t, pct) { if (mp4ConvertFor === blob) updateProgress(pct == null ? 100 : pct, t); };
+            gen.disabled = true;
+            showStatus('WebM ready. Making the MP4 for X now (this can take a few minutes, keep this tab open)...', 'info');
+            try {
+                var ff = await loadFfmpeg(function(t) { step(t, 0); });
+                var onProg = function(e) { var p = Math.max(0, Math.min(1, e.progress || 0)); step('Converting to MP4... ' + Math.round(p * 100) + '%', p * 100); };
+                ff.on('progress', onProg);
+                await ff.writeFile('in.webm', new Uint8Array(await blob.arrayBuffer()));
+                // H.264 + standard-range yuv420p + faststart = the MP4 flavour X/Twitter accepts; 30 fps keeps it quick and small.
+                var code = await ff.exec(['-i', 'in.webm', '-r', '30', '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '23',
+                                          '-vf', 'scale=out_range=tv,format=yuv420p', '-movflags', '+faststart', '-an', 'out.mp4']);
+                ff.off('progress', onProg);
+                if (code !== 0) throw new Error('converter exit code ' + code);
+                var data = await ff.readFile('out.mp4');
+                try { await ff.deleteFile('in.webm'); await ff.deleteFile('out.mp4'); } catch (e) {}
+                if (mp4ConvertFor !== blob) return;   // a newer video started meanwhile
+                window.mp4Buffer = data.buffer;
+                step('MP4 ready!', 100);
+                showStatus('MP4 ready (' + (data.byteLength / 1024 / 1024).toFixed(2) + ' MB). Use Download MP4 for X.', 'success');
+                var b = document.getElementById('downloadMp4Btn');
+                b.style.display = 'block'; b.disabled = false; b.textContent = 'Download MP4';
+            } catch (e) {
+                console.error('MP4 conversion failed:', e);
+                if (mp4ConvertFor === blob) showStatus('Couldn\'t make the MP4 (' + e.message + '). The WebM download still works.', 'error');
+            } finally {
+                if (mp4ConvertFor === blob) { gen.disabled = false; mp4ConvertFor = null; }
+            }
         }
 
         // ========================================
