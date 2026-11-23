@@ -112706,6 +112706,12 @@
   {
     "TEAM": "Sacramento",
     "YEAR": "2027",
+    "PLAYER": "Gabe Vincent",
+    "SALARY": "$2,663,116"
+  },
+  {
+    "TEAM": "Sacramento",
+    "YEAR": "2027",
     "PLAYER": "Daeqwon Plowden",
     "SALARY": "$2,449,422"
   },
