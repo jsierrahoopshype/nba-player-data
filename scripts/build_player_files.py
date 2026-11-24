@@ -97,7 +97,7 @@ def h2h_links(names, rs_rows):
     name (Head to Head's slug rule, then a looser one) and career years: our rsStats
     YEAR is the season's end year, Head to Head's first/last its start year. Only a
     single candidate whose career overlaps ours gets a link; none or several: no link.
-    Missing file: no links (the page then shows initials and plain names)."""
+    Missing file: no links (the page then shows plain names, no faces)."""
     try:
         with open(H2H_FILE, encoding='utf-8') as f:
             h2h = json.load(f)

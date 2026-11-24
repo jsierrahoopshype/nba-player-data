@@ -134,7 +134,7 @@
         .loop-stop-bar { margin: 0 0 .6rem; }
         .loop-stop-bar .loop-button { width: 100%; }
 
-        /* faces: nba-headshots busts shown whole on a light grey #f0f0f2 circle; initials when there is no file */
+        /* faces: nba-headshots busts shown whole on a light grey #f0f0f2 circle; no circle when there is no file */
         .ph, .f, .fm { position: relative; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; overflow: hidden;
             background: #f0f0f2; flex-shrink: 0; vertical-align: middle; font-family: 'DM Sans', sans-serif; font-weight: 700; font-style: normal; color: #55555c; line-height: 1; }
         .ph { width: var(--s); height: var(--s); font-size: calc(var(--s) * .34); }
@@ -2265,17 +2265,14 @@
         // keeping a hidden-set in closure so toggling re-derives the view live.
         // ===== Look: headshots and player pages (HoopsMatic Head to Head) =====
         // Busts from nba-headshots, the file Head to Head shows for the player, on a light grey
-        // disc; fallbacks as Head to Head's: head-uniform-480, face-tight, then the initials.
+        // disc; fallbacks as Head to Head's: head-uniform-480, face-tight, then no face at all
+        // (never an initials circle: HoopsMatic-wide rule, Nov 2026).
         const HM_HUB = 'https://hoopsmatic.com/head-to-head/player/';
         const HS_BUST = 'https://jsierrahoopshype.github.io/nba-headshots/players/headshots/head-uniform-sharp/';
         const HS_ERR = "var s=this.dataset.s;if(!s){this.dataset.s=1;this.src=this.src.replace('/head-uniform-sharp/','/head-uniform-480/')}" +
-            "else if(s==1){this.dataset.s=2;this.src=this.src.replace('/head-uniform-480/','/face-tight/')}else{this.onerror=null;this.parentNode.textContent=this.dataset.i}";
+            "else if(s==1){this.dataset.s=2;this.src=this.src.replace('/head-uniform-480/','/face-tight/')}else{this.onerror=null;this.parentNode.remove()}";
         function hmEsc(v) {
             return String(v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-        }
-        function playerInitials(name) {
-            const w = String(name || '').replace(/\./g, ' ').replace(/\(\d{4}\)/g, '').split(/\s+/).filter(x => x && !/^(jr|sr|ii|iii|iv|v),?$/i.test(x));
-            return w.length ? (w[0][0] + (w.length > 1 ? w[w.length - 1][0] : '')).toUpperCase() : '?';
         }
         // His Head to Head page on HoopsMatic, or '' when there is none.
         function playerPageUrl(name) {
@@ -2284,11 +2281,10 @@
         }
         // A face disc (cls 'ph' with a size, or 'f' / 'fm'); a link to his page when he has one.
         function playerFace(name, cls, size) {
-            const l = playerLinks[name] || {}, ini = hmEsc(playerInitials(name)), url = playerPageUrl(name);
+            const l = playerLinks[name] || {}, url = playerPageUrl(name);
             const st = size ? ` style="--s:${size}px"` : '';
-            const img = l.hs && /^[0-9a-z-]+$/.test(l.hs)
-                ? `<img src="${HS_BUST + l.hs}.webp" alt="${hmEsc(name)}"${cls === 'ph' ? '' : ' loading="lazy"'} data-i="${ini}" onerror="${HS_ERR}">`
-                : ini;
+            if (!(l.hs && /^[0-9a-z-]+$/.test(l.hs))) return '';
+            const img = `<img src="${HS_BUST + l.hs}.webp" alt="${hmEsc(name)}"${cls === 'ph' ? '' : ' loading="lazy"'} onerror="${HS_ERR}">`;
             return url
                 ? `<a class="${cls}"${st} href="${url}" title="${hmEsc(name)} on HoopsMatic" aria-label="${hmEsc(name)}">${img}</a>`
                 : `<span class="${cls}"${st}>${img}</span>`;
