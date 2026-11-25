@@ -72,6 +72,32 @@ def parse_sheet_records(csv_text):
 
 
 CHAMPIONS_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'data', 'champions.json')
+YEAR_FIXES_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'data', 'award-year-corrections.json')
+
+
+def fix_award_years(records):
+    """Correct the YEAR of the rows listed in data/award-year-corrections.json
+    (same player, award and wrong year). The sheet has some years a decade off
+    (Wilt Chamberlain's 1960 All-Star MVP was listed as 1950). If the sheet
+    already has the right year as well, the wrong row is dropped instead.
+    Changes `records` in place; returns (rows changed, rows dropped)."""
+    with open(YEAR_FIXES_PATH, encoding='utf-8') as f:
+        fixes = {(c['player'], c['award'], c['wrong_year']): c['year']
+                 for c in json.load(f)['corrections']}
+    have = {(r['PLAYER / COACH'], r['AWARD'], r['YEAR']) for r in records}
+    changed = dropped = 0
+    kept = []
+    for r in records:
+        year = fixes.get((r['PLAYER / COACH'], r['AWARD'], r['YEAR']))
+        if year and (r['PLAYER / COACH'], r['AWARD'], year) in have:
+            dropped += 1
+            continue
+        if year:
+            r['YEAR'] = year
+            changed += 1
+        kept.append(r)
+    records[:] = kept
+    return changed, dropped
 
 
 def fix_title_teams(records):
@@ -98,6 +124,7 @@ def main():
 
     records = parse_sheet_records(csv_text)
     print(f"Parsed {len(records)} records")
+    print("Award years corrected / duplicate wrong-year rows dropped: %d / %d" % fix_award_years(records))
     print(f"Title rows given their season's champion: {fix_title_teams(records)}")
 
     if not records:

@@ -1,0 +1,11 @@
+{
+ "_about": "Award rows whose YEAR is wrong in the Awards sheet. scripts/update-awards.py changes each matching row (same player, award and wrong year) to the right year after every fetch, before title teams are set. YEAR is the season's ending year. A row that no longer matches (the sheet was fixed) is skipped. If the sheet already has the right year too, the wrong row is dropped instead of kept twice.",
+ "corrections": [
+  {"player": "Wilt Chamberlain", "award": "All-Star MVP", "wrong_year": "1950", "year": "1960", "reason": "Decade-off typo: he was MVP of the 1960 All-Star Game; there was no All-Star Game before 1951 and he entered the league in 1959-60."},
+  {"player": "Willis Reed", "award": "All-Star MVP", "wrong_year": "1960", "year": "1970", "reason": "Decade-off typo: he was MVP of the 1970 All-Star Game; he entered the league in 1964-65 (1960's MVP was Wilt Chamberlain)."},
+  {"player": "George Gervin", "award": "All-Star MVP", "wrong_year": "1970", "year": "1980", "reason": "Decade-off typo: he was MVP of the 1980 All-Star Game; he entered the NBA in 1976-77 (1970's MVP was Willis Reed)."},
+  {"player": "Magic Johnson", "award": "All-Star MVP", "wrong_year": "1980", "year": "1990", "reason": "Decade-off typo: his All-Star MVPs were 1990 and 1992; 1980's MVP was George Gervin, and 1990 had no winner in the sheet."},
+  {"player": "Dwyane Wade", "award": "All-Star MVP", "wrong_year": "2000", "year": "2010", "reason": "Decade-off typo: he was MVP of the 2010 All-Star Game; he entered the league in 2003-04 (2000's co-MVPs were Shaquille O'Neal and Tim Duncan)."},
+  {"player": "Kawhi Leonard", "award": "All-Star MVP", "wrong_year": "2010", "year": "2020", "reason": "Decade-off typo: he was MVP of the 2020 All-Star Game; he entered the league in 2011-12 (2010's MVP was Dwyane Wade), and 2020 had no winner in the sheet."}
+ ]
+}
