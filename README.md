@@ -13,3 +13,9 @@ The Awards sheet's TEAM column is wrong for many "NBA Champion" rows: it often n
 A few Awards sheet rows have the wrong YEAR, for example Wilt Chamberlain's 1960 All-Star MVP is listed as 1950 (six All-Star MVP rows were a decade off). The sheet itself has not been corrected.
 
 `scripts/update-awards.py` fixes these after every fetch too. `fix_award_years()` changes each row listed in `data/award-year-corrections.json` (player, award, wrong year, right year and the reason) to the right year. To fix another row, add it to that file.
+
+## Birth dates: overrides and placeholders
+
+`scripts/update-bio.py` applies `data/bio_birthdate_overrides.json` after every fetch: each entry replaces the sheet's BIRTHDAY with `correct_value` while the sheet still holds `wrong_value`, and says where the date came from (`source`, `reason`). The sources are NBA.com (www.nba.com/player/<id>) and Wikidata. `data/bio_birthdate_review.json` lists the cases a person should look at.
+
+NBA.com fills an unknown birth date with January 1, or with a date in 1905. Such a date is a placeholder (`scripts/birthdate_rules.py`): when the same player's Wikidata item has one different full date, that date is used (Ray Corley 1/14/1928, Herm Hedderick 1/10/1930, Jimmy Jones 1/4/1945); otherwise NBA.com's date is kept and listed in the review file as `nba_placeholder`. `update-bio.py` prints any placeholder-looking date that is not in the review file yet. Tests: `python scripts/test_birthdate_rules.py`.

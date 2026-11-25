@@ -14,6 +14,13 @@
     "reason": "NBA.com player 78421 (Alexander Volkov, 1990-1992); Wikidata agrees"
   },
   {
+    "name": "Allen Graves",
+    "wrong_value": "1/1/2006",
+    "correct_value": "7/28/2006",
+    "source": "nba.com",
+    "reason": "NBA.com player 1643512 (Allen Graves, 2027-2027); Wikidata agrees"
+  },
+  {
     "name": "Andreas Glyniadakis",
     "wrong_value": "8/26/1981",
     "correct_value": "8/26/1981",
@@ -330,9 +337,9 @@
   {
     "name": "Herm Hedderick",
     "wrong_value": "",
-    "correct_value": "1/1/1930",
-    "source": "nba.com",
-    "reason": "NBA.com player 76986 (Herm Hedderick, 1955-1955); Wikidata differs, see review file"
+    "correct_value": "1/10/1930",
+    "source": "wikidata",
+    "reason": "Wikidata Q4456405 P569 (NBA.com ID matches a career-checked NBA.com record); NBA.com player 76986 (Herm Hedderick, 1955-1955) lists 1/1/1930, a placeholder; Wikidata also lists 1/1/1930; see review file"
   },
   {
     "name": "Hilton Armstrong",
@@ -438,6 +445,13 @@
     "correct_value": "1/28/1943",
     "source": "nba.com",
     "reason": "NBA.com player 76328 (Jim Caldwell, 1968-1968); Wikidata agrees"
+  },
+  {
+    "name": "Jimmy Jones",
+    "wrong_value": "1/1/1945",
+    "correct_value": "1/4/1945",
+    "source": "wikidata",
+    "reason": "Wikidata Q663453 P569 (NBA.com ID matches a career-checked NBA.com record); NBA.com player 77186 (Jimmy Jones, 1975-1977) lists 1/1/1945, a placeholder; see review file"
   },
   {
     "name": "Joan Beringer",
@@ -679,9 +693,9 @@
   {
     "name": "Ray Corley",
     "wrong_value": "1/1/1928",
-    "correct_value": "1/1/1928",
-    "source": "nba.com",
-    "reason": "NBA.com player 76452 (Ray Corley, 1950-1953); Wikidata differs, see review file"
+    "correct_value": "1/14/1928",
+    "source": "wikidata",
+    "reason": "Wikidata Q3930616 P569 (NBA.com ID matches a career-checked NBA.com record); NBA.com player 76452 (Ray Corley, 1950-1953) lists 1/1/1928, a placeholder; Wikidata also lists 1/1/1928; see review file"
   },
   {
     "name": "Ray Ellefson",

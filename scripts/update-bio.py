@@ -12,11 +12,13 @@ from io import StringIO
 import requests
 
 import sheet_guard  # fail clearly and keep the committed file (scripts/sheet_guard.py)
+from birthdate_rules import is_nba_placeholder  # January 1 / 1905 (scripts/birthdate_rules.py)
 
 SHEET_ID = '1Wxqb2qD848ZEb0jVpVkJfN4-XzKy5qhOmdWMeFTe1ow'
 GID = '1048341184'  # Bio Data
 OUTPUT_PATH = 'bio.json'
 OVERRIDES_PATH = 'data/bio_birthdate_overrides.json'
+REVIEW_PATH = 'data/bio_birthdate_review.json'
 FIELDS = ['PLAYER', 'BIRTHDAY', 'POS', 'HEIGHT', 'WEIGHT', 'NATIONALITY', 'DRAFT']
 
 
@@ -112,6 +114,28 @@ def apply_birthdate_overrides(records, path=OVERRIDES_PATH):
         print(f"Birth-date overrides: {unchanged} already at correct_value (no change)")
 
 
+def report_placeholders(records, path=REVIEW_PATH):
+    """Warn about every BIRTHDAY that looks like an NBA.com placeholder
+    (January 1, or any 1905 date) and is not in the review file yet.
+
+    Only a warning: the date stays as it is. The placeholder rule (see
+    scripts/birthdate_rules.py) is applied through the overrides file, so a
+    new one is settled there, or listed in the review file as nba_placeholder.
+    """
+    try:
+        with open(path, encoding='utf-8') as f:
+            listed = {e.get('name') for e in json.load(f).get('entries', [])}
+    except (OSError, ValueError, AttributeError):
+        listed = set()
+    new = [r['PLAYER'] for r in records
+           if is_nba_placeholder(r['BIRTHDAY']) and r['PLAYER'] not in listed]
+    for name in new:
+        print(f"  placeholder? {name}: {next(r['BIRTHDAY'] for r in records if r['PLAYER'] == name)} "
+              f"(January 1 or 1905) is not in {path}")
+    print(f"Placeholder-looking birth dates not yet reviewed: {len(new)}")
+    return new
+
+
 def main():
     print(f"Fetching bio data from Google Sheet {SHEET_ID} (gid={GID})...")
     csv_text = sheet_guard.fetch_checked('Bio tab', 'bio.json', fetch_google_sheet_csv, SHEET_ID, GID)
@@ -124,6 +148,7 @@ def main():
         raise RuntimeError("No records parsed; refusing to write bio.json")
 
     apply_birthdate_overrides(records)
+    report_placeholders(records)
 
     with open(OUTPUT_PATH, 'w', encoding='utf-8') as f:
         json.dump(records, f, ensure_ascii=False, separators=(',', ':'))
