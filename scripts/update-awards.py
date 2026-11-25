@@ -9,6 +9,7 @@ The sheet is the source of truth — awards.json is fully regenerated each run.
 
 import csv
 import json
+import os
 from io import StringIO
 import requests
 
@@ -70,6 +71,26 @@ def parse_sheet_records(csv_text):
     return records
 
 
+CHAMPIONS_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'data', 'champions.json')
+
+
+def fix_title_teams(records):
+    """Set every 'NBA Champion' row's TEAM to that season's champion
+    (data/champions.json). The sheet's TEAM for title rows is unreliable: it
+    often names another team the player was on (Gary Payton II's 2022 title
+    was listed under Boston). A season missing from the table is left as is.
+    Returns the number of rows changed."""
+    with open(CHAMPIONS_PATH, encoding='utf-8') as f:
+        champs = json.load(f)['champions']
+    changed = 0
+    for r in records:
+        team = champs.get(r['YEAR']) if r['AWARD'] == 'NBA Champion' else None
+        if team and r['TEAM'] != team:
+            r['TEAM'] = team
+            changed += 1
+    return changed
+
+
 def main():
     print(f"Fetching awards from Google Sheet {SHEET_ID} (gid={GID})...")
     csv_text = sheet_guard.fetch_checked('Awards tab', 'awards.json', fetch_google_sheet_csv, SHEET_ID, GID)
@@ -77,6 +98,7 @@ def main():
 
     records = parse_sheet_records(csv_text)
     print(f"Parsed {len(records)} records")
+    print(f"Title rows given their season's champion: {fix_title_teams(records)}")
 
     if not records:
         raise RuntimeError("No records parsed; refusing to overwrite awards.json")
