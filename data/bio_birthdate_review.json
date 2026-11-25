@@ -1,0 +1,2129 @@
+{
+  "about": "Birth-date overrides that need a person to look at them. Each entry lists every source value and the days between them; chosen/chosen_source is what data/bio_birthdate_overrides.json now holds. Rules: NBA.com (www.nba.com/player/<PERSON_ID>, career years checked) wins when it answered; Wikidata P569 is used only for a basketball player whose career matches; entries no source confirms are pinned to the sheet value (source \"unresolved\"). Kinds: disagreement = NBA.com and Wikidata differ; single_source_contradicts_old = one source only and it differs from the old override value; no_source = neither source gave a full date.",
+  "checked": "2026-11-25",
+  "count": 43,
+  "entries": [
+    {
+      "name": "Adrian Dantley",
+      "kind": "disagreement",
+      "sheet_value": "2/28/1956",
+      "old_override_value": "2/28/1955",
+      "nba_com": [
+        {
+          "person_id": "76504",
+          "value": "2/26/1955",
+          "nba_name": "Adrian Dantley",
+          "years": [
+            1977,
+            1991
+          ]
+        }
+      ],
+      "wikidata": [
+        {
+          "qid": "Q372859",
+          "values": [
+            "2/28/1955",
+            "2/28/1956"
+          ],
+          "partial_years": [],
+          "career_evidence": [
+            "NBA.com ID matches a career-checked NBA.com record",
+            "team (P54) years overlap career",
+            "work-period start matches career"
+          ]
+        }
+      ],
+      "nba_com_rejected": null,
+      "career_years": [
+        1977,
+        1991
+      ],
+      "chosen": "2/26/1955",
+      "chosen_source": "nba.com",
+      "days_apart": {
+        "nba_com_vs_wikidata_Q372859_2/28/1955": 2,
+        "nba_com_vs_wikidata_Q372859_2/28/1956": 367,
+        "nba_com_vs_old_override": 2,
+        "nba_com_vs_sheet": 367,
+        "wikidata_Q372859_2/28/1955_vs_wikidata_Q372859_2/28/1956": 365,
+        "wikidata_Q372859_2/28/1955_vs_old_override": 0,
+        "wikidata_Q372859_2/28/1955_vs_sheet": 365,
+        "wikidata_Q372859_2/28/1956_vs_old_override": 365,
+        "wikidata_Q372859_2/28/1956_vs_sheet": 0,
+        "old_override_vs_sheet": 365
+      },
+      "changed_vs_old": true
+    },
+    {
+      "name": "Ariel Maughan",
+      "kind": "disagreement",
+      "sheet_value": "4/26/1923",
+      "old_override_value": "2/23/1923",
+      "nba_com": [
+        {
+          "person_id": "77485",
+          "value": "2/23/1923",
+          "nba_name": "Ariel Maughan",
+          "years": [
+            1947,
+            1951
+          ]
+        }
+      ],
+      "wikidata": [
+        {
+          "qid": "Q1653775",
+          "values": [
+            "4/26/1923"
+          ],
+          "partial_years": [],
+          "career_evidence": [
+            "NBA.com ID matches a career-checked NBA.com record",
+            "work-period start matches career"
+          ]
+        }
+      ],
+      "nba_com_rejected": null,
+      "career_years": [
+        1947,
+        1951
+      ],
+      "chosen": "2/23/1923",
+      "chosen_source": "nba.com",
+      "days_apart": {
+        "nba_com_vs_wikidata_Q1653775_4/26/1923": 62,
+        "nba_com_vs_old_override": 0,
+        "nba_com_vs_sheet": 62,
+        "wikidata_Q1653775_4/26/1923_vs_old_override": 62,
+        "wikidata_Q1653775_4/26/1923_vs_sheet": 0,
+        "old_override_vs_sheet": 62
+      },
+      "changed_vs_old": false
+    },
+    {
+      "name": "Bill Davis",
+      "kind": "disagreement",
+      "sheet_value": "10/3/1921",
+      "old_override_value": "10/3/1920",
+      "nba_com": [
+        {
+          "person_id": "76538",
+          "value": "10/3/1921",
+          "nba_name": "Bill Davis",
+          "years": [
+            1947,
+            1947
+          ]
+        }
+      ],
+      "wikidata": [
+        {
+          "qid": "Q3639966",
+          "values": [
+            "10/3/1920"
+          ],
+          "partial_years": [],
+          "career_evidence": [
+            "NBA.com ID matches a career-checked NBA.com record",
+            "team (P54) years overlap career",
+            "work-period start matches career"
+          ]
+        }
+      ],
+      "nba_com_rejected": null,
+      "career_years": [
+        1947,
+        1947
+      ],
+      "chosen": "10/3/1921",
+      "chosen_source": "nba.com",
+      "days_apart": {
+        "nba_com_vs_wikidata_Q3639966_10/3/1920": 365,
+        "nba_com_vs_old_override": 365,
+        "nba_com_vs_sheet": 0,
+        "wikidata_Q3639966_10/3/1920_vs_old_override": 0,
+        "wikidata_Q3639966_10/3/1920_vs_sheet": 365,
+        "old_override_vs_sheet": 365
+      },
+      "changed_vs_old": true
+    },
+    {
+      "name": "Bob Christian",
+      "kind": "disagreement",
+      "sheet_value": "5/11/1946",
+      "old_override_value": "5/11/1944",
+      "nba_com": [
+        {
+          "person_id": "76395",
+          "value": "5/11/1944",
+          "nba_name": "Bob Christian",
+          "years": [
+            1971,
+            1974
+          ]
+        }
+      ],
+      "wikidata": [
+        {
+          "qid": "Q3641279",
+          "values": [
+            "5/11/1946"
+          ],
+          "partial_years": [],
+          "career_evidence": [
+            "NBA.com ID matches a career-checked NBA.com record",
+            "work-period start matches career"
+          ]
+        },
+        {
+          "qid": "Q100981206",
+          "values": [],
+          "partial_years": [],
+          "career_evidence": []
+        }
+      ],
+      "nba_com_rejected": null,
+      "career_years": [
+        1971,
+        1974
+      ],
+      "chosen": "5/11/1944",
+      "chosen_source": "nba.com",
+      "days_apart": {
+        "nba_com_vs_wikidata_Q3641279_5/11/1946": 730,
+        "nba_com_vs_old_override": 0,
+        "nba_com_vs_sheet": 730,
+        "wikidata_Q3641279_5/11/1946_vs_old_override": 730,
+        "wikidata_Q3641279_5/11/1946_vs_sheet": 0,
+        "old_override_vs_sheet": 730
+      },
+      "changed_vs_old": false
+    },
+    {
+      "name": "Bob Santini",
+      "kind": "disagreement",
+      "sheet_value": "2/17/1932",
+      "old_override_value": "2/17/1935",
+      "nba_com": [
+        {
+          "person_id": "78061",
+          "value": "2/17/1935",
+          "nba_name": "Bob Santini",
+          "years": [
+            1956,
+            1956
+          ]
+        }
+      ],
+      "wikidata": [
+        {
+          "qid": "Q4846393",
+          "values": [
+            "2/17/1932"
+          ],
+          "partial_years": [],
+          "career_evidence": [
+            "NBA.com ID matches a career-checked NBA.com record"
+          ]
+        }
+      ],
+      "nba_com_rejected": null,
+      "career_years": [
+        1956,
+        1956
+      ],
+      "chosen": "2/17/1935",
+      "chosen_source": "nba.com",
+      "days_apart": {
+        "nba_com_vs_wikidata_Q4846393_2/17/1932": 1096,
+        "nba_com_vs_old_override": 0,
+        "nba_com_vs_sheet": 1096,
+        "wikidata_Q4846393_2/17/1932_vs_old_override": 1096,
+        "wikidata_Q4846393_2/17/1932_vs_sheet": 0,
+        "old_override_vs_sheet": 1096
+      },
+      "changed_vs_old": false
+    },
+    {
+      "name": "Cal Christensen",
+      "kind": "disagreement",
+      "sheet_value": "7/8/1927",
+      "old_override_value": "6/6/1927",
+      "nba_com": [
+        {
+          "person_id": "76394",
+          "value": "6/8/1927",
+          "nba_name": "Cal Christensen",
+          "years": [
+            1951,
+            1955
+          ]
+        }
+      ],
+      "wikidata": [
+        {
+          "qid": "Q3649982",
+          "values": [
+            "6/6/1927",
+            "7/8/1927"
+          ],
+          "partial_years": [],
+          "career_evidence": [
+            "NBA.com ID matches a career-checked NBA.com record",
+            "team (P54) years overlap career",
+            "work-period start matches career"
+          ]
+        }
+      ],
+      "nba_com_rejected": null,
+      "career_years": [
+        1951,
+        1955
+      ],
+      "chosen": "6/8/1927",
+      "chosen_source": "nba.com",
+      "days_apart": {
+        "nba_com_vs_wikidata_Q3649982_6/6/1927": 2,
+        "nba_com_vs_wikidata_Q3649982_7/8/1927": 30,
+        "nba_com_vs_old_override": 2,
+        "nba_com_vs_sheet": 30,
+        "wikidata_Q3649982_6/6/1927_vs_wikidata_Q3649982_7/8/1927": 32,
+        "wikidata_Q3649982_6/6/1927_vs_old_override": 0,
+        "wikidata_Q3649982_6/6/1927_vs_sheet": 32,
+        "wikidata_Q3649982_7/8/1927_vs_old_override": 32,
+        "wikidata_Q3649982_7/8/1927_vs_sheet": 0,
+        "old_override_vs_sheet": 32
+      },
+      "changed_vs_old": true
+    },
+    {
+      "name": "Don Lofgran",
+      "kind": "disagreement",
+      "sheet_value": "11/18/1928",
+      "old_override_value": "11/8/1929",
+      "nba_com": [
+        {
+          "person_id": "77402",
+          "value": "11/18/1928",
+          "nba_name": "Don Lofgran",
+          "years": [
+            1951,
+            1954
+          ]
+        }
+      ],
+      "wikidata": [
+        {
+          "qid": "Q3713560",
+          "values": [
+            "11/18/1928",
+            "11/8/1928"
+          ],
+          "partial_years": [],
+          "career_evidence": [
+            "NBA.com ID matches a career-checked NBA.com record",
+            "team (P54) years overlap career",
+            "work-period start matches career"
+          ]
+        }
+      ],
+      "nba_com_rejected": null,
+      "career_years": [
+        1951,
+        1954
+      ],
+      "chosen": "11/18/1928",
+      "chosen_source": "nba.com",
+      "days_apart": {
+        "nba_com_vs_wikidata_Q3713560_11/18/1928": 0,
+        "nba_com_vs_wikidata_Q3713560_11/8/1928": 10,
+        "nba_com_vs_old_override": 355,
+        "nba_com_vs_sheet": 0,
+        "wikidata_Q3713560_11/18/1928_vs_wikidata_Q3713560_11/8/1928": 10,
+        "wikidata_Q3713560_11/18/1928_vs_old_override": 355,
+        "wikidata_Q3713560_11/18/1928_vs_sheet": 0,
+        "wikidata_Q3713560_11/8/1928_vs_old_override": 365,
+        "wikidata_Q3713560_11/8/1928_vs_sheet": 10,
+        "old_override_vs_sheet": 355
+      },
+      "changed_vs_old": true
+    },
+    {
+      "name": "Ed Gayda",
+      "kind": "disagreement",
+      "sheet_value": "5/11/1927",
+      "old_override_value": "5/16/1927",
+      "nba_com": [
+        {
+          "person_id": "76797",
+          "value": "5/11/1927",
+          "nba_name": "Ed Gayda",
+          "years": [
+            1951,
+            1951
+          ]
+        }
+      ],
+      "wikidata": [
+        {
+          "qid": "Q3718845",
+          "values": [
+            "5/11/1927",
+            "5/16/1927"
+          ],
+          "partial_years": [],
+          "career_evidence": [
+            "NBA.com ID matches a career-checked NBA.com record",
+            "team (P54) years overlap career",
+            "work-period start matches career"
+          ]
+        }
+      ],
+      "nba_com_rejected": null,
+      "career_years": [
+        1951,
+        1951
+      ],
+      "chosen": "5/11/1927",
+      "chosen_source": "nba.com",
+      "days_apart": {
+        "nba_com_vs_wikidata_Q3718845_5/11/1927": 0,
+        "nba_com_vs_wikidata_Q3718845_5/16/1927": 5,
+        "nba_com_vs_old_override": 5,
+        "nba_com_vs_sheet": 0,
+        "wikidata_Q3718845_5/11/1927_vs_wikidata_Q3718845_5/16/1927": 5,
+        "wikidata_Q3718845_5/11/1927_vs_old_override": 5,
+        "wikidata_Q3718845_5/11/1927_vs_sheet": 0,
+        "wikidata_Q3718845_5/16/1927_vs_old_override": 0,
+        "wikidata_Q3718845_5/16/1927_vs_sheet": 5,
+        "old_override_vs_sheet": 5
+      },
+      "changed_vs_old": true
+    },
+    {
+      "name": "Gaylon Nickerson",
+      "kind": "disagreement",
+      "sheet_value": "5/5/1969",
+      "old_override_value": "2/5/1969",
+      "nba_com": [
+        {
+          "person_id": "1093",
+          "value": "2/6/1969",
+          "nba_name": "Gaylon Nickerson",
+          "years": [
+            1997,
+            1997
+          ]
+        }
+      ],
+      "wikidata": [
+        {
+          "qid": "Q3759053",
+          "values": [
+            "2/5/1969"
+          ],
+          "partial_years": [],
+          "career_evidence": [
+            "NBA.com ID matches a career-checked NBA.com record",
+            "work-period start matches career"
+          ]
+        }
+      ],
+      "nba_com_rejected": null,
+      "career_years": [
+        1997,
+        1997
+      ],
+      "chosen": "2/6/1969",
+      "chosen_source": "nba.com",
+      "days_apart": {
+        "nba_com_vs_wikidata_Q3759053_2/5/1969": 1,
+        "nba_com_vs_old_override": 1,
+        "nba_com_vs_sheet": 88,
+        "wikidata_Q3759053_2/5/1969_vs_old_override": 0,
+        "wikidata_Q3759053_2/5/1969_vs_sheet": 89,
+        "old_override_vs_sheet": 89
+      },
+      "changed_vs_old": true
+    },
+    {
+      "name": "George Feigenbaum",
+      "kind": "disagreement",
+      "sheet_value": "7/2/1929",
+      "old_override_value": "7/2/1928",
+      "nba_com": [
+        {
+          "person_id": "76702",
+          "value": "7/2/1929",
+          "nba_name": "George Feigenbaum",
+          "years": [
+            1950,
+            1953
+          ]
+        }
+      ],
+      "wikidata": [
+        {
+          "qid": "Q3729082",
+          "values": [
+            "7/2/1928"
+          ],
+          "partial_years": [],
+          "career_evidence": [
+            "NBA.com ID matches a career-checked NBA.com record",
+            "work-period start matches career"
+          ]
+        }
+      ],
+      "nba_com_rejected": null,
+      "career_years": [
+        1950,
+        1953
+      ],
+      "chosen": "7/2/1929",
+      "chosen_source": "nba.com",
+      "days_apart": {
+        "nba_com_vs_wikidata_Q3729082_7/2/1928": 365,
+        "nba_com_vs_old_override": 365,
+        "nba_com_vs_sheet": 0,
+        "wikidata_Q3729082_7/2/1928_vs_old_override": 0,
+        "wikidata_Q3729082_7/2/1928_vs_sheet": 365,
+        "old_override_vs_sheet": 365
+      },
+      "changed_vs_old": true
+    },
+    {
+      "name": "George Lehmann",
+      "kind": "disagreement",
+      "sheet_value": "5/1/1942",
+      "old_override_value": "5/1/1941",
+      "nba_com": [
+        {
+          "person_id": "77369",
+          "value": "5/1/1942",
+          "nba_name": "George Lehmann",
+          "years": [
+            1968,
+            1969
+          ]
+        }
+      ],
+      "wikidata": [
+        {
+          "qid": "Q3760573",
+          "values": [
+            "5/1/1941"
+          ],
+          "partial_years": [],
+          "career_evidence": [
+            "NBA.com ID matches a career-checked NBA.com record",
+            "team (P54) years overlap career",
+            "work-period start matches career"
+          ]
+        }
+      ],
+      "nba_com_rejected": null,
+      "career_years": [
+        1968,
+        1969
+      ],
+      "chosen": "5/1/1942",
+      "chosen_source": "nba.com",
+      "days_apart": {
+        "nba_com_vs_wikidata_Q3760573_5/1/1941": 365,
+        "nba_com_vs_old_override": 365,
+        "nba_com_vs_sheet": 0,
+        "wikidata_Q3760573_5/1/1941_vs_old_override": 0,
+        "wikidata_Q3760573_5/1/1941_vs_sheet": 365,
+        "old_override_vs_sheet": 365
+      },
+      "changed_vs_old": true
+    },
+    {
+      "name": "Greg Dreiling",
+      "kind": "disagreement",
+      "sheet_value": "11/7/1963",
+      "old_override_value": "11/7/1962",
+      "nba_com": [
+        {
+          "person_id": "1068",
+          "value": "11/7/1963",
+          "nba_name": "Greg Dreiling",
+          "years": [
+            1987,
+            1997
+          ]
+        }
+      ],
+      "wikidata": [
+        {
+          "qid": "Q3776403",
+          "values": [
+            "11/7/1962"
+          ],
+          "partial_years": [],
+          "career_evidence": [
+            "NBA.com ID matches a career-checked NBA.com record",
+            "work-period start matches career"
+          ]
+        }
+      ],
+      "nba_com_rejected": null,
+      "career_years": [
+        1987,
+        1997
+      ],
+      "chosen": "11/7/1963",
+      "chosen_source": "nba.com",
+      "days_apart": {
+        "nba_com_vs_wikidata_Q3776403_11/7/1962": 365,
+        "nba_com_vs_old_override": 365,
+        "nba_com_vs_sheet": 0,
+        "wikidata_Q3776403_11/7/1962_vs_old_override": 0,
+        "wikidata_Q3776403_11/7/1962_vs_sheet": 365,
+        "old_override_vs_sheet": 365
+      },
+      "changed_vs_old": true
+    },
+    {
+      "name": "Greg Whittington",
+      "kind": "disagreement",
+      "sheet_value": "2/17/1993",
+      "old_override_value": "2/7/1993",
+      "nba_com": [
+        {
+          "person_id": "204222",
+          "value": "2/7/1993",
+          "nba_name": "Greg Whittington",
+          "years": [
+            2021,
+            2021
+          ]
+        }
+      ],
+      "wikidata": [
+        {
+          "qid": "Q21066526",
+          "values": [
+            "2/17/1993",
+            "2/7/1993"
+          ],
+          "partial_years": [],
+          "career_evidence": [
+            "NBA.com ID matches a career-checked NBA.com record"
+          ]
+        },
+        {
+          "qid": "Q100955000",
+          "values": [],
+          "partial_years": [],
+          "career_evidence": []
+        }
+      ],
+      "nba_com_rejected": null,
+      "career_years": [
+        2021,
+        2021
+      ],
+      "chosen": "2/7/1993",
+      "chosen_source": "nba.com",
+      "days_apart": {
+        "nba_com_vs_wikidata_Q21066526_2/17/1993": 10,
+        "nba_com_vs_wikidata_Q21066526_2/7/1993": 0,
+        "nba_com_vs_old_override": 0,
+        "nba_com_vs_sheet": 10,
+        "wikidata_Q21066526_2/17/1993_vs_wikidata_Q21066526_2/7/1993": 10,
+        "wikidata_Q21066526_2/17/1993_vs_old_override": 10,
+        "wikidata_Q21066526_2/17/1993_vs_sheet": 0,
+        "wikidata_Q21066526_2/7/1993_vs_old_override": 0,
+        "wikidata_Q21066526_2/7/1993_vs_sheet": 10,
+        "old_override_vs_sheet": 10
+      },
+      "changed_vs_old": false
+    },
+    {
+      "name": "Hal Tidrick",
+      "kind": "disagreement",
+      "sheet_value": "8/4/1915",
+      "old_override_value": "4/4/1915",
+      "nba_com": [
+        {
+          "person_id": "78341",
+          "value": "6/14/1915",
+          "nba_name": "Howard Tidrick",
+          "years": [
+            1949,
+            1949
+          ]
+        }
+      ],
+      "wikidata": [
+        {
+          "qid": "Q3782509",
+          "values": [
+            "8/4/1915"
+          ],
+          "partial_years": [],
+          "career_evidence": [
+            "NBA.com ID matches a career-checked NBA.com record"
+          ]
+        }
+      ],
+      "nba_com_rejected": null,
+      "career_years": [
+        1949,
+        1949
+      ],
+      "chosen": "6/14/1915",
+      "chosen_source": "nba.com",
+      "days_apart": {
+        "nba_com_vs_wikidata_Q3782509_8/4/1915": 51,
+        "nba_com_vs_old_override": 71,
+        "nba_com_vs_sheet": 51,
+        "wikidata_Q3782509_8/4/1915_vs_old_override": 122,
+        "wikidata_Q3782509_8/4/1915_vs_sheet": 0,
+        "old_override_vs_sheet": 122
+      },
+      "changed_vs_old": true
+    },
+    {
+      "name": "Herm Hedderick",
+      "kind": "disagreement",
+      "sheet_value": "",
+      "old_override_value": "1/10/1930",
+      "nba_com": [
+        {
+          "person_id": "76986",
+          "value": "1/1/1930",
+          "nba_name": "Herm Hedderick",
+          "years": [
+            1955,
+            1955
+          ]
+        }
+      ],
+      "wikidata": [
+        {
+          "qid": "Q4456405",
+          "values": [
+            "1/1/1930",
+            "1/10/1930"
+          ],
+          "partial_years": [],
+          "career_evidence": [
+            "NBA.com ID matches a career-checked NBA.com record"
+          ]
+        }
+      ],
+      "nba_com_rejected": null,
+      "career_years": [
+        1955,
+        1955
+      ],
+      "chosen": "1/1/1930",
+      "chosen_source": "nba.com",
+      "days_apart": {
+        "nba_com_vs_wikidata_Q4456405_1/1/1930": 0,
+        "nba_com_vs_wikidata_Q4456405_1/10/1930": 9,
+        "nba_com_vs_old_override": 9,
+        "wikidata_Q4456405_1/1/1930_vs_wikidata_Q4456405_1/10/1930": 9,
+        "wikidata_Q4456405_1/1/1930_vs_old_override": 9,
+        "wikidata_Q4456405_1/10/1930_vs_old_override": 0
+      },
+      "changed_vs_old": true
+    },
+    {
+      "name": "Hiram Fuller",
+      "kind": "disagreement",
+      "sheet_value": "5/13/1981",
+      "old_override_value": "5/15/1981",
+      "nba_com": [
+        {
+          "person_id": "2673",
+          "value": "5/13/1981",
+          "nba_name": "Hiram Fuller",
+          "years": [
+            2004,
+            2004
+          ]
+        }
+      ],
+      "wikidata": [
+        {
+          "qid": "Q3136207",
+          "values": [
+            "5/13/1981",
+            "5/15/1981"
+          ],
+          "partial_years": [],
+          "career_evidence": [
+            "NBA.com ID matches a career-checked NBA.com record",
+            "team (P54) years overlap career"
+          ]
+        }
+      ],
+      "nba_com_rejected": null,
+      "career_years": [
+        2004,
+        2004
+      ],
+      "chosen": "5/13/1981",
+      "chosen_source": "nba.com",
+      "days_apart": {
+        "nba_com_vs_wikidata_Q3136207_5/13/1981": 0,
+        "nba_com_vs_wikidata_Q3136207_5/15/1981": 2,
+        "nba_com_vs_old_override": 2,
+        "nba_com_vs_sheet": 0,
+        "wikidata_Q3136207_5/13/1981_vs_wikidata_Q3136207_5/15/1981": 2,
+        "wikidata_Q3136207_5/13/1981_vs_old_override": 2,
+        "wikidata_Q3136207_5/13/1981_vs_sheet": 0,
+        "wikidata_Q3136207_5/15/1981_vs_old_override": 0,
+        "wikidata_Q3136207_5/15/1981_vs_sheet": 2,
+        "old_override_vs_sheet": 2
+      },
+      "changed_vs_old": true
+    },
+    {
+      "name": "Ibo Kutluay",
+      "kind": "disagreement",
+      "sheet_value": "1/7/1974",
+      "old_override_value": "7/1/1974",
+      "nba_com": [
+        {
+          "person_id": "2825",
+          "value": "1/7/1974",
+          "nba_name": "Ibrahim Kutluay",
+          "years": [
+            2005,
+            2005
+          ]
+        }
+      ],
+      "wikidata": [
+        {
+          "qid": "Q343341",
+          "values": [
+            "1/7/1974",
+            "12/7/1974"
+          ],
+          "partial_years": [],
+          "career_evidence": [
+            "NBA.com ID matches a career-checked NBA.com record"
+          ]
+        }
+      ],
+      "nba_com_rejected": null,
+      "career_years": [
+        2005,
+        2005
+      ],
+      "chosen": "1/7/1974",
+      "chosen_source": "nba.com",
+      "days_apart": {
+        "nba_com_vs_wikidata_Q343341_1/7/1974": 0,
+        "nba_com_vs_wikidata_Q343341_12/7/1974": 334,
+        "nba_com_vs_old_override": 175,
+        "nba_com_vs_sheet": 0,
+        "wikidata_Q343341_1/7/1974_vs_wikidata_Q343341_12/7/1974": 334,
+        "wikidata_Q343341_1/7/1974_vs_old_override": 175,
+        "wikidata_Q343341_1/7/1974_vs_sheet": 0,
+        "wikidata_Q343341_12/7/1974_vs_old_override": 159,
+        "wikidata_Q343341_12/7/1974_vs_sheet": 334,
+        "old_override_vs_sheet": 175
+      },
+      "changed_vs_old": true
+    },
+    {
+      "name": "Jabari Smith Sr",
+      "kind": "disagreement",
+      "sheet_value": "4/12/1977",
+      "old_override_value": "2/12/1977",
+      "nba_com": [
+        {
+          "person_id": "2074",
+          "value": "2/12/1977",
+          "nba_name": "Jabari Smith",
+          "years": [
+            2001,
+            2005
+          ]
+        }
+      ],
+      "wikidata": [
+        {
+          "qid": "Q974738",
+          "values": [
+            "2/12/1977",
+            "4/12/1977"
+          ],
+          "partial_years": [],
+          "career_evidence": [
+            "NBA.com ID matches a career-checked NBA.com record",
+            "team (P54) years overlap career",
+            "work-period start matches career"
+          ]
+        },
+        {
+          "qid": "Q100268254",
+          "values": [
+            "5/13/2003"
+          ],
+          "partial_years": [],
+          "career_evidence": []
+        }
+      ],
+      "nba_com_rejected": null,
+      "career_years": [
+        2001,
+        2005
+      ],
+      "chosen": "2/12/1977",
+      "chosen_source": "nba.com",
+      "days_apart": {
+        "nba_com_vs_wikidata_Q974738_2/12/1977": 0,
+        "nba_com_vs_wikidata_Q974738_4/12/1977": 59,
+        "nba_com_vs_wikidata_Q100268254_5/13/2003": 9586,
+        "nba_com_vs_old_override": 0,
+        "nba_com_vs_sheet": 59,
+        "wikidata_Q974738_2/12/1977_vs_wikidata_Q974738_4/12/1977": 59,
+        "wikidata_Q974738_2/12/1977_vs_wikidata_Q100268254_5/13/2003": 9586,
+        "wikidata_Q974738_2/12/1977_vs_old_override": 0,
+        "wikidata_Q974738_2/12/1977_vs_sheet": 59,
+        "wikidata_Q974738_4/12/1977_vs_wikidata_Q100268254_5/13/2003": 9527,
+        "wikidata_Q974738_4/12/1977_vs_old_override": 59,
+        "wikidata_Q974738_4/12/1977_vs_sheet": 0,
+        "wikidata_Q100268254_5/13/2003_vs_old_override": 9586,
+        "wikidata_Q100268254_5/13/2003_vs_sheet": 9527,
+        "old_override_vs_sheet": 59
+      },
+      "changed_vs_old": false
+    },
+    {
+      "name": "Jack Cooley",
+      "kind": "disagreement",
+      "sheet_value": "4/4/1991",
+      "old_override_value": "4/12/1991",
+      "nba_com": [
+        {
+          "person_id": "204022",
+          "value": "4/12/1991",
+          "nba_name": "Jack Cooley",
+          "years": [
+            2015,
+            2018
+          ]
+        }
+      ],
+      "wikidata": [
+        {
+          "qid": "Q6111803",
+          "values": [
+            "4/12/1991",
+            "4/4/1991"
+          ],
+          "partial_years": [],
+          "career_evidence": [
+            "NBA.com ID matches a career-checked NBA.com record",
+            "team (P54) years overlap career"
+          ]
+        }
+      ],
+      "nba_com_rejected": null,
+      "career_years": [
+        2015,
+        2018
+      ],
+      "chosen": "4/12/1991",
+      "chosen_source": "nba.com",
+      "days_apart": {
+        "nba_com_vs_wikidata_Q6111803_4/12/1991": 0,
+        "nba_com_vs_wikidata_Q6111803_4/4/1991": 8,
+        "nba_com_vs_old_override": 0,
+        "nba_com_vs_sheet": 8,
+        "wikidata_Q6111803_4/12/1991_vs_wikidata_Q6111803_4/4/1991": 8,
+        "wikidata_Q6111803_4/12/1991_vs_old_override": 0,
+        "wikidata_Q6111803_4/12/1991_vs_sheet": 8,
+        "wikidata_Q6111803_4/4/1991_vs_old_override": 8,
+        "wikidata_Q6111803_4/4/1991_vs_sheet": 0,
+        "old_override_vs_sheet": 8
+      },
+      "changed_vs_old": false
+    },
+    {
+      "name": "Jason Sasser",
+      "kind": "disagreement",
+      "sheet_value": "1/3/1974",
+      "old_override_value": "1/13/1974",
+      "nba_com": [
+        {
+          "person_id": "987",
+          "value": "1/13/1974",
+          "nba_name": "Jason Sasser",
+          "years": [
+            1997,
+            2003
+          ]
+        }
+      ],
+      "wikidata": [
+        {
+          "qid": "Q707870",
+          "values": [
+            "1/3/1974"
+          ],
+          "partial_years": [],
+          "career_evidence": [
+            "NBA.com ID matches a career-checked NBA.com record",
+            "team (P54) years overlap career",
+            "work-period start matches career"
+          ]
+        }
+      ],
+      "nba_com_rejected": null,
+      "career_years": [
+        1997,
+        1999
+      ],
+      "chosen": "1/13/1974",
+      "chosen_source": "nba.com",
+      "days_apart": {
+        "nba_com_vs_wikidata_Q707870_1/3/1974": 10,
+        "nba_com_vs_old_override": 0,
+        "nba_com_vs_sheet": 10,
+        "wikidata_Q707870_1/3/1974_vs_old_override": 10,
+        "wikidata_Q707870_1/3/1974_vs_sheet": 0,
+        "old_override_vs_sheet": 10
+      },
+      "changed_vs_old": false
+    },
+    {
+      "name": "Joao Vianna",
+      "kind": "disagreement",
+      "sheet_value": "11/15/1963",
+      "old_override_value": "11/15/1966",
+      "nba_com": [
+        {
+          "person_id": "78416",
+          "value": "11/15/1966",
+          "nba_name": "Joao Vianna",
+          "years": [
+            1992,
+            1992
+          ]
+        }
+      ],
+      "wikidata": [
+        {
+          "qid": "Q3810734",
+          "values": [
+            "11/15/1963",
+            "11/15/1966"
+          ],
+          "partial_years": [],
+          "career_evidence": [
+            "NBA.com ID matches a career-checked NBA.com record"
+          ]
+        }
+      ],
+      "nba_com_rejected": null,
+      "career_years": [
+        1992,
+        1992
+      ],
+      "chosen": "11/15/1966",
+      "chosen_source": "nba.com",
+      "days_apart": {
+        "nba_com_vs_wikidata_Q3810734_11/15/1963": 1096,
+        "nba_com_vs_wikidata_Q3810734_11/15/1966": 0,
+        "nba_com_vs_old_override": 0,
+        "nba_com_vs_sheet": 1096,
+        "wikidata_Q3810734_11/15/1963_vs_wikidata_Q3810734_11/15/1966": 1096,
+        "wikidata_Q3810734_11/15/1963_vs_old_override": 1096,
+        "wikidata_Q3810734_11/15/1963_vs_sheet": 0,
+        "wikidata_Q3810734_11/15/1966_vs_old_override": 0,
+        "wikidata_Q3810734_11/15/1966_vs_sheet": 1096,
+        "old_override_vs_sheet": 1096
+      },
+      "changed_vs_old": false
+    },
+    {
+      "name": "Joe Mullaney",
+      "kind": "disagreement",
+      "sheet_value": "11/17/1925",
+      "old_override_value": "11/17/1924",
+      "nba_com": [
+        {
+          "person_id": "77659",
+          "value": "11/17/1925",
+          "nba_name": "Joe Mullaney",
+          "years": [
+            1950,
+            1950
+          ]
+        }
+      ],
+      "wikidata": [
+        {
+          "qid": "Q1448496",
+          "values": [
+            "11/17/1924"
+          ],
+          "partial_years": [],
+          "career_evidence": [
+            "NBA.com ID matches a career-checked NBA.com record",
+            "team (P54) years overlap career",
+            "work-period start matches career"
+          ]
+        },
+        {
+          "qid": "Q100984883",
+          "values": [],
+          "partial_years": [],
+          "career_evidence": []
+        }
+      ],
+      "nba_com_rejected": null,
+      "career_years": [
+        1950,
+        1950
+      ],
+      "chosen": "11/17/1925",
+      "chosen_source": "nba.com",
+      "days_apart": {
+        "nba_com_vs_wikidata_Q1448496_11/17/1924": 365,
+        "nba_com_vs_old_override": 365,
+        "nba_com_vs_sheet": 0,
+        "wikidata_Q1448496_11/17/1924_vs_old_override": 0,
+        "wikidata_Q1448496_11/17/1924_vs_sheet": 365,
+        "old_override_vs_sheet": 365
+      },
+      "changed_vs_old": true
+    },
+    {
+      "name": "Johnny Furphy",
+      "kind": "disagreement",
+      "sheet_value": "12/7/2004",
+      "old_override_value": "12/8/2004",
+      "nba_com": [
+        {
+          "person_id": "1642277",
+          "value": "12/8/2004",
+          "nba_name": "Johnny Furphy",
+          "years": [
+            2025,
+            2027
+          ]
+        }
+      ],
+      "wikidata": [
+        {
+          "qid": "Q124624089",
+          "values": [
+            "12/7/2004"
+          ],
+          "partial_years": [],
+          "career_evidence": [
+            "NBA.com ID matches a career-checked NBA.com record"
+          ]
+        }
+      ],
+      "nba_com_rejected": null,
+      "career_years": [
+        2025,
+        2026
+      ],
+      "chosen": "12/8/2004",
+      "chosen_source": "nba.com",
+      "days_apart": {
+        "nba_com_vs_wikidata_Q124624089_12/7/2004": 1,
+        "nba_com_vs_old_override": 0,
+        "nba_com_vs_sheet": 1,
+        "wikidata_Q124624089_12/7/2004_vs_old_override": 1,
+        "wikidata_Q124624089_12/7/2004_vs_sheet": 0,
+        "old_override_vs_sheet": 1
+      },
+      "changed_vs_old": false
+    },
+    {
+      "name": "Ken Corley",
+      "kind": "single_source_contradicts_old",
+      "sheet_value": "5/10/1921",
+      "old_override_value": "5/10/1920",
+      "nba_com": null,
+      "wikidata": [
+        {
+          "qid": "Q6387482",
+          "values": [
+            "5/10/1921"
+          ],
+          "partial_years": [],
+          "career_evidence": [
+            "NBA.com ID matches a career-checked NBA.com record"
+          ]
+        }
+      ],
+      "nba_com_rejected": [
+        {
+          "person_id": "76451",
+          "value": "4/4/1905",
+          "nba_name": "Ken Corley",
+          "years": [
+            1947,
+            1947
+          ],
+          "age_at_debut": 41
+        }
+      ],
+      "career_years": [
+        1947,
+        1947
+      ],
+      "chosen": "5/10/1921",
+      "chosen_source": "wikidata",
+      "days_apart": {
+        "nba_com_vs_wikidata_Q6387482_5/10/1921": 5880,
+        "nba_com_vs_old_override": 5515,
+        "nba_com_vs_sheet": 5880,
+        "wikidata_Q6387482_5/10/1921_vs_old_override": 365,
+        "wikidata_Q6387482_5/10/1921_vs_sheet": 0,
+        "old_override_vs_sheet": 365
+      },
+      "changed_vs_old": true
+    },
+    {
+      "name": "Ken Keller",
+      "kind": "single_source_contradicts_old",
+      "sheet_value": "1/1/1922",
+      "old_override_value": "8/16/1922",
+      "nba_com": null,
+      "wikidata": [
+        {
+          "qid": "Q372803",
+          "values": [
+            "1/1/1922"
+          ],
+          "partial_years": [],
+          "career_evidence": [
+            "NBA.com ID matches a career-checked NBA.com record",
+            "work-period start matches career"
+          ]
+        }
+      ],
+      "nba_com_rejected": [
+        {
+          "person_id": "77234",
+          "value": "4/5/1905",
+          "nba_name": "Ken Keller",
+          "years": [
+            1947,
+            1947
+          ],
+          "age_at_debut": 41
+        }
+      ],
+      "career_years": [
+        1947,
+        1947
+      ],
+      "chosen": "1/1/1922",
+      "chosen_source": "wikidata",
+      "days_apart": {
+        "nba_com_vs_wikidata_Q372803_1/1/1922": 6115,
+        "nba_com_vs_old_override": 6342,
+        "nba_com_vs_sheet": 6115,
+        "wikidata_Q372803_1/1/1922_vs_old_override": 227,
+        "wikidata_Q372803_1/1/1922_vs_sheet": 0,
+        "old_override_vs_sheet": 227
+      },
+      "changed_vs_old": true
+    },
+    {
+      "name": "Ken McBride",
+      "kind": "single_source_contradicts_old",
+      "sheet_value": "3/23/1929",
+      "old_override_value": "5/23/1929",
+      "nba_com": null,
+      "wikidata": [
+        {
+          "qid": "Q4505416",
+          "values": [
+            "3/23/1929"
+          ],
+          "partial_years": [],
+          "career_evidence": [
+            "NBA.com ID matches a career-checked NBA.com record",
+            "work-period start matches career"
+          ]
+        }
+      ],
+      "nba_com_rejected": [
+        {
+          "person_id": "77499",
+          "value": "4/14/1905",
+          "nba_name": "Ken McBride",
+          "years": [
+            1955,
+            1955
+          ],
+          "age_at_debut": 49
+        }
+      ],
+      "career_years": [
+        1955,
+        1955
+      ],
+      "chosen": "3/23/1929",
+      "chosen_source": "wikidata",
+      "days_apart": {
+        "nba_com_vs_wikidata_Q4505416_3/23/1929": 8744,
+        "nba_com_vs_old_override": 8805,
+        "nba_com_vs_sheet": 8744,
+        "wikidata_Q4505416_3/23/1929_vs_old_override": 61,
+        "wikidata_Q4505416_3/23/1929_vs_sheet": 0,
+        "old_override_vs_sheet": 61
+      },
+      "changed_vs_old": true
+    },
+    {
+      "name": "Kenny Sailors",
+      "kind": "disagreement",
+      "sheet_value": "1/14/1922",
+      "old_override_value": "1/14/1921",
+      "nba_com": [
+        {
+          "person_id": "78051",
+          "value": "1/14/1922",
+          "nba_name": "Kenny Sailors",
+          "years": [
+            1947,
+            1951
+          ]
+        }
+      ],
+      "wikidata": [
+        {
+          "qid": "Q1450551",
+          "values": [
+            "1/14/1921"
+          ],
+          "partial_years": [],
+          "career_evidence": [
+            "NBA.com ID matches a career-checked NBA.com record",
+            "work-period start matches career"
+          ]
+        }
+      ],
+      "nba_com_rejected": null,
+      "career_years": [
+        1947,
+        1951
+      ],
+      "chosen": "1/14/1922",
+      "chosen_source": "nba.com",
+      "days_apart": {
+        "nba_com_vs_wikidata_Q1450551_1/14/1921": 365,
+        "nba_com_vs_old_override": 365,
+        "nba_com_vs_sheet": 0,
+        "wikidata_Q1450551_1/14/1921_vs_old_override": 0,
+        "wikidata_Q1450551_1/14/1921_vs_sheet": 365,
+        "old_override_vs_sheet": 365
+      },
+      "changed_vs_old": true
+    },
+    {
+      "name": "Kevinn Pinkney",
+      "kind": "disagreement",
+      "sheet_value": "10/10/1983",
+      "old_override_value": "10/20/1983",
+      "nba_com": [
+        {
+          "person_id": "200838",
+          "value": "10/20/1983",
+          "nba_name": "Kevinn Pinkney",
+          "years": [
+            2007,
+            2007
+          ]
+        }
+      ],
+      "wikidata": [
+        {
+          "qid": "Q2897346",
+          "values": [
+            "10/10/1983",
+            "10/20/1983"
+          ],
+          "partial_years": [],
+          "career_evidence": [
+            "NBA.com ID matches a career-checked NBA.com record",
+            "team (P54) years overlap career",
+            "work-period start matches career"
+          ]
+        }
+      ],
+      "nba_com_rejected": null,
+      "career_years": [
+        2007,
+        2007
+      ],
+      "chosen": "10/20/1983",
+      "chosen_source": "nba.com",
+      "days_apart": {
+        "nba_com_vs_wikidata_Q2897346_10/10/1983": 10,
+        "nba_com_vs_wikidata_Q2897346_10/20/1983": 0,
+        "nba_com_vs_old_override": 0,
+        "nba_com_vs_sheet": 10,
+        "wikidata_Q2897346_10/10/1983_vs_wikidata_Q2897346_10/20/1983": 10,
+        "wikidata_Q2897346_10/10/1983_vs_old_override": 10,
+        "wikidata_Q2897346_10/10/1983_vs_sheet": 0,
+        "wikidata_Q2897346_10/20/1983_vs_old_override": 0,
+        "wikidata_Q2897346_10/20/1983_vs_sheet": 10,
+        "old_override_vs_sheet": 10
+      },
+      "changed_vs_old": false
+    },
+    {
+      "name": "Leo Kubiak",
+      "kind": "disagreement",
+      "sheet_value": "12/25/1927",
+      "old_override_value": "12/25/1926",
+      "nba_com": [
+        {
+          "person_id": "77317",
+          "value": "12/25/1926",
+          "nba_name": "Leo Kubiak",
+          "years": [
+            1950,
+            1950
+          ]
+        }
+      ],
+      "wikidata": [
+        {
+          "qid": "Q3329090",
+          "values": [
+            "12/25/1927"
+          ],
+          "partial_years": [],
+          "career_evidence": [
+            "NBA.com ID matches a career-checked NBA.com record",
+            "team (P54) years overlap career",
+            "work-period start matches career"
+          ]
+        }
+      ],
+      "nba_com_rejected": null,
+      "career_years": [
+        1950,
+        1950
+      ],
+      "chosen": "12/25/1926",
+      "chosen_source": "nba.com",
+      "days_apart": {
+        "nba_com_vs_wikidata_Q3329090_12/25/1927": 365,
+        "nba_com_vs_old_override": 0,
+        "nba_com_vs_sheet": 365,
+        "wikidata_Q3329090_12/25/1927_vs_old_override": 365,
+        "wikidata_Q3329090_12/25/1927_vs_sheet": 0,
+        "old_override_vs_sheet": 365
+      },
+      "changed_vs_old": false
+    },
+    {
+      "name": "Matt Mooney",
+      "kind": "disagreement",
+      "sheet_value": "2/7/1997",
+      "old_override_value": "2/7/1996",
+      "nba_com": [
+        {
+          "person_id": "1629760",
+          "value": "2/7/1995",
+          "nba_name": "Matt Mooney",
+          "years": [
+            2020,
+            2022
+          ]
+        }
+      ],
+      "wikidata": [
+        {
+          "qid": "Q62752685",
+          "values": [
+            "2/7/1995",
+            "2/7/1997"
+          ],
+          "partial_years": [],
+          "career_evidence": [
+            "NBA.com ID matches a career-checked NBA.com record",
+            "team (P54) years overlap career",
+            "work-period start matches career"
+          ]
+        }
+      ],
+      "nba_com_rejected": null,
+      "career_years": [
+        2020,
+        2022
+      ],
+      "chosen": "2/7/1995",
+      "chosen_source": "nba.com",
+      "days_apart": {
+        "nba_com_vs_wikidata_Q62752685_2/7/1995": 0,
+        "nba_com_vs_wikidata_Q62752685_2/7/1997": 731,
+        "nba_com_vs_old_override": 365,
+        "nba_com_vs_sheet": 731,
+        "wikidata_Q62752685_2/7/1995_vs_wikidata_Q62752685_2/7/1997": 731,
+        "wikidata_Q62752685_2/7/1995_vs_old_override": 365,
+        "wikidata_Q62752685_2/7/1995_vs_sheet": 731,
+        "wikidata_Q62752685_2/7/1997_vs_old_override": 366,
+        "wikidata_Q62752685_2/7/1997_vs_sheet": 0,
+        "old_override_vs_sheet": 366
+      },
+      "changed_vs_old": true
+    },
+    {
+      "name": "Max Morris",
+      "kind": "disagreement",
+      "sheet_value": "3/13/1925",
+      "old_override_value": "3/14/1925",
+      "nba_com": [
+        {
+          "person_id": "77646",
+          "value": "3/14/1925",
+          "nba_name": "Max Morris",
+          "years": [
+            1950,
+            1950
+          ]
+        }
+      ],
+      "wikidata": [
+        {
+          "qid": "Q3853063",
+          "values": [
+            "3/13/1925"
+          ],
+          "partial_years": [],
+          "career_evidence": [
+            "NBA.com ID matches a career-checked NBA.com record"
+          ]
+        }
+      ],
+      "nba_com_rejected": null,
+      "career_years": [
+        1950,
+        1950
+      ],
+      "chosen": "3/14/1925",
+      "chosen_source": "nba.com",
+      "days_apart": {
+        "nba_com_vs_wikidata_Q3853063_3/13/1925": 1,
+        "nba_com_vs_old_override": 0,
+        "nba_com_vs_sheet": 1,
+        "wikidata_Q3853063_3/13/1925_vs_old_override": 1,
+        "wikidata_Q3853063_3/13/1925_vs_sheet": 0,
+        "old_override_vs_sheet": 1
+      },
+      "changed_vs_old": false
+    },
+    {
+      "name": "Michael Stewart",
+      "kind": "disagreement",
+      "sheet_value": "4/24/1975",
+      "old_override_value": "4/25/1975",
+      "nba_com": [
+        {
+          "person_id": "1565",
+          "value": "4/25/1975",
+          "nba_name": "Michael Stewart",
+          "years": [
+            1998,
+            2005
+          ]
+        }
+      ],
+      "wikidata": [
+        {
+          "qid": "Q2353002",
+          "values": [
+            "4/24/1975"
+          ],
+          "partial_years": [],
+          "career_evidence": [
+            "NBA.com ID matches a career-checked NBA.com record",
+            "team (P54) years overlap career",
+            "work-period start matches career"
+          ]
+        }
+      ],
+      "nba_com_rejected": null,
+      "career_years": [
+        1998,
+        2005
+      ],
+      "chosen": "4/25/1975",
+      "chosen_source": "nba.com",
+      "days_apart": {
+        "nba_com_vs_wikidata_Q2353002_4/24/1975": 1,
+        "nba_com_vs_old_override": 0,
+        "nba_com_vs_sheet": 1,
+        "wikidata_Q2353002_4/24/1975_vs_old_override": 1,
+        "wikidata_Q2353002_4/24/1975_vs_sheet": 0,
+        "old_override_vs_sheet": 1
+      },
+      "changed_vs_old": false
+    },
+    {
+      "name": "Omari Johnson",
+      "kind": "disagreement",
+      "sheet_value": "5/26/1989",
+      "old_override_value": "11/26/1989",
+      "nba_com": [
+        {
+          "person_id": "204179",
+          "value": "5/26/1989",
+          "nba_name": "Omari Johnson",
+          "years": [
+            2018,
+            2018
+          ]
+        }
+      ],
+      "wikidata": [
+        {
+          "qid": "Q20643185",
+          "values": [
+            "11/26/1989",
+            "5/26/1989"
+          ],
+          "partial_years": [],
+          "career_evidence": [
+            "NBA.com ID matches a career-checked NBA.com record"
+          ]
+        }
+      ],
+      "nba_com_rejected": null,
+      "career_years": [
+        2018,
+        2018
+      ],
+      "chosen": "5/26/1989",
+      "chosen_source": "nba.com",
+      "days_apart": {
+        "nba_com_vs_wikidata_Q20643185_11/26/1989": 184,
+        "nba_com_vs_wikidata_Q20643185_5/26/1989": 0,
+        "nba_com_vs_old_override": 184,
+        "nba_com_vs_sheet": 0,
+        "wikidata_Q20643185_11/26/1989_vs_wikidata_Q20643185_5/26/1989": 184,
+        "wikidata_Q20643185_11/26/1989_vs_old_override": 0,
+        "wikidata_Q20643185_11/26/1989_vs_sheet": 184,
+        "wikidata_Q20643185_5/26/1989_vs_old_override": 184,
+        "wikidata_Q20643185_5/26/1989_vs_sheet": 0,
+        "old_override_vs_sheet": 184
+      },
+      "changed_vs_old": true
+    },
+    {
+      "name": "Press Maravich",
+      "kind": "disagreement",
+      "sheet_value": "8/20/1920",
+      "old_override_value": "8/29/1915",
+      "nba_com": [
+        {
+          "person_id": "77458",
+          "value": "8/20/1920",
+          "nba_name": "Peter Maravich",
+          "years": [
+            1947,
+            1947
+          ]
+        }
+      ],
+      "wikidata": [
+        {
+          "qid": "Q3911157",
+          "values": [
+            "8/29/1915"
+          ],
+          "partial_years": [],
+          "career_evidence": [
+            "NBA.com ID matches a career-checked NBA.com record"
+          ]
+        }
+      ],
+      "nba_com_rejected": null,
+      "career_years": [
+        1947,
+        1947
+      ],
+      "chosen": "8/20/1920",
+      "chosen_source": "nba.com",
+      "days_apart": {
+        "nba_com_vs_wikidata_Q3911157_8/29/1915": 1818,
+        "nba_com_vs_old_override": 1818,
+        "nba_com_vs_sheet": 0,
+        "wikidata_Q3911157_8/29/1915_vs_old_override": 0,
+        "wikidata_Q3911157_8/29/1915_vs_sheet": 1818,
+        "old_override_vs_sheet": 1818
+      },
+      "changed_vs_old": true
+    },
+    {
+      "name": "Ray Corley",
+      "kind": "disagreement",
+      "sheet_value": "1/1/1928",
+      "old_override_value": "1/14/1928",
+      "nba_com": [
+        {
+          "person_id": "76452",
+          "value": "1/1/1928",
+          "nba_name": "Ray Corley",
+          "years": [
+            1950,
+            1953
+          ]
+        }
+      ],
+      "wikidata": [
+        {
+          "qid": "Q3930616",
+          "values": [
+            "1/1/1928",
+            "1/14/1928"
+          ],
+          "partial_years": [],
+          "career_evidence": [
+            "NBA.com ID matches a career-checked NBA.com record",
+            "team (P54) years overlap career",
+            "work-period start matches career"
+          ]
+        }
+      ],
+      "nba_com_rejected": null,
+      "career_years": [
+        1950,
+        1953
+      ],
+      "chosen": "1/1/1928",
+      "chosen_source": "nba.com",
+      "days_apart": {
+        "nba_com_vs_wikidata_Q3930616_1/1/1928": 0,
+        "nba_com_vs_wikidata_Q3930616_1/14/1928": 13,
+        "nba_com_vs_old_override": 13,
+        "nba_com_vs_sheet": 0,
+        "wikidata_Q3930616_1/1/1928_vs_wikidata_Q3930616_1/14/1928": 13,
+        "wikidata_Q3930616_1/1/1928_vs_old_override": 13,
+        "wikidata_Q3930616_1/1/1928_vs_sheet": 0,
+        "wikidata_Q3930616_1/14/1928_vs_old_override": 0,
+        "wikidata_Q3930616_1/14/1928_vs_sheet": 13,
+        "old_override_vs_sheet": 13
+      },
+      "changed_vs_old": true
+    },
+    {
+      "name": "Ray Ellefson",
+      "kind": "disagreement",
+      "sheet_value": "11/18/1927",
+      "old_override_value": "11/18/1922",
+      "nba_com": [
+        {
+          "person_id": "76655",
+          "value": "11/18/1922",
+          "nba_name": "Ray Ellefson",
+          "years": [
+            1949,
+            1951
+          ]
+        }
+      ],
+      "wikidata": [
+        {
+          "qid": "Q7297443",
+          "values": [
+            "11/18/1927"
+          ],
+          "partial_years": [],
+          "career_evidence": [
+            "NBA.com ID matches a career-checked NBA.com record",
+            "team (P54) years overlap career",
+            "work-period start matches career"
+          ]
+        }
+      ],
+      "nba_com_rejected": null,
+      "career_years": [
+        1949,
+        1951
+      ],
+      "chosen": "11/18/1922",
+      "chosen_source": "nba.com",
+      "days_apart": {
+        "nba_com_vs_wikidata_Q7297443_11/18/1927": 1826,
+        "nba_com_vs_old_override": 0,
+        "nba_com_vs_sheet": 1826,
+        "wikidata_Q7297443_11/18/1927_vs_old_override": 1826,
+        "wikidata_Q7297443_11/18/1927_vs_sheet": 0,
+        "old_override_vs_sheet": 1826
+      },
+      "changed_vs_old": false
+    },
+    {
+      "name": "Reggie Jordan",
+      "kind": "disagreement",
+      "sheet_value": "1/26/1969",
+      "old_override_value": "1/26/1968",
+      "nba_com": [
+        {
+          "person_id": "674",
+          "value": "1/26/1968",
+          "nba_name": "Reggie Jordan",
+          "years": [
+            1994,
+            2000
+          ]
+        }
+      ],
+      "wikidata": [
+        {
+          "qid": "Q3931725",
+          "values": [
+            "1/26/1968",
+            "1/26/1969"
+          ],
+          "partial_years": [],
+          "career_evidence": [
+            "NBA.com ID matches a career-checked NBA.com record",
+            "work-period start matches career"
+          ]
+        }
+      ],
+      "nba_com_rejected": null,
+      "career_years": [
+        1994,
+        2000
+      ],
+      "chosen": "1/26/1968",
+      "chosen_source": "nba.com",
+      "days_apart": {
+        "nba_com_vs_wikidata_Q3931725_1/26/1968": 0,
+        "nba_com_vs_wikidata_Q3931725_1/26/1969": 366,
+        "nba_com_vs_old_override": 0,
+        "nba_com_vs_sheet": 366,
+        "wikidata_Q3931725_1/26/1968_vs_wikidata_Q3931725_1/26/1969": 366,
+        "wikidata_Q3931725_1/26/1968_vs_old_override": 0,
+        "wikidata_Q3931725_1/26/1968_vs_sheet": 366,
+        "wikidata_Q3931725_1/26/1969_vs_old_override": 366,
+        "wikidata_Q3931725_1/26/1969_vs_sheet": 0,
+        "old_override_vs_sheet": 366
+      },
+      "changed_vs_old": false
+    },
+    {
+      "name": "Rodney Carney",
+      "kind": "disagreement",
+      "sheet_value": "4/5/1984",
+      "old_override_value": "4/15/1984",
+      "nba_com": [
+        {
+          "person_id": "200760",
+          "value": "4/5/1984",
+          "nba_name": "Rodney Carney",
+          "years": [
+            2007,
+            2011
+          ]
+        }
+      ],
+      "wikidata": [
+        {
+          "qid": "Q2733947",
+          "values": [
+            "4/15/1984",
+            "4/5/1984"
+          ],
+          "partial_years": [],
+          "career_evidence": [
+            "NBA.com ID matches a career-checked NBA.com record",
+            "team (P54) years overlap career",
+            "work-period start matches career"
+          ]
+        }
+      ],
+      "nba_com_rejected": null,
+      "career_years": [
+        2007,
+        2011
+      ],
+      "chosen": "4/5/1984",
+      "chosen_source": "nba.com",
+      "days_apart": {
+        "nba_com_vs_wikidata_Q2733947_4/15/1984": 10,
+        "nba_com_vs_wikidata_Q2733947_4/5/1984": 0,
+        "nba_com_vs_old_override": 10,
+        "nba_com_vs_sheet": 0,
+        "wikidata_Q2733947_4/15/1984_vs_wikidata_Q2733947_4/5/1984": 10,
+        "wikidata_Q2733947_4/15/1984_vs_old_override": 0,
+        "wikidata_Q2733947_4/15/1984_vs_sheet": 10,
+        "wikidata_Q2733947_4/5/1984_vs_old_override": 10,
+        "wikidata_Q2733947_4/5/1984_vs_sheet": 0,
+        "old_override_vs_sheet": 10
+      },
+      "changed_vs_old": true
+    },
+    {
+      "name": "Roko Ukic",
+      "kind": "disagreement",
+      "sheet_value": "12/5/1984",
+      "old_override_value": "5/12/1984",
+      "nba_com": [
+        {
+          "person_id": "101146",
+          "value": "12/5/1984",
+          "nba_name": "Roko Ukic",
+          "years": [
+            2008,
+            2010
+          ]
+        }
+      ],
+      "wikidata": [
+        {
+          "qid": "Q203331",
+          "values": [
+            "12/5/1984",
+            "5/12/1984"
+          ],
+          "partial_years": [],
+          "career_evidence": [
+            "NBA.com ID matches a career-checked NBA.com record",
+            "team (P54) years overlap career"
+          ]
+        }
+      ],
+      "nba_com_rejected": null,
+      "career_years": [
+        2009,
+        2010
+      ],
+      "chosen": "12/5/1984",
+      "chosen_source": "nba.com",
+      "days_apart": {
+        "nba_com_vs_wikidata_Q203331_12/5/1984": 0,
+        "nba_com_vs_wikidata_Q203331_5/12/1984": 207,
+        "nba_com_vs_old_override": 207,
+        "nba_com_vs_sheet": 0,
+        "wikidata_Q203331_12/5/1984_vs_wikidata_Q203331_5/12/1984": 207,
+        "wikidata_Q203331_12/5/1984_vs_old_override": 207,
+        "wikidata_Q203331_12/5/1984_vs_sheet": 0,
+        "wikidata_Q203331_5/12/1984_vs_old_override": 0,
+        "wikidata_Q203331_5/12/1984_vs_sheet": 207,
+        "old_override_vs_sheet": 207
+      },
+      "changed_vs_old": true
+    },
+    {
+      "name": "Sharrod Ford",
+      "kind": "disagreement",
+      "sheet_value": "9/9/1982",
+      "old_override_value": "1/9/1982",
+      "nba_com": [
+        {
+          "person_id": "101213",
+          "value": "1/9/1982",
+          "nba_name": "Sharrod Ford",
+          "years": [
+            2006,
+            2006
+          ]
+        }
+      ],
+      "wikidata": [
+        {
+          "qid": "Q326355",
+          "values": [
+            "9/9/1982"
+          ],
+          "partial_years": [],
+          "career_evidence": [
+            "NBA.com ID matches a career-checked NBA.com record",
+            "team (P54) years overlap career",
+            "work-period start matches career"
+          ]
+        }
+      ],
+      "nba_com_rejected": null,
+      "career_years": [
+        2006,
+        2006
+      ],
+      "chosen": "1/9/1982",
+      "chosen_source": "nba.com",
+      "days_apart": {
+        "nba_com_vs_wikidata_Q326355_9/9/1982": 243,
+        "nba_com_vs_old_override": 0,
+        "nba_com_vs_sheet": 243,
+        "wikidata_Q326355_9/9/1982_vs_old_override": 243,
+        "wikidata_Q326355_9/9/1982_vs_sheet": 0,
+        "old_override_vs_sheet": 243
+      },
+      "changed_vs_old": false
+    },
+    {
+      "name": "Steve Hamilton",
+      "kind": "disagreement",
+      "sheet_value": "11/30/1935",
+      "old_override_value": "11/30/1934",
+      "nba_com": [
+        {
+          "person_id": "76929",
+          "value": "11/30/1935",
+          "nba_name": "Steve Hamilton",
+          "years": [
+            1959,
+            1960
+          ]
+        }
+      ],
+      "wikidata": [
+        {
+          "qid": "Q6932895",
+          "values": [
+            "11/30/1934",
+            "11/30/1935"
+          ],
+          "partial_years": [],
+          "career_evidence": [
+            "NBA.com ID matches a career-checked NBA.com record",
+            "team (P54) years overlap career",
+            "work-period start matches career"
+          ]
+        },
+        {
+          "qid": "Q100982516",
+          "values": [],
+          "partial_years": [],
+          "career_evidence": []
+        }
+      ],
+      "nba_com_rejected": null,
+      "career_years": [
+        1959,
+        1960
+      ],
+      "chosen": "11/30/1935",
+      "chosen_source": "nba.com",
+      "days_apart": {
+        "nba_com_vs_wikidata_Q6932895_11/30/1934": 365,
+        "nba_com_vs_wikidata_Q6932895_11/30/1935": 0,
+        "nba_com_vs_old_override": 365,
+        "nba_com_vs_sheet": 0,
+        "wikidata_Q6932895_11/30/1934_vs_wikidata_Q6932895_11/30/1935": 365,
+        "wikidata_Q6932895_11/30/1934_vs_old_override": 0,
+        "wikidata_Q6932895_11/30/1934_vs_sheet": 365,
+        "wikidata_Q6932895_11/30/1935_vs_old_override": 365,
+        "wikidata_Q6932895_11/30/1935_vs_sheet": 0,
+        "old_override_vs_sheet": 365
+      },
+      "changed_vs_old": true
+    },
+    {
+      "name": "Wayne Englestad",
+      "kind": "disagreement",
+      "sheet_value": "12/6/1966",
+      "old_override_value": "12/6/1965",
+      "nba_com": [
+        {
+          "person_id": "76671",
+          "value": "12/6/1963",
+          "nba_name": "Wayne Englestad",
+          "years": [
+            1989,
+            1989
+          ]
+        }
+      ],
+      "wikidata": [
+        {
+          "qid": "Q4018597",
+          "values": [
+            "12/6/1965"
+          ],
+          "partial_years": [],
+          "career_evidence": [
+            "NBA.com ID matches a career-checked NBA.com record",
+            "team (P54) years overlap career",
+            "work-period start matches career"
+          ]
+        }
+      ],
+      "nba_com_rejected": null,
+      "career_years": [
+        1989,
+        1989
+      ],
+      "chosen": "12/6/1963",
+      "chosen_source": "nba.com",
+      "days_apart": {
+        "nba_com_vs_wikidata_Q4018597_12/6/1965": 731,
+        "nba_com_vs_old_override": 731,
+        "nba_com_vs_sheet": 1096,
+        "wikidata_Q4018597_12/6/1965_vs_old_override": 0,
+        "wikidata_Q4018597_12/6/1965_vs_sheet": 365,
+        "old_override_vs_sheet": 365
+      },
+      "changed_vs_old": true
+    },
+    {
+      "name": "Will Frazier",
+      "kind": "disagreement",
+      "sheet_value": "8/24/1942",
+      "old_override_value": "8/25/1942",
+      "nba_com": [
+        {
+          "person_id": "76751",
+          "value": "8/24/1942",
+          "nba_name": "Will Frazier",
+          "years": [
+            1966,
+            1966
+          ]
+        }
+      ],
+      "wikidata": [
+        {
+          "qid": "Q976016",
+          "values": [
+            "8/24/1942",
+            "8/25/1942"
+          ],
+          "partial_years": [],
+          "career_evidence": [
+            "NBA.com ID matches a career-checked NBA.com record",
+            "work-period start matches career"
+          ]
+        }
+      ],
+      "nba_com_rejected": null,
+      "career_years": [
+        1966,
+        1966
+      ],
+      "chosen": "8/24/1942",
+      "chosen_source": "nba.com",
+      "days_apart": {
+        "nba_com_vs_wikidata_Q976016_8/24/1942": 0,
+        "nba_com_vs_wikidata_Q976016_8/25/1942": 1,
+        "nba_com_vs_old_override": 1,
+        "nba_com_vs_sheet": 0,
+        "wikidata_Q976016_8/24/1942_vs_wikidata_Q976016_8/25/1942": 1,
+        "wikidata_Q976016_8/24/1942_vs_old_override": 1,
+        "wikidata_Q976016_8/24/1942_vs_sheet": 0,
+        "wikidata_Q976016_8/25/1942_vs_old_override": 0,
+        "wikidata_Q976016_8/25/1942_vs_sheet": 1,
+        "old_override_vs_sheet": 1
+      },
+      "changed_vs_old": true
+    }
+  ]
+}

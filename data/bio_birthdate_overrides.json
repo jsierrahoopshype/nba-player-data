@@ -2,230 +2,268 @@
   {
     "name": "Adrian Dantley",
     "wrong_value": "2/28/1956",
-    "correct_value": "2/28/1955",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "correct_value": "2/26/1955",
+    "source": "nba.com",
+    "reason": "NBA.com player 76504 (Adrian Dantley, 1977-1991); Wikidata differs, see review file"
   },
   {
     "name": "Alexander Volkov",
     "wrong_value": "3/28/1964",
     "correct_value": "3/29/1964",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "source": "nba.com",
+    "reason": "NBA.com player 78421 (Alexander Volkov, 1990-1992); Wikidata agrees"
   },
   {
     "name": "Andreas Glyniadakis",
     "wrong_value": "8/26/1981",
-    "correct_value": "8/21/1981",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "correct_value": "8/26/1981",
+    "source": "nba.com",
+    "reason": "NBA.com player 2601 (Andreas Glyniadakis, 2007-2007); Wikidata agrees"
   },
   {
     "name": "Andy Panko",
     "wrong_value": "11/29/1977",
-    "correct_value": "11/27/1977",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "correct_value": "11/29/1977",
+    "source": "nba.com",
+    "reason": "NBA.com player 1950 (Andy Panko, 2001-2001); Wikidata agrees"
   },
   {
     "name": "Antonio Burks",
     "wrong_value": "2/5/1980",
     "correct_value": "2/25/1980",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "source": "nba.com",
+    "reason": "NBA.com player 2766 (Antonio Burks, 2005-2006); Wikidata agrees"
   },
   {
     "name": "Ariel Hukporti",
     "wrong_value": "4/12/2002",
-    "correct_value": "4/11/2002",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "correct_value": "4/12/2002",
+    "source": "nba.com",
+    "reason": "NBA.com player 1630574 (Ariel Hukporti, 2025-2027); Wikidata agrees"
   },
   {
     "name": "Ariel Maughan",
     "wrong_value": "4/26/1923",
     "correct_value": "2/23/1923",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "source": "nba.com",
+    "reason": "NBA.com player 77485 (Ariel Maughan, 1947-1951); Wikidata differs, see review file"
   },
   {
     "name": "Art Spector",
     "wrong_value": "10/17/1920",
-    "correct_value": "10/17/1918",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "correct_value": "10/17/1920",
+    "source": "nba.com",
+    "reason": "NBA.com player 78226 (Art Spector, 1947-1950); Wikidata agrees"
   },
   {
     "name": "Ben Clyde",
     "wrong_value": "6/10/1951",
-    "correct_value": "6/10/1952",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "correct_value": "6/10/1951",
+    "source": "nba.com",
+    "reason": "NBA.com player 76409 (Ben Clyde, 1975-1975); Wikidata agrees"
   },
   {
     "name": "Ben Uzoh",
     "wrong_value": "3/18/1988",
-    "correct_value": "3/19/1988",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "correct_value": "3/18/1988",
+    "source": "nba.com",
+    "reason": "NBA.com player 202386 (Ben Uzoh, 2011-2012); Wikidata agrees"
   },
   {
     "name": "Bill Davis",
     "wrong_value": "10/3/1921",
-    "correct_value": "10/3/1920",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "correct_value": "10/3/1921",
+    "source": "nba.com",
+    "reason": "NBA.com player 76538 (Bill Davis, 1947-1947); Wikidata differs, see review file"
   },
   {
     "name": "Bill Wennington",
     "wrong_value": "12/26/1963",
     "correct_value": "4/26/1963",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "source": "nba.com",
+    "reason": "NBA.com player 82 (Bill Wennington, 1986-2000); Wikidata agrees"
   },
   {
     "name": "Bob Brannum",
     "wrong_value": "5/28/1925",
-    "correct_value": "5/28/1926",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "correct_value": "5/28/1925",
+    "source": "nba.com",
+    "reason": "NBA.com player 76238 (Bob Brannum, 1950-1955); Wikidata agrees"
   },
   {
     "name": "Bob Christian",
     "wrong_value": "5/11/1946",
     "correct_value": "5/11/1944",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "source": "nba.com",
+    "reason": "NBA.com player 76395 (Bob Christian, 1971-1974); Wikidata differs, see review file"
   },
   {
     "name": "Bob Santini",
     "wrong_value": "2/17/1932",
     "correct_value": "2/17/1935",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "source": "nba.com",
+    "reason": "NBA.com player 78061 (Bob Santini, 1956-1956); Wikidata differs, see review file"
   },
   {
     "name": "Boniface N'Dong",
     "wrong_value": "9/3/1977",
-    "correct_value": "3/9/1977",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "correct_value": "9/3/1977",
+    "source": "nba.com",
+    "reason": "NBA.com player 101238 (Boniface Ndong, 2006-2006); Wikidata agrees"
   },
   {
     "name": "Brook Steppe",
     "wrong_value": "9/7/1959",
     "correct_value": "11/7/1959",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "source": "nba.com",
+    "reason": "NBA.com player 78250 (Brook Steppe, 1983-1989); Wikidata agrees"
   },
   {
     "name": "C.J. Kupec",
     "wrong_value": "1/16/1953",
-    "correct_value": "1/26/1953",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "correct_value": "1/16/1953",
+    "source": "nba.com",
+    "reason": "NBA.com player 77325 (Charles Kupec, 1976-1978); Wikidata agrees"
   },
   {
     "name": "Cal Christensen",
     "wrong_value": "7/8/1927",
-    "correct_value": "6/6/1927",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "correct_value": "6/8/1927",
+    "source": "nba.com",
+    "reason": "NBA.com player 76394 (Cal Christensen, 1951-1955); Wikidata differs, see review file"
   },
   {
     "name": "Carlos Clark",
     "wrong_value": "8/20/1960",
     "correct_value": "8/10/1960",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "source": "nba.com",
+    "reason": "NBA.com player 76398 (Carlos Clark, 1984-1985); Wikidata agrees"
   },
   {
     "name": "Charlie Hoefer",
     "wrong_value": "7/12/1917",
-    "correct_value": "9/16/1921",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "correct_value": "7/12/1917",
+    "source": "nba.com",
+    "reason": "NBA.com player 77035 (Adolph Hoefer, 1947-1948); Wikidata agrees"
   },
   {
     "name": "Chink Crossin",
     "wrong_value": "7/4/1924",
-    "correct_value": "7/4/1923",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "correct_value": "7/4/1924",
+    "source": "nba.com",
+    "reason": "NBA.com player 76479 (Francis Crossin, 1948-1950); Wikidata agrees"
   },
   {
     "name": "Curtis Jones",
     "wrong_value": "10/4/2001",
-    "correct_value": "12/4/2001",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "correct_value": "10/4/2001",
+    "source": "nba.com",
+    "reason": "NBA.com player 1642938 (Curtis Jones, 2026-2026); Wikidata agrees"
   },
   {
     "name": "Darrall Imhoff",
     "wrong_value": "10/12/1938",
     "correct_value": "10/11/1938",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "source": "nba.com",
+    "reason": "NBA.com player 77093 (Darrall Imhoff, 1961-1972); Wikidata agrees"
   },
   {
     "name": "DeVaughn Akoon-Purcell",
     "wrong_value": "3/5/1993",
     "correct_value": "6/5/1993",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "source": "nba.com",
+    "reason": "NBA.com player 1629152 (DeVaughn Akoon-Purcell, 2019-2019); Wikidata agrees"
   },
   {
     "name": "Didi Louzada",
     "wrong_value": "7/2/1999",
-    "correct_value": "2/7/1999",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "correct_value": "7/2/1999",
+    "source": "nba.com",
+    "reason": "NBA.com player 1629712 (Didi Louzada, 2021-2022); Wikidata agrees"
   },
   {
     "name": "Dijon Thompson",
     "wrong_value": "3/23/1983",
-    "correct_value": "2/23/1983",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "correct_value": "3/23/1983",
+    "source": "nba.com",
+    "reason": "NBA.com player 101159 (Dijon Thompson, 2006-2007); Wikidata agrees"
   },
   {
     "name": "Don Buse",
     "wrong_value": "8/20/1950",
     "correct_value": "8/10/1950",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "source": "nba.com",
+    "reason": "NBA.com player 76317 (Don Buse, 1977-1985); Wikidata agrees"
   },
   {
     "name": "Don Lofgran",
     "wrong_value": "11/18/1928",
-    "correct_value": "11/8/1929",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "correct_value": "11/18/1928",
+    "source": "nba.com",
+    "reason": "NBA.com player 77402 (Don Lofgran, 1951-1954); Wikidata differs, see review file"
   },
   {
     "name": "Donell Taylor",
     "wrong_value": "1/26/1982",
     "correct_value": "7/26/1982",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "source": "nba.com",
+    "reason": "NBA.com player 101182 (Donell Taylor, 2006-2007); Wikidata agrees"
   },
   {
     "name": "Doug Holcomb",
     "wrong_value": "2/9/1925",
-    "correct_value": "2/9/1921",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "correct_value": "2/9/1925",
+    "source": "nba.com",
+    "reason": "NBA.com player 77039 (Doug Holcomb, 1949-1949); Wikidata agrees"
   },
   {
     "name": "Dylan Cardwell",
     "wrong_value": "12/26/2001",
     "correct_value": "12/16/2001",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "source": "nba.com",
+    "reason": "NBA.com player 1642928 (Dylan Cardwell, 2026-2027); Wikidata agrees"
   },
   {
     "name": "Ed Gayda",
     "wrong_value": "5/11/1927",
-    "correct_value": "5/16/1927",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "correct_value": "5/11/1927",
+    "source": "nba.com",
+    "reason": "NBA.com player 76797 (Ed Gayda, 1951-1951); Wikidata differs, see review file"
   },
   {
     "name": "Ed Sadowski",
     "wrong_value": "7/11/1917",
-    "correct_value": "7/11/1915",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "correct_value": "7/11/1917",
+    "source": "nba.com",
+    "reason": "NBA.com player 78050 (Ed Sadowski, 1947-1950); Wikidata agrees"
   },
   {
     "name": "Fran Curran",
     "wrong_value": "9/19/1925",
-    "correct_value": "9/9/1922",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "correct_value": "9/19/1925",
+    "source": "nba.com",
+    "reason": "NBA.com player 76492 (Fran Curran, 1949-1950); Wikidata agrees"
   },
   {
     "name": "Frankie King",
     "wrong_value": "7/6/1972",
     "correct_value": "6/6/1972",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "source": "nba.com",
+    "reason": "NBA.com player 701 (Frankie King, 1996-1997); Wikidata agrees"
   },
   {
     "name": "Gary Hill",
     "wrong_value": "10/17/1941",
     "correct_value": "10/7/1941",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "source": "nba.com",
+    "reason": "NBA.com player 77026 (Gary Hill, 1964-1965); Wikidata agrees"
   },
   {
     "name": "Gaylon Nickerson",
     "wrong_value": "5/5/1969",
-    "correct_value": "2/5/1969",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "correct_value": "2/6/1969",
+    "source": "nba.com",
+    "reason": "NBA.com player 1093 (Gaylon Nickerson, 1997-1997); Wikidata differs, see review file"
   },
   {
     "name": "Gene Gillette",
@@ -236,290 +274,338 @@
   {
     "name": "Gene Stump",
     "wrong_value": "11/13/1923",
-    "correct_value": "8/9/1925",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "correct_value": "11/13/1923",
+    "source": "nba.com",
+    "reason": "NBA.com player 78275 (Gene Stump, 1948-1950); Wikidata agrees"
   },
   {
     "name": "George Feigenbaum",
     "wrong_value": "7/2/1929",
-    "correct_value": "7/2/1928",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "correct_value": "7/2/1929",
+    "source": "nba.com",
+    "reason": "NBA.com player 76702 (George Feigenbaum, 1950-1953); Wikidata differs, see review file"
   },
   {
     "name": "George Glamack",
     "wrong_value": "6/7/1919",
-    "correct_value": "6/7/1918",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "correct_value": "6/7/1919",
+    "source": "nba.com",
+    "reason": "NBA.com player 76820 (George Glamack, 1949-1949); Wikidata agrees"
   },
   {
     "name": "George Lehmann",
     "wrong_value": "5/1/1942",
-    "correct_value": "5/1/1941",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "correct_value": "5/1/1942",
+    "source": "nba.com",
+    "reason": "NBA.com player 77369 (George Lehmann, 1968-1969); Wikidata differs, see review file"
   },
   {
     "name": "Greg Dreiling",
     "wrong_value": "11/7/1963",
-    "correct_value": "11/7/1962",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "correct_value": "11/7/1963",
+    "source": "nba.com",
+    "reason": "NBA.com player 1068 (Greg Dreiling, 1987-1997); Wikidata differs, see review file"
   },
   {
     "name": "Greg Whittington",
     "wrong_value": "2/17/1993",
     "correct_value": "2/7/1993",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "source": "nba.com",
+    "reason": "NBA.com player 204222 (Greg Whittington, 2021-2021); Wikidata differs, see review file"
   },
   {
     "name": "Hal Tidrick",
     "wrong_value": "8/4/1915",
-    "correct_value": "4/4/1915",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "correct_value": "6/14/1915",
+    "source": "nba.com",
+    "reason": "NBA.com player 78341 (Howard Tidrick, 1949-1949); Wikidata differs, see review file"
   },
   {
     "name": "Herm Fuetsch",
     "wrong_value": "7/16/1918",
     "correct_value": "7/6/1918",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "source": "nba.com",
+    "reason": "NBA.com player 76763 (Herm Fuetsch, 1948-1948); Wikidata agrees"
   },
   {
     "name": "Herm Hedderick",
     "wrong_value": "",
-    "correct_value": "1/10/1930",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "correct_value": "1/1/1930",
+    "source": "nba.com",
+    "reason": "NBA.com player 76986 (Herm Hedderick, 1955-1955); Wikidata differs, see review file"
   },
   {
     "name": "Hilton Armstrong",
     "wrong_value": "11/23/1984",
-    "correct_value": "11/11/1984",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "correct_value": "11/23/1984",
+    "source": "nba.com",
+    "reason": "NBA.com player 200756 (Hilton Armstrong, 2007-2014); Wikidata agrees"
   },
   {
     "name": "Hiram Fuller",
     "wrong_value": "5/13/1981",
-    "correct_value": "5/15/1981",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "correct_value": "5/13/1981",
+    "source": "nba.com",
+    "reason": "NBA.com player 2673 (Hiram Fuller, 2004-2004); Wikidata differs, see review file"
   },
   {
     "name": "Ibo Kutluay",
     "wrong_value": "1/7/1974",
-    "correct_value": "7/1/1974",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "correct_value": "1/7/1974",
+    "source": "nba.com",
+    "reason": "NBA.com player 2825 (Ibrahim Kutluay, 2005-2005); Wikidata differs, see review file"
   },
   {
     "name": "Ike Anigbogu",
     "wrong_value": "10/16/1998",
-    "correct_value": "10/17/1998",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "correct_value": "10/16/1998",
+    "source": "nba.com",
+    "reason": "NBA.com player 1628387 (Ike Anigbogu, 2018-2019); Wikidata agrees"
   },
   {
     "name": "Jabari Smith Sr",
     "wrong_value": "4/12/1977",
     "correct_value": "2/12/1977",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "source": "nba.com",
+    "reason": "NBA.com player 2074 (Jabari Smith, 2001-2005); Wikidata differs, see review file"
   },
   {
     "name": "Jack Cooley",
     "wrong_value": "4/4/1991",
     "correct_value": "4/12/1991",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "source": "nba.com",
+    "reason": "NBA.com player 204022 (Jack Cooley, 2015-2018); Wikidata differs, see review file"
   },
   {
     "name": "Jack Cotton",
     "wrong_value": "10/15/1924",
-    "correct_value": "10/25/1924",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "correct_value": "10/15/1924",
+    "source": "nba.com",
+    "reason": "NBA.com player 76456 (Jack Cotton, 1950-1950); Wikidata agrees"
   },
   {
     "name": "Jackson Rowe",
     "wrong_value": "7/1/1997",
     "correct_value": "1/4/1997",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "source": "nba.com",
+    "reason": "NBA.com player 1642050 (Jackson Rowe, 2025-2025); Wikidata agrees"
   },
   {
     "name": "Jake Ford",
     "wrong_value": "4/29/1946",
-    "correct_value": "4/29/1945",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "correct_value": "4/29/1946",
+    "source": "nba.com",
+    "reason": "NBA.com player 76735 (Jake Ford, 1971-1972); Wikidata agrees"
   },
   {
     "name": "Jamal Shead",
     "wrong_value": "7/24/2002",
-    "correct_value": "6/24/2002",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "correct_value": "7/24/2002",
+    "source": "nba.com",
+    "reason": "NBA.com player 1642347 (Jamal Shead, 2025-2027); Wikidata agrees"
   },
   {
     "name": "Jason Sasser",
     "wrong_value": "1/3/1974",
     "correct_value": "1/13/1974",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "source": "nba.com",
+    "reason": "NBA.com player 987 (Jason Sasser, 1997-2003); Wikidata differs, see review file"
   },
   {
     "name": "Jay Huff",
     "wrong_value": "8/25/1997",
-    "correct_value": "8/25/1998",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "correct_value": "8/25/1997",
+    "source": "nba.com",
+    "reason": "NBA.com player 1630643 (Jay Huff, 2022-2027); Wikidata agrees"
   },
   {
     "name": "Jerel McNeal",
     "wrong_value": "7/1/1987",
     "correct_value": "6/1/1987",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "source": "nba.com",
+    "reason": "NBA.com player 202077 (Jerel McNeal, 2013-2015); Wikidata agrees"
   },
   {
     "name": "Jim Brogan",
     "wrong_value": "2/24/1954",
     "correct_value": "2/24/1958",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "source": "nba.com",
+    "reason": "NBA.com player 76262 (Jim Brogan, 1982-1983); Wikidata agrees"
   },
   {
     "name": "Jim Caldwell",
     "wrong_value": "1/27/1943",
     "correct_value": "1/28/1943",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "source": "nba.com",
+    "reason": "NBA.com player 76328 (Jim Caldwell, 1968-1968); Wikidata agrees"
   },
   {
     "name": "Joan Beringer",
     "wrong_value": "11/1/2006",
     "correct_value": "11/11/2006",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "source": "nba.com",
+    "reason": "NBA.com player 1642866 (Joan Beringer, 2026-2027); Wikidata agrees"
   },
   {
     "name": "Joao Vianna",
     "wrong_value": "11/15/1963",
     "correct_value": "11/15/1966",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "source": "nba.com",
+    "reason": "NBA.com player 78416 (Joao Vianna, 1992-1992); Wikidata differs, see review file"
   },
   {
     "name": "Joe Fabel",
     "wrong_value": "9/4/1913",
-    "correct_value": "5/15/1917",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "correct_value": "9/4/1913",
+    "source": "nba.com",
+    "reason": "NBA.com player 76690 (Joe Fabel, 1947-1947); Wikidata agrees"
   },
   {
     "name": "Joe Mullaney",
     "wrong_value": "11/17/1925",
-    "correct_value": "11/17/1924",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "correct_value": "11/17/1925",
+    "source": "nba.com",
+    "reason": "NBA.com player 77659 (Joe Mullaney, 1950-1950); Wikidata differs, see review file"
   },
   {
     "name": "John Abramovic",
     "wrong_value": "2/19/1919",
     "correct_value": "2/9/1919",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "source": "nba.com",
+    "reason": "NBA.com player 76007 (John Abramovic, 1947-1948); Wikidata agrees"
   },
   {
     "name": "John Barr",
     "wrong_value": "8/8/1918",
     "correct_value": "8/18/1918",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "source": "nba.com",
+    "reason": "NBA.com player 76111 (John Barr, 1947-1947); Wikidata agrees"
   },
   {
     "name": "Johnny Furphy",
     "wrong_value": "12/7/2004",
     "correct_value": "12/8/2004",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "source": "nba.com",
+    "reason": "NBA.com player 1642277 (Johnny Furphy, 2025-2027); Wikidata differs, see review file"
   },
   {
     "name": "Ken Corley",
     "wrong_value": "5/10/1921",
-    "correct_value": "5/10/1920",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "correct_value": "5/10/1921",
+    "source": "wikidata",
+    "reason": "Wikidata Q6387482 P569 (NBA.com ID matches a career-checked NBA.com record); differs from old value, see review file; NBA.com 76451 lists 4/4/1905, rejected as a placeholder (age 41 at debut)"
   },
   {
     "name": "Ken Keller",
     "wrong_value": "1/1/1922",
-    "correct_value": "8/16/1922",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "correct_value": "1/1/1922",
+    "source": "wikidata",
+    "reason": "Wikidata Q372803 P569 (NBA.com ID matches a career-checked NBA.com record; work-period start matches career); differs from old value, see review file; NBA.com 77234 lists 4/5/1905, rejected as a placeholder (age 41 at debut)"
   },
   {
     "name": "Ken McBride",
     "wrong_value": "3/23/1929",
-    "correct_value": "5/23/1929",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "correct_value": "3/23/1929",
+    "source": "wikidata",
+    "reason": "Wikidata Q4505416 P569 (NBA.com ID matches a career-checked NBA.com record; work-period start matches career); differs from old value, see review file; NBA.com 77499 lists 4/14/1905, rejected as a placeholder (age 49 at debut)"
   },
   {
     "name": "Kenny Sailors",
     "wrong_value": "1/14/1922",
-    "correct_value": "1/14/1921",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "correct_value": "1/14/1922",
+    "source": "nba.com",
+    "reason": "NBA.com player 78051 (Kenny Sailors, 1947-1951); Wikidata differs, see review file"
   },
   {
     "name": "Kenny Satterfield",
     "wrong_value": "4/12/1981",
     "correct_value": "4/10/1981",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "source": "nba.com",
+    "reason": "NBA.com player 2261 (Kenny Satterfield, 2002-2003); Wikidata agrees"
   },
   {
     "name": "Kevin McCullar",
     "wrong_value": "3/25/2001",
     "correct_value": "3/15/2001",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "source": "nba.com",
+    "reason": "NBA.com player 1641755 (Kevin McCullar Jr., 2025-2027); Wikidata agrees"
   },
   {
     "name": "Kevinn Pinkney",
     "wrong_value": "10/10/1983",
     "correct_value": "10/20/1983",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "source": "nba.com",
+    "reason": "NBA.com player 200838 (Kevinn Pinkney, 2007-2007); Wikidata differs, see review file"
   },
   {
     "name": "Kyshawn George",
     "wrong_value": "12/2/2003",
     "correct_value": "12/12/2003",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "source": "nba.com",
+    "reason": "NBA.com player 1642273 (Kyshawn George, 2025-2027); Wikidata agrees"
   },
   {
     "name": "Leo Kubiak",
     "wrong_value": "12/25/1927",
     "correct_value": "12/25/1926",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "source": "nba.com",
+    "reason": "NBA.com player 77317 (Leo Kubiak, 1950-1950); Wikidata differs, see review file"
   },
   {
     "name": "Les Pugh",
     "wrong_value": "9/18/1923",
-    "correct_value": "9/18/1922",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "correct_value": "9/18/1923",
+    "source": "nba.com",
+    "reason": "NBA.com player 77888 (Les Pugh, 1949-1950); Wikidata agrees"
   },
   {
     "name": "Loy Vaught",
     "wrong_value": "2/27/1967",
     "correct_value": "2/27/1968",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "source": "nba.com",
+    "reason": "NBA.com player 919 (Loy Vaught, 1991-2001); Wikidata agrees"
   },
   {
     "name": "Maceo Baston",
     "wrong_value": "5/29/1976",
-    "correct_value": "5/29/1975",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "correct_value": "5/29/1976",
+    "source": "nba.com",
+    "reason": "NBA.com player 1766 (Maceo Baston, 2003-2009); Wikidata agrees"
   },
   {
     "name": "Malachi Flynn",
     "wrong_value": "5/9/1998",
-    "correct_value": "5/10/1998",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "correct_value": "5/9/1998",
+    "source": "nba.com",
+    "reason": "NBA.com player 1630201 (Malachi Flynn, 2021-2025); Wikidata agrees"
   },
   {
     "name": "Mamadou N'diaye",
     "wrong_value": "6/17/1975",
     "correct_value": "6/16/1975",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "source": "nba.com",
+    "reason": "NBA.com player 2055 (Mamadou N'diaye, 2001-2005); Wikidata agrees"
   },
   {
     "name": "Matt Mooney",
     "wrong_value": "2/7/1997",
-    "correct_value": "2/7/1996",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "correct_value": "2/7/1995",
+    "source": "nba.com",
+    "reason": "NBA.com player 1629760 (Matt Mooney, 2020-2022); Wikidata differs, see review file"
   },
   {
     "name": "Matt Steigenga",
     "wrong_value": "2/27/1970",
     "correct_value": "3/27/1970",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "source": "nba.com",
+    "reason": "NBA.com player 1099 (Matt Steigenga, 1997-1997); Wikidata agrees"
   },
   {
     "name": "Maurice Baker",
     "wrong_value": "7/28/1980",
     "correct_value": "7/28/1979",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "source": "nba.com",
+    "reason": "NBA.com player 2486 (Maurice Baker, 2003-2005); Wikidata agrees"
   },
   {
     "name": "Maury King",
@@ -531,216 +617,252 @@
     "name": "Max Morris",
     "wrong_value": "3/13/1925",
     "correct_value": "3/14/1925",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "source": "nba.com",
+    "reason": "NBA.com player 77646 (Max Morris, 1950-1950); Wikidata differs, see review file"
   },
   {
     "name": "Michael Stewart",
     "wrong_value": "4/24/1975",
     "correct_value": "4/25/1975",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "source": "nba.com",
+    "reason": "NBA.com player 1565 (Michael Stewart, 1998-2005); Wikidata differs, see review file"
   },
   {
     "name": "Mirza Teletovic",
     "wrong_value": "9/17/1985",
-    "correct_value": "9/18/1985",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "correct_value": "9/17/1985",
+    "source": "nba.com",
+    "reason": "NBA.com player 203141 (Mirza Teletovic, 2013-2018); Wikidata agrees"
   },
   {
     "name": "Myron Brown",
     "wrong_value": "10/3/1969",
     "correct_value": "11/3/1969",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "source": "nba.com",
+    "reason": "NBA.com player 76277 (Myron Brown, 1992-1992); Wikidata agrees"
   },
   {
     "name": "Odie Spears",
     "wrong_value": "6/26/1925",
-    "correct_value": "6/17/1924",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "correct_value": "6/26/1925",
+    "source": "nba.com",
+    "reason": "NBA.com player 78225 (Odie Spears, 1949-1957); Wikidata agrees"
   },
   {
     "name": "Omari Johnson",
     "wrong_value": "5/26/1989",
-    "correct_value": "11/26/1989",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "correct_value": "5/26/1989",
+    "source": "nba.com",
+    "reason": "NBA.com player 204179 (Omari Johnson, 2018-2018); Wikidata differs, see review file"
   },
   {
     "name": "Paul Hoffman",
     "wrong_value": "4/12/1925",
     "correct_value": "5/5/1925",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "source": "nba.com",
+    "reason": "NBA.com player 77036 (Paul Hoffman, 1948-1955); Wikidata agrees"
   },
   {
     "name": "Peter John Ramos",
     "wrong_value": "5/23/1985",
-    "correct_value": "5/13/1985",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "correct_value": "5/23/1985",
+    "source": "nba.com",
+    "reason": "NBA.com player 2762 (Peter John Ramos, 2005-2005); Wikidata agrees"
   },
   {
     "name": "Press Maravich",
     "wrong_value": "8/20/1920",
-    "correct_value": "8/29/1915",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "correct_value": "8/20/1920",
+    "source": "nba.com",
+    "reason": "NBA.com player 77458 (Peter Maravich, 1947-1947); Wikidata differs, see review file"
   },
   {
     "name": "Ray Corley",
     "wrong_value": "1/1/1928",
-    "correct_value": "1/14/1928",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "correct_value": "1/1/1928",
+    "source": "nba.com",
+    "reason": "NBA.com player 76452 (Ray Corley, 1950-1953); Wikidata differs, see review file"
   },
   {
     "name": "Ray Ellefson",
     "wrong_value": "11/18/1927",
     "correct_value": "11/18/1922",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "source": "nba.com",
+    "reason": "NBA.com player 76655 (Ray Ellefson, 1949-1951); Wikidata differs, see review file"
   },
   {
     "name": "Ray Wertis",
     "wrong_value": "1/1/1922",
-    "correct_value": "7/30/1923",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "correct_value": "1/1/1922",
+    "source": "nba.com",
+    "reason": "NBA.com player 78494 (Ray Wertis, 1947-1948); Wikidata agrees"
   },
   {
     "name": "Red Davis",
     "wrong_value": "4/22/1931",
     "correct_value": "4/22/1932",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "source": "nba.com",
+    "reason": "NBA.com player 76524 (James Davis, 1956-1956); Wikidata agrees"
   },
   {
     "name": "Reggie Jordan",
     "wrong_value": "1/26/1969",
     "correct_value": "1/26/1968",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "source": "nba.com",
+    "reason": "NBA.com player 674 (Reggie Jordan, 1994-2000); Wikidata differs, see review file"
   },
   {
     "name": "Rodney Carney",
     "wrong_value": "4/5/1984",
-    "correct_value": "4/15/1984",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "correct_value": "4/5/1984",
+    "source": "nba.com",
+    "reason": "NBA.com player 200760 (Rodney Carney, 2007-2011); Wikidata differs, see review file"
   },
   {
     "name": "Roko Ukic",
     "wrong_value": "12/5/1984",
-    "correct_value": "5/12/1984",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "correct_value": "12/5/1984",
+    "source": "nba.com",
+    "reason": "NBA.com player 101146 (Roko Ukic, 2008-2010); Wikidata differs, see review file"
   },
   {
     "name": "Ron Brewer",
     "wrong_value": "9/16/1955",
-    "correct_value": "7/16/1955",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "correct_value": "9/16/1955",
+    "source": "nba.com",
+    "reason": "NBA.com player 76249 (Ron Brewer, 1979-1986); Wikidata agrees"
   },
   {
     "name": "Ron Williams",
     "wrong_value": "9/29/1944",
     "correct_value": "9/24/1944",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "source": "nba.com",
+    "reason": "NBA.com player 78567 (Ron Williams, 1969-1976); Wikidata agrees"
   },
   {
     "name": "Sam Ranzino",
     "wrong_value": "6/21/1927",
-    "correct_value": "6/23/1928",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "correct_value": "6/21/1927",
+    "source": "nba.com",
+    "reason": "NBA.com player 77912 (Sam Ranzino, 1952-1952); Wikidata agrees"
   },
   {
     "name": "Sharrod Ford",
     "wrong_value": "9/9/1982",
     "correct_value": "1/9/1982",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "source": "nba.com",
+    "reason": "NBA.com player 101213 (Sharrod Ford, 2006-2006); Wikidata differs, see review file"
   },
   {
     "name": "Stan Miasek",
     "wrong_value": "8/8/1924",
-    "correct_value": "9/19/1923",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "correct_value": "8/8/1924",
+    "source": "nba.com",
+    "reason": "NBA.com player 77587 (Stan Miasek, 1947-1953); Wikidata agrees"
   },
   {
     "name": "Steve Hamilton",
     "wrong_value": "11/30/1935",
-    "correct_value": "11/30/1934",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "correct_value": "11/30/1935",
+    "source": "nba.com",
+    "reason": "NBA.com player 76929 (Steve Hamilton, 1959-1960); Wikidata differs, see review file"
   },
   {
     "name": "Todd Mundt",
     "wrong_value": "3/17/1970",
     "correct_value": "5/17/1970",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "source": "nba.com",
+    "reason": "NBA.com player 942 (Todd Mundt, 1996-1996); Wikidata agrees"
   },
   {
     "name": "Tree Rollins",
     "wrong_value": "6/15/1953",
     "correct_value": "6/16/1955",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "source": "nba.com",
+    "reason": "NBA.com player 78014 (Tree Rollins, 1978-1995); Wikidata agrees"
   },
   {
     "name": "Trey Thompkins",
     "wrong_value": "5/29/1990",
-    "correct_value": "5/20/1990",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "correct_value": "5/29/1990",
+    "source": "nba.com",
+    "reason": "NBA.com player 202717 (Trey Thompkins, 2012-2012); Wikidata agrees"
   },
   {
     "name": "Tyrese Proctor",
     "wrong_value": "1/4/2004",
     "correct_value": "4/1/2004",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "source": "nba.com",
+    "reason": "NBA.com player 1642878 (Tyrese Proctor, 2026-2027); Wikidata agrees"
   },
   {
     "name": "Vern Gardner",
     "wrong_value": "3/14/1925",
     "correct_value": "5/14/1925",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "source": "nba.com",
+    "reason": "NBA.com player 76779 (Vern Gardner, 1950-1952); Wikidata agrees"
   },
   {
     "name": "Vernon Macklin",
     "wrong_value": "9/25/1986",
-    "correct_value": "9/20/1986",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "correct_value": "9/25/1986",
+    "source": "nba.com",
+    "reason": "NBA.com player 202731 (Vernon Macklin, 2012-2012); Wikidata agrees"
   },
   {
     "name": "Vester Marshall",
     "wrong_value": "10/22/1948",
     "correct_value": "12/22/1948",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "source": "nba.com",
+    "reason": "NBA.com player 77468 (Vester Marshall, 1974-1974); Wikidata agrees"
   },
   {
     "name": "Vincenzo Esposito",
     "wrong_value": "1/3/1969",
     "correct_value": "3/1/1969",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "source": "nba.com",
+    "reason": "NBA.com player 76683 (Vincenzo Esposito, 1996-1996); Wikidata agrees"
   },
   {
     "name": "Walt Miller",
     "wrong_value": "7/30/1915",
-    "correct_value": "7/20/1915",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "correct_value": "7/30/1915",
+    "source": "nba.com",
+    "reason": "NBA.com player 77604 (Walt Miller, 1947-1947); Wikidata agrees"
   },
   {
     "name": "Warren Perkins",
     "wrong_value": "2/2/1924",
-    "correct_value": "2/2/1922",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "correct_value": "2/2/1924",
+    "source": "nba.com",
+    "reason": "NBA.com player 77834 (Warren Perkins, 1950-1951); Wikidata agrees"
   },
   {
     "name": "Wayne Englestad",
     "wrong_value": "12/6/1966",
-    "correct_value": "12/6/1965",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "correct_value": "12/6/1963",
+    "source": "nba.com",
+    "reason": "NBA.com player 76671 (Wayne Englestad, 1989-1989); Wikidata differs, see review file"
   },
   {
     "name": "Will Frazier",
     "wrong_value": "8/24/1942",
-    "correct_value": "8/25/1942",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "correct_value": "8/24/1942",
+    "source": "nba.com",
+    "reason": "NBA.com player 76751 (Will Frazier, 1966-1966); Wikidata differs, see review file"
   },
   {
     "name": "William Bedford",
     "wrong_value": "12/14/1962",
     "correct_value": "12/14/1963",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "source": "nba.com",
+    "reason": "NBA.com player 76138 (William Bedford, 1987-1993); Wikidata agrees"
   },
   {
     "name": "Yakhouba Diawara",
     "wrong_value": "8/21/1982",
     "correct_value": "8/29/1982",
-    "source": "nba-born-died-data logs/match_report.md (player_bio.json), 2026-09-29"
+    "source": "nba.com",
+    "reason": "NBA.com player 200821 (Yakhouba Diawara, 2007-2010); Wikidata agrees"
   }
 ]
