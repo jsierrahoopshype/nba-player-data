@@ -1,7 +1,7 @@
 {
-  "about": "Birth-date overrides that need a person to look at them. Each entry lists every source value and the days between them; chosen/chosen_source is what data/bio_birthdate_overrides.json now holds. Rules: NBA.com (www.nba.com/player/<PERSON_ID>, career years checked) wins when it answered; Wikidata P569 is used only for a basketball player whose career matches; entries no source confirms are pinned to the sheet value (source \"unresolved\"). Kinds: disagreement = NBA.com and Wikidata differ; single_source_contradicts_old = one source only and it differs from the old override value; no_source = neither source gave a full date.",
+  "about": "Birth-date overrides that need a person to look at them. Each entry lists every source value and the days between them; chosen/chosen_source is what data/bio_birthdate_overrides.json now holds. Rules: NBA.com (www.nba.com/player/<PERSON_ID>, career years checked) wins when it answered; Wikidata P569 is used only for a basketball player whose career matches; entries no source confirms are pinned to the sheet value (source \"unresolved\"). Placeholder rule (scripts/birthdate_rules.py): an NBA.com date on January 1, or in 1905, is a placeholder; Wikidata's date is used when the same person's item has one different full (day-precision) date, otherwise NBA.com's is kept and listed here as nba_placeholder. Kinds: disagreement = NBA.com and Wikidata differ; single_source_contradicts_old = one source only and it differs from the old override value; no_source = neither source gave a full date; nba_placeholder = NBA.com's date is a placeholder and Wikidata has no different full date, so it is kept.",
   "checked": "2026-11-25",
-  "count": 43,
+  "count": 62,
   "entries": [
     {
       "name": "Adrian Dantley",
@@ -54,6 +54,45 @@
         "old_override_vs_sheet": 365
       },
       "changed_vs_old": true
+    },
+    {
+      "name": "Alan Sawyer",
+      "kind": "nba_placeholder",
+      "sheet_value": "1/1/1928",
+      "old_override_value": null,
+      "nba_com": [
+        {
+          "person_id": "78067",
+          "value": "1/1/1928",
+          "nba_name": "Alan Sawyer",
+          "years": [
+            1951,
+            1951
+          ]
+        }
+      ],
+      "wikidata": [
+        {
+          "qid": "Q3607773",
+          "values": [
+            "1/1/1928"
+          ],
+          "partial_years": [],
+          "career_evidence": [
+            "NBA.com ID matches a career-checked NBA.com record"
+          ]
+        }
+      ],
+      "nba_com_rejected": null,
+      "career_years": [
+        1951,
+        1951
+      ],
+      "chosen": "1/1/1928",
+      "chosen_source": "nba.com",
+      "days_apart": {},
+      "changed_vs_old": false,
+      "placeholder": "NBA.com's date is a placeholder (January 1 or 1905); Wikidata has the same date, so NBA.com's is kept"
     },
     {
       "name": "Ariel Maughan",
@@ -246,6 +285,45 @@
       "changed_vs_old": false
     },
     {
+      "name": "Bones McKinney",
+      "kind": "nba_placeholder",
+      "sheet_value": "1/1/1919",
+      "old_override_value": null,
+      "nba_com": [
+        {
+          "person_id": "77546",
+          "value": "1/1/1919",
+          "nba_name": "Horace McKinney",
+          "years": [
+            1947,
+            1952
+          ]
+        }
+      ],
+      "wikidata": [
+        {
+          "qid": "Q1450542",
+          "values": [
+            "1/1/1919"
+          ],
+          "partial_years": [],
+          "career_evidence": [
+            "NBA.com ID matches a career-checked NBA.com record"
+          ]
+        }
+      ],
+      "nba_com_rejected": null,
+      "career_years": [
+        1947,
+        1952
+      ],
+      "chosen": "1/1/1919",
+      "chosen_source": "nba.com",
+      "days_apart": {},
+      "changed_vs_old": false,
+      "placeholder": "NBA.com's date is a placeholder (January 1 or 1905); Wikidata has the same date, so NBA.com's is kept"
+    },
+    {
       "name": "Cal Christensen",
       "kind": "disagreement",
       "sheet_value": "7/8/1927",
@@ -296,6 +374,84 @@
         "old_override_vs_sheet": 32
       },
       "changed_vs_old": true
+    },
+    {
+      "name": "Chris Anstey",
+      "kind": "nba_placeholder",
+      "sheet_value": "1/1/1975",
+      "old_override_value": null,
+      "nba_com": [
+        {
+          "person_id": "1512",
+          "value": "1/1/1975",
+          "nba_name": "Chris Anstey",
+          "years": [
+            1998,
+            2000
+          ]
+        }
+      ],
+      "wikidata": [
+        {
+          "qid": "Q1076942",
+          "values": [
+            "1/1/1975"
+          ],
+          "partial_years": [],
+          "career_evidence": [
+            "NBA.com ID matches a career-checked NBA.com record"
+          ]
+        }
+      ],
+      "nba_com_rejected": null,
+      "career_years": [
+        1998,
+        2000
+      ],
+      "chosen": "1/1/1975",
+      "chosen_source": "nba.com",
+      "days_apart": {},
+      "changed_vs_old": false,
+      "placeholder": "NBA.com's date is a placeholder (January 1 or 1905); Wikidata has the same date, so NBA.com's is kept"
+    },
+    {
+      "name": "Dan Anderson",
+      "kind": "nba_placeholder",
+      "sheet_value": "1/1/1951",
+      "old_override_value": null,
+      "nba_com": [
+        {
+          "person_id": "76036",
+          "value": "1/1/1951",
+          "nba_name": "Daniel Anderson",
+          "years": [
+            1975,
+            1976
+          ]
+        }
+      ],
+      "wikidata": [
+        {
+          "qid": "Q3701346",
+          "values": [
+            "1/1/1951"
+          ],
+          "partial_years": [],
+          "career_evidence": [
+            "NBA.com ID matches a career-checked NBA.com record"
+          ]
+        }
+      ],
+      "nba_com_rejected": null,
+      "career_years": [
+        1975,
+        1976
+      ],
+      "chosen": "1/1/1951",
+      "chosen_source": "nba.com",
+      "days_apart": {},
+      "changed_vs_old": false,
+      "placeholder": "NBA.com's date is a placeholder (January 1 or 1905); Wikidata has the same date, so NBA.com's is kept"
     },
     {
       "name": "Don Lofgran",
@@ -541,6 +697,84 @@
       "changed_vs_old": true
     },
     {
+      "name": "Glen Davis",
+      "kind": "nba_placeholder",
+      "sheet_value": "1/1/1986",
+      "old_override_value": null,
+      "nba_com": [
+        {
+          "person_id": "201175",
+          "value": "1/1/1986",
+          "nba_name": "Glen Davis",
+          "years": [
+            2008,
+            2015
+          ]
+        }
+      ],
+      "wikidata": [
+        {
+          "qid": "Q337729",
+          "values": [
+            "1/1/1986"
+          ],
+          "partial_years": [],
+          "career_evidence": [
+            "NBA.com ID matches a career-checked NBA.com record"
+          ]
+        }
+      ],
+      "nba_com_rejected": null,
+      "career_years": [
+        2008,
+        2015
+      ],
+      "chosen": "1/1/1986",
+      "chosen_source": "nba.com",
+      "days_apart": {},
+      "changed_vs_old": false,
+      "placeholder": "NBA.com's date is a placeholder (January 1 or 1905); Wikidata has the same date, so NBA.com's is kept"
+    },
+    {
+      "name": "Glen Rice Jr",
+      "kind": "nba_placeholder",
+      "sheet_value": "1/1/1991",
+      "old_override_value": null,
+      "nba_com": [
+        {
+          "person_id": "203318",
+          "value": "1/1/1991",
+          "nba_name": "Glen Rice",
+          "years": [
+            2014,
+            2015
+          ]
+        }
+      ],
+      "wikidata": [
+        {
+          "qid": "Q4811246",
+          "values": [
+            "1/1/1991"
+          ],
+          "partial_years": [],
+          "career_evidence": [
+            "NBA.com ID matches a career-checked NBA.com record"
+          ]
+        }
+      ],
+      "nba_com_rejected": null,
+      "career_years": [
+        2014,
+        2015
+      ],
+      "chosen": "1/1/1991",
+      "chosen_source": "nba.com",
+      "days_apart": {},
+      "changed_vs_old": false,
+      "placeholder": "NBA.com's date is a placeholder (January 1 or 1905); Wikidata has the same date, so NBA.com's is kept"
+    },
+    {
       "name": "Greg Dreiling",
       "kind": "disagreement",
       "sheet_value": "11/7/1963",
@@ -721,8 +955,8 @@
         1955,
         1955
       ],
-      "chosen": "1/1/1930",
-      "chosen_source": "nba.com",
+      "chosen": "1/10/1930",
+      "chosen_source": "wikidata",
       "days_apart": {
         "nba_com_vs_wikidata_Q4456405_1/1/1930": 0,
         "nba_com_vs_wikidata_Q4456405_1/10/1930": 9,
@@ -731,7 +965,8 @@
         "wikidata_Q4456405_1/1/1930_vs_old_override": 9,
         "wikidata_Q4456405_1/10/1930_vs_old_override": 0
       },
-      "changed_vs_old": true
+      "changed_vs_old": false,
+      "placeholder": "NBA.com's 1/1/1930 is a placeholder (January 1 or 1905); Wikidata's other full date is used"
     },
     {
       "name": "Hiram Fuller",
@@ -998,6 +1233,125 @@
       "changed_vs_old": false
     },
     {
+      "name": "Jeff Taylor",
+      "kind": "nba_placeholder",
+      "sheet_value": "1/1/1960",
+      "old_override_value": null,
+      "nba_com": [
+        {
+          "person_id": "78299",
+          "value": "1/1/1960",
+          "nba_name": "Jeff Taylor",
+          "years": [
+            1983,
+            1987
+          ]
+        }
+      ],
+      "wikidata": [
+        {
+          "qid": "Q3807796",
+          "values": [
+            "1/1/1960"
+          ],
+          "partial_years": [],
+          "career_evidence": [
+            "NBA.com ID matches a career-checked NBA.com record"
+          ]
+        }
+      ],
+      "nba_com_rejected": null,
+      "career_years": [
+        1983,
+        1987
+      ],
+      "chosen": "1/1/1960",
+      "chosen_source": "nba.com",
+      "days_apart": {},
+      "changed_vs_old": false,
+      "placeholder": "NBA.com's date is a placeholder (January 1 or 1905); Wikidata has the same date, so NBA.com's is kept"
+    },
+    {
+      "name": "Jim Browne",
+      "kind": "nba_placeholder",
+      "sheet_value": "1/1/1930",
+      "old_override_value": null,
+      "nba_com": [
+        {
+          "person_id": "76287",
+          "value": "1/1/1930",
+          "nba_name": "Jim Browne",
+          "years": [
+            1949,
+            1950
+          ]
+        }
+      ],
+      "wikidata": [
+        {
+          "qid": "Q3808314",
+          "values": [
+            "1/1/1930"
+          ],
+          "partial_years": [],
+          "career_evidence": [
+            "NBA.com ID matches a career-checked NBA.com record"
+          ]
+        }
+      ],
+      "nba_com_rejected": null,
+      "career_years": [
+        1949,
+        1950
+      ],
+      "chosen": "1/1/1930",
+      "chosen_source": "nba.com",
+      "days_apart": {},
+      "changed_vs_old": false,
+      "placeholder": "NBA.com's date is a placeholder (January 1 or 1905); Wikidata has the same date, so NBA.com's is kept"
+    },
+    {
+      "name": "Jimmy Jones",
+      "kind": "disagreement",
+      "sheet_value": "1/1/1945",
+      "old_override_value": null,
+      "nba_com": [
+        {
+          "person_id": "77186",
+          "value": "1/1/1945",
+          "nba_name": "Jimmy Jones",
+          "years": [
+            1975,
+            1977
+          ]
+        }
+      ],
+      "wikidata": [
+        {
+          "qid": "Q663453",
+          "values": [
+            "1/4/1945"
+          ],
+          "partial_years": [],
+          "career_evidence": [
+            "NBA.com ID matches a career-checked NBA.com record"
+          ]
+        }
+      ],
+      "nba_com_rejected": null,
+      "career_years": [
+        1975,
+        1977
+      ],
+      "chosen": "1/4/1945",
+      "chosen_source": "wikidata",
+      "days_apart": {
+        "nba_com_vs_wikidata_Q663453_1/4/1945": 3
+      },
+      "changed_vs_old": false,
+      "placeholder": "NBA.com's 1/1/1945 is a placeholder (January 1 or 1905); Wikidata's other full date is used"
+    },
+    {
       "name": "Joao Vianna",
       "kind": "disagreement",
       "sheet_value": "11/15/1963",
@@ -1144,6 +1498,45 @@
         "old_override_vs_sheet": 1
       },
       "changed_vs_old": false
+    },
+    {
+      "name": "Johnny Logan",
+      "kind": "nba_placeholder",
+      "sheet_value": "1/1/1921",
+      "old_override_value": null,
+      "nba_com": [
+        {
+          "person_id": "77403",
+          "value": "1/1/1921",
+          "nba_name": "Johnny Logan",
+          "years": [
+            1947,
+            1951
+          ]
+        }
+      ],
+      "wikidata": [
+        {
+          "qid": "Q2320891",
+          "values": [
+            "1/1/1921"
+          ],
+          "partial_years": [],
+          "career_evidence": [
+            "NBA.com ID matches a career-checked NBA.com record"
+          ]
+        }
+      ],
+      "nba_com_rejected": null,
+      "career_years": [
+        1947,
+        1951
+      ],
+      "chosen": "1/1/1921",
+      "chosen_source": "nba.com",
+      "days_apart": {},
+      "changed_vs_old": false,
+      "placeholder": "NBA.com's date is a placeholder (January 1 or 1905); Wikidata has the same date, so NBA.com's is kept"
     },
     {
       "name": "Ken Corley",
@@ -1384,6 +1777,84 @@
       "changed_vs_old": false
     },
     {
+      "name": "Kobe Brown",
+      "kind": "nba_placeholder",
+      "sheet_value": "1/1/2000",
+      "old_override_value": null,
+      "nba_com": [
+        {
+          "person_id": "1641738",
+          "value": "1/1/2000",
+          "nba_name": "Kobe Brown",
+          "years": [
+            2024,
+            2027
+          ]
+        }
+      ],
+      "wikidata": [
+        {
+          "qid": "Q100762367",
+          "values": [
+            "1/1/2000"
+          ],
+          "partial_years": [],
+          "career_evidence": [
+            "NBA.com ID matches a career-checked NBA.com record"
+          ]
+        }
+      ],
+      "nba_com_rejected": null,
+      "career_years": [
+        2024,
+        2027
+      ],
+      "chosen": "1/1/2000",
+      "chosen_source": "nba.com",
+      "days_apart": {},
+      "changed_vs_old": false,
+      "placeholder": "NBA.com's date is a placeholder (January 1 or 1905); Wikidata has the same date, so NBA.com's is kept"
+    },
+    {
+      "name": "Larry Nance Jr",
+      "kind": "nba_placeholder",
+      "sheet_value": "1/1/1993",
+      "old_override_value": null,
+      "nba_com": [
+        {
+          "person_id": "1626204",
+          "value": "1/1/1993",
+          "nba_name": "Larry Nance Jr.",
+          "years": [
+            2016,
+            2027
+          ]
+        }
+      ],
+      "wikidata": [
+        {
+          "qid": "Q19605398",
+          "values": [
+            "1/1/1993"
+          ],
+          "partial_years": [],
+          "career_evidence": [
+            "NBA.com ID matches a career-checked NBA.com record"
+          ]
+        }
+      ],
+      "nba_com_rejected": null,
+      "career_years": [
+        2016,
+        2027
+      ],
+      "chosen": "1/1/1993",
+      "chosen_source": "nba.com",
+      "days_apart": {},
+      "changed_vs_old": false,
+      "placeholder": "NBA.com's date is a placeholder (January 1 or 1905); Wikidata has the same date, so NBA.com's is kept"
+    },
+    {
       "name": "Leo Kubiak",
       "kind": "disagreement",
       "sheet_value": "12/25/1927",
@@ -1429,6 +1900,45 @@
         "old_override_vs_sheet": 365
       },
       "changed_vs_old": false
+    },
+    {
+      "name": "Leroy Combs",
+      "kind": "nba_placeholder",
+      "sheet_value": "1/1/1961",
+      "old_override_value": null,
+      "nba_com": [
+        {
+          "person_id": "76425",
+          "value": "1/1/1961",
+          "nba_name": "Leroy Combs",
+          "years": [
+            1984,
+            1984
+          ]
+        }
+      ],
+      "wikidata": [
+        {
+          "qid": "Q3830796",
+          "values": [
+            "1/1/1961"
+          ],
+          "partial_years": [],
+          "career_evidence": [
+            "NBA.com ID matches a career-checked NBA.com record"
+          ]
+        }
+      ],
+      "nba_com_rejected": null,
+      "career_years": [
+        1984,
+        1984
+      ],
+      "chosen": "1/1/1961",
+      "chosen_source": "nba.com",
+      "days_apart": {},
+      "changed_vs_old": false,
+      "placeholder": "NBA.com's date is a placeholder (January 1 or 1905); Wikidata has the same date, so NBA.com's is kept"
     },
     {
       "name": "Matt Mooney",
@@ -1575,6 +2085,45 @@
       "changed_vs_old": false
     },
     {
+      "name": "Mike Mitchell",
+      "kind": "nba_placeholder",
+      "sheet_value": "1/1/1956",
+      "old_override_value": null,
+      "nba_com": [
+        {
+          "person_id": "77615",
+          "value": "1/1/1956",
+          "nba_name": "Mike Mitchell",
+          "years": [
+            1979,
+            1988
+          ]
+        }
+      ],
+      "wikidata": [
+        {
+          "qid": "Q2731961",
+          "values": [
+            "1/1/1956"
+          ],
+          "partial_years": [],
+          "career_evidence": [
+            "NBA.com ID matches a career-checked NBA.com record"
+          ]
+        }
+      ],
+      "nba_com_rejected": null,
+      "career_years": [
+        1979,
+        1988
+      ],
+      "chosen": "1/1/1956",
+      "chosen_source": "nba.com",
+      "days_apart": {},
+      "changed_vs_old": false,
+      "placeholder": "NBA.com's date is a placeholder (January 1 or 1905); Wikidata has the same date, so NBA.com's is kept"
+    },
+    {
       "name": "Omari Johnson",
       "kind": "disagreement",
       "sheet_value": "5/26/1989",
@@ -1705,8 +2254,8 @@
         1950,
         1953
       ],
-      "chosen": "1/1/1928",
-      "chosen_source": "nba.com",
+      "chosen": "1/14/1928",
+      "chosen_source": "wikidata",
       "days_apart": {
         "nba_com_vs_wikidata_Q3930616_1/1/1928": 0,
         "nba_com_vs_wikidata_Q3930616_1/14/1928": 13,
@@ -1719,7 +2268,8 @@
         "wikidata_Q3930616_1/14/1928_vs_sheet": 13,
         "old_override_vs_sheet": 13
       },
-      "changed_vs_old": true
+      "changed_vs_old": false,
+      "placeholder": "NBA.com's 1/1/1928 is a placeholder (January 1 or 1905); Wikidata's other full date is used"
     },
     {
       "name": "Ray Ellefson",
@@ -1767,6 +2317,45 @@
         "old_override_vs_sheet": 1826
       },
       "changed_vs_old": false
+    },
+    {
+      "name": "Ray Wertis",
+      "kind": "nba_placeholder",
+      "sheet_value": "1/1/1922",
+      "old_override_value": "1/1/1922",
+      "nba_com": [
+        {
+          "person_id": "78494",
+          "value": "1/1/1922",
+          "nba_name": "Ray Wertis",
+          "years": [
+            1947,
+            1948
+          ]
+        }
+      ],
+      "wikidata": [
+        {
+          "qid": "Q2157569",
+          "values": [
+            "1/1/1922"
+          ],
+          "partial_years": [],
+          "career_evidence": [
+            "NBA.com ID matches a career-checked NBA.com record"
+          ]
+        }
+      ],
+      "nba_com_rejected": null,
+      "career_years": [
+        1947,
+        1948
+      ],
+      "chosen": "1/1/1922",
+      "chosen_source": "nba.com",
+      "days_apart": {},
+      "changed_vs_old": false,
+      "placeholder": "NBA.com's date is a placeholder (January 1 or 1905); Wikidata has the same date, so NBA.com's is kept"
     },
     {
       "name": "Reggie Jordan",
@@ -1923,6 +2512,45 @@
       "changed_vs_old": true
     },
     {
+      "name": "Ronnie Lester",
+      "kind": "nba_placeholder",
+      "sheet_value": "1/1/1959",
+      "old_override_value": null,
+      "nba_com": [
+        {
+          "person_id": "77373",
+          "value": "1/1/1959",
+          "nba_name": "Ronnie Lester",
+          "years": [
+            1981,
+            1986
+          ]
+        }
+      ],
+      "wikidata": [
+        {
+          "qid": "Q2328853",
+          "values": [
+            "1/1/1959"
+          ],
+          "partial_years": [],
+          "career_evidence": [
+            "NBA.com ID matches a career-checked NBA.com record"
+          ]
+        }
+      ],
+      "nba_com_rejected": null,
+      "career_years": [
+        1981,
+        1986
+      ],
+      "chosen": "1/1/1959",
+      "chosen_source": "nba.com",
+      "days_apart": {},
+      "changed_vs_old": false,
+      "placeholder": "NBA.com's date is a placeholder (January 1 or 1905); Wikidata has the same date, so NBA.com's is kept"
+    },
+    {
       "name": "Sharrod Ford",
       "kind": "disagreement",
       "sheet_value": "9/9/1982",
@@ -2026,6 +2654,123 @@
         "old_override_vs_sheet": 365
       },
       "changed_vs_old": true
+    },
+    {
+      "name": "Tiago Splitter",
+      "kind": "nba_placeholder",
+      "sheet_value": "1/1/1985",
+      "old_override_value": null,
+      "nba_com": [
+        {
+          "person_id": "201168",
+          "value": "1/1/1985",
+          "nba_name": "Tiago Splitter",
+          "years": [
+            2011,
+            2017
+          ]
+        }
+      ],
+      "wikidata": [
+        {
+          "qid": "Q352168",
+          "values": [
+            "1/1/1985"
+          ],
+          "partial_years": [],
+          "career_evidence": [
+            "NBA.com ID matches a career-checked NBA.com record"
+          ]
+        }
+      ],
+      "nba_com_rejected": null,
+      "career_years": [
+        2011,
+        2017
+      ],
+      "chosen": "1/1/1985",
+      "chosen_source": "nba.com",
+      "days_apart": {},
+      "changed_vs_old": false,
+      "placeholder": "NBA.com's date is a placeholder (January 1 or 1905); Wikidata has the same date, so NBA.com's is kept"
+    },
+    {
+      "name": "Tony Robertson",
+      "kind": "nba_placeholder",
+      "sheet_value": "1/1/1956",
+      "old_override_value": null,
+      "nba_com": [
+        {
+          "person_id": "77983",
+          "value": "1/1/1956",
+          "nba_name": "Tony Robertson",
+          "years": [
+            1978,
+            1979
+          ]
+        }
+      ],
+      "wikidata": [
+        {
+          "qid": "Q3993296",
+          "values": [
+            "1/1/1956"
+          ],
+          "partial_years": [],
+          "career_evidence": [
+            "NBA.com ID matches a career-checked NBA.com record"
+          ]
+        }
+      ],
+      "nba_com_rejected": null,
+      "career_years": [
+        1978,
+        1979
+      ],
+      "chosen": "1/1/1956",
+      "chosen_source": "nba.com",
+      "days_apart": {},
+      "changed_vs_old": false,
+      "placeholder": "NBA.com's date is a placeholder (January 1 or 1905); Wikidata has the same date, so NBA.com's is kept"
+    },
+    {
+      "name": "Travis Grant",
+      "kind": "nba_placeholder",
+      "sheet_value": "1/1/1950",
+      "old_override_value": null,
+      "nba_com": [
+        {
+          "person_id": "76853",
+          "value": "1/1/1950",
+          "nba_name": "Travis Grant",
+          "years": [
+            1973,
+            1974
+          ]
+        }
+      ],
+      "wikidata": [
+        {
+          "qid": "Q3998036",
+          "values": [
+            "1/1/1950"
+          ],
+          "partial_years": [],
+          "career_evidence": [
+            "NBA.com ID matches a career-checked NBA.com record"
+          ]
+        }
+      ],
+      "nba_com_rejected": null,
+      "career_years": [
+        1973,
+        1974
+      ],
+      "chosen": "1/1/1950",
+      "chosen_source": "nba.com",
+      "days_apart": {},
+      "changed_vs_old": false,
+      "placeholder": "NBA.com's date is a placeholder (January 1 or 1905); Wikidata has the same date, so NBA.com's is kept"
     },
     {
       "name": "Wayne Englestad",
