@@ -112310,6 +112310,12 @@
   {
     "TEAM": "Orlando",
     "YEAR": "2027",
+    "PLAYER": "Kevin Porter",
+    "SALARY": "$2,431,769"
+  },
+  {
+    "TEAM": "Orlando",
+    "YEAR": "2027",
     "PLAYER": "Noah Penda",
     "SALARY": "$2,150,917"
   },
